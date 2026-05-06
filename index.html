@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="대구 여성기업 오늘은 봄날. 공공예술 인터랙티브 콘텐츠와 B2G 맞춤형 미디어아트를 제작합니다."
+    />
+    <title>오늘은 봄날 | 대구 여성기업 공공예술 인터랙티브 콘텐츠</title>
+    <link rel="preconnect" href="https://api.open-meteo.com" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="site-page">
+    <header class="site-nav">
+      <a class="brand" href="#top" aria-label="오늘은 봄날 홈">
+        <strong>오늘은 봄날</strong>
+        <span>대구 여성기업 · 공공예술 콘텐츠</span>
+      </a>
+      <nav aria-label="주요 메뉴">
+        <a href="#works">작품 공개</a>
+        <a href="#products">B2G</a>
+        <a href="#artist">작가</a>
+        <a href="#process">설치</a>
+        <a href="#contact">문의</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="spring-stage site-hero" aria-label="대구 오늘 하루의 날씨에 반응하는 봄날 미디어아트">
+        <canvas id="springCanvas"></canvas>
+
+        <section class="copy" aria-live="polite">
+          <p class="kicker" id="placeLabel">대구의 하늘을 읽는 중</p>
+          <h1>오늘은 봄날</h1>
+          <p class="line" id="weatherLine">대구의 오늘 날씨가 꽃잎의 속도와 빛의 온도를 바꿉니다.</p>
+          <div class="hero-actions">
+            <a class="primary-link" href="#works">작품 공개 보기</a>
+            <a class="secondary-link" href="#contact">공공 프로젝트 문의</a>
+          </div>
+        </section>
+
+        <aside class="panel" aria-label="날씨와 작품 상태">
+          <div>
+            <span>기온</span>
+            <strong id="tempValue">--</strong>
+          </div>
+          <div>
+            <span>하늘</span>
+            <strong id="skyValue">--</strong>
+          </div>
+          <div>
+            <span>바람</span>
+            <strong id="windValue">--</strong>
+          </div>
+          <button id="refreshButton" type="button">대구 하늘 다시 읽기</button>
+        </aside>
+      </section>
+
+      <section class="section intro">
+        <p class="section-kicker">Daegu Women-led Public Art Studio</p>
+        <h2>대구 여성기업 오늘은 봄날은 공공예술 인터랙티브 콘텐츠 전문회사입니다.</h2>
+        <p>
+          지자체, 공공기관, 문화재단, 축제, 학교, 도서관, 도시재생 공간을 위한 미디어아트를 기획하고
+          제작합니다. 날씨, 시간, 관람자의 움직임, 장소의 이야기를 연결해 매일 다른 공공예술 경험을
+          만듭니다.
+        </p>
+      </section>
+
+      <section class="section works" id="works">
+        <div class="section-head">
+          <p class="section-kicker">Public Works Archive</p>
+          <h2>공개 자료: 데이터 기반 작품을 먼저 걸어두었습니다.</h2>
+        </div>
+        <div class="works-grid">
+          <article class="work-card live-work">
+            <div class="work-preview">
+              <canvas id="miniSpringCanvas" aria-hidden="true"></canvas>
+            </div>
+            <div class="work-copy">
+              <span>Weather Interactive</span>
+              <h3>오늘은 봄날</h3>
+              <p>대구의 오늘 날씨에 따라 빛, 꽃잎, 바람의 흐름이 달라지는 실시간 미디어아트입니다.</p>
+            </div>
+          </article>
+          <article class="work-card">
+            <div class="work-preview preview-river">
+              <canvas id="dustWalkCanvas" aria-hidden="true"></canvas>
+            </div>
+            <div class="work-copy">
+              <span>Public Plaza</span>
+              <h3>빛의 산책로</h3>
+              <p>대구 미세먼지 API를 연결해 아이들이 공원에서 야외활동을 해도 되는지 빛의 색으로 보여줍니다.</p>
+            </div>
+          </article>
+          <article class="work-card">
+            <div class="work-preview preview-forest">
+              <canvas id="temperatureGardenCanvas" aria-hidden="true"></canvas>
+            </div>
+            <div class="work-copy">
+              <span>Healing Media Wall</span>
+              <h3>숨 쉬는 정원</h3>
+              <p>오늘 온도를 꽃의 크기, 색온도, 정원의 호흡 리듬으로 시각화하는 자연형 미디어월 작품입니다.</p>
+            </div>
+          </article>
+          <article class="work-card">
+            <div class="work-preview preview-city">
+              <canvas id="rainFlowerCanvas" aria-hidden="true"></canvas>
+            </div>
+            <div class="work-copy">
+              <span>Festival Facade</span>
+              <h3>도시의 꽃비</h3>
+              <p>기상 정보를 활용해 오늘 비가 올지 안 올지 꽃비의 밀도와 하늘의 밝기로 보여주는 작품입니다.</p>
+            </div>
+          </article>
+        </div>
+        <div class="data-table-wrap" aria-label="작품별 데이터 활용 표">
+          <table class="data-table">
+            <caption>
+              작품별 공공 데이터 연결 방식
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">작품</th>
+                <th scope="col">연결 데이터</th>
+                <th scope="col">시민에게 보여주는 판단</th>
+                <th scope="col">적용 공간</th>
+                <th scope="col">설치 장비</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">오늘은 봄날</th>
+                <td>대구 날씨, 바람, 구름, 강수</td>
+                <td id="springStatus">오늘의 하늘 상태를 꽃잎, 빛, 바람의 움직임으로 표현</td>
+                <td>공공청사 로비, 미디어월, 야외 LED</td>
+                <td>라즈베리 파이 5 가능, 대형 화면은 미니 PC 권장</td>
+              </tr>
+              <tr>
+                <th scope="row">빛의 산책로</th>
+                <td>대구 미세먼지 API, 초미세먼지 지수</td>
+                <td id="dustStatus">아이들이 공원에서 야외활동을 해도 되는지 색과 신호로 안내</td>
+                <td>공원, 학교 앞, 어린이 체험 공간</td>
+                <td>라즈베리 파이 5 가능, 네트워크 연결 필요</td>
+              </tr>
+              <tr>
+                <th scope="row">숨 쉬는 정원</th>
+                <td>오늘 온도, 체감온도, 시간대별 변화</td>
+                <td id="temperatureStatus">따뜻함과 추위를 꽃의 크기, 색온도, 호흡 속도로 시각화</td>
+                <td>도서관, 병원, 복지관, 웰니스 공간</td>
+                <td>라즈베리 파이 5 가능, 4K 장시간은 미니 PC 권장</td>
+              </tr>
+              <tr>
+                <th scope="row">도시의 꽃비</th>
+                <td>강수 확률, 강수량, 기상 예보</td>
+                <td id="rainStatus">오늘 비가 올지 안 올지를 꽃비의 밀도와 하늘 변화로 표현</td>
+                <td>축제 미디어파사드, 광장, 관광 안내 공간</td>
+                <td>FHD 송출 가능, 프로젝션/LED는 현장 테스트 권장</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section catalog" id="products">
+        <div class="section-head">
+          <p class="section-kicker">B2G Public Art Content</p>
+          <h2>공공기관 프로젝트에 맞춘 기획, 제작, 설치, 운영까지 대응합니다.</h2>
+        </div>
+        <div class="product-grid">
+          <article class="product-card">
+            <span>01</span>
+            <h3>공공예술 콘텐츠 제작</h3>
+            <p>지역의 장소성, 정책 메시지, 축제 주제에 맞춰 인터랙티브 미디어아트를 커스텀 제작합니다.</p>
+            <dl>
+              <div>
+                <dt>대상</dt>
+                <dd>지자체, 문화재단, 공공기관</dd>
+              </div>
+              <div>
+                <dt>구성</dt>
+                <dd>기획안, 작품 제작, 현장 적용</dd>
+              </div>
+            </dl>
+          </article>
+          <article class="product-card featured">
+            <span>02</span>
+            <h3>인터랙티브 전시 구축</h3>
+            <p>키오스크, 센서, 터치스크린, 미디어월을 연결해 관람자가 참여하는 콘텐츠를 구축합니다.</p>
+            <dl>
+              <div>
+                <dt>대상</dt>
+                <dd>전시관, 도서관, 학교, 홍보관</dd>
+              </div>
+              <div>
+                <dt>구성</dt>
+                <dd>UX 설계, 개발, 설치, 매뉴얼</dd>
+              </div>
+            </dl>
+          </article>
+          <article class="product-card">
+            <span>03</span>
+            <h3>미디어파사드 운영</h3>
+            <p>건물 외벽, LED, 프로젝션 맵핑, 대형 미디어월에 맞춰 작품을 제작하고 송출 환경을 세팅합니다.</p>
+            <dl>
+              <div>
+                <dt>대상</dt>
+                <dd>축제, 야간 경관, 도시재생</dd>
+              </div>
+              <div>
+                <dt>구성</dt>
+                <dd>현장 설계, 커스텀 연출, 송출 테스트</dd>
+              </div>
+            </dl>
+          </article>
+        </div>
+      </section>
+
+      <section class="section grid" id="artist">
+        <article>
+          <span>Artist</span>
+          <h3>홍석범 대구경북지역 미디어아티스트</h3>
+          <p>
+            대구경북지역을 기반으로 빛, 꽃잎, 바람, 계절감을 디지털 풍경으로 번역합니다. 장소의
+            표면과 관람 거리에 맞춰 작품의 밀도와 리듬을 조율합니다.
+          </p>
+        </article>
+        <article>
+          <span>Weather Responsive</span>
+          <h3>공공 데이터와 장소 반응</h3>
+          <p>
+            날씨, 시간, 관람자 움직임, 지역 데이터를 작품의 색과 흐름으로 바꿉니다. 프로젝트별로
+            필요한 데이터 연동을 설계합니다.
+          </p>
+        </article>
+        <article>
+          <span>Interactive</span>
+          <h3>B2G 맞춤형 제작</h3>
+          <p>
+            공공기관의 예산, 일정, 공간, 장비 조건에 맞춰 콘텐츠 범위와 설치 방식을 현실적으로
+            조정합니다.
+          </p>
+        </article>
+      </section>
+
+      <section class="section process" id="process">
+        <div class="section-head">
+          <p class="section-kicker">Project Flow</p>
+          <h2>제안서 단계부터 현장 운영까지 공공 프로젝트 흐름에 맞춰 움직입니다.</h2>
+        </div>
+        <ol class="timeline">
+          <li>
+            <span>상담</span>
+            <p>사업 목적, 대상 공간, 예산 범위, 공고 일정, 운영 기간을 확인합니다.</p>
+          </li>
+          <li>
+            <span>제안</span>
+            <p>공공예술 기획 의도, 콘텐츠 구성, 장비 조건, 운영 방식을 제안서 형태로 정리합니다.</p>
+          </li>
+          <li>
+            <span>제작</span>
+            <p>작품 그래픽, 인터랙션, 데이터 연동, 현장 화면 비율을 맞춰 제작합니다.</p>
+          </li>
+          <li>
+            <span>운영</span>
+            <p>설치 테스트, 송출 안정화, 운영 매뉴얼, 행사 기간 대응까지 준비합니다.</p>
+          </li>
+        </ol>
+      </section>
+
+      <section class="section use-cases">
+        <div>
+          <p class="section-kicker">Where It Works</p>
+          <h2>공공성과 체험성이 필요한 공간에 잘 어울립니다.</h2>
+        </div>
+        <div class="case-list">
+          <p>시청, 구청, 공공청사 로비</p>
+          <p>문화재단, 아트센터, 전시관</p>
+          <p>도시재생 거점, 관광 안내 공간</p>
+          <p>문화재단, 지자체, 축제 미디어파사드</p>
+          <p>학교, 도서관, 어린이 체험 공간</p>
+          <p>공원, 광장, 야간 경관 구역</p>
+        </div>
+      </section>
+
+      <section class="section contact" id="contact">
+        <div>
+          <p class="section-kicker">Contact</p>
+          <h2>공공사업 개요와 공간 사진만 있어도 첫 검토를 시작할 수 있습니다.</h2>
+          <p>
+            오늘은 봄날은 대구를 기반으로 공공예술 인터랙티브 콘텐츠, 미디어파사드, 키오스크형
+            체험 콘텐츠를 커스텀 제작합니다.
+          </p>
+        </div>
+        <div class="contact-box">
+          <h3>상담할 때 알려주세요</h3>
+          <ul>
+            <li>발주 기관과 사업 목적</li>
+            <li>화면 장비: TV, LED, 프로젝터, 키오스크</li>
+            <li>설치 장소, 운영 기간, 예산 범위</li>
+            <li>필요한 인터랙션과 데이터 연동</li>
+          </ul>
+          <a class="primary-link" href="mailto:hello@oneulbomnal.kr?subject=오늘은 봄날 공공예술 콘텐츠 문의">
+            공공 프로젝트 문의하기
+          </a>
+        </div>
+      </section>
+
+      <section class="section credentials" id="credentials">
+        <div class="section-head">
+          <p class="section-kicker">Business Credentials</p>
+          <h2>공공 프로젝트 수행을 위한 사업자 정보와 자격요건입니다.</h2>
+        </div>
+        <div class="credential-layout">
+          <article class="business-card">
+            <h3>사업자 정보</h3>
+            <dl>
+              <div>
+                <dt>상호</dt>
+                <dd>오늘은 봄날</dd>
+              </div>
+              <div>
+                <dt>대표자</dt>
+                <dd>박성실</dd>
+              </div>
+              <div>
+                <dt>사업자등록번호</dt>
+                <dd>575-19-00976</dd>
+              </div>
+              <div>
+                <dt>개업연월일</dt>
+                <dd>2018년 09월 06일</dd>
+              </div>
+              <div>
+                <dt>사업장 소재지</dt>
+                <dd>대구광역시 수성구 동대구로 250, 102동 101호</dd>
+              </div>
+              <div>
+                <dt>업태</dt>
+                <dd>정보통신업, 서비스업</dd>
+              </div>
+              <div>
+                <dt>종목</dt>
+                <dd>영상제작, 장비대여, 기획전시, 콘텐츠개발</dd>
+              </div>
+            </dl>
+          </article>
+          <div class="credential-grid">
+            <article>
+              <span>여성기업 확인서</span>
+              <h3>대구 여성기업</h3>
+              <p>발급번호 제0113-2025-35456호. 유효기간 2025년 11월 07일부터 2028년 11월 06일까지.</p>
+            </article>
+            <article>
+              <span>비디오물제작업 신고증</span>
+              <h3>영상 제작 자격</h3>
+              <p>신고번호 제2025-000019호. 동영상 제작, 홍보영상 제작, 영상촬영 제작품목 신고.</p>
+            </article>
+            <article>
+              <span>방송영상독립제작사 신고증</span>
+              <h3>방송영상 제작</h3>
+              <p>신고번호 제12235호. 방송영상물 제작 및 공급 업종으로 신고.</p>
+            </article>
+            <article>
+              <span>B2G 대응</span>
+              <h3>공공사업 수행 기반</h3>
+              <p>지자체, 공공기관, 문화재단 프로젝트에 맞춰 제안, 제작, 설치, 운영 문서를 준비합니다.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="./spring.js"></script>
+  </body>
+</html>

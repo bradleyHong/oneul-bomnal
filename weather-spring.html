@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>오늘은 봄날</title>
+    <link rel="preconnect" href="https://api.open-meteo.com" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="spring-stage" aria-label="오늘 하루의 날씨에 반응하는 봄날 미디어아트">
+      <canvas id="springCanvas"></canvas>
+
+      <section class="copy" aria-live="polite">
+        <p class="kicker" id="placeLabel">대구의 하늘을 읽는 중</p>
+        <h1>오늘은 봄날</h1>
+        <p class="line" id="weatherLine">대구의 오늘 날씨가 꽃잎의 속도와 빛의 온도를 바꿉니다.</p>
+      </section>
+
+      <aside class="panel" aria-label="날씨와 작품 상태">
+        <div>
+          <span>기온</span>
+          <strong id="tempValue">--</strong>
+        </div>
+        <div>
+          <span>하늘</span>
+          <strong id="skyValue">--</strong>
+        </div>
+        <div>
+          <span>바람</span>
+          <strong id="windValue">--</strong>
+        </div>
+        <button id="refreshButton" type="button">대구 하늘 다시 읽기</button>
+      </aside>
+    </main>
+
+    <script src="./spring.js"></script>
+  </body>
+</html>
