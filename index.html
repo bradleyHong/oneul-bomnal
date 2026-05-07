@@ -9,7 +9,7 @@
     />
     <title>오늘은 봄날 | 공공예술 콘텐츠와 공공사업 페이지 제작</title>
     <link rel="preconnect" href="https://api.open-meteo.com" />
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles.css?v=mini-pc-profile-20260507" />
   </head>
   <body class="site-page">
     <header class="site-nav">
@@ -21,6 +21,7 @@
         <a href="#works">작품 공개</a>
         <a href="#products">B2G</a>
         <a href="#pages">페이지 제작</a>
+        <a href="#profile">소개서</a>
         <a href="#artist">작가</a>
         <a href="#process">설치</a>
         <a href="#contact">문의</a>
@@ -64,7 +65,9 @@
         <p>
           지자체, 공공기관, 문화재단, 축제, 학교, 도서관, 도시재생 공간을 위한 미디어아트를 기획하고
           제작합니다. 공공사업 랜딩페이지, 설문조사, 참여 신청, 결과 아카이브 페이지까지 함께 만들어
-          시민이 보고 참여하고 남길 수 있는 디지털 접점을 설계합니다.
+          시민이 보고 참여하고 남길 수 있는 디지털 접점을 설계합니다. 미디어아트 화면 안에 QR을 심어
+          랜딩페이지, 설문, 이벤트, 사은품 수령 페이지로 연결할 수 있고, 날씨·미세먼지·수위·교통·행사
+          데이터 같은 공공 API 조건에 따라 서로 다른 결과물이 나오도록 제작할 수 있습니다.
         </p>
       </section>
 
@@ -135,28 +138,28 @@
                 <td>대구 날씨, 바람, 구름, 강수</td>
                 <td id="springStatus">오늘의 하늘과 현재 시각을 시침, 초침, 꽃잎, 빛의 움직임으로 표현</td>
                 <td>공공청사 로비, 미디어월, 야외 LED</td>
-                <td>라즈베리 파이 5 가능, 대형 화면은 미니 PC 권장</td>
+                <td>현장 송출용 미니 PC 권장</td>
               </tr>
               <tr>
                 <th scope="row">빛의 산책로</th>
                 <td>대구 미세먼지 API, 초미세먼지 지수</td>
                 <td id="dustStatus">아이들이 공원에서 야외활동을 해도 되는지 색과 신호로 안내</td>
                 <td>공원, 학교 앞, 어린이 체험 공간</td>
-                <td>라즈베리 파이 5 가능, 네트워크 연결 필요</td>
+                <td>미니 PC 권장, 네트워크 연결 필요</td>
               </tr>
               <tr>
                 <th scope="row">숨 쉬는 정원</th>
                 <td>오늘 온도, 체감온도, 시간대별 변화</td>
                 <td id="temperatureStatus">따뜻함과 추위를 꽃의 크기, 색온도, 호흡 속도로 시각화</td>
                 <td>도서관, 병원, 복지관, 웰니스 공간</td>
-                <td>라즈베리 파이 5 가능, 4K 장시간은 미니 PC 권장</td>
+                <td>4K 장시간 운영은 미니 PC 권장</td>
               </tr>
               <tr>
                 <th scope="row">도시의 꽃비</th>
                 <td>강수 확률, 강수량, 기상 예보</td>
                 <td id="rainStatus">오늘 비가 올지 안 올지를 꽃비의 밀도와 하늘 변화로 표현</td>
                 <td>축제 미디어파사드, 광장, 관광 안내 공간</td>
-                <td>FHD 송출 가능, 프로젝션/LED는 현장 테스트 권장</td>
+                <td>미니 PC 송출, 프로젝션/LED 현장 테스트 권장</td>
               </tr>
             </tbody>
           </table>
@@ -228,8 +231,9 @@
             <h3>미디어아트와 연결되는 랜딩페이지, 설문조사, 신청접수 페이지.</h3>
             <p>
               행사나 전시를 소개하는 랜딩페이지, QR로 참여하는 설문조사, 프로그램 신청 페이지,
-              시민 의견 수집 페이지를 프로젝트 목적에 맞게 제작합니다. 콘텐츠 제작 후 참여 데이터까지
-              정리해 공공사업 결과 보고에 활용할 수 있습니다.
+              시민 의견 수집 페이지를 프로젝트 목적에 맞게 제작합니다. LED 사이니지나 미디어월 화면에
+              QR을 넣어 현장 참여를 유도하고, 콘텐츠 제작 후 참여 데이터까지 정리해 공공사업 결과 보고에
+              활용할 수 있습니다.
             </p>
             <div class="service-actions">
               <a href="./landing-references.html">랜딩페이지 레퍼런스 20+개 보기</a>
@@ -318,6 +322,45 @@
         </div>
       </section>
 
+      <section class="section company-profile" id="profile">
+        <div class="section-head">
+          <p class="section-kicker">Company Profile</p>
+          <h2>오늘은 봄날 회사소개서</h2>
+        </div>
+        <div class="profile-layout">
+          <article class="profile-lead">
+            <span>Daegu Women-owned Public Art Company</span>
+            <h3>공공데이터, 미디어아트, 시민 참여 페이지를 하나의 프로젝트로 설계합니다.</h3>
+            <p>
+              오늘은 봄날은 대구 여성기업으로, 공공기관과 지자체의 사업 목적에 맞춰 데이터 기반 미디어아트,
+              LED 사이니지 콘텐츠, 랜딩페이지, 설문·신청 시스템을 함께 제작합니다.
+            </p>
+          </article>
+          <div class="profile-grid">
+            <article>
+              <span>01</span>
+              <h3>데이터 기반 미디어아트</h3>
+              <p>날씨, 미세먼지, 교통, 수위, 행사 참여 데이터 등 다양한 API 조건에 따라 화면 결과가 달라지는 콘텐츠를 제작합니다.</p>
+            </article>
+            <article>
+              <span>02</span>
+              <h3>LED·사이니지 송출</h3>
+              <p>공공청사, 도서관, 축제장, 야외 LED, 실내 미디어월에 맞춰 화면 비율과 운영 환경을 설계합니다.</p>
+            </article>
+            <article>
+              <span>03</span>
+              <h3>QR 참여 연결</h3>
+              <p>작품 화면 안의 QR을 통해 랜딩페이지, 설문, 이벤트, 사은품 수령, 신청접수 페이지로 연결합니다.</p>
+            </article>
+            <article>
+              <span>04</span>
+              <h3>B2G 프로젝트 문서화</h3>
+              <p>기획 의도, 장비 조건, 운영 방식, 결과 데이터 정리까지 공공사업 보고에 필요한 흐름을 준비합니다.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section class="section grid" id="artist">
         <article>
           <span>Artist</span>
@@ -393,19 +436,67 @@
             오늘은 봄날은 대구를 기반으로 공공예술 인터랙티브 콘텐츠, 미디어파사드, 키오스크형
             체험 콘텐츠를 커스텀 제작합니다.
           </p>
+          <div class="contact-actions">
+            <a class="primary-link" href="#inquiry-form">문의폼 작성하기</a>
+            <a class="secondary-link" href="./landing-references.html">레퍼런스 먼저 보기</a>
+          </div>
         </div>
-        <div class="contact-box">
-          <h3>상담할 때 알려주세요</h3>
+        <div class="contact-summary">
+          <h3>상담 전 확인하면 좋은 것</h3>
           <ul>
-            <li>발주 기관과 사업 목적</li>
-            <li>화면 장비: TV, LED, 프로젝터, 키오스크</li>
-            <li>설치 장소, 운영 기간, 예산 범위</li>
-            <li>필요한 인터랙션과 데이터 연동</li>
+            <li>기관명과 사업 목적</li>
+            <li>설치 장소 또는 페이지 제작 목적</li>
+            <li>예산 범위와 희망 일정</li>
+            <li>데이터 연동, 센서, 미디어월 등 필요한 기능</li>
           </ul>
-          <a class="primary-link" href="mailto:hello@oneulbomnal.kr?subject=오늘은 봄날 공공예술 콘텐츠 문의">
-            공공 프로젝트 문의하기
-          </a>
         </div>
+      </section>
+
+      <section class="section inquiry-section" id="inquiry-form">
+        <div>
+          <p class="section-kicker">Inquiry Form</p>
+          <h2>프로젝트 문의</h2>
+          <p>기관명, 사업영역, 예산 범위만 남겨주시면 검토 후 연락드립니다.</p>
+        </div>
+        <form class="contact-form" id="contactForm">
+          <h3>프로젝트 문의폼</h3>
+          <label>
+            <span>기관이름</span>
+            <input name="organization" type="text" placeholder="예: ㅇㅇ구청, ㅇㅇ문화재단" required />
+          </label>
+          <div class="form-row">
+            <label>
+              <span>담당자 성함</span>
+              <input name="name" type="text" placeholder="성함" required />
+            </label>
+            <label>
+              <span>연락처</span>
+              <input name="phone" type="tel" placeholder="010-0000-0000" required />
+            </label>
+          </div>
+          <label>
+            <span>이메일</span>
+            <input name="email" type="email" placeholder="name@example.com" required />
+          </label>
+          <fieldset>
+            <legend>사업영역</legend>
+            <label><input name="service" type="checkbox" value="데이터기반 미디어아트 콘텐츠" /> 데이터기반 미디어아트 콘텐츠</label>
+            <label><input name="service" type="checkbox" value="랜딩페이지" /> 랜딩페이지</label>
+            <label><input name="service" type="checkbox" value="미디어아트" /> 미디어아트</label>
+          </fieldset>
+          <fieldset>
+            <legend>예산</legend>
+            <label><input name="budget" type="radio" value="500~1000만원" required /> 500~1000만원</label>
+            <label><input name="budget" type="radio" value="1000~3000만원" /> 1000~3000만원</label>
+            <label><input name="budget" type="radio" value="3000~4000만원" /> 3000~4000만원</label>
+            <label><input name="budget" type="radio" value="4000~5500만원" /> 4000~5500만원</label>
+          </fieldset>
+          <label>
+            <span>문의 내용</span>
+            <textarea name="message" rows="4" placeholder="설치 장소, 행사 일정, 필요한 기능을 간단히 적어주세요."></textarea>
+          </label>
+          <button class="primary-link" type="submit">문의 내용 메일로 보내기</button>
+        </form>
       </section>
 
       <section class="section credentials" id="credentials">
@@ -473,6 +564,41 @@
       </section>
     </main>
 
+    <script>
+      function scrollToCurrentHash() {
+        if (!window.location.hash) return;
+        const target = document.querySelector(window.location.hash);
+        if (!target) return;
+        window.setTimeout(() => {
+          target.scrollIntoView({ block: "start" });
+        }, 80);
+      }
+
+      window.addEventListener("load", scrollToCurrentHash);
+      window.addEventListener("hashchange", scrollToCurrentHash);
+
+      const contactForm = document.querySelector("#contactForm");
+      if (contactForm) {
+        contactForm.addEventListener("submit", (event) => {
+          event.preventDefault();
+          const form = new FormData(contactForm);
+          const services = form.getAll("service").join(", ") || "선택 없음";
+          const body = [
+            `기관이름: ${form.get("organization") || ""}`,
+            `담당자 성함: ${form.get("name") || ""}`,
+            `연락처: ${form.get("phone") || ""}`,
+            `이메일: ${form.get("email") || ""}`,
+            `사업영역: ${services}`,
+            `예산: ${form.get("budget") || ""}`,
+            "",
+            "문의 내용:",
+            form.get("message") || "",
+          ].join("\n");
+          const subject = encodeURIComponent("[오늘은 봄날] 공공 프로젝트 문의");
+          window.location.href = `mailto:hello@oneulbomnal.kr?subject=${subject}&body=${encodeURIComponent(body)}`;
+        });
+      }
+    </script>
     <script src="./spring.js"></script>
   </body>
 </html>

@@ -413,6 +413,26 @@
         font-weight: 850;
       }
 
+      .example-disclaimer {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: -16px 0 28px;
+        color: rgba(31, 42, 36, 0.7);
+      }
+
+      .example-disclaimer span {
+        display: inline-flex;
+        min-height: 34px;
+        align-items: center;
+        padding: 0 12px;
+        border: 1px solid rgba(31, 42, 36, 0.14);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.38);
+        font-size: 13px;
+        font-weight: 900;
+      }
+
       .filter-bar {
         display: flex;
         flex-wrap: wrap;
@@ -440,15 +460,15 @@
 
       .reference-grid {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 16px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 22px;
       }
 
       .ref-card {
         position: relative;
         display: flex;
         flex-direction: column;
-        min-height: 392px;
+        min-height: 560px;
         overflow: hidden;
         padding: 0;
         border: 1px solid rgba(31, 42, 36, 0.12);
@@ -489,24 +509,24 @@
       }
 
       .ref-card:nth-child(3n) {
-        min-height: 468px;
+        min-height: 620px;
       }
 
       .ref-card:nth-child(5n) {
-        grid-column: span 2;
+        grid-column: span 1;
       }
 
       .ref-photo {
         position: relative;
         z-index: 0;
-        min-height: 172px;
+        min-height: 270px;
         overflow: hidden;
       }
 
       .ref-photo img {
         width: 100%;
         height: 100%;
-        min-height: 200px;
+        min-height: 300px;
         object-fit: cover;
         filter: saturate(0.9) contrast(0.96);
         transform: scale(1.03);
@@ -517,6 +537,24 @@
         position: absolute;
         inset: 0;
         background: linear-gradient(180deg, transparent 25%, color-mix(in srgb, var(--card-a) 78%, transparent));
+      }
+
+      .ref-sample-tag {
+        position: absolute;
+        left: 22px;
+        top: 22px;
+        z-index: 2;
+        display: inline-flex;
+        min-height: 30px;
+        align-items: center;
+        padding: 0 10px;
+        border: 1px solid rgba(255, 255, 255, 0.34);
+        border-radius: 999px;
+        color: rgba(255, 255, 255, 0.92);
+        background: rgba(31, 42, 36, 0.28);
+        backdrop-filter: blur(10px);
+        font-size: 12px;
+        font-weight: 950;
       }
 
       .ref-body {
@@ -575,9 +613,17 @@
 
       .ref-bottom {
         align-self: end;
-        margin-top: 24px;
+        margin-top: 26px;
         font-size: 14px;
         font-weight: 950;
+      }
+
+      .ref-notice {
+        display: block;
+        margin-top: 8px;
+        color: color-mix(in srgb, var(--card-ink) 58%, transparent);
+        font-size: 12px;
+        font-weight: 900;
       }
 
       .ref-specs {
@@ -617,6 +663,7 @@
         background: var(--case-bg);
         background-position: center;
         background-size: cover;
+        overflow: hidden;
       }
 
       .case-hero .actions {
@@ -687,7 +734,7 @@
 
       .template-promo .case-hero {
         display: grid;
-        grid-template-columns: minmax(0, 0.76fr) minmax(340px, 0.58fr);
+        grid-template-columns: minmax(0, 0.76fr) minmax(300px, 0.58fr);
         gap: clamp(34px, 7vw, 104px);
         align-items: center;
       }
@@ -719,7 +766,7 @@
 
       .template-medical .case-hero {
         display: grid;
-        grid-template-columns: minmax(330px, 0.5fr) minmax(0, 0.9fr);
+        grid-template-columns: minmax(280px, 0.5fr) minmax(0, 0.9fr);
         gap: clamp(30px, 6vw, 88px);
         align-items: center;
       }
@@ -743,7 +790,7 @@
 
       .template-public .case-hero {
         display: grid;
-        grid-template-columns: minmax(0, 0.9fr) minmax(320px, 0.56fr);
+        grid-template-columns: minmax(0, 0.9fr) minmax(280px, 0.56fr);
         gap: clamp(30px, 6vw, 88px);
         align-items: end;
       }
@@ -769,7 +816,7 @@
 
       .template-event .case-hero {
         display: grid;
-        grid-template-columns: minmax(0, 0.62fr) minmax(360px, 0.76fr);
+        grid-template-columns: minmax(0, 0.62fr) minmax(300px, 0.76fr);
         gap: clamp(30px, 6vw, 88px);
         align-items: center;
       }
@@ -813,7 +860,7 @@
 
       .template-contest .case-hero {
         display: grid;
-        grid-template-columns: minmax(0, 0.82fr) minmax(330px, 0.62fr);
+        grid-template-columns: minmax(0, 0.82fr) minmax(300px, 0.62fr);
         gap: clamp(30px, 6vw, 88px);
         align-items: center;
       }
@@ -841,7 +888,7 @@
 
       .template-report .case-hero {
         display: grid;
-        grid-template-columns: minmax(0, 0.62fr) minmax(360px, 0.76fr);
+        grid-template-columns: minmax(0, 0.62fr) minmax(300px, 0.76fr);
         gap: clamp(30px, 6vw, 88px);
         align-items: center;
       }
@@ -869,7 +916,7 @@
 
       .promo-stage {
         display: grid;
-        grid-template-columns: minmax(0, 0.9fr) minmax(340px, 0.58fr);
+        grid-template-columns: minmax(0, 0.9fr) minmax(300px, 0.58fr);
         gap: clamp(30px, 6vw, 88px);
         align-items: center;
       }
@@ -911,7 +958,7 @@
 
       .medical-stage {
         display: grid;
-        grid-template-columns: minmax(340px, 0.58fr) minmax(0, 0.82fr);
+        grid-template-columns: minmax(280px, 0.58fr) minmax(0, 0.82fr);
         gap: clamp(30px, 6vw, 88px);
         align-items: center;
       }
@@ -951,7 +998,7 @@
 
       .public-stage {
         display: grid;
-        grid-template-columns: minmax(0, 0.72fr) minmax(360px, 0.7fr);
+        grid-template-columns: minmax(0, 0.72fr) minmax(300px, 0.7fr);
         gap: clamp(30px, 6vw, 88px);
         align-items: stretch;
       }
@@ -980,7 +1027,7 @@
 
       .event-stage {
         display: grid;
-        grid-template-columns: minmax(0, 0.65fr) minmax(360px, 0.68fr);
+        grid-template-columns: minmax(0, 0.65fr) minmax(300px, 0.68fr);
         gap: clamp(30px, 6vw, 88px);
         align-items: center;
       }
@@ -1019,7 +1066,7 @@
 
       .contest-stage {
         display: grid;
-        grid-template-columns: minmax(0, 0.7fr) minmax(380px, 0.68fr);
+        grid-template-columns: minmax(0, 0.7fr) minmax(300px, 0.68fr);
         gap: clamp(30px, 6vw, 88px);
         align-items: center;
       }
@@ -1050,7 +1097,7 @@
 
       .report-stage {
         display: grid;
-        grid-template-columns: minmax(360px, 0.64fr) minmax(0, 0.78fr);
+        grid-template-columns: minmax(300px, 0.64fr) minmax(0, 0.78fr);
         gap: clamp(30px, 6vw, 88px);
         align-items: center;
       }
@@ -1238,8 +1285,59 @@
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
-        .ref-card:nth-child(5n) {
-          grid-column: span 1;
+        .case-hero,
+        .promo-stage,
+        .medical-stage,
+        .public-stage,
+        .event-stage,
+        .contest-stage,
+        .report-stage,
+        .template-promo .case-hero,
+        .template-medical .case-hero,
+        .template-public .case-hero,
+        .template-event .case-hero,
+        .template-contest .case-hero,
+        .template-report .case-hero {
+          grid-template-columns: 1fr;
+          min-height: auto;
+          gap: 30px;
+        }
+
+        .case-hero.variant-1 .case-copy,
+        .case-hero.variant-3 .case-copy,
+        .case-hero.variant-1 .promo-offer,
+        .case-hero.variant-1 .doctor-card,
+        .case-hero.variant-1 .public-console,
+        .case-hero.variant-1 .stamp-pass,
+        .case-hero.variant-1 .contest-console,
+        .case-hero.variant-1 .report-panel,
+        .case-hero.variant-3 .promo-offer,
+        .case-hero.variant-3 .doctor-card,
+        .case-hero.variant-3 .public-console,
+        .case-hero.variant-3 .stamp-pass,
+        .case-hero.variant-3 .contest-console,
+        .case-hero.variant-3 .report-panel {
+          order: initial;
+        }
+
+        .doctor-card {
+          display: grid;
+          grid-template-columns: minmax(240px, 0.8fr) minmax(0, 1fr);
+          min-height: auto;
+        }
+
+        .doctor-card img {
+          height: 100%;
+          min-height: 320px;
+        }
+
+        .public-console,
+        .medical-slots {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .stamp-pass img {
+          height: clamp(260px, 38vw, 420px);
         }
       }
 
@@ -1281,6 +1379,7 @@
 
         .case-hero {
           min-height: auto;
+          overflow: visible;
         }
       }
 
@@ -1306,6 +1405,19 @@
           grid-template-columns: 1fr;
         }
 
+        .ref-card,
+        .ref-card:nth-child(3n) {
+          min-height: auto;
+        }
+
+        .ref-photo {
+          min-height: 230px;
+        }
+
+        .ref-photo img {
+          min-height: 260px;
+        }
+
         .spotlight-card,
         .spotlight-card:nth-child(n + 2) {
           min-height: 420px;
@@ -1317,9 +1429,32 @@
           line-height: 1.12;
         }
 
+        .case-hero .actions {
+          gap: 8px;
+          margin-top: 24px;
+        }
+
+        .case-hero .button {
+          flex: 1 1 180px;
+        }
+
+        .case-lead,
+        .case-copy p:not(.kicker) {
+          font-size: 15px;
+          line-height: 1.72;
+        }
+
+        .case-meta {
+          margin-top: 18px;
+        }
+
+        .case-meta span {
+          min-height: auto;
+        }
+
         .promo-wheel,
         .stamp-map {
-          min-height: 360px;
+          min-height: 300px;
         }
 
         .image-window {
@@ -1341,6 +1476,38 @@
         .public-console div {
           min-height: auto;
         }
+
+        .doctor-card {
+          grid-template-columns: 1fr;
+        }
+
+        .doctor-card img {
+          height: 260px;
+          min-height: 260px;
+        }
+
+        .public-console,
+        .medical-slots,
+        .stamp-row {
+          grid-template-columns: 1fr;
+        }
+
+        .public-console div,
+        .medical-slots span,
+        .stamp-row span {
+          min-height: auto;
+        }
+
+        .stamp-pass,
+        .contest-console,
+        .report-panel,
+        .survey-ticket {
+          padding: 18px;
+        }
+
+        .stamp-pass img {
+          height: 220px;
+        }
       }
     </style>
   </head>
@@ -1359,13 +1526,13 @@
           <p class="kicker">Landing Reference Showroom · Korean / English</p>
           <h1>클릭하는 순간, 사업이 시작되는 페이지.</h1>
           <p>
-            보험 이벤트, 병원 예약, 관공서 참여자 모집, 관광 스탬프, 공모전 접수까지 목적별로 다른 첫 화면과 참여 흐름을
-            보여주는 랜딩페이지 쇼룸입니다.
+            보험 이벤트, 병원 예약, 관공서 참여자 모집, 관광 스탬프, 공모전 접수, LED 사이니지 미디어아트까지
+            목적별로 다른 화면과 참여 흐름을 보여주는 레퍼런스 쇼룸입니다.
           </p>
           <div class="hero-badges">
-            <div><b>24</b><span>sample landing pages</span></div>
+            <div><b>34</b><span>sample references</span></div>
             <div><b>6</b><span>layout systems</span></div>
-            <div><b>QR</b><span>survey / booking / recruit</span></div>
+            <div><b>LED</b><span>survey / signage / media art</span></div>
           </div>
           <div class="actions">
             <a class="button primary" href="#spotlight">대표 데모 보기</a>
@@ -1434,19 +1601,27 @@
         <div class="section-head">
           <div>
             <p class="kicker">Reference Index</p>
-            <h2>색, 구조, 폼 방식이 다른 24개 샘플.</h2>
+            <h2>설문, 행사 소개, 모집, 예약, LED 미디어아트까지 다른 34개 샘플.</h2>
           </div>
           <p>
-            각 카드는 실제 제안서에 넣을 수 있는 페이지 시안 방향입니다. 클릭하면 주제에 맞춘 상세 랜딩 레이아웃이 열립니다.
+            각 카드는 실제 제안서에 넣을 수 있는 페이지 시안 방향입니다. 단순 설문뿐 아니라 행사 홍보, 참여 인증, 사은품 수령,
+            예약, 모집, 공모전, 결과 리포트형, 공공데이터 기반 사이니지 미디어아트까지 목적별로 다르게 구성했습니다.
             <span class="image-note">Free stock images from Unsplash are used as proposal mockup assets.</span>
           </p>
+        </div>
+        <div class="example-disclaimer" aria-label="레퍼런스 안내">
+          <span>모든 카드는 제작 예시입니다.</span>
+          <span>실제 납품 사례가 아닌 제안용 샘플입니다.</span>
+          <span>이미지는 무료 스톡 이미지를 활용한 목업입니다.</span>
         </div>
         <div class="filter-bar" aria-label="레퍼런스 필터">
           <button class="active" type="button" data-filter="all">전체</button>
           <button type="button" data-filter="보험사">보험사</button>
           <button type="button" data-filter="병원">병원</button>
           <button type="button" data-filter="관공서">관공서</button>
+          <button type="button" data-filter="행사">행사/홍보</button>
           <button type="button" data-filter="관광">관광/이벤트</button>
+          <button type="button" data-filter="미디어아트">LED/미디어아트</button>
           <button type="button" data-filter="기업">기업/공공</button>
         </div>
         <div class="reference-grid" id="cards"></div>
@@ -1465,22 +1640,32 @@
         ["retirement-plan", "금융/보험", "은퇴설계 체크업", "은퇴 준비 상태를 시각화하고 연금 상담으로 연결합니다.", "은퇴 준비 점검", "report", "연금"],
         ["hospital-checkup", "병원", "ㅇㅇ병원 건강검진 예약 랜딩", "검진 패키지 안내, 희망 일정 선택, 상담 신청을 받는 병원형 랜딩.", "검진 예약 문의", "medical", "병원"],
         ["hospital-appointment", "병원", "ㅇㅇ병원 진료예약 사전접수", "초진/재진 여부와 증상을 미리 받아 접수 대기를 줄입니다.", "진료예약 접수", "medical", "예약"],
-        ["hospital-patient-survey", "병원", "ㅇㅇ병원 환자경험 설문", "내원 후 QR로 만족도, 대기시간, 개선 의견을 수집합니다.", "환자경험 설문 참여", "report", "설문"],
-        ["hospital-health-class", "병원", "ㅇㅇ병원 건강강좌 참여자 모집", "지역 주민 대상 건강강좌와 설명회 신청을 받습니다.", "건강강좌 신청", "public", "강좌"],
+        ["hospital-patient-survey", "병원", "ㅇㅇ병원 환자경험 리포트", "내원 후 만족도와 대기시간을 모아 병원 서비스 개선 리포트로 보여줍니다.", "환자경험 남기기", "report", "리포트"],
+        ["hospital-health-class", "병원", "ㅇㅇ병원 건강강좌 행사 소개", "강좌 일정, 의료진 소개, 장소 안내를 보여주고 참석 신청까지 연결합니다.", "행사 일정 보기", "public", "강좌"],
         ["city-program-recruit", "관공서", "청년 문화프로그램 참여자 모집", "청년 대상 교육/문화 프로그램 신청을 받는 모집 페이지.", "참여 신청하기", "public", "모집"],
         ["public-survey", "관공서", "시민 의견 설문조사", "정책 수요와 시민 의견을 QR로 수집하는 공공 설문.", "시민 의견 남기기", "report", "의견"],
-        ["festival-volunteer", "관공서", "지역축제 자원봉사자 모집", "축제 운영 스태프와 자원봉사자를 모집하는 신청접수.", "봉사자 신청", "public", "축제"],
+        ["local-event-gift-survey", "관공서", "지자체 행사 홍보·참여 인증", "행사 소개를 먼저 보여주고 QR 설문, 현장 참여 인증, 사은품 수령까지 연결합니다.", "행사 참여 인증", "event", "행사"],
         ["tour-stamp", "관광", "대구 골목여행 스탬프 투어", "관광지 방문 인증과 경품 신청을 연결하는 모바일 이벤트.", "스탬프 시작", "event", "여행"],
         ["carbon-challenge", "관공서", "탄소중립 시민 챌린지", "시민 실천 인증과 참여 결과를 모으는 캠페인 페이지.", "실천 인증하기", "event", "탄소"],
-        ["safety-education", "관공서", "재난안전 교육 신청", "교육 일정을 안내하고 시민 신청을 받는 공공 예약 페이지.", "교육 신청", "medical", "교육"],
-        ["traffic-safety", "공공 캠페인", "어린이 교통안전 캠페인", "학교 앞 교통안전 서약과 퀴즈 참여를 받습니다.", "안전 서약하기", "report", "교통"],
-        ["birthcare-support", "관공서", "출산·육아 지원사업 안내", "지원 대상 확인과 상담 신청을 연결하는 복지정책 랜딩.", "지원 대상 확인", "public", "복지"],
+        ["safety-education", "관공서", "재난안전 교육 일정 안내", "교육 일정, 장소, 대상자를 안내하고 회차별 예약을 받는 공공 행사 페이지.", "교육 일정 확인", "medical", "교육"],
+        ["traffic-safety", "공공 캠페인", "어린이 교통안전 캠페인", "학교 앞 교통안전 서약, 퀴즈, 현장 인증을 함께 운영하는 캠페인 페이지.", "안전 캠페인 참여", "event", "교통"],
+        ["birthcare-support", "관공서", "출산·육아 지원사업 안내", "지원 제도, 대상 조건, 신청 절차를 한 화면에서 이해시키는 복지 안내 페이지.", "지원 내용 보기", "public", "복지"],
         ["idea-contest", "관공서", "시민 아이디어 공모전", "정책 아이디어 접수와 첨부파일 제출을 받는 공모전 페이지.", "아이디어 제출", "contest", "공모"],
-        ["media-art-workshop", "문화재단", "미디어아트 체험 워크숍 모집", "어린이·청소년 미디어아트 체험 프로그램 신청접수.", "워크숍 신청", "public", "예술"],
-        ["hometown-donation", "관공서", "고향사랑기부제 홍보 랜딩", "답례품, 기부 혜택, 참여 방법을 안내하는 정책 홍보.", "기부 방법 보기", "event", "기부"],
-        ["market-coupon", "소상공인", "전통시장 모바일 쿠폰 이벤트", "방문 인증과 쿠폰 신청을 받는 전통시장 활성화 페이지.", "쿠폰 받기", "event", "쿠폰"],
+        ["media-art-workshop", "문화재단", "미디어아트 체험 워크숍 소개", "작품 체험, 강사 소개, 일정 안내를 중심으로 보여주는 문화행사 랜딩.", "워크숍 일정 보기", "public", "예술"],
+        ["hometown-donation", "관공서", "고향사랑기부제 홍보 랜딩", "답례품, 기부 혜택, 참여 방법을 카드형 콘텐츠로 안내하는 정책 홍보 페이지.", "기부 방법 보기", "event", "기부"],
+        ["market-coupon", "소상공인", "전통시장 모바일 쿠폰 이벤트", "행사 소개, 상점 지도, 구매 인증, 쿠폰 수령을 연결하는 전통시장 활성화 페이지.", "쿠폰 받기", "event", "쿠폰"],
         ["smallbiz-support", "관공서", "소상공인 디지털 전환 지원", "지원사업 안내와 신청 상담을 받는 B2G 사업 랜딩.", "지원 상담 신청", "public", "상담"],
         ["employee-esg", "기업/공공", "임직원 ESG 참여 캠페인", "조직 내부 ESG 실천 인증과 설문을 함께 받는 캠페인.", "ESG 실천 참여", "report", "ESG"],
+        ["air-garden-led", "미디어아트", "숨쉬는 공기정원 LED", "대구 미세먼지와 초미세먼지 데이터를 꽃잎 밀도와 빛의 투명도로 바꾸는 공공 사이니지 미디어아트.", "미디어월 예시 보기", "media", "공기"],
+        ["river-level-wall", "미디어아트", "금호강 수위의 빛", "하천 수위와 강수량 데이터를 물결의 높이, 속도, 색으로 보여주는 LED 미디어월 콘텐츠.", "하천 데이터 연출", "media", "수위"],
+        ["bus-flow-screen", "미디어아트", "도시 이동의 리듬", "버스 도착 정보와 정류장 혼잡도를 흐르는 선과 점의 군집으로 시각화하는 교통 데이터 사이니지.", "교통 데이터 연출", "media", "이동"],
+        ["heatwave-shade-signage", "미디어아트", "폭염 그늘지도", "폭염특보, 기온, 체감온도를 활용해 쉼터 방향과 위험 단계를 부드러운 색면으로 안내하는 공공 LED 콘텐츠.", "폭염 안내 예시", "media", "폭염"],
+        ["rain-flower-facade", "미디어아트", "비 예보 꽃비 파사드", "강수 확률과 시간대별 예보를 꽃비의 양과 낙하 속도로 표현하는 축제형 미디어파사드.", "꽃비 연출 보기", "media", "꽃비"],
+        ["library-reading-light", "미디어아트", "도서관 독서의 별", "도서 대출량과 방문자 수를 밤하늘의 별자리와 은은한 빛의 확산으로 보여주는 실내 미디어월.", "도서관 사이니지", "media", "독서"],
+        ["festival-crowd-bloom", "미디어아트", "축제 인파의 꽃", "행사장 방문자 수와 시간대별 체류 데이터를 꽃의 개화 리듬으로 시각화하는 축제 LED 콘텐츠.", "축제 LED 예시", "media", "축제"],
+        ["noise-calm-wall", "미디어아트", "소음이 잠드는 벽", "도시 소음 데이터를 물결과 호흡 패턴으로 바꿔 조용한 방향을 제안하는 힐링형 공공 미디어아트.", "소음 데이터 연출", "media", "소음"],
+        ["solar-energy-bloom", "미디어아트", "태양광 꽃시계", "공공청사 태양광 발전량과 일사량 데이터를 꽃의 방향과 빛의 밝기로 시각화하는 ESG 사이니지.", "에너지 데이터 연출", "media", "태양"],
+        ["safe-walk-light", "미디어아트", "안심귀가 빛길", "보행량, 가로등, 안전지수 데이터를 활용해 밤길의 밝기와 동선을 시각화하는 야간 경관 미디어아트.", "안전 데이터 연출", "media", "안심"],
       ].map(([id, group, title, summary, cta, template, badge], index) => ({ id, group, title, summary, cta, template, badge, index }));
 
       const englishTitles = [
@@ -1492,22 +1677,32 @@
         "Retirement Planning Checkup",
         "Hospital Checkup Booking",
         "Clinic Pre-Appointment",
-        "Patient Experience Survey",
-        "Community Health Class",
+        "Patient Experience Report",
+        "Community Health Event",
         "Youth Culture Program",
         "Public Opinion Survey",
-        "Festival Volunteer Recruitment",
+        "Local Event Gift Survey",
         "Daegu Alley Stamp Tour",
         "Carbon Neutral Challenge",
-        "Disaster Safety Class",
+        "Disaster Safety Schedule",
         "Children Traffic Safety",
         "Birthcare Support Guide",
         "Citizen Idea Contest",
-        "Media Art Workshop",
+        "Media Art Workshop Event",
         "Hometown Donation Campaign",
         "Market Coupon Event",
         "Small Business Support",
         "Employee ESG Campaign",
+        "Breathing Air Garden LED",
+        "River Level Light Wall",
+        "Urban Mobility Rhythm",
+        "Heatwave Shade Map",
+        "Rain Forecast Flower Facade",
+        "Library Reading Stars",
+        "Festival Crowd Bloom",
+        "Noise Calming Wall",
+        "Solar Energy Flower Clock",
+        "Safe Walk Light Path",
       ];
 
       const imagePool = [
@@ -1523,7 +1718,7 @@
         "https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?auto=format&fit=crop&w=1200&q=80",
         "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80",
         "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=1200&q=80",
         "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
         "https://images.unsplash.com/photo-1497436072909-f5e4be1713d1?auto=format&fit=crop&w=1200&q=80",
         "https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?auto=format&fit=crop&w=1200&q=80",
@@ -1535,6 +1730,16 @@
         "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80",
         "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80",
         "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80",
       ];
 
       const caseBlueprints = {
@@ -1637,6 +1842,14 @@
           metrics: ["응답률", "참여율", "전환율", "완료율"],
           output: "이벤트 참여자와 상담 희망자를 구분해 저장합니다.",
         },
+        media: {
+          trust: ["공공데이터", "LED 송출", "QR 연결"],
+          steps: ["데이터 수집", "화면 조건 변화", "QR 참여 연결"],
+          stats: ["API", "LED", "QR", "MINI PC"],
+          fields: ["연결 API", "화면 비율", "운영 시간", "QR 연결 페이지"],
+          metrics: ["데이터 상태", "화면 반응", "참여 연결", "운영 안정성"],
+          output: "공공데이터 조건에 따라 달라지는 사이니지 화면과 QR 참여 흐름을 함께 설계합니다.",
+        },
       };
 
       const blueprintOverrides = {
@@ -1646,7 +1859,7 @@
         "hospital-health-class": { trust: ["건강강좌", "지역 주민", "참석자 명단"], stats: ["모집 인원", "강좌 주제", "참석 확정", "문자 안내"], fields: ["참석 인원", "관심 주제", "연령대", "연락처"], output: "건강강좌 신청자와 안내 문자 발송 명단을 만듭니다." },
         "city-program-recruit": { trust: ["청년 대상", "회차별 모집", "문자 안내"], stats: ["모집 인원", "신청 상태", "운영 회차", "대기자"], fields: ["이름", "거주지", "희망 회차", "참여 동기"], output: "회차별 정원과 대기자를 구분해 관리합니다." },
         "public-survey": { trust: ["정책 수요", "QR 설문", "의견 분석"], stats: ["응답 수", "관심 정책", "만족도", "자유 의견"], fields: ["거주 지역", "관심 정책", "만족도", "자유 의견"], output: "정책 수요와 시민 의견을 결과 보고 표로 만듭니다." },
-        "festival-volunteer": { trust: ["자원봉사", "시간대 배정", "1365"], stats: ["봉사자", "가능 날짜", "업무 배정", "사전 안내"], fields: ["가능 날짜", "가능 시간", "희망 업무", "1365 ID"], output: "시간대별 봉사자 배치표를 만듭니다." },
+        "local-event-gift-survey": { trust: ["행사 홍보", "QR 설문", "사은품 수령"], stats: ["행사 소개", "현장 인증", "만족도", "사은품"], fields: ["참여자 연락처", "현장 인증", "만족도 설문", "사은품 수령 확인"], output: "행사 참여자, 설문 응답, 사은품 지급 내역을 한 번에 정리합니다." },
         "tour-stamp": { trust: ["방문 인증", "스탬프", "경품 신청"], stats: ["코스 01", "코스 02", "코스 03"], fields: ["방문 장소", "인증 사진", "연락처", "동의"], output: "관광지별 방문 인증과 경품 신청을 모읍니다." },
         "carbon-challenge": { trust: ["탄소중립", "실천 인증", "성과 집계"], stats: ["실천 항목", "인증 사진", "동네", "소감"], fields: ["실천 항목", "인증 사진", "동네", "참여 소감"], output: "시민 실천 인증을 캠페인 성과로 집계합니다." },
         "safety-education": { trust: ["재난안전", "교육 신청", "참석자"], stats: ["교육 날짜", "참석 인원", "소속", "안내"], fields: ["교육 날짜", "참석 인원", "소속", "연락처"], output: "교육 참석자 명단과 안내 메시지 대상을 정리합니다." },
@@ -1694,19 +1907,35 @@
         return `--card-a:${a};--card-b:${b};--card-ink:${ink};--glow:rgba(255,255,255,.34);--spot-x:${x}%;--spot-y:${y}%`;
       }
 
+      function sampleType(item) {
+        const labels = {
+          promo: "이벤트 설문형",
+          report: "리포트/진단형",
+          medical: "예약/일정형",
+          public: "행사 소개/모집형",
+          event: "행사 참여/인증형",
+          contest: "공모 접수형",
+          media: "LED 미디어아트형",
+        };
+        return labels[item.template] || "랜딩 제작 예시";
+      }
+
       function renderGallery() {
         document.querySelector("#cards").innerHTML = references
           .map(
             (item) => `
               <a class="ref-card" href="./landing-references.html?case=${item.id}" data-group="${item.group}" style="${cardStyle(item)}">
-                <div class="ref-photo"><img src="${imagePool[item.index]}" alt="${englishTitles[item.index]}" loading="lazy" /></div>
+                <div class="ref-photo">
+                  <span class="ref-sample-tag">제작 예시 · ${sampleType(item)}</span>
+                  <img src="${imagePool[item.index]}" alt="${englishTitles[item.index]}" loading="lazy" />
+                </div>
                 <div class="ref-body">
                   <div class="ref-top"><span>${String(item.index + 1).padStart(2, "0")} · ${item.group}</span><b>${item.template}</b></div>
                   <div class="ref-icon">${item.badge}<span class="en-label">${englishTitles[item.index]}</span></div>
                   <h3>${item.title}</h3>
                   <p>${item.summary}</p>
                   <div class="ref-specs">${blueprintFor(item).trust.slice(0, 3).map((text) => `<span>${text}</span>`).join("")}</div>
-                  <div class="ref-bottom">${item.cta}</div>
+                  <div class="ref-bottom">${item.cta}<span class="ref-notice">실제 납품 사례가 아닌 제안용 샘플</span></div>
                 </div>
               </a>
             `,
@@ -1871,6 +2100,8 @@
                 filter === "all" ||
                 group === filter ||
                 (filter === "관광" && ["관광", "소상공인"].includes(group)) ||
+                (filter === "행사" && ["관공서", "문화재단", "공공 캠페인", "소상공인"].includes(group)) ||
+                (filter === "미디어아트" && ["미디어아트"].includes(group)) ||
                 (filter === "기업" && ["기업/공공", "문화재단", "공공 캠페인"].includes(group)) ||
                 (filter === "관공서" && ["관공서"].includes(group));
               card.style.display = visible ? "" : "none";
