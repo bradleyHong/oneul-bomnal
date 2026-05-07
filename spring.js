@@ -37,6 +37,7 @@ const airQuality = {
   pm10: null,
   pm25: null,
 };
+const TAU = Math.PI * 2;
 
 let width = 0;
 let height = 0;
@@ -44,6 +45,7 @@ let dpr = 1;
 let time = 0;
 let petals = [];
 let stems = [];
+let clockMarks = [];
 
 const skyNames = new Map([
   [0, "맑음"],
@@ -104,6 +106,15 @@ function buildGarden() {
     lean: random(-16, 16),
     phase: random(0, Math.PI * 2),
     bloom: random(0.35, 1),
+  }));
+
+  clockMarks = Array.from({ length: 60 }, (_, index) => ({
+    index,
+    length: index % 5 === 0 ? random(18, 34) : random(7, 16),
+    width: index % 5 === 0 ? random(1.7, 3.4) : random(0.7, 1.6),
+    wobble: random(-0.018, 0.018),
+    phase: random(0, TAU),
+    hue: random(18, 196),
   }));
 }
 
@@ -264,12 +275,155 @@ function drawBreath(mood) {
   ctx.globalAlpha = 1;
 }
 
+function clockGeometry() {
+  const compact = width < 760;
+  const radius = Math.min(width, height) * (compact ? 0.285 : 0.215);
+  return {
+    x: compact ? width * 0.5 : width * 0.69,
+    y: compact ? height * 0.56 : height * 0.5,
+    r: Math.max(118, Math.min(radius, compact ? 210 : 260)),
+  };
+}
+
+function drawHand(cx, cy, angle, length, tail, lineWidth, color, glow, cap = "round") {
+  const startX = cx - Math.cos(angle) * tail;
+  const startY = cy - Math.sin(angle) * tail;
+  const endX = cx + Math.cos(angle) * length;
+  const endY = cy + Math.sin(angle) * length;
+
+  ctx.save();
+  ctx.lineCap = cap;
+  ctx.lineWidth = lineWidth;
+  ctx.strokeStyle = color;
+  ctx.shadowColor = glow;
+  ctx.shadowBlur = lineWidth * 3.4;
+  ctx.beginPath();
+  ctx.moveTo(startX, startY);
+  ctx.lineTo(endX, endY);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawClockPetal(cx, cy, radius, angle, size, hue, alpha) {
+  const x = cx + Math.cos(angle) * radius;
+  const y = cy + Math.sin(angle) * radius;
+
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(angle + Math.PI / 2);
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = `hsl(${hueWrap(hue)}, 84%, 72%)`;
+  ctx.beginPath();
+  ctx.ellipse(0, 0, size * 1.7, size * 0.58, 0, 0, TAU);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawClockArt(mood) {
+  const { x: cx, y: cy, r } = clockGeometry();
+  const now = new Date();
+  const milliseconds = now.getMilliseconds();
+  const seconds = now.getSeconds() + milliseconds / 1000;
+  const minutes = now.getMinutes() + seconds / 60;
+  const hours = (now.getHours() % 12) + minutes / 60;
+  const secondAngle = (seconds / 60) * TAU - Math.PI / 2;
+  const minuteAngle = (minutes / 60) * TAU - Math.PI / 2;
+  const hourAngle = (hours / 12) * TAU - Math.PI / 2;
+  const pulse = 0.5 + Math.sin(time * 0.002 + seconds * 0.2) * 0.5;
+
+  ctx.save();
+  ctx.globalCompositeOperation = "screen";
+  const aura = ctx.createRadialGradient(cx, cy, r * 0.08, cx, cy, r * 1.55);
+  aura.addColorStop(0, `hsla(${46 + mood.tempWarmth * 34}, 94%, 78%, ${0.3 + mood.light * 0.16})`);
+  aura.addColorStop(0.5, `hsla(${176 - mood.cloud * 38}, 78%, 76%, ${0.16 + pulse * 0.07})`);
+  aura.addColorStop(1, "rgba(255, 255, 255, 0)");
+  ctx.fillStyle = aura;
+  ctx.beginPath();
+  ctx.arc(cx, cy, r * 1.55, 0, TAU);
+  ctx.fill();
+
+  for (let i = 0; i < 4; i += 1) {
+    const ringPulse = Math.sin(time * 0.0008 + i * 1.7) * 0.5 + 0.5;
+    ctx.globalAlpha = 0.16 - i * 0.022 + mood.light * 0.05;
+    ctx.strokeStyle = `hsl(${hueWrap(34 + i * 42 + mood.tempWarmth * 22)}, 92%, ${68 + ringPulse * 14}%)`;
+    ctx.lineWidth = 1.2 + i * 0.8;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r * (0.78 + i * 0.16 + ringPulse * 0.018), 0, TAU);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  ctx.save();
+  ctx.globalAlpha = 0.35;
+  ctx.strokeStyle = "rgba(36, 48, 41, 0.28)";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(cx, cy, r * 1.02, 0, TAU);
+  ctx.stroke();
+  ctx.globalAlpha = 0.09;
+  ctx.fillStyle = "#fffaf0";
+  ctx.beginPath();
+  ctx.arc(cx, cy, r * 0.96, 0, TAU);
+  ctx.fill();
+  ctx.restore();
+
+  clockMarks.forEach((mark) => {
+    const angle = (mark.index / 60) * TAU - Math.PI / 2 + mark.wobble + Math.sin(time * 0.001 + mark.phase) * 0.004;
+    const inner = r - mark.length;
+    const outer = r + (mark.index % 5 === 0 ? 9 : 4) + Math.sin(time * 0.0014 + mark.phase) * 2;
+    ctx.save();
+    ctx.globalAlpha = mark.index % 5 === 0 ? 0.68 : 0.38;
+    ctx.strokeStyle = `hsl(${hueWrap(mark.hue + mood.tempWarmth * 18 - mood.cloud * 24)}, 58%, ${38 + mood.light * 20}%)`;
+    ctx.lineWidth = mark.width;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(cx + Math.cos(angle) * inner, cy + Math.sin(angle) * inner);
+    ctx.lineTo(cx + Math.cos(angle) * outer, cy + Math.sin(angle) * outer);
+    ctx.stroke();
+    ctx.restore();
+  });
+
+  for (let i = 0; i < 18; i += 1) {
+    const trail = secondAngle - i * 0.028 * (0.75 + mood.windPower * 0.18);
+    drawClockPetal(
+      cx,
+      cy,
+      r * (0.62 + (i % 4) * 0.028),
+      trail,
+      3.4 + (18 - i) * 0.12,
+      334 + i * 8 + mood.tempWarmth * 24,
+      Math.max(0.04, 0.36 - i * 0.017),
+    );
+  }
+
+  for (let i = 0; i < 12; i += 1) {
+    const orbit = (i / 12) * TAU + time * 0.00014 * (1 + mood.windPower) + Math.sin(time * 0.0007 + i) * 0.08;
+    drawClockPetal(cx, cy, r * (1.1 + (i % 3) * 0.045), orbit, 4.5 + (i % 4), 22 + i * 18, 0.28);
+  }
+
+  drawHand(cx, cy, hourAngle, r * 0.46, r * 0.08, Math.max(8, r * 0.055), "rgba(35, 76, 60, 0.76)", "rgba(255, 232, 138, 0.58)");
+  drawHand(cx, cy, minuteAngle, r * 0.66, r * 0.12, Math.max(4, r * 0.024), "rgba(25, 58, 50, 0.58)", "rgba(148, 217, 202, 0.42)");
+  drawHand(cx, cy, secondAngle, r * 0.82, r * 0.2, Math.max(1.5, r * 0.009), "rgba(232, 74, 92, 0.82)", "rgba(255, 110, 132, 0.8)", "butt");
+
+  ctx.save();
+  ctx.globalCompositeOperation = "screen";
+  ctx.globalAlpha = 0.78;
+  ctx.fillStyle = `hsl(${48 + pulse * 24}, 92%, 72%)`;
+  ctx.shadowColor = "rgba(255, 232, 138, 0.8)";
+  ctx.shadowBlur = 26;
+  ctx.beginPath();
+  ctx.arc(cx, cy, Math.max(8, r * 0.042), 0, TAU);
+  ctx.fill();
+  ctx.restore();
+}
+
 function animate(now) {
   time = now;
   pointer.force *= 0.94;
   const mood = weatherMood();
   drawBackground(mood);
   drawBreath(mood);
+  drawClockArt(mood);
   drawGarden(mood);
   drawPetals(mood);
   drawRainOrSnow(mood);
@@ -659,7 +813,7 @@ function describeWeather() {
   const sky = skyNames.get(weather.code) || weather.label;
   const gentle = weather.wind < 4 ? "천천히" : weather.wind < 9 ? "조금 빠르게" : "힘 있게";
   const rainPhrase = weather.rain > 0.2 ? "비의 무게를 품고" : "빛을 가볍게 머금고";
-  weatherLine.textContent = `${sky}인 오늘, 꽃잎은 ${gentle} 흐르고 ${rainPhrase} 번집니다.`;
+  weatherLine.textContent = `${sky}인 오늘, 시침은 깊게 머물고 초침은 ${gentle} 꽃잎의 잔상을 그리며 ${rainPhrase} 번집니다.`;
   tempValue.textContent = `${Math.round(weather.temp)}°C`;
   skyValue.textContent = sky;
   windValue.textContent = `${Math.round(weather.wind)} m/s`;
@@ -672,7 +826,7 @@ function updatePublicDataTable() {
   if (springStatus) {
     const springText = `${sky}, ${Math.round(weather.temp)}°C, 바람 ${Math.round(
       weather.wind,
-    )} m/s를 꽃잎과 빛의 흐름으로 표현`;
+    )} m/s를 시계 바늘, 꽃잎, 빛의 흐름으로 표현`;
     springStatus.textContent = springText;
     if (springCardStatus) springCardStatus.textContent = springText;
   }

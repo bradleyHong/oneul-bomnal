@@ -559,6 +559,107 @@ h1 {
   font-weight: 900;
 }
 
+.page-services {
+  color: #f8fbf5;
+  background: #1f3a33;
+}
+
+.page-services .section-kicker {
+  color: rgba(248, 251, 245, 0.68);
+}
+
+.service-layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.72fr) minmax(0, 1fr);
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid rgba(248, 251, 245, 0.16);
+  border-radius: 8px;
+  background: rgba(248, 251, 245, 0.16);
+}
+
+.service-lead,
+.service-grid article {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.service-lead {
+  display: grid;
+  align-content: space-between;
+  min-height: 560px;
+  padding: clamp(28px, 4.5vw, 52px);
+}
+
+.service-lead span,
+.service-grid span {
+  color: rgba(248, 251, 245, 0.58);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.service-lead h3 {
+  max-width: 620px;
+  margin: 80px 0 24px;
+  font-size: clamp(30px, 4.6vw, 58px);
+  line-height: 1.05;
+}
+
+.service-lead p {
+  color: rgba(248, 251, 245, 0.78);
+  font-size: 18px;
+}
+
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+}
+
+.service-grid article {
+  display: grid;
+  align-content: start;
+  min-height: 280px;
+  padding: clamp(24px, 3.8vw, 42px);
+}
+
+.service-grid h3 {
+  margin: 46px 0 16px;
+  font-size: clamp(24px, 3vw, 34px);
+  line-height: 1.15;
+}
+
+.service-grid p {
+  color: rgba(248, 251, 245, 0.76);
+  font-size: 17px;
+}
+
+.service-grid dl {
+  display: grid;
+  gap: 12px;
+  margin: 28px 0 0;
+}
+
+.service-grid dl div {
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  gap: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(248, 251, 245, 0.14);
+}
+
+.service-grid dt,
+.service-grid dd {
+  margin: 0;
+  color: rgba(248, 251, 245, 0.74);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.service-grid dt {
+  color: rgba(248, 251, 245, 0.56);
+  font-weight: 900;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -842,6 +943,8 @@ h1 {
   .grid,
   .works-grid,
   .product-grid,
+  .service-layout,
+  .service-grid,
   .timeline,
   .use-cases,
   .contact,
@@ -855,6 +958,7 @@ h1 {
   }
 
   .product-card,
+  .service-lead,
   .timeline li {
     min-height: auto;
   }
