@@ -165,7 +165,10 @@
         display: grid;
         min-height: 360px;
         padding: 28px;
-        background: #fbf7e8;
+        color: var(--card-ink, #243029);
+        background:
+          radial-gradient(circle at 86% 14%, var(--card-glow, rgba(255, 232, 138, 0.32)), transparent 25%),
+          linear-gradient(145deg, var(--card-a, #fbf7e8), var(--card-b, #f4edd8));
       }
 
       .card span {
@@ -196,6 +199,8 @@
       .landing {
         min-height: 100vh;
         display: none;
+        color: var(--ink);
+        background: var(--page-bg, #f8f3e2);
       }
 
       .landing.active {
@@ -215,6 +220,63 @@
           linear-gradient(135deg, var(--color-a), var(--color-b));
       }
 
+      .landing-hero.layout-survey {
+        grid-template-columns: minmax(0, 0.84fr) minmax(340px, 0.72fr);
+        background:
+          radial-gradient(circle at 12% 84%, var(--accent-soft), transparent 26%),
+          linear-gradient(125deg, var(--color-a), var(--color-b));
+      }
+
+      .landing-hero.layout-booking {
+        grid-template-columns: minmax(320px, 0.62fr) minmax(0, 0.88fr);
+        background:
+          linear-gradient(90deg, rgba(255, 255, 255, 0.09) 1px, transparent 1px),
+          linear-gradient(180deg, var(--color-a), var(--color-b));
+        background-size: 72px 72px, auto;
+      }
+
+      .landing-hero.layout-recruit {
+        grid-template-columns: minmax(0, 1fr);
+        align-content: end;
+        background:
+          radial-gradient(circle at 70% 16%, var(--accent-soft), transparent 22%),
+          linear-gradient(160deg, var(--color-a), var(--color-b));
+      }
+
+      .landing-hero.layout-campaign {
+        grid-template-columns: minmax(0, 0.7fr) minmax(320px, 0.6fr);
+        background:
+          linear-gradient(135deg, transparent 0 48%, rgba(255, 255, 255, 0.1) 48% 52%, transparent 52%),
+          linear-gradient(135deg, var(--color-a), var(--color-b));
+      }
+
+      .landing-hero.layout-contest {
+        grid-template-columns: minmax(0, 0.8fr) minmax(320px, 0.64fr);
+        background:
+          radial-gradient(circle at 20% 20%, var(--accent-soft), transparent 18%),
+          radial-gradient(circle at 92% 78%, rgba(255, 255, 255, 0.14), transparent 24%),
+          linear-gradient(140deg, var(--color-a), var(--color-b));
+      }
+
+      .landing-hero.layout-commerce {
+        grid-template-columns: minmax(0, 0.82fr) minmax(300px, 0.58fr);
+        background:
+          repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0 18px, transparent 18px 36px),
+          linear-gradient(140deg, var(--color-a), var(--color-b));
+      }
+
+      .layout-booking .hero-copy {
+        order: 2;
+      }
+
+      .layout-booking .panel {
+        order: 1;
+      }
+
+      .layout-recruit .hero-copy {
+        max-width: 980px;
+      }
+
       .landing-hero h1 {
         font-size: clamp(48px, 8vw, 104px);
       }
@@ -232,6 +294,7 @@
         border: 1px solid rgba(248, 251, 245, 0.18);
         border-radius: 8px;
         background: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.14);
       }
 
       .panel h2 {
@@ -242,6 +305,10 @@
         display: grid;
         gap: 12px;
         margin-top: 28px;
+      }
+
+      .form-preview.two-col {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
       .field {
@@ -256,6 +323,77 @@
       .field b {
         font-size: 12px;
         color: rgba(248, 251, 245, 0.62);
+      }
+
+      .choice-row,
+      .date-row,
+      .meter-stack,
+      .coupon-box,
+      .upload-box,
+      .timeline-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 22px;
+      }
+
+      .choice-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .choice-row span,
+      .date-row span,
+      .meter-stack span,
+      .timeline-list span {
+        padding: 13px;
+        border: 1px solid rgba(248, 251, 245, 0.16);
+        border-radius: 8px;
+        color: rgba(248, 251, 245, 0.86);
+        background: rgba(255, 255, 255, 0.1);
+        font-weight: 850;
+      }
+
+      .date-row {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .meter-stack i {
+        display: block;
+        height: 9px;
+        margin-top: 8px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #ffe88a var(--value), rgba(255, 255, 255, 0.18) var(--value));
+      }
+
+      .coupon-box,
+      .upload-box {
+        min-height: 170px;
+        place-items: center;
+        border: 1px dashed rgba(248, 251, 245, 0.36);
+        border-radius: 8px;
+        color: rgba(248, 251, 245, 0.88);
+        text-align: center;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .coupon-box strong {
+        font-size: clamp(34px, 5vw, 56px);
+      }
+
+      .timeline-list {
+        counter-reset: step;
+      }
+
+      .timeline-list span::before {
+        counter-increment: step;
+        content: counter(step, decimal-leading-zero) " ";
+        color: rgba(255, 232, 138, 0.9);
+      }
+
+      .mini-note {
+        margin-top: 18px;
+        color: rgba(248, 251, 245, 0.66);
+        font-size: 14px;
+        line-height: 1.6;
       }
 
       .landing-section {
@@ -324,8 +462,61 @@
         .feature-grid,
         .gallery-head,
         .landing-hero,
+        .landing-hero.layout-survey,
+        .landing-hero.layout-booking,
+        .landing-hero.layout-recruit,
+        .landing-hero.layout-campaign,
+        .landing-hero.layout-contest,
+        .landing-hero.layout-commerce,
+        .form-preview.two-col,
+        .choice-row,
+        .date-row,
         .notice {
           grid-template-columns: 1fr;
+        }
+
+        .layout-booking .hero-copy,
+        .layout-booking .panel {
+          order: initial;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .topbar {
+          padding: 16px 24px;
+        }
+
+        .topbar nav {
+          gap: 12px;
+          font-size: 13px;
+        }
+
+        .hero,
+        .section,
+        .landing-hero,
+        .landing-section {
+          padding-left: 30px;
+          padding-right: 30px;
+        }
+
+        h1,
+        .landing-hero h1 {
+          font-size: clamp(44px, 13vw, 64px);
+          line-height: 1.05;
+        }
+
+        h2 {
+          font-size: clamp(34px, 11vw, 54px);
+        }
+
+        .landing-hero {
+          min-height: auto;
+          padding-top: 76px;
+          padding-bottom: 76px;
+        }
+
+        .panel {
+          padding: 24px;
         }
       }
     </style>
@@ -610,33 +801,182 @@
         },
       ];
 
+      const layouts = ["survey", "booking", "campaign", "booking", "commerce", "survey", "booking", "booking", "survey", "recruit", "recruit", "survey", "recruit", "commerce", "campaign", "booking", "campaign", "recruit", "contest", "recruit", "campaign", "commerce", "booking", "campaign"];
+      const cardPalettes = [
+        ["#fff5cc", "#f4d997", "rgba(255, 139, 99, 0.26)", "#2b271c"],
+        ["#dceaf5", "#b7ccdd", "rgba(255, 232, 138, 0.26)", "#1f2f3d"],
+        ["#e4f4d5", "#b9d7a2", "rgba(255, 153, 156, 0.28)", "#233522"],
+        ["#f3e7d2", "#d8bd91", "rgba(115, 156, 197, 0.28)", "#352a1d"],
+        ["#f7dfd6", "#e7aaa0", "rgba(255, 232, 138, 0.32)", "#3a2422"],
+        ["#dde3f6", "#aebdde", "rgba(255, 232, 138, 0.22)", "#23293d"],
+        ["#e3f2f5", "#a7cad8", "rgba(255, 232, 138, 0.22)", "#203642"],
+        ["#dff1ed", "#a8d0c8", "rgba(255, 232, 138, 0.24)", "#1d3835"],
+        ["#ece7f5", "#c7bddf", "rgba(184, 216, 210, 0.3)", "#2f2a40"],
+        ["#e7f2d2", "#b7d78b", "rgba(255, 180, 103, 0.28)", "#26351c"],
+        ["#f6e1c7", "#dfae7c", "rgba(115, 156, 197, 0.28)", "#3a2819"],
+        ["#e1ece3", "#b6d0bd", "rgba(255, 232, 138, 0.28)", "#21362a"],
+      ];
+      const heroPalettes = [
+        ["#2f4b3d", "#7b6e4f", "rgba(255, 232, 138, 0.34)"],
+        ["#1f3150", "#586f9a", "rgba(154, 195, 255, 0.26)"],
+        ["#31492f", "#8a9f57", "rgba(255, 215, 122, 0.28)"],
+        ["#44362c", "#9a7655", "rgba(255, 229, 176, 0.28)"],
+        ["#4a2d34", "#b36b74", "rgba(255, 232, 138, 0.3)"],
+        ["#2b2f57", "#7478a8", "rgba(183, 203, 255, 0.28)"],
+        ["#183a4c", "#5d93ab", "rgba(184, 216, 210, 0.34)"],
+        ["#1f4240", "#6aa398", "rgba(255, 232, 138, 0.24)"],
+        ["#352d4e", "#8975a9", "rgba(219, 189, 255, 0.28)"],
+        ["#26442e", "#84a760", "rgba(255, 216, 129, 0.28)"],
+        ["#4a2f22", "#b97945", "rgba(255, 232, 138, 0.34)"],
+        ["#213b35", "#6f9a81", "rgba(179, 219, 205, 0.32)"],
+        ["#4d2e2b", "#ac665d", "rgba(255, 211, 140, 0.3)"],
+        ["#1f455b", "#69a0bb", "rgba(255, 232, 138, 0.24)"],
+        ["#184a3d", "#65a66a", "rgba(180, 234, 181, 0.28)"],
+        ["#4b2c25", "#b35f4d", "rgba(255, 232, 138, 0.26)"],
+        ["#293f59", "#778dab", "rgba(255, 232, 138, 0.3)"],
+        ["#4c3147", "#a8759d", "rgba(255, 232, 138, 0.25)"],
+        ["#26382d", "#78936f", "rgba(184, 216, 210, 0.32)"],
+        ["#1b3440", "#607b98", "rgba(233, 154, 144, 0.28)"],
+        ["#3f3028", "#9b7656", "rgba(255, 232, 138, 0.32)"],
+        ["#58351f", "#b06c3d", "rgba(255, 232, 138, 0.32)"],
+        ["#243654", "#637da3", "rgba(184, 216, 210, 0.28)"],
+        ["#214538", "#7aa06f", "rgba(255, 232, 138, 0.26)"],
+      ];
+
+      function getLayout(item, index) {
+        if (item.id.includes("survey")) return "survey";
+        if (item.id.includes("hospital") || item.id.includes("check") || item.id.includes("appointment")) return "booking";
+        if (item.id.includes("contest") || item.fields.some((field) => field.includes("파일"))) return "contest";
+        if (item.id.includes("coupon") || item.id.includes("stamp") || item.id.includes("pet")) return "commerce";
+        if (item.id.includes("recruit") || item.id.includes("volunteer") || item.id.includes("workshop") || item.id.includes("class")) return "recruit";
+        if (item.id.includes("challenge") || item.id.includes("campaign") || item.id.includes("safety")) return "campaign";
+        return layouts[index % layouts.length];
+      }
+
+      function panelTitle(layout) {
+        return {
+          survey: "설문 응답 미리보기",
+          booking: "예약 가능 일정",
+          recruit: "모집 현황",
+          campaign: "참여 인증",
+          contest: "제출 자료",
+          commerce: "이벤트 혜택",
+        }[layout];
+      }
+
+      function renderPanel(item, layout) {
+        if (layout === "booking") {
+          return `
+            <div class="date-row">
+              <span>오늘<br />상담 가능</span>
+              <span>이번 주<br />예약 여유</span>
+              <span>모바일<br />확인 완료</span>
+            </div>
+            <div class="form-preview two-col">
+              ${item.fields.map((field) => `<div class="field"><b>예약 항목</b>${field}</div>`).join("")}
+            </div>
+            <p class="mini-note">병원·검진센터·상담형 기관은 날짜 선택, 시간대 선택, 콜백 요청을 전면에 배치합니다.</p>
+          `;
+        }
+
+        if (layout === "survey") {
+          return `
+            <div class="meter-stack">
+              <span>관심도 <i style="--value: 76%"></i></span>
+              <span>참여율 <i style="--value: 58%"></i></span>
+              <span>상담 전환 <i style="--value: 42%"></i></span>
+            </div>
+            <div class="form-preview">
+              ${item.fields.map((field) => `<div class="field"><b>질문</b>${field}</div>`).join("")}
+            </div>
+          `;
+        }
+
+        if (layout === "recruit") {
+          return `
+            <div class="timeline-list">
+              <span>모집 공고 공개</span>
+              <span>온라인 신청 접수</span>
+              <span>참여자 확정 안내</span>
+            </div>
+            <div class="form-preview two-col">
+              ${item.fields.map((field) => `<div class="field"><b>신청 정보</b>${field}</div>`).join("")}
+            </div>
+          `;
+        }
+
+        if (layout === "campaign") {
+          return `
+            <div class="choice-row">
+              <span>서약 참여</span>
+              <span>인증 업로드</span>
+              <span>결과 공유</span>
+              <span>리포트 정리</span>
+            </div>
+            <div class="form-preview">
+              ${item.fields.map((field) => `<div class="field"><b>참여 항목</b>${field}</div>`).join("")}
+            </div>
+          `;
+        }
+
+        if (layout === "contest") {
+          return `
+            <div class="upload-box">
+              <strong>PDF / 이미지</strong>
+              <p>제안서와 첨부파일을 함께 받는 제출형 화면</p>
+            </div>
+            <div class="form-preview two-col">
+              ${item.fields.map((field) => `<div class="field"><b>제출 항목</b>${field}</div>`).join("")}
+            </div>
+          `;
+        }
+
+        return `
+          <div class="coupon-box">
+            <strong>EVENT</strong>
+            <p>쿠폰, 스탬프, 인증번호처럼 혜택이 먼저 보이는 구조</p>
+          </div>
+          <div class="form-preview">
+            ${item.fields.map((field) => `<div class="field"><b>참여 정보</b>${field}</div>`).join("")}
+          </div>
+        `;
+      }
+
       function renderGallery() {
         const cards = document.querySelector("#cards");
         cards.innerHTML = references
           .map(
-            (item, index) => `
-              <a class="card" href="./landing-references.html?case=${item.id}">
+            (item, index) => {
+              const palette = cardPalettes[index % cardPalettes.length];
+              const layout = getLayout(item, index);
+              return `
+              <a class="card" href="./landing-references.html?case=${item.id}" style="--card-a:${palette[0]};--card-b:${palette[1]};--card-glow:${palette[2]};--card-ink:${palette[3]}">
                 <span>${String(index + 1).padStart(2, "0")} · ${item.group}</span>
                 <h3>${item.title}</h3>
                 <p>${item.summary}</p>
-                <small>샘플 페이지 보기</small>
+                <small>${panelTitle(layout).replace(" 미리보기", "")} 보기</small>
               </a>
-            `,
+            `;
+            },
           )
           .join("");
       }
 
       function renderLanding(item) {
+        const index = references.findIndex((reference) => reference.id === item.id);
+        const layout = getLayout(item, index);
         document.querySelector("#gallery").style.display = "none";
         const landing = document.querySelector("#landing");
         landing.classList.add("active");
-        landing.style.setProperty("--color-a", item.accent[0]);
-        landing.style.setProperty("--color-b", item.accent[1]);
-        landing.style.setProperty("--accent-soft", item.accent[2]);
+        const heroPalette = heroPalettes[index % heroPalettes.length];
+        landing.style.setProperty("--color-a", heroPalette[0]);
+        landing.style.setProperty("--color-b", heroPalette[1]);
+        landing.style.setProperty("--accent-soft", heroPalette[2]);
+        landing.style.setProperty("--page-bg", cardPalettes[index % cardPalettes.length][0]);
         landing.innerHTML = `
-          <section class="landing-hero">
-            <div>
-              <p class="kicker">${item.group} Landing Sample</p>
+          <section class="landing-hero layout-${layout}">
+            <div class="hero-copy">
+              <p class="kicker">${item.group} · ${panelTitle(layout)}</p>
               <h1>${item.title}</h1>
               <p>${item.summary}</p>
               <div class="actions">
@@ -645,10 +985,8 @@
               </div>
             </div>
             <aside class="panel" id="sampleForm">
-              <h2>참여 정보 입력</h2>
-              <div class="form-preview">
-                ${item.fields.map((field) => `<div class="field"><b>항목</b>${field}</div>`).join("")}
-              </div>
+              <h2>${panelTitle(layout)}</h2>
+              ${renderPanel(item, layout)}
             </aside>
           </section>
           <section class="landing-section">
