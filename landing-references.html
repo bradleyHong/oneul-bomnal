@@ -29,6 +29,7 @@
           "Segoe UI",
           sans-serif;
         background: var(--paper);
+        line-height: 1.5;
       }
 
       h1,
@@ -56,7 +57,7 @@
         justify-content: space-between;
         align-items: center;
         gap: 24px;
-        padding: 18px clamp(20px, 5vw, 72px);
+        padding: 14px clamp(20px, 5vw, 72px);
         color: var(--nav-ink, #1f2a24);
         background: rgba(246, 240, 222, 0.88);
         border-bottom: 1px solid var(--line);
@@ -64,7 +65,7 @@
       }
 
       .topbar strong {
-        font-size: 18px;
+        font-size: 16px;
       }
 
       .topbar nav {
@@ -79,11 +80,12 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-height: 48px;
-        padding: 0 18px;
+        min-height: 44px;
+        padding: 0 16px;
         border: 1px solid rgba(255, 255, 255, 0.28);
         border-radius: 8px;
         color: inherit;
+        font-size: 14px;
         font-weight: 900;
       }
 
@@ -122,8 +124,8 @@
         grid-template-columns: minmax(0, 0.82fr) minmax(360px, 0.72fr);
         gap: clamp(36px, 7vw, 104px);
         align-items: center;
-        min-height: calc(100vh - 65px);
-        padding: clamp(74px, 10vw, 136px) clamp(22px, 6vw, 92px);
+        min-height: calc(100vh - 57px);
+        padding: clamp(68px, 8vw, 112px) clamp(22px, 6vw, 92px);
         color: #f8fbf4;
         background:
           linear-gradient(90deg, rgba(16, 43, 40, 0.94), rgba(16, 43, 40, 0.64)),
@@ -151,27 +153,29 @@
       }
 
       .kicker {
-        margin-bottom: 18px;
+        margin-bottom: 16px;
         color: currentColor;
         opacity: 0.68;
-        font-size: 14px;
+        font-size: 12px;
         font-weight: 950;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
       }
 
       .gallery-hero h1,
       .case-title {
         max-width: 1050px;
-        font-size: clamp(50px, 8vw, 112px);
-        line-height: 1;
+        font-size: clamp(40px, 6vw, 82px);
+        line-height: 1.06;
         letter-spacing: 0;
       }
 
       .gallery-hero p:not(.kicker) {
-        margin-top: 26px;
+        margin-top: 22px;
         max-width: 760px;
         color: rgba(248, 251, 244, 0.78);
-        font-size: clamp(18px, 2vw, 24px);
-        line-height: 1.72;
+        font-size: clamp(16px, 1.5vw, 20px);
+        line-height: 1.78;
       }
 
       .hero-badges {
@@ -187,15 +191,15 @@
       }
 
       .hero-badges div {
-        min-height: 98px;
-        padding: 18px;
+        min-height: 86px;
+        padding: 16px;
         background: rgba(255, 255, 255, 0.08);
       }
 
       .hero-badges b {
         display: block;
         color: #ffe879;
-        font-size: clamp(26px, 3vw, 42px);
+        font-size: clamp(22px, 2.2vw, 32px);
         line-height: 1;
       }
 
@@ -203,7 +207,7 @@
         display: block;
         margin-top: 10px;
         color: rgba(248, 251, 244, 0.72);
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 900;
       }
 
@@ -214,7 +218,7 @@
 
       .showcase-card {
         position: relative;
-        min-height: 180px;
+        min-height: 162px;
         overflow: hidden;
         border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 8px;
@@ -223,7 +227,7 @@
       }
 
       .showcase-card.featured {
-        min-height: 340px;
+        min-height: 308px;
       }
 
       .showcase-card img {
@@ -260,8 +264,8 @@
       .showcase-card strong {
         display: block;
         margin-top: 8px;
-        font-size: clamp(24px, 3vw, 42px);
-        line-height: 1.05;
+        font-size: clamp(20px, 2.2vw, 30px);
+        line-height: 1.14;
       }
 
       .showcase-row {
@@ -287,14 +291,14 @@
 
       .spotlight-card {
         position: relative;
-        min-height: 520px;
+        min-height: 480px;
         overflow: hidden;
         border-radius: 8px;
         border: 1px solid rgba(255, 255, 255, 0.16);
       }
 
       .spotlight-card:nth-child(n + 2) {
-        min-height: 380px;
+        min-height: 350px;
       }
 
       .spotlight-card img {
@@ -328,8 +332,8 @@
 
       .spotlight-card h3 {
         margin-top: 12px;
-        font-size: clamp(28px, 4vw, 58px);
-        line-height: 1.02;
+        font-size: clamp(24px, 3vw, 42px);
+        line-height: 1.12;
       }
 
       .spotlight-card p {
@@ -339,7 +343,7 @@
       }
 
       .section {
-        padding: clamp(64px, 9vw, 116px) clamp(22px, 6vw, 92px);
+        padding: clamp(58px, 8vw, 96px) clamp(22px, 6vw, 92px);
       }
 
       .service-matrix {
@@ -358,8 +362,8 @@
       }
 
       .matrix-grid article {
-        min-height: 250px;
-        padding: 28px;
+        min-height: 230px;
+        padding: 24px;
         background: rgba(255, 255, 255, 0.08);
       }
 
@@ -370,9 +374,9 @@
       }
 
       .matrix-grid h3 {
-        margin-top: 48px;
-        font-size: clamp(24px, 3vw, 34px);
-        line-height: 1.12;
+        margin-top: 38px;
+        font-size: clamp(22px, 2.3vw, 28px);
+        line-height: 1.2;
       }
 
       .matrix-grid p {
@@ -386,19 +390,19 @@
         grid-template-columns: minmax(0, 0.75fr) minmax(280px, 0.42fr);
         gap: clamp(28px, 6vw, 84px);
         align-items: end;
-        margin-bottom: 48px;
+        margin-bottom: 40px;
       }
 
       .section-head h2 {
         max-width: 850px;
-        font-size: clamp(36px, 5.7vw, 76px);
-        line-height: 1.05;
+        font-size: clamp(30px, 4.2vw, 56px);
+        line-height: 1.14;
       }
 
       .section-head p {
         color: rgba(31, 42, 36, 0.68);
-        font-size: 18px;
-        line-height: 1.7;
+        font-size: 16px;
+        line-height: 1.75;
       }
 
       .image-note {
@@ -437,14 +441,14 @@
       .reference-grid {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 14px;
+        gap: 16px;
       }
 
       .ref-card {
         position: relative;
         display: flex;
         flex-direction: column;
-        min-height: 420px;
+        min-height: 392px;
         overflow: hidden;
         padding: 0;
         border: 1px solid rgba(31, 42, 36, 0.12);
@@ -485,7 +489,7 @@
       }
 
       .ref-card:nth-child(3n) {
-        min-height: 500px;
+        min-height: 468px;
       }
 
       .ref-card:nth-child(5n) {
@@ -495,14 +499,14 @@
       .ref-photo {
         position: relative;
         z-index: 0;
-        min-height: 190px;
+        min-height: 172px;
         overflow: hidden;
       }
 
       .ref-photo img {
         width: 100%;
         height: 100%;
-        min-height: 220px;
+        min-height: 200px;
         object-fit: cover;
         filter: saturate(0.9) contrast(0.96);
         transform: scale(1.03);
@@ -520,7 +524,7 @@
         z-index: 3;
         display: grid;
         flex: 1;
-        padding: 24px 26px 26px;
+        padding: 22px 24px 24px;
       }
 
       .ref-top,
@@ -538,8 +542,8 @@
       }
 
       .ref-icon {
-        margin-top: 30px;
-        font-size: 28px;
+        margin-top: 24px;
+        font-size: 22px;
         font-weight: 950;
       }
 
@@ -554,24 +558,24 @@
 
       .ref-card h3 {
         position: relative;
-        margin-top: 20px;
+        margin-top: 16px;
         max-width: 420px;
-        font-size: clamp(24px, 2.5vw, 38px);
-        line-height: 1.05;
+        font-size: clamp(22px, 2vw, 30px);
+        line-height: 1.18;
       }
 
       .ref-card p {
         position: relative;
-        margin-top: 18px;
+        margin-top: 14px;
         max-width: 460px;
         color: color-mix(in srgb, var(--card-ink) 74%, transparent);
-        font-size: 16px;
-        line-height: 1.64;
+        font-size: 14px;
+        line-height: 1.68;
       }
 
       .ref-bottom {
         align-self: end;
-        margin-top: 34px;
+        margin-top: 24px;
         font-size: 14px;
         font-weight: 950;
       }
@@ -607,8 +611,8 @@
       }
 
       .case-hero {
-        min-height: calc(100vh - 65px);
-        padding: clamp(54px, 8vw, 110px) clamp(22px, 6vw, 92px);
+        min-height: calc(100vh - 57px);
+        padding: clamp(56px, 7vw, 96px) clamp(22px, 6vw, 92px);
         color: var(--case-ink);
         background: var(--case-bg);
         background-position: center;
@@ -626,16 +630,16 @@
         max-width: 720px;
         margin-top: 24px;
         color: color-mix(in srgb, var(--case-ink) 75%, transparent);
-        font-size: clamp(18px, 2.1vw, 24px);
-        line-height: 1.7;
+        font-size: clamp(16px, 1.5vw, 20px);
+        line-height: 1.78;
       }
 
       .case-title-en {
         display: block;
         max-width: 820px;
-        margin-top: 18px;
+        margin-top: 14px;
         color: color-mix(in srgb, var(--case-ink) 62%, transparent);
-        font-size: clamp(18px, 2.2vw, 28px);
+        font-size: clamp(15px, 1.4vw, 20px);
         font-weight: 950;
         line-height: 1.2;
         text-transform: uppercase;
@@ -676,7 +680,7 @@
         right: 24px;
         bottom: 24px;
         z-index: 1;
-        font-size: clamp(26px, 4vw, 48px);
+        font-size: clamp(22px, 3vw, 34px);
         font-weight: 950;
         line-height: 1.05;
       }
@@ -709,8 +713,8 @@
       }
 
       .promo-wheel strong {
-        font-size: clamp(40px, 7vw, 88px);
-        line-height: 0.95;
+        font-size: clamp(34px, 5vw, 62px);
+        line-height: 1;
       }
 
       .template-medical .case-hero {
@@ -881,8 +885,8 @@
       }
 
       .promo-offer strong {
-        font-size: clamp(44px, 8vw, 118px);
-        line-height: 0.9;
+        font-size: clamp(36px, 5vw, 72px);
+        line-height: 0.98;
       }
 
       .survey-ticket {
@@ -965,13 +969,13 @@
       .public-console div {
         display: grid;
         align-content: space-between;
-        min-height: 210px;
-        padding: 26px;
+        min-height: 188px;
+        padding: 24px;
         background: rgba(255, 255, 255, 0.1);
       }
 
       .public-console b {
-        font-size: clamp(38px, 5vw, 72px);
+        font-size: clamp(30px, 4vw, 50px);
       }
 
       .event-stage {
@@ -1076,18 +1080,20 @@
 
       .case-eyebrow {
         display: inline-flex;
-        margin-bottom: 22px;
+        margin-bottom: 18px;
         color: rgba(248, 251, 244, 0.68);
-        font-size: 14px;
+        font-size: 12px;
         font-weight: 950;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
       }
 
       .case-lead {
         max-width: 720px;
-        margin-top: 24px;
+        margin-top: 20px;
         color: rgba(248, 251, 244, 0.76);
-        font-size: clamp(18px, 2.1vw, 24px);
-        line-height: 1.7;
+        font-size: clamp(16px, 1.5vw, 20px);
+        line-height: 1.78;
       }
 
       .trust-row {
@@ -1099,15 +1105,45 @@
 
       .trust-row span {
         display: inline-flex;
-        min-height: 34px;
+        min-height: 32px;
         align-items: center;
         padding: 0 12px;
         border: 1px solid rgba(255, 255, 255, 0.18);
         border-radius: 999px;
         color: rgba(248, 251, 244, 0.76);
         background: rgba(255, 255, 255, 0.08);
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 900;
+      }
+
+      .case-meta {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1px;
+        max-width: 680px;
+        margin-top: 22px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.18);
+      }
+
+      .case-meta span {
+        min-height: 66px;
+        padding: 14px 16px;
+        color: rgba(248, 251, 244, 0.72);
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 12px;
+        font-weight: 850;
+        line-height: 1.5;
+      }
+
+      .case-meta b {
+        display: block;
+        margin-bottom: 6px;
+        color: #ffe879;
+        font-size: 13px;
+        white-space: nowrap;
       }
 
       .case-hero.variant-1 {
@@ -1143,7 +1179,7 @@
       }
 
       .detail-section {
-        padding: clamp(58px, 8vw, 106px) clamp(22px, 6vw, 92px);
+        padding: clamp(54px, 7vw, 88px) clamp(22px, 6vw, 92px);
         color: #1f2a24;
       }
 
@@ -1158,8 +1194,8 @@
       }
 
       .detail-grid article {
-        min-height: 260px;
-        padding: 30px;
+        min-height: 238px;
+        padding: 26px;
         background: color-mix(in srgb, var(--case-paper) 90%, white);
       }
 
@@ -1170,16 +1206,17 @@
       }
 
       .detail-grid h3 {
-        margin-top: 54px;
+        margin-top: 42px;
         color: #1f2a24;
-        font-size: clamp(26px, 3vw, 36px);
-        line-height: 1.12;
+        font-size: clamp(22px, 2.2vw, 28px);
+        line-height: 1.2;
       }
 
       .detail-grid p {
         margin-top: 16px;
         color: rgba(31, 42, 36, 0.7);
-        line-height: 1.65;
+        font-size: 14px;
+        line-height: 1.7;
       }
 
       .detail-checks {
@@ -1237,7 +1274,8 @@
         }
 
         .showcase-row,
-        .hero-badges {
+        .hero-badges,
+        .case-meta {
           grid-template-columns: 1fr;
         }
 
@@ -1275,8 +1313,8 @@
 
         .gallery-hero h1,
         .case-title {
-          font-size: clamp(44px, 13vw, 64px);
-          line-height: 1.05;
+          font-size: clamp(36px, 10vw, 48px);
+          line-height: 1.12;
         }
 
         .promo-wheel,
@@ -1683,6 +1721,12 @@
           <span class="case-title-en">${english}</span>
           <p class="case-lead">${item.summary}</p>
           <div class="trust-row">${bp.trust.map((text) => `<span>${text}</span>`).join("")}</div>
+          <div class="case-meta">
+            <span><b>01 제작 범위</b>반응형 랜딩 / 모바일 우선</span>
+            <span><b>02 입력 데이터</b>${bp.fields.slice(0, 2).join(" · ")}</span>
+            <span><b>03 운영 자료</b>관리자 표 / 결과 요약</span>
+            <span><b>04 현장 배포</b>QR / 문자 / 링크 공유</span>
+          </div>
           <div class="actions">
             <a class="button primary" href="#details">${item.cta}</a>
             <a class="button" href="./landing-references.html">다른 레퍼런스 보기</a>
