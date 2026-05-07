@@ -2,3 +2,6 @@ User-agent: *
 Allow: /
 
 Sitemap: https://publicbloom.art/sitemap.xml
+
+# AI search and answer engines can use this concise company profile.
+Allow: /llms.txt

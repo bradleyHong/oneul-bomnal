@@ -1,0 +1,1189 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>오늘은 봄날 공공예술 예시 · 대구 공기 정원</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #0788d9;
+        touch-action: none;
+      }
+
+      canvas {
+        display: block;
+        width: 100vw;
+        height: 100vh;
+      }
+
+      #grass-stage {
+        position: fixed;
+        left: -4vw;
+        right: -4vw;
+        bottom: -14vh;
+        z-index: 2;
+        height: min(34vh, 360px);
+        pointer-events: none;
+        overflow: hidden;
+        background-color: rgba(38, 154, 78, 0.62);
+        background-image: url("Grass/full-grass-field.png");
+        background-repeat: repeat-x;
+        background-position: 50% 100%;
+        background-size: auto 100%;
+        filter: saturate(1.06) contrast(1.02) drop-shadow(0 -10px 20px rgba(28, 135, 64, 0.12));
+        transform-origin: 50% 100%;
+        animation: grassFieldSway 7.6s ease-in-out infinite;
+      }
+
+      #grass-stage::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(7, 136, 217, 0) 0%, rgba(7, 136, 217, 0.04) 42%, rgba(14, 92, 54, 0.16) 100%);
+      }
+
+      #grass-stage::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 24%;
+        background: linear-gradient(180deg, rgba(43, 180, 70, 0), rgba(26, 126, 64, 0.72));
+      }
+
+      @keyframes grassFieldSway {
+        0%,
+        100% {
+          background-position: 49% 100%;
+          transform: skewX(-0.7deg) scaleY(1.01);
+        }
+
+        50% {
+          background-position: 51% 100%;
+          transform: skewX(1.1deg) scaleY(1.04);
+        }
+      }
+
+      #title {
+        position: fixed;
+        left: clamp(18px, 3vw, 42px);
+        top: clamp(18px, 3vw, 42px);
+        z-index: 4;
+        display: grid;
+        gap: 7px;
+        color: rgba(232, 252, 255, 0.7);
+        font-family: "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+        pointer-events: none;
+        user-select: none;
+      }
+
+      #title strong {
+        font-size: clamp(15px, 1.4vw, 22px);
+        font-weight: 400;
+        letter-spacing: 0.2em;
+      }
+
+      #title span {
+        color: rgba(232, 252, 255, 0.48);
+        font-size: 10px;
+        font-weight: 300;
+        letter-spacing: 0.34em;
+      }
+
+      #name {
+        position: fixed;
+        right: 24px;
+        bottom: 24px;
+        z-index: 4;
+        color: rgba(232, 252, 255, 0.38);
+        font-family: "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+        font-size: 12px;
+        font-weight: 300;
+        letter-spacing: 7px;
+        line-height: 1.7;
+        writing-mode: vertical-rl;
+        pointer-events: none;
+        user-select: none;
+      }
+
+      #live-footer {
+        position: fixed;
+        left: clamp(18px, 4vw, 56px);
+        right: clamp(18px, 4vw, 56px);
+        bottom: clamp(18px, 3.2vh, 38px);
+        z-index: 6;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 24px;
+        color: rgba(238, 255, 244, 0.9);
+        font-family: "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+        pointer-events: none;
+        text-shadow: 0 2px 18px rgba(0, 46, 36, 0.35);
+        user-select: none;
+      }
+
+      #live-footer strong {
+        display: block;
+        margin-bottom: 6px;
+        font-size: clamp(15px, 1.6vw, 24px);
+        font-weight: 650;
+        letter-spacing: 0.08em;
+      }
+
+      #live-footer span {
+        color: rgba(238, 255, 244, 0.7);
+        font-size: clamp(11px, 1vw, 14px);
+        font-weight: 300;
+        letter-spacing: 0.16em;
+      }
+
+      #live-time {
+        min-width: max-content;
+        font-size: clamp(18px, 2.2vw, 34px);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-align: right;
+      }
+
+      #air-panel {
+        display: block;
+        position: fixed;
+        left: 50%;
+        top: 48%;
+        z-index: 5;
+        width: min(760px, calc(100vw - 72px));
+        max-height: calc(100dvh - 178px);
+        color: rgba(7, 36, 57, 0.94);
+        font-family: "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+        border: 1px solid rgba(232, 252, 255, 0.42);
+        border-radius: 8px;
+        background: rgba(238, 252, 255, 0.78);
+        box-shadow: 0 36px 120px rgba(0, 56, 106, 0.34);
+        backdrop-filter: blur(30px);
+        overflow: hidden;
+        transform: translate(-50%, -50%);
+      }
+
+      #air-panel header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: clamp(16px, 3vh, 28px) clamp(22px, 3vw, 34px);
+        border-bottom: 1px solid rgba(9, 49, 70, 0.12);
+        font-size: clamp(19px, 1.7vw, 27px);
+        font-weight: 650;
+        letter-spacing: 0.18em;
+      }
+
+      .dot {
+        width: 16px;
+        height: 16px;
+        border-radius: 999px;
+        background: #6bd4df;
+        box-shadow: 0 0 18px #6bd4df;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: clamp(14px, 3.2vh, 28px) clamp(22px, 3vw, 34px);
+        border-bottom: 1px solid rgba(9, 49, 70, 0.1);
+        text-align: left;
+        font-size: clamp(18px, 1.55vw, 25px);
+        font-weight: 400;
+      }
+
+      th {
+        color: rgba(9, 49, 70, 0.56);
+        letter-spacing: 0.12em;
+        width: 30%;
+      }
+
+      td {
+        color: rgba(9, 49, 70, 0.9);
+      }
+
+      td strong {
+        font-size: clamp(46px, min(7vw, 10vh), 112px);
+        font-weight: 760;
+        letter-spacing: 0;
+      }
+
+      .bar {
+        height: clamp(9px, 1.6vh, 14px);
+        margin-top: clamp(8px, 2vh, 18px);
+        overflow: hidden;
+        border-radius: 999px;
+        background: rgba(20, 61, 72, 0.09);
+      }
+
+      .bar i {
+        display: block;
+        width: var(--value);
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #6bd4df, #8ed978, #f6bf4d, #ff8c7a);
+      }
+
+      #caption {
+        padding: clamp(14px, 2.6vh, 24px) clamp(22px, 3vw, 34px) clamp(16px, 3vh, 30px);
+        color: rgba(9, 49, 70, 0.66);
+        font-size: clamp(16px, 1.25vw, 22px);
+        font-weight: 400;
+        line-height: 1.8;
+        word-break: keep-all;
+      }
+
+      #veil {
+        position: fixed;
+        inset: 0;
+        z-index: 3;
+        pointer-events: none;
+        background:
+          radial-gradient(circle at 18% 18%, rgba(255, 251, 151, 0.5), transparent 30rem),
+          radial-gradient(circle at 74% 28%, rgba(255, 255, 255, 0.34), transparent 32rem),
+          radial-gradient(circle at 42% 70%, rgba(255, 170, 106, 0.2), transparent 30rem),
+          linear-gradient(rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0));
+        mix-blend-mode: screen;
+      }
+
+      #legend {
+        display: none;
+        position: fixed;
+        left: clamp(18px, 3vw, 42px);
+        bottom: clamp(22px, 4vh, 46px);
+        z-index: 4;
+        grid-template-columns: repeat(3, minmax(96px, 1fr));
+        gap: 10px;
+        width: min(520px, calc(100vw - 72px));
+        font-family: "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+        pointer-events: none;
+      }
+
+      .chip {
+        min-height: 82px;
+        padding: 14px 16px;
+        border: 1px solid rgba(232, 252, 255, 0.18);
+        border-radius: 8px;
+        background: rgba(0, 55, 100, 0.2);
+        color: rgba(232, 252, 255, 0.82);
+        backdrop-filter: blur(18px);
+      }
+
+      .chip span {
+        display: block;
+        margin-bottom: 9px;
+        color: rgba(232, 252, 255, 0.54);
+        font-size: 11px;
+        letter-spacing: 0.18em;
+      }
+
+      .chip strong {
+        font-size: 24px;
+        font-weight: 650;
+      }
+
+      @media (max-width: 760px) {
+        #title {
+          max-width: calc(100vw - 36px);
+        }
+
+        #title strong {
+          font-size: 18px;
+          letter-spacing: 0.1em;
+        }
+
+        #title span {
+          font-size: 10px;
+          letter-spacing: 0.22em;
+        }
+
+        #air-panel {
+          left: 50%;
+          right: auto;
+          top: 50%;
+          bottom: auto;
+          width: calc(100vw - 32px);
+          max-height: calc(100dvh - 150px);
+        }
+
+        #name {
+          display: none;
+        }
+
+        #live-footer {
+          bottom: 16px;
+          display: grid;
+          gap: 8px;
+        }
+
+        #live-footer strong {
+          margin-bottom: 3px;
+        }
+
+        #live-time {
+          text-align: left;
+        }
+
+        #legend {
+          display: none;
+        }
+      }
+
+      @media (max-height: 760px) {
+        #title {
+          top: 18px;
+          gap: 4px;
+        }
+
+        #title strong {
+          font-size: 16px;
+        }
+
+        #air-panel {
+          top: 46%;
+          width: min(700px, calc(100vw - 56px));
+          max-height: calc(100dvh - 136px);
+        }
+
+        #air-panel header {
+          padding-top: 14px;
+          padding-bottom: 14px;
+          font-size: clamp(17px, 1.5vw, 22px);
+        }
+
+        th,
+        td {
+          padding-top: 10px;
+          padding-bottom: 10px;
+          font-size: clamp(15px, 1.35vw, 20px);
+        }
+
+        td strong {
+          font-size: clamp(40px, 8vh, 76px);
+        }
+
+        #caption {
+          padding-top: 10px;
+          padding-bottom: 12px;
+          font-size: clamp(13px, 1.1vw, 17px);
+          line-height: 1.5;
+        }
+
+        #live-footer {
+          bottom: 14px;
+        }
+
+        #live-footer strong {
+          font-size: clamp(13px, 1.3vw, 19px);
+        }
+
+        #live-footer span {
+          font-size: 10px;
+        }
+
+        #live-time {
+          font-size: clamp(17px, 2vw, 28px);
+        }
+
+        #grass-stage {
+          bottom: -17vh;
+          height: min(32vh, 300px);
+        }
+      }
+
+      @media (max-height: 560px) {
+        #title span,
+        #caption,
+        #live-footer span {
+          display: none;
+        }
+
+        #air-panel {
+          top: 45%;
+          max-height: calc(100dvh - 92px);
+        }
+
+        #air-panel header {
+          padding-top: 10px;
+          padding-bottom: 10px;
+        }
+
+        th,
+        td {
+          padding-top: 7px;
+          padding-bottom: 7px;
+        }
+
+        td strong {
+          font-size: clamp(34px, 8vh, 58px);
+        }
+
+        .bar {
+          height: 8px;
+          margin-top: 6px;
+        }
+
+        #live-footer {
+          align-items: center;
+          bottom: 10px;
+        }
+
+        #live-footer strong {
+          margin-bottom: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="grass-stage" aria-hidden="true"></div>
+    <div id="veil"></div>
+    <div id="title">
+      <strong>오늘은 봄날</strong>
+      <span>공공예술 예시 · DAEGU AIR GARDEN</span>
+    </div>
+    <aside id="air-panel" aria-label="대구 공기질 표">
+      <header>
+        <span>대구 공기질</span>
+        <i class="dot" aria-hidden="true"></i>
+      </header>
+      <table>
+        <tbody>
+          <tr>
+            <th>PM10</th>
+            <td>
+              <strong id="pm10">--</strong> µg/m³
+              <div class="bar"><i id="pm10-bar" style="--value: 0%"></i></div>
+            </td>
+          </tr>
+          <tr>
+            <th>PM2.5</th>
+            <td>
+              <strong id="pm25">--</strong> µg/m³
+              <div class="bar"><i id="pm25-bar" style="--value: 0%"></i></div>
+            </td>
+          </tr>
+          <tr>
+            <th>상태</th>
+            <td id="quality">읽는 중</td>
+          </tr>
+          <tr>
+            <th>갱신</th>
+            <td id="updated">--:--</td>
+          </tr>
+        </tbody>
+      </table>
+      <p id="caption">오늘의 대구 공기를 하늘의 밝기, 흐림, 빛의 선으로 번역합니다.</p>
+    </aside>
+    <footer id="live-footer" aria-label="실시간 작품 정보">
+      <p>
+        <strong>오늘의 공기가 바람과 풀빛으로 번집니다</strong>
+        <span>DAEGU AIR GARDEN · REAL-TIME PUBLIC ART</span>
+      </p>
+      <time id="live-time" datetime="">--월 --일 --:--</time>
+    </footer>
+    <div id="legend" aria-hidden="true">
+      <div class="chip"><span>SKY</span><strong id="sky-state">맑음</strong></div>
+      <div class="chip"><span>FLOW</span><strong id="flow-state">느림</strong></div>
+      <div class="chip"><span>DENSITY</span><strong id="density-state">낮음</strong></div>
+    </div>
+    <div id="name">오늘은 봄날 공공예술 예시</div>
+
+    <script type="module">
+      import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js";
+
+      const daeguAirUrl =
+        "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=35.8714&longitude=128.6014&current=pm10,pm2_5&timezone=Asia%2FSeoul";
+      const pm10El = document.querySelector("#pm10");
+      const pm25El = document.querySelector("#pm25");
+      const pm10Bar = document.querySelector("#pm10-bar");
+      const pm25Bar = document.querySelector("#pm25-bar");
+      const qualityEl = document.querySelector("#quality");
+      const updatedEl = document.querySelector("#updated");
+      const captionEl = document.querySelector("#caption");
+      const skyStateEl = document.querySelector("#sky-state");
+      const flowStateEl = document.querySelector("#flow-state");
+      const densityStateEl = document.querySelector("#density-state");
+      const liveTimeEl = document.querySelector("#live-time");
+
+      const air = {
+        pm10: 34,
+        pm25: 16,
+        density: 0.28,
+        quality: "보통",
+        source: "calendar",
+        updatedAt: new Date(),
+      };
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x0788d9);
+      scene.fog = new THREE.FogExp2(0x2ccfff, 0.008);
+
+      const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 120);
+      camera.position.set(0, 0.18, 8.4);
+      camera.lookAt(0, 0, 0);
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
+      renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+      renderer.setSize(innerWidth, innerHeight);
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.46;
+      document.body.prepend(renderer.domElement);
+
+      const hemi = new THREE.HemisphereLight(0xffffff, 0x93d5c8, 2.8);
+      scene.add(hemi);
+
+      const sun = new THREE.DirectionalLight(0xfff0b0, 4.8);
+      sun.position.set(-3.5, 5.4, 4.2);
+      scene.add(sun);
+
+      function seeded(input) {
+        let h = 2166136261;
+        for (let i = 0; i < input.length; i += 1) {
+          h ^= input.charCodeAt(i);
+          h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24);
+        }
+        return Math.abs(h >>> 0) / 4294967295;
+      }
+
+      function lerp(a, b, t) {
+        return a + (b - a) * t;
+      }
+
+      function clamp(v, a, b) {
+        return Math.max(a, Math.min(b, v));
+      }
+
+      function updateLiveTime() {
+        const now = new Date();
+        liveTimeEl.dateTime = now.toISOString();
+        liveTimeEl.textContent = now.toLocaleString("ko-KR", {
+          timeZone: "Asia/Seoul",
+          month: "long",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      }
+
+      updateLiveTime();
+      setInterval(updateLiveTime, 1000);
+
+      function makeSoftTexture() {
+        const c = document.createElement("canvas");
+        c.width = 128;
+        c.height = 128;
+        const g = c.getContext("2d");
+        const grad = g.createRadialGradient(64, 64, 0, 64, 64, 62);
+        grad.addColorStop(0, "rgba(255,255,255,0.95)");
+        grad.addColorStop(0.42, "rgba(255,255,255,0.38)");
+        grad.addColorStop(1, "rgba(255,255,255,0)");
+        g.fillStyle = grad;
+        g.fillRect(0, 0, 128, 128);
+        const tex = new THREE.CanvasTexture(c);
+        tex.colorSpace = THREE.SRGBColorSpace;
+        return tex;
+      }
+
+      function makeAuroraTexture() {
+        const c = document.createElement("canvas");
+        c.width = 512;
+        c.height = 128;
+        const g = c.getContext("2d");
+        const grad = g.createLinearGradient(0, 0, c.width, 0);
+        grad.addColorStop(0, "rgba(255,255,255,0)");
+        grad.addColorStop(0.18, "rgba(93,242,255,0.58)");
+        grad.addColorStop(0.44, "rgba(255,232,94,0.34)");
+        grad.addColorStop(0.68, "rgba(124,255,185,0.46)");
+        grad.addColorStop(1, "rgba(255,255,255,0)");
+        g.fillStyle = grad;
+        g.fillRect(0, 0, c.width, c.height);
+
+        const vertical = g.createLinearGradient(0, 0, 0, c.height);
+        vertical.addColorStop(0, "rgba(255,255,255,0)");
+        vertical.addColorStop(0.45, "rgba(255,255,255,0.8)");
+        vertical.addColorStop(1, "rgba(255,255,255,0)");
+        g.globalCompositeOperation = "destination-in";
+        g.fillStyle = vertical;
+        g.fillRect(0, 0, c.width, c.height);
+
+        const tex = new THREE.CanvasTexture(c);
+        tex.colorSpace = THREE.SRGBColorSpace;
+        tex.wrapS = THREE.RepeatWrapping;
+        tex.wrapT = THREE.ClampToEdgeWrapping;
+        return tex;
+      }
+
+      function makePetalTexture() {
+        const c = document.createElement("canvas");
+        c.width = 128;
+        c.height = 128;
+        const g = c.getContext("2d");
+        g.clearRect(0, 0, c.width, c.height);
+        const grad = g.createRadialGradient(54, 42, 4, 64, 64, 58);
+        grad.addColorStop(0, "rgba(255,255,255,0.96)");
+        grad.addColorStop(0.42, "rgba(255,183,207,0.86)");
+        grad.addColorStop(1, "rgba(255,132,170,0)");
+        g.fillStyle = grad;
+        g.beginPath();
+        g.moveTo(64, 12);
+        g.bezierCurveTo(104, 30, 103, 86, 64, 116);
+        g.bezierCurveTo(25, 86, 24, 30, 64, 12);
+        g.fill();
+        const tex = new THREE.CanvasTexture(c);
+        tex.colorSpace = THREE.SRGBColorSpace;
+        return tex;
+      }
+
+      function makeGrassTexture() {
+        const c = document.createElement("canvas");
+        c.width = 64;
+        c.height = 256;
+        const g = c.getContext("2d");
+        g.clearRect(0, 0, c.width, c.height);
+        const grad = g.createLinearGradient(0, 0, 0, c.height);
+        grad.addColorStop(0, "rgba(180,255,164,0)");
+        grad.addColorStop(0.28, "rgba(140,238,122,0.78)");
+        grad.addColorStop(1, "rgba(24,122,70,0.95)");
+        g.fillStyle = grad;
+        g.beginPath();
+        g.moveTo(32, 8);
+        g.bezierCurveTo(52, 72, 50, 168, 36, 256);
+        g.lineTo(23, 256);
+        g.bezierCurveTo(16, 168, 18, 72, 32, 8);
+        g.fill();
+        const tex = new THREE.CanvasTexture(c);
+        tex.colorSpace = THREE.SRGBColorSpace;
+        return tex;
+      }
+
+      const particleTexture = makeSoftTexture();
+      const auroraTexture = makeAuroraTexture();
+      const petalTexture = makePetalTexture();
+      const grassTexture = new THREE.TextureLoader().load("Grass/Grass1-cutout.png");
+      grassTexture.colorSpace = THREE.SRGBColorSpace;
+      grassTexture.minFilter = THREE.LinearFilter;
+      grassTexture.magFilter = THREE.LinearFilter;
+      const particleCount = 900;
+      const particleGeo = new THREE.BufferGeometry();
+      const positions = new Float32Array(particleCount * 3);
+      const seeds = [];
+
+      for (let i = 0; i < particleCount; i += 1) {
+        const sx = seeded(`x-${i}`) - 0.5;
+        const sy = seeded(`y-${i}`) - 0.5;
+        const sz = seeded(`z-${i}`) - 0.5;
+        positions[i * 3] = sx * 16;
+        positions[i * 3 + 1] = sy * 9;
+        positions[i * 3 + 2] = sz * 9;
+        seeds.push({
+          x: positions[i * 3],
+          y: positions[i * 3 + 1],
+          z: positions[i * 3 + 2],
+          phase: seeded(`p-${i}`) * Math.PI * 2,
+          speed: lerp(0.18, 0.9, seeded(`s-${i}`)),
+          size: lerp(0.04, 0.22, seeded(`size-${i}`)),
+        });
+      }
+
+      particleGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+      const particleMat = new THREE.PointsMaterial({
+        map: particleTexture,
+        size: 0.2,
+        transparent: true,
+        opacity: 0.54,
+        depthWrite: false,
+        color: 0xffffff,
+        blending: THREE.AdditiveBlending,
+      });
+      const particles = new THREE.Points(particleGeo, particleMat);
+      scene.add(particles);
+
+      const petalCount = 1200;
+      const petalGeo = new THREE.PlaneGeometry(0.12, 0.2, 1, 1);
+      const petalMat = new THREE.MeshBasicMaterial({
+        map: petalTexture,
+        transparent: true,
+        opacity: 0.82,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide,
+      });
+      const petals = new THREE.InstancedMesh(petalGeo, petalMat, petalCount);
+      petals.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+      petals.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(petalCount * 3), 3);
+      scene.add(petals);
+
+      const petalObject = new THREE.Object3D();
+      const petalColor = new THREE.Color();
+      const petalData = [];
+      for (let i = 0; i < petalCount; i += 1) {
+        petalData.push({
+          x: (seeded(`petal-x-${i}`) - 0.5) * 17,
+          y: (seeded(`petal-y-${i}`) - 0.5) * 9,
+          z: lerp(-7.2, -1.2, seeded(`petal-z-${i}`)),
+          phase: seeded(`petal-p-${i}`) * Math.PI * 2,
+          speed: lerp(0.18, 0.85, seeded(`petal-s-${i}`)),
+          drift: lerp(0.45, 1.8, seeded(`petal-d-${i}`)),
+          scale: lerp(0.72, 1.8, seeded(`petal-scale-${i}`)),
+          spin: lerp(-1.1, 1.1, seeded(`petal-spin-${i}`)),
+        });
+        petalColor.setHSL(lerp(0.92, 0.12, seeded(`petal-h-${i}`)), lerp(0.42, 0.78, seeded(`petal-sat-${i}`)), lerp(0.68, 0.9, seeded(`petal-lit-${i}`)));
+        petals.setColorAt(i, petalColor);
+      }
+
+      const grassCount = 1800;
+      const grassGeo = new THREE.PlaneGeometry(1.45, 0.13, 1, 1);
+      grassGeo.translate(0.5, 0, 0);
+      const grassMat = new THREE.MeshBasicMaterial({
+        map: grassTexture,
+        transparent: true,
+        opacity: 0.8,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+      });
+      const grass = new THREE.InstancedMesh(grassGeo, grassMat, grassCount);
+      grass.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+      grass.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(grassCount * 3), 3);
+      scene.add(grass);
+      grass.visible = false;
+
+      const grassObject = new THREE.Object3D();
+      const grassColor = new THREE.Color();
+      const grassData = [];
+      for (let i = 0; i < grassCount; i += 1) {
+        const depth = seeded(`grass-depth-${i}`);
+        grassData.push({
+          x: (seeded(`grass-x-${i}`) - 0.5) * 18,
+          y: lerp(-2.65, -0.82, depth),
+          z: lerp(-3.8, -10.5, depth),
+          h: lerp(0.58, 1.95, seeded(`grass-h-${i}`)) * lerp(1.08, 0.5, depth),
+          w: lerp(0.42, 1.25, seeded(`grass-w-${i}`)),
+          phase: seeded(`grass-p-${i}`) * Math.PI * 2,
+          bend: lerp(0.18, 0.92, seeded(`grass-b-${i}`)),
+        });
+        grassColor.setHSL(lerp(0.25, 0.36, seeded(`grass-c-${i}`)), lerp(0.44, 0.72, seeded(`grass-s-${i}`)), lerp(0.42, 0.72, seeded(`grass-l-${i}`)));
+        grass.setColorAt(i, grassColor);
+      }
+
+      const meadow = new THREE.Mesh(
+        new THREE.PlaneGeometry(22, 2.4, 32, 4),
+        new THREE.MeshBasicMaterial({
+          color: 0x52d56f,
+          transparent: true,
+          opacity: 0.12,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+        }),
+      );
+      meadow.position.set(0, -2.35, -8.4);
+      scene.add(meadow);
+      meadow.visible = false;
+
+      const cloudGroup = new THREE.Group();
+      scene.add(cloudGroup);
+      const cloudMat = new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.28,
+        roughness: 0.9,
+        metalness: 0,
+        depthWrite: false,
+      });
+
+      for (let i = 0; i < 62; i += 1) {
+        const geo = new THREE.SphereGeometry(lerp(0.35, 1.2, seeded(`cloud-r-${i}`)), 24, 12);
+        const mesh = new THREE.Mesh(geo, cloudMat.clone());
+        mesh.material.opacity = lerp(0.1, 0.32, seeded(`cloud-o-${i}`));
+        mesh.position.set((seeded(`cloud-x-${i}`) - 0.5) * 15, lerp(-2.8, 3.2, seeded(`cloud-y-${i}`)), lerp(-6.4, -1.1, seeded(`cloud-z-${i}`)));
+        mesh.scale.set(lerp(2.4, 7.2, seeded(`cloud-sx-${i}`)), lerp(0.14, 0.5, seeded(`cloud-sy-${i}`)), lerp(0.9, 2.5, seeded(`cloud-sz-${i}`)));
+        cloudGroup.add(mesh);
+      }
+
+      const horizonGeo = new THREE.PlaneGeometry(22, 9, 1, 1);
+      const horizonMat = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.1,
+        depthWrite: false,
+      });
+      const horizon = new THREE.Mesh(horizonGeo, horizonMat);
+      horizon.position.set(0, -3.4, -5.2);
+      scene.add(horizon);
+
+      const airPalette = [0x27e0ff, 0x8cffd5, 0xffd86f, 0xff8c78, 0x8ab8ff, 0xffffff];
+
+      const airFieldGroup = new THREE.Group();
+      scene.add(airFieldGroup);
+      airFieldGroup.visible = false;
+      for (let i = 0; i < 44; i += 1) {
+        const geo = new THREE.PlaneGeometry(lerp(2.4, 7.8, seeded(`airfield-w-${i}`)), lerp(0.9, 3.4, seeded(`airfield-h-${i}`)), 1, 1);
+        const mat = new THREE.MeshBasicMaterial({
+          map: particleTexture,
+          color: airPalette[(i + Math.floor(i / 3)) % airPalette.length],
+          transparent: true,
+          opacity: lerp(0.035, 0.18, seeded(`airfield-o-${i}`)),
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+          side: THREE.DoubleSide,
+        });
+        const field = new THREE.Mesh(geo, mat);
+        field.position.set(lerp(-7.8, 7.8, seeded(`airfield-x-${i}`)), lerp(-3.4, 3.2, seeded(`airfield-y-${i}`)), lerp(-8.4, -2.2, seeded(`airfield-z-${i}`)));
+        field.rotation.set(0, 0, lerp(-0.24, 0.24, seeded(`airfield-r-${i}`)));
+        field.userData.baseOpacity = mat.opacity;
+        field.userData.phase = seeded(`airfield-p-${i}`) * Math.PI * 2;
+        field.userData.speed = lerp(0.035, 0.13, seeded(`airfield-s-${i}`));
+        field.userData.baseX = field.position.x;
+        field.userData.baseY = field.position.y;
+        field.userData.baseScale = lerp(0.8, 1.4, seeded(`airfield-scale-${i}`));
+        airFieldGroup.add(field);
+      }
+
+      const fieldGroup = new THREE.Group();
+      scene.add(fieldGroup);
+      fieldGroup.visible = false;
+      const fieldPalette = [0xfff06f, 0x1bd7ff, 0xff946a, 0x88ef62, 0x8dc2ff, 0xffffff];
+
+      for (let i = 0; i < 24; i += 1) {
+        const geo = new THREE.PlaneGeometry(lerp(3.2, 8.8, seeded(`field-w-${i}`)), lerp(1.1, 3.4, seeded(`field-h-${i}`)), 1, 1);
+        const mat = new THREE.MeshBasicMaterial({
+          map: particleTexture,
+          color: fieldPalette[i % fieldPalette.length],
+          transparent: true,
+          opacity: lerp(0.08, 0.22, seeded(`field-o-${i}`)),
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+          side: THREE.DoubleSide,
+        });
+        const field = new THREE.Mesh(geo, mat);
+        field.position.set(lerp(-6.8, 5.8, seeded(`field-x-${i}`)), lerp(-3.1, 3.0, seeded(`field-y-${i}`)), lerp(-7.2, -2.2, seeded(`field-z-${i}`)));
+        field.rotation.set(0, 0, lerp(-0.35, 0.35, seeded(`field-r-${i}`)));
+        field.userData.baseOpacity = mat.opacity;
+        field.userData.phase = seeded(`field-p-${i}`) * Math.PI * 2;
+        field.userData.speed = lerp(0.04, 0.14, seeded(`field-s-${i}`));
+        fieldGroup.add(field);
+      }
+
+      const auroraGroup = new THREE.Group();
+      scene.add(auroraGroup);
+      auroraGroup.visible = false;
+      const auroraPalette = [0x00e2ff, 0x6dffb8, 0xffd45f, 0x9b8cff, 0xffffff];
+
+      for (let i = 0; i < 8; i += 1) {
+        const geo = new THREE.PlaneGeometry(15.6, lerp(1.7, 3.8, seeded(`aurora-h-${i}`)), 96, 10);
+        const base = geo.attributes.position.array.slice();
+        const mat = new THREE.MeshBasicMaterial({
+          map: auroraTexture,
+          color: auroraPalette[i % auroraPalette.length],
+          transparent: true,
+          opacity: lerp(0.16, 0.34, seeded(`aurora-o-${i}`)),
+          depthWrite: false,
+          side: THREE.DoubleSide,
+        });
+        const sheet = new THREE.Mesh(geo, mat);
+        sheet.position.set(lerp(-0.8, 0.8, seeded(`aurora-x-${i}`)), lerp(-0.6, 2.8, seeded(`aurora-y-${i}`)), lerp(-5.6, -2.4, seeded(`aurora-z-${i}`)));
+        sheet.rotation.set(lerp(-0.18, 0.18, seeded(`aurora-rx-${i}`)), lerp(-0.1, 0.1, seeded(`aurora-ry-${i}`)), lerp(-0.32, 0.32, seeded(`aurora-rz-${i}`)));
+        sheet.scale.setScalar(lerp(0.92, 1.34, seeded(`aurora-scale-${i}`)));
+        sheet.userData.base = base;
+        sheet.userData.phase = seeded(`aurora-p-${i}`) * Math.PI * 2;
+        sheet.userData.speed = lerp(0.25, 0.62, seeded(`aurora-s-${i}`));
+        sheet.userData.baseOpacity = mat.opacity;
+        auroraGroup.add(sheet);
+      }
+
+      const shardGroup = new THREE.Group();
+      scene.add(shardGroup);
+      for (let i = 0; i < 120; i += 1) {
+        const geo = new THREE.PlaneGeometry(lerp(0.05, 0.22, seeded(`shard-w-${i}`)), lerp(0.32, 1.15, seeded(`shard-h-${i}`)));
+        const mat = new THREE.MeshBasicMaterial({
+          color: auroraPalette[i % auroraPalette.length],
+          transparent: true,
+          opacity: lerp(0.16, 0.46, seeded(`shard-o-${i}`)),
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+          side: THREE.DoubleSide,
+        });
+        const shard = new THREE.Mesh(geo, mat);
+        shard.position.set(lerp(-7.4, 7.4, seeded(`shard-x-${i}`)), lerp(-2.2, 3.5, seeded(`shard-y-${i}`)), lerp(-5.8, -1.8, seeded(`shard-z-${i}`)));
+        shard.rotation.set(0, 0, seeded(`shard-r-${i}`) * Math.PI);
+        shard.userData.baseX = shard.position.x;
+        shard.userData.baseY = shard.position.y;
+        shard.userData.phase = seeded(`shard-p-${i}`) * Math.PI * 2;
+        shard.userData.speed = lerp(0.14, 0.66, seeded(`shard-s-${i}`));
+        shard.userData.baseOpacity = mat.opacity;
+        shardGroup.add(shard);
+      }
+      shardGroup.visible = false;
+
+      const streamGroup = new THREE.Group();
+      scene.add(streamGroup);
+      streamGroup.visible = false;
+      const streamColors = [0x00f0ff, 0x8dffb2, 0xffdc68, 0xff8b7b];
+      const streams = [];
+
+      for (let s = 0; s < 4; s += 1) {
+        const count = 520;
+        const geo = new THREE.BufferGeometry();
+        const arr = new Float32Array(count * 3);
+        const meta = [];
+        for (let i = 0; i < count; i += 1) {
+          const u = i / count;
+          const spread = seeded(`stream-spread-${s}-${i}`);
+          arr[i * 3] = lerp(-7.8, 7.8, u) + (spread - 0.5) * 0.44;
+          arr[i * 3 + 1] = -1.85 + s * 1.05 + Math.sin(u * Math.PI * 2.4 + s) * 0.72 + (seeded(`stream-y-${s}-${i}`) - 0.5) * 0.5;
+          arr[i * 3 + 2] = -3.4 - s * 0.42;
+          meta.push({
+            u,
+            phase: seeded(`stream-phase-${s}-${i}`) * Math.PI * 2,
+            amp: lerp(0.18, 0.72, seeded(`stream-amp-${s}-${i}`)),
+          });
+        }
+        geo.setAttribute("position", new THREE.BufferAttribute(arr, 3));
+        const mat = new THREE.PointsMaterial({
+          map: particleTexture,
+          size: 0.22,
+          transparent: true,
+          opacity: 0.9,
+          color: streamColors[s],
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+        });
+        const points = new THREE.Points(geo, mat);
+        points.userData.meta = meta;
+        points.userData.base = arr.slice();
+        points.userData.phase = seeded(`stream-p-${s}`) * Math.PI * 2;
+        points.userData.speed = lerp(0.16, 0.38, seeded(`stream-speed-${s}`));
+        points.userData.colorIndex = s;
+        streams.push(points);
+        streamGroup.add(points);
+      }
+
+      function classifyAir(pm10, pm25) {
+        const score = Math.max(pm10 / 150, pm25 / 75);
+        if (pm10 > 150 || pm25 > 75) return { quality: "매우나쁨", density: Math.min(1, 0.84 + score * 0.16) };
+        if (pm10 > 80 || pm25 > 35) return { quality: "나쁨", density: Math.min(0.82, 0.58 + score * 0.24) };
+        if (pm10 > 30 || pm25 > 15) return { quality: "보통", density: Math.min(0.56, 0.24 + score * 0.32) };
+        return { quality: "좋음", density: Math.max(0.08, score * 0.28) };
+      }
+
+      function setAir(pm10, pm25, source, updatedAt = new Date()) {
+        const c = classifyAir(pm10, pm25);
+        air.pm10 = pm10;
+        air.pm25 = pm25;
+        air.density = c.density;
+        air.quality = c.quality;
+        air.source = source;
+        air.updatedAt = updatedAt;
+
+        pm10El.textContent = Math.round(pm10);
+        pm25El.textContent = Math.round(pm25);
+        pm10Bar.style.setProperty("--value", `${Math.min(100, Math.round((pm10 / 150) * 100))}%`);
+        pm25Bar.style.setProperty("--value", `${Math.min(100, Math.round((pm25 / 75) * 100))}%`);
+        qualityEl.textContent = c.quality;
+        updatedEl.textContent = `${source === "live" ? "실시간" : "예비"} ${updatedAt.toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}`;
+        skyStateEl.textContent = c.quality === "좋음" ? "선명" : c.quality === "보통" ? "옅은 흐림" : "탁함";
+        flowStateEl.textContent = c.density < 0.22 ? "느림" : c.density < 0.58 ? "보통" : "빠름";
+        densityStateEl.textContent = c.density < 0.22 ? "낮음" : c.density < 0.58 ? "중간" : "높음";
+        captionEl.textContent =
+          c.quality === "좋음"
+            ? "맑은 공기는 선명한 하늘, 넓은 색면, 느린 빛 입자로 표현됩니다."
+            : "농도가 높아질수록 하늘은 두꺼운 색면과 촘촘한 입자 흐름으로 바뀝니다.";
+      }
+
+      function dailyFallback() {
+        const now = new Date();
+        const key = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}-daegu-air`;
+        const season = Math.sin(((now.getMonth() + 1) / 12) * Math.PI);
+        setAir(24 + seeded(key) * 62 + season * 18, 10 + seeded(`${key}-pm25`) * 28 + season * 7, "calendar", now);
+      }
+
+      async function refreshAir() {
+        try {
+          const response = await fetch(daeguAirUrl, { cache: "no-store" });
+          if (!response.ok) throw new Error("air failed");
+          const data = await response.json();
+          const pm10 = Number(data.current?.pm10);
+          const pm25 = Number(data.current?.pm2_5);
+          if (!Number.isFinite(pm10) || !Number.isFinite(pm25)) throw new Error("air missing");
+          setAir(pm10, pm25, "live", new Date(data.current?.time || Date.now()));
+        } catch (error) {
+          dailyFallback();
+        }
+      }
+
+      function resize() {
+        camera.aspect = innerWidth / innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+        renderer.setSize(innerWidth, innerHeight);
+      }
+
+      addEventListener("resize", resize);
+      refreshAir();
+      setInterval(refreshAir, 60 * 60 * 1000);
+
+      const clock = new THREE.Clock();
+      function animate() {
+        const t = clock.getElapsedTime();
+        const density = air.density;
+        const wind = 0.18 + density * 1.5;
+        const skyTop = new THREE.Color(0x0788d9).lerp(new THREE.Color(0x6e5f87), density);
+        const fogColor = new THREE.Color(0x1fd5ff).lerp(new THREE.Color(0xc59a72), density);
+
+        scene.background = skyTop;
+        scene.fog.color.copy(fogColor);
+        scene.fog.density = lerp(0.005, 0.042, density);
+        particleMat.opacity = lerp(0.4, 0.78, density);
+        particleMat.size = lerp(0.13, 0.26, density);
+        petalMat.opacity = lerp(0.72, 0.92, density);
+        grassMat.opacity = lerp(0.68, 0.86, density);
+        horizonMat.opacity = lerp(0.08, 0.22, density);
+        renderer.toneMappingExposure = lerp(1.86, 1.22, density);
+        sun.intensity = lerp(5.2, 3.2, density);
+        hemi.intensity = lerp(3.0, 2.05, density);
+        fieldGroup.children.forEach((field, i) => {
+          field.position.x += Math.sin(t * field.userData.speed + field.userData.phase) * 0.002;
+          field.position.y += Math.cos(t * field.userData.speed * 0.82 + i) * 0.002;
+          field.rotation.z += Math.sin(t * 0.06 + i) * 0.00045;
+          field.material.opacity = field.userData.baseOpacity * lerp(1.45, 0.82, density) * (0.82 + Math.sin(t * 0.16 + i) * 0.18);
+        });
+        const pm10Ratio = clamp(air.pm10 / 150, 0, 1);
+        const pm25Ratio = clamp(air.pm25 / 75, 0, 1);
+        airFieldGroup.rotation.z = Math.sin(t * 0.045) * 0.025;
+        airFieldGroup.children.forEach((field, i) => {
+          const metricPull = i % 2 === 0 ? pm10Ratio : pm25Ratio;
+          const drift = 0.28 + metricPull * 0.74;
+          field.position.x = field.userData.baseX + Math.sin(t * field.userData.speed + field.userData.phase) * drift;
+          field.position.y = field.userData.baseY + Math.cos(t * field.userData.speed * 0.74 + field.userData.phase) * (0.18 + density * 0.4);
+          field.rotation.z += Math.sin(t * 0.035 + i) * 0.00035;
+          field.scale.x = field.userData.baseScale * lerp(0.9, 1.55, metricPull);
+          field.scale.y = field.userData.baseScale * lerp(0.85, 1.3, density);
+          field.material.opacity = field.userData.baseOpacity * lerp(1.35, 2.2, density) * (0.72 + Math.sin(t * 0.16 + i) * 0.28);
+        });
+        auroraGroup.children.forEach((sheet, i) => {
+          const attr = sheet.geometry.attributes.position;
+          const arr = attr.array;
+          const base = sheet.userData.base;
+          const pull = i % 2 === 0 ? pm10Ratio : pm25Ratio;
+          for (let j = 0; j < arr.length; j += 3) {
+            const x = base[j];
+            const y = base[j + 1];
+            const waveA = Math.sin(x * 0.9 + t * sheet.userData.speed + sheet.userData.phase) * (0.34 + density * 0.62);
+            const waveB = Math.cos(y * 2.2 + t * 0.42 + i) * (0.16 + pull * 0.4);
+            arr[j] = x;
+            arr[j + 1] = y + waveA + waveB;
+            arr[j + 2] = base[j + 2] + Math.sin(x * 0.42 + t * 0.24 + i) * (0.1 + density * 0.34);
+          }
+          attr.needsUpdate = true;
+          sheet.position.x = Math.sin(t * 0.08 + sheet.userData.phase) * (0.42 + pull * 0.6);
+          sheet.material.opacity = sheet.userData.baseOpacity * lerp(0.9, 1.45, density) * (0.78 + Math.sin(t * 0.18 + i) * 0.22);
+        });
+        shardGroup.children.forEach((shard, i) => {
+          const pull = i % 2 === 0 ? pm10Ratio : pm25Ratio;
+          shard.position.x = shard.userData.baseX + Math.sin(t * shard.userData.speed + shard.userData.phase) * (0.18 + pull * 0.9);
+          shard.position.y = shard.userData.baseY + Math.cos(t * shard.userData.speed * 0.8 + i) * (0.14 + density * 0.46);
+          shard.rotation.z += 0.002 + density * 0.006;
+          shard.material.opacity = shard.userData.baseOpacity * lerp(0.9, 1.9, density);
+        });
+        streams.forEach((stream, s) => {
+          const arr = stream.geometry.attributes.position.array;
+          const base = stream.userData.base;
+          const meta = stream.userData.meta;
+          const pull = s % 2 === 0 ? pm10Ratio : pm25Ratio;
+          stream.material.opacity = lerp(0.76, 1, density) * (0.86 + Math.sin(t * 0.16 + s) * 0.14);
+          stream.material.size = lerp(0.18, 0.32, density);
+          for (let i = 0; i < meta.length; i += 1) {
+            const m = meta[i];
+            const j = i * 3;
+            const wave = Math.sin(m.u * Math.PI * (3.1 + s * 0.55) + t * stream.userData.speed + stream.userData.phase);
+            const drift = t * (0.18 + pull * 0.55);
+            arr[j] = base[j] + Math.sin(m.phase + t * 0.2) * (0.12 + pull * 0.26) + drift;
+            arr[j + 1] = base[j + 1] + wave * m.amp * (0.5 + density) + Math.cos(t * 0.26 + m.phase) * 0.12;
+            arr[j + 2] = base[j + 2] + Math.cos(m.u * Math.PI * 4 + t * 0.2 + s) * (0.12 + density * 0.28);
+            if (arr[j] > 8.2) arr[j] -= 16.4;
+          }
+          stream.geometry.attributes.position.needsUpdate = true;
+        });
+
+        for (let i = 0; i < grassCount; i += 1) {
+          const g = grassData[i];
+          const sway = Math.sin(t * (0.72 + wind * 0.6) + g.phase) * g.bend * (0.16 + wind * 0.34);
+          grassObject.position.set(g.x + sway * 0.42, g.y, g.z);
+          grassObject.rotation.set(0, 0, Math.PI / 2 + sway);
+          grassObject.scale.set(g.h, g.w * 0.38, 1);
+          grassObject.updateMatrix();
+          grass.setMatrixAt(i, grassObject.matrix);
+        }
+        grass.instanceMatrix.needsUpdate = true;
+
+        const visiblePetals = Math.floor(lerp(260, 760, density));
+        petals.count = visiblePetals;
+        for (let i = 0; i < visiblePetals; i += 1) {
+          const p = petalData[i];
+          const gust = wind * p.drift;
+          p.x += (0.014 + gust * 0.012) * (1 + pm10Ratio * 1.8);
+          p.y += Math.sin(t * p.speed + p.phase) * 0.002 - (0.001 + pm25Ratio * 0.002);
+          if (p.x > 8.8) p.x = -8.8;
+          if (p.y < -4.8) p.y = 4.8;
+          const swayX = Math.sin(t * p.speed + p.phase) * (0.22 + density * 0.42);
+          const swayY = Math.cos(t * p.speed * 0.72 + p.phase) * (0.12 + pm25Ratio * 0.28);
+          petalObject.position.set(p.x + swayX, p.y + swayY, p.z);
+          petalObject.rotation.set(
+            Math.sin(t * 0.7 + p.phase) * 0.9,
+            Math.cos(t * 0.52 + p.phase) * 0.7,
+            t * p.spin + p.phase,
+          );
+          const scale = p.scale * lerp(0.72, 1.22, density);
+          petalObject.scale.set(scale, scale, scale);
+          petalObject.updateMatrix();
+          petals.setMatrixAt(i, petalObject.matrix);
+        }
+        petals.instanceMatrix.needsUpdate = true;
+
+        const pos = particleGeo.attributes.position.array;
+        for (let i = 0; i < particleCount; i += 1) {
+          const p = seeds[i];
+          pos[i * 3] = p.x + Math.sin(t * p.speed + p.phase) * (0.16 + wind * 0.32) + t * wind * 0.22;
+          pos[i * 3 + 1] = p.y + Math.cos(t * p.speed * 0.7 + p.phase) * (0.12 + density * 0.28);
+          pos[i * 3 + 2] = p.z + Math.sin(t * 0.18 + p.phase) * 0.42;
+          if (pos[i * 3] > 7.8) pos[i * 3] -= 15.6;
+        }
+        particleGeo.attributes.position.needsUpdate = true;
+
+        cloudGroup.children.forEach((cloud, i) => {
+          cloud.position.x += (0.0008 + density * 0.0024) * (1 + (i % 5) * 0.12);
+          cloud.position.y += Math.sin(t * 0.2 + i) * 0.0008;
+          if (cloud.position.x > 8) cloud.position.x = -8;
+          cloud.material.opacity = lerp(0.08, 0.3, density) * (0.65 + Math.sin(t * 0.12 + i) * 0.18);
+        });
+
+        camera.position.x = Math.sin(t * 0.06) * 0.28;
+        camera.position.y = 0.18 + Math.sin(t * 0.09) * 0.1;
+        camera.lookAt(Math.sin(t * 0.05) * 0.18, 0, 0);
+
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+      }
+
+      requestAnimationFrame(animate);
+    </script>
+  </body>
+</html>

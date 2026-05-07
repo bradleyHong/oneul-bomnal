@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>영화 (永花)</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100%;height:100%;overflow:hidden;background:#06162e;touch-action:none}
+  canvas{display:block;width:100vw;height:100vh}
+  #c{position:fixed;inset:0;z-index:0}
+  #treeLayer{position:fixed;inset:0;z-index:1;pointer-events:none}
+  #treeLayer canvas{display:block;width:100vw;height:100vh}
+  #footerShade{
+    position:fixed;left:0;right:0;bottom:0;height:24vh;z-index:2;pointer-events:none;
+    background:
+      linear-gradient(180deg,rgba(66,182,174,0),rgba(44,174,156,.32) 42%,rgba(24,150,135,.52)),
+      radial-gradient(ellipse at 50% 100%,rgba(226,255,244,.18),rgba(87,202,183,.08) 46%,rgba(0,113,103,0) 72%)
+  }
+  video{position:fixed;width:1px;height:1px;opacity:0;pointer-events:none}
+  #name{
+    position:fixed;right:28px;bottom:26px;color:rgba(255,244,232,.34);
+    font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;font-size:12px;font-weight:200;
+    letter-spacing:8px;writing-mode:vertical-rl;pointer-events:none;text-shadow:0 0 18px rgba(0,0,0,.62)
+  }
+  #brandMark{
+    position:fixed;left:clamp(18px,3vw,40px);top:clamp(18px,3vw,34px);z-index:3;
+    color:rgba(246,253,255,.86);font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+    pointer-events:none;text-shadow:0 0 18px rgba(37,123,184,.28)
+  }
+  #brandMark .artist{font-size:clamp(16px,1.5vw,24px);font-weight:800;letter-spacing:5px;line-height:1.2}
+  #brandMark .sub{margin-top:10px;font-size:clamp(9px,.75vw,12px);font-weight:300;letter-spacing:4px;color:rgba(230,249,255,.62)}
+  #windData{
+    margin-top:8px;color:rgba(235,255,255,.62);
+    font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;font-size:clamp(10px,.78vw,12px);
+    font-weight:300;letter-spacing:2.6px;pointer-events:none;text-shadow:0 0 14px rgba(28,112,132,.34)
+  }
+  #artFooter{
+    position:fixed;left:clamp(22px,3.6vw,56px);right:clamp(22px,3.6vw,56px);bottom:clamp(22px,3.4vw,48px);
+    z-index:4;display:flex;align-items:flex-end;justify-content:space-between;gap:28px;
+    color:rgba(250,255,255,.94);font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;pointer-events:none;
+    text-shadow:0 0 18px rgba(8,91,118,.42)
+  }
+  #artFooter .message{font-size:clamp(18px,2vw,32px);font-weight:800;letter-spacing:1.2px;line-height:1.25}
+  #artFooter .meta{margin-top:10px;color:rgba(232,255,255,.70);font-size:clamp(10px,.85vw,13px);font-weight:300;letter-spacing:3px}
+  #footerClock{
+    min-width:max-content;text-align:right;font-size:clamp(24px,2.7vw,42px);font-weight:900;letter-spacing:3px;line-height:1;
+  }
+  #modelStatus{
+    position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;
+    color:rgba(224,244,255,.52);font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+    font-size:12px;font-weight:300;letter-spacing:3px;pointer-events:none;text-shadow:0 0 18px rgba(0,30,70,.9)
+  }
+  #weatherPanel{
+    position:fixed;left:50%;top:clamp(70px,8vh,112px);transform:translateX(-50%);z-index:2;
+    width:clamp(520px,48vw,760px);max-width:calc(100vw - 48px);
+    color:#18374a;font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+    font-size:clamp(12px,1.05vw,16px);font-weight:300;letter-spacing:.4px;pointer-events:none;
+    background:linear-gradient(90deg,rgba(216,238,248,.72),rgba(220,243,252,.66));
+    border:1px solid rgba(255,255,255,.72);
+    border-radius:7px;overflow:hidden;box-shadow:0 22px 64px rgba(39,113,164,.18);
+    backdrop-filter:blur(3px) saturate(1.04)
+  }
+  #weatherPanel .cap{
+    position:relative;padding:clamp(22px,2.6vw,34px) clamp(24px,3vw,40px);
+    color:#17384d;background:rgba(228,246,255,.42);
+    border-bottom:1px solid rgba(105,157,190,.16);letter-spacing:5px;font-weight:800;
+    font-size:clamp(22px,2.15vw,32px)
+  }
+  #weatherPanel .cap:after{
+    content:'';position:absolute;right:clamp(18px,2.6vw,34px);top:50%;width:16px;height:16px;
+    transform:translateY(-50%);border-radius:50%;background:#61d2d4;box-shadow:0 0 22px rgba(82,211,216,.62)
+  }
+  #weatherPanel .cap small{display:block;margin-top:8px;color:#6f8a9b;font-size:clamp(10px,.8vw,12px);font-weight:300;letter-spacing:.8px}
+  #weatherPanel table{width:100%;border-collapse:collapse}
+  #weatherPanel th,#weatherPanel td{padding:clamp(16px,1.75vw,28px) clamp(24px,3vw,40px);border-bottom:1px solid rgba(105,157,190,.14);text-align:left;font-weight:300}
+  #weatherPanel th{width:36%;color:#6f8798;background:rgba(221,242,252,.18);font-size:clamp(15px,1.3vw,24px);letter-spacing:2.4px}
+  #weatherPanel td{color:#18374a;text-align:left;font-variant-numeric:tabular-nums;font-weight:800;font-size:clamp(22px,2.2vw,38px)}
+  #weatherPanel .src{padding:clamp(18px,1.8vw,24px) clamp(24px,3vw,40px);color:#597689;background:rgba(221,242,252,.24);font-size:clamp(11px,.9vw,14px);letter-spacing:.6px;line-height:1.8}
+  #overlay{
+    position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px;
+    background:
+      radial-gradient(circle at 50% 54%,rgba(95,153,212,.18),rgba(6,22,46,.42) 48%,rgba(1,7,18,.74)),
+      linear-gradient(180deg,rgba(3,16,36,.48),rgba(1,7,18,.78));
+    color:rgba(255,245,232,.72);font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+    transition:opacity 1.3s;backdrop-filter:blur(.45px)
+  }
+  #overlay.hidden{opacity:0;pointer-events:none}
+  #overlay .ttl{font-size:24px;font-weight:200;letter-spacing:12px;color:rgba(255,239,224,.64)}
+  #overlay .note{font-size:12px;font-weight:200;line-height:2;letter-spacing:1.5px;text-align:center;color:rgba(255,239,224,.40)}
+  #startBloom{
+    background:rgba(255,232,214,.06);border:1px solid rgba(255,235,220,.28);
+    color:rgba(255,242,228,.70);padding:14px 42px;font-size:13px;font-weight:200;
+    letter-spacing:5px;cursor:pointer;transition:all .35s
+  }
+  #startBloom:hover{border-color:rgba(255,244,232,.64);color:rgba(255,251,245,.94);background:rgba(255,230,218,.12)}
+  @media(max-width:700px){
+    #name{right:14px;bottom:18px;font-size:10px;letter-spacing:5px}
+    #brandMark{left:14px;top:14px}
+    #brandMark .artist{font-size:15px;letter-spacing:3px}
+    #brandMark .sub{margin-top:6px;font-size:8px;letter-spacing:2.4px}
+    #footerShade{height:30vh}
+    #artFooter{left:16px;right:16px;bottom:18px;display:block}
+    #artFooter .message{font-size:17px}
+    #artFooter .meta{margin-top:6px;font-size:9px;letter-spacing:2px}
+    #footerClock{margin-top:12px;text-align:left;font-size:22px;letter-spacing:2px}
+    #windData{margin-top:6px;font-size:9px;letter-spacing:1.6px}
+    #weatherPanel{top:72px;width:calc(100vw - 24px);max-height:44vh}
+    #weatherPanel .cap{padding:12px 16px;font-size:18px;letter-spacing:2.4px}
+    #weatherPanel .cap small{display:none}
+    #weatherPanel th,#weatherPanel td{padding:8px 16px}
+    #weatherPanel th{font-size:12px}
+    #weatherPanel td{font-size:16px;text-align:right}
+    #weatherPanel .src{padding:8px 16px;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    #overlay .ttl{font-size:21px;letter-spacing:9px}
+  }
+  @media(max-height:760px) and (min-width:701px){
+    #weatherPanel{top:clamp(58px,7vh,82px);width:clamp(460px,44vw,660px)}
+    #weatherPanel .cap{padding:16px 30px;font-size:24px}
+    #weatherPanel th,#weatherPanel td{padding:12px 30px}
+    #weatherPanel td{font-size:28px}
+    #weatherPanel .src{padding:12px 30px}
+    #artFooter .message{font-size:24px}
+    #footerClock{font-size:34px}
+  }
+  #overlay{display:none}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="treeLayer"></div>
+<div id="footerShade"></div>
+<video id="video" playsinline muted></video>
+<div id="brandMark">
+  <div class="artist">오늘은 봄날</div>
+  <div class="sub">공공예술 전시 · DAEGU AIR GARDEN</div>
+</div>
+<div id="name">영화 永花</div>
+<div id="modelStatus">대구의 나무 불러오는 중</div>
+<div id="weatherPanel">
+  <div class="cap">오늘의 대구<small>실시간 날씨와 바람의 공공예술 입력값</small></div>
+  <table>
+    <tr><th>온도</th><td id="wTemp">-- °C</td></tr>
+    <tr><th>습도</th><td id="wHumidity">-- %</td></tr>
+    <tr><th>풍속</th><td id="wWind">-- km/h</td></tr>
+    <tr><th>돌풍</th><td id="wGust">-- km/h</td></tr>
+    <tr><th>풍향</th><td id="wDir">-- °</td></tr>
+  </table>
+  <div class="src" id="wSource">Open-Meteo · 수신중</div>
+</div>
+<div id="artFooter">
+  <div>
+    <div class="message">오늘의 공기가 바람과 나무의 결로 번집니다</div>
+    <div class="meta">DAEGU AIR GARDEN · REAL-TIME PUBLIC ART</div>
+    <div id="windData">대구 바람 수신중</div>
+  </div>
+  <div id="footerClock">--월 --일 --:--</div>
+</div>
+<div id="overlay">
+  <div class="ttl">영화 永花</div>
+  <button id="startBloom">대구의 꽃잎 시작</button>
+  <div class="note">오늘의 온도와 바람에 따라<br>하나의 꽃잎이 천천히 회전합니다</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d', { alpha:false });
+const video = document.getElementById('video');
+const overlay = document.getElementById('overlay');
+const startBloom = document.getElementById('startBloom');
+const windData = document.getElementById('windData');
+const wTemp = document.getElementById('wTemp');
+const wHumidity = document.getElementById('wHumidity');
+const wWind = document.getElementById('wWind');
+const wGust = document.getElementById('wGust');
+const wDir = document.getElementById('wDir');
+const wSource = document.getElementById('wSource');
+const footerClock = document.getElementById('footerClock');
+
+let W = 0, H = 0, DPR = 1;
+let time = 0;
+let lastFrame = 0;
+let bloom = 0;
+let bloomTarget = 0;
+let handX = .5;
+let handY = .52;
+let handSeen = false;
+let pointerX = .5;
+let pointerY = .54;
+let pointerGlow = 0;
+let handCamera = null;
+let audioCtx = null;
+let masterGain = null;
+let tempC = 22.5;
+let humidity = 36;
+let windKmh = 3.7;
+let gustKmh = 27.4;
+let windDir = 299;
+let windTarget = .18;
+let windEnergy = .18;
+let windUpdated = '';
+let petalAngle = 0;
+let petalPulse = 0;
+
+const TAU = Math.PI * 2;
+const flowers = [];
+const liveFlowers = [];
+const particles = [];
+const clouds = [];
+const fireflies = [];
+const flowerSprites = [];
+const airborneLeaves = [];
+const gardenCanvas = document.createElement('canvas');
+const gardenCtx = gardenCanvas.getContext('2d');
+
+function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+function lerp(a,b,t){ return a + (b-a)*t; }
+function smoothstep(a,b,x){ x = clamp((x-a)/(b-a), 0, 1); return x*x*(3-2*x); }
+function rand(n){
+  const v = Math.sin(n * 12.9898) * 43758.5453123;
+  return v - Math.floor(v);
+}
+function easeOutBack(x){
+  const c1 = 1.70158;
+  const c3 = c1 + 1;
+  return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
+}
+
+function makeFlowerSprite(seed, hue, petals, type){
+  const c = document.createElement('canvas');
+  c.width = c.height = 192;
+  const g = c.getContext('2d');
+  g.clearRect(0,0,192,192);
+  g.translate(96,96);
+  g.globalCompositeOperation = 'source-over';
+
+  const backGlow = g.createRadialGradient(0,0,0,0,0,88);
+  backGlow.addColorStop(0, `hsla(${hue},84%,72%,.22)`);
+  backGlow.addColorStop(.60, `hsla(${hue+18},70%,62%,.08)`);
+  backGlow.addColorStop(1, `hsla(${hue},70%,58%,0)`);
+  g.fillStyle = backGlow;
+  g.beginPath();
+  g.arc(0,0,116,0,TAU);
+  g.fill();
+
+  const rings = type === 0 ? 3 : type === 1 ? 4 : 4;
+  for(let r=0;r<rings;r++){
+    const ringT = r / Math.max(1,rings-1);
+    const count = petals + r*4 + (type === 2 ? 6 : 0);
+    const radius = lerp(13, 48, ringT);
+    const len = lerp(50, 28, ringT);
+    const width = lerp(19, 11, ringT);
+    const twist = (r % 2 ? Math.PI / count : 0) + rand(seed+r*11.3) * .22;
+    for(let p=0;p<count;p++){
+      const a = p / count * TAU + twist;
+      const jitter = lerp(.96,1.04,rand(seed+p*3.9+r*4.1));
+      const px = Math.cos(a) * radius * jitter;
+      const py = Math.sin(a) * radius * jitter;
+      g.save();
+      g.translate(px,py);
+      g.rotate(a + Math.PI/2);
+      const petal = g.createLinearGradient(-width, -len, width, len*.65);
+      petal.addColorStop(0, `hsla(${hue+18},88%,84%,.88)`);
+      petal.addColorStop(.42, `hsla(${hue},74%,64%,.82)`);
+      petal.addColorStop(1, `hsla(${hue-26},58%,34%,.18)`);
+      g.fillStyle = petal;
+      g.beginPath();
+      g.moveTo(0,-len);
+      g.lineTo(width*.66,-len*.18);
+      g.quadraticCurveTo(width*.40,len*.40,0,len*.72);
+      g.quadraticCurveTo(-width*.40,len*.40,-width*.66,-len*.18);
+      g.closePath();
+      g.fill();
+
+      g.globalCompositeOperation = 'screen';
+      g.strokeStyle = `hsla(${hue+30},90%,88%,.18)`;
+      g.lineWidth = .75;
+      g.beginPath();
+      g.moveTo(0,-len*.70);
+      g.lineTo(0,len*.55);
+      g.stroke();
+      g.globalCompositeOperation = 'source-over';
+      g.restore();
+    }
+  }
+
+  g.save();
+  const center = g.createRadialGradient(0,0,0,0,0,20);
+  center.addColorStop(0, 'rgba(255,224,96,.98)');
+  center.addColorStop(.34, `hsla(${hue+58},82%,42%,.96)`);
+  center.addColorStop(.72, 'rgba(118,78,28,.90)');
+  center.addColorStop(1, 'rgba(48,31,18,.86)');
+  g.fillStyle = center;
+  g.beginPath();
+  g.arc(0,0,18,0,TAU);
+  g.fill();
+  for(let i=0;i<70;i++){
+    const a = rand(seed+i*8.1)*TAU;
+    const r = Math.sqrt(rand(seed+i*9.7))*18;
+    g.fillStyle = `rgba(${Math.floor(72+rand(seed+i)*120)},${Math.floor(50+rand(seed+i*2)*88)},${Math.floor(16+rand(seed+i*3)*28)},${lerp(.22,.66,rand(seed+i*4))})`;
+    g.beginPath();
+    g.arc(Math.cos(a)*r,Math.sin(a)*r,lerp(.7,1.8,rand(seed+i*5)),0,TAU);
+    g.fill();
+  }
+  g.restore();
+
+  g.globalCompositeOperation = 'multiply';
+  for(let i=0;i<110;i++){
+    const a = rand(seed+i*13.7)*TAU;
+    const r = Math.sqrt(rand(seed+i*14.9))*82;
+    g.fillStyle = `rgba(58,44,28,${lerp(.006,.030,rand(seed+i*16.1))})`;
+    g.beginPath();
+    g.ellipse(Math.cos(a)*r,Math.sin(a)*r,lerp(.5,2.7,rand(seed+i*17.3)),lerp(.4,1.8,rand(seed+i*18.7)),a,0,TAU);
+    g.fill();
+  }
+
+  return c;
+}
+
+function buildFlowerSprites(){
+  flowerSprites.length = 0;
+  const hues = [336, 350, 8, 28, 48, 318, 286, 202, 18, 42, 330, 6];
+  for(let i=0;i<hues.length;i++){
+    flowerSprites.push(makeFlowerSprite(20+i*9.37, hues[i], 9 + Math.floor(rand(i*5.2)*6), i % 3));
+  }
+}
+buildFlowerSprites();
+
+function resize(){
+  DPR = Math.min(devicePixelRatio || 1, 1.15);
+  W = innerWidth;
+  H = innerHeight;
+  canvas.width = Math.floor(W * DPR);
+  canvas.height = Math.floor(H * DPR);
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  gardenCanvas.width = canvas.width;
+  gardenCanvas.height = canvas.height;
+  gardenCtx.setTransform(DPR,0,0,DPR,0,0);
+  if(flowers.length) renderGardenCache();
+}
+addEventListener('resize', resize);
+resize();
+
+function buildGarden(){
+  flowers.length = 0;
+  liveFlowers.length = 0;
+  particles.length = 0;
+  clouds.length = 0;
+  fireflies.length = 0;
+  airborneLeaves.length = 0;
+
+  for(let i=0;i<0;i++){
+    const depth = Math.pow(rand(i*2.17), .52);
+    const y = lerp(.03, 1.05, Math.pow(rand(i*2.91), .82));
+    const spread = lerp(1.05, 1.42, depth);
+    const flower = {
+      x:.5 + (rand(i*3.71)-.5) * spread,
+      y,
+      depth,
+      size:lerp(11, 82, depth) * lerp(.76,1.58,rand(i*4.91)),
+      stem:0,
+      lean:lerp(-.34,.34,rand(i*6.61)),
+      petals:5 + Math.floor(rand(i*7.23) * 6),
+      hue:lerp(326, 52, rand(i*8.31)),
+      sat:lerp(42, 78, rand(i*9.41)),
+      light:lerp(56, 75, rand(i*10.17)),
+      phase:rand(i*11.63) * TAU,
+      bloomSeed:rand(i*12.87),
+      ring:rand(i*13.93),
+      sprite:Math.floor(rand(i*15.47) * flowerSprites.length),
+      tilt:lerp(-.18,.18,rand(i*16.17))
+    };
+    flowers.push(flower);
+    if(depth > .78 && rand(i*18.47) > .91) liveFlowers.push(flower);
+  }
+  flowers.sort((a,b)=>a.depth-b.depth);
+  liveFlowers.sort((a,b)=>a.depth-b.depth);
+
+  for(let i=0;i<0;i++){
+    clouds.push({
+      x:rand(i*2.3),
+      y:lerp(.08,.42,rand(i*3.7)),
+      w:lerp(.18,.55,rand(i*4.9)),
+      h:lerp(.035,.095,rand(i*5.8)),
+      speed:lerp(.006,.024,rand(i*6.6)),
+      phase:rand(i*7.5)*TAU,
+      alpha:lerp(.09,.28,rand(i*8.2))
+    });
+  }
+
+  for(let i=0;i<0;i++){
+    fireflies.push({
+      x:rand(i*3.13),
+      y:lerp(.13,.90,rand(i*4.31)),
+      r:lerp(.7,2.2,rand(i*5.41)),
+      phase:rand(i*6.71)*TAU,
+      speed:lerp(.015,.055,rand(i*7.91))
+    });
+  }
+
+  for(let i=0;i<96;i++){
+    airborneLeaves.push({
+      seed:i * 19.77 + 4.1,
+      x:rand(i * 5.31),
+      y:rand(i * 7.73),
+      s:lerp(4,13,rand(i * 11.21)),
+      hue:lerp(82,124,rand(i * 17.55)),
+      delay:rand(i * 23.9),
+      spin:lerp(-1,1,rand(i * 29.2)),
+      depth:lerp(.35,1,rand(i * 31.7))
+    });
+  }
+}
+buildGarden();
+
+function drawCachedFlower(g,f){
+  const x = f.x * W;
+  const y = f.y * H;
+  const scale = lerp(.22,1.0,f.depth);
+  const size = f.size * scale * 1.02;
+  const sprite = flowerSprites[f.sprite % flowerSprites.length];
+  const drawSize = size * 3.34;
+  if(x + drawSize < -80 || x - drawSize > W + 80 || y + drawSize < -80 || y - drawSize > H + 80) return;
+  g.save();
+  g.translate(x, y);
+  g.rotate(f.lean*.22 + f.tilt);
+  g.globalAlpha = lerp(.44,.92,f.depth);
+  g.drawImage(sprite, -drawSize*.5, -drawSize*.5, drawSize, drawSize);
+  g.restore();
+}
+
+function renderGardenCache(){
+  gardenCtx.setTransform(DPR,0,0,DPR,0,0);
+  gardenCtx.clearRect(0,0,W,H);
+  for(const f of flowers) drawCachedFlower(gardenCtx, f);
+}
+renderGardenCache();
+
+function flowerColor(f, add=0, alpha=1){
+  return `hsla(${(f.hue + add + 360) % 360},${f.sat}%,${f.light}%,${alpha})`;
+}
+
+function makeWeatherPetal(){
+  const c = document.createElement('canvas');
+  c.width = 720;
+  c.height = 1120;
+  const g = c.getContext('2d');
+  g.translate(360, 560);
+
+  const petalPath = () => {
+    g.beginPath();
+    g.moveTo(-10, -508);
+    g.bezierCurveTo(172, -372, 238, -118, 166, 120);
+    g.bezierCurveTo(114, 292, 38, 440, -4, 514);
+    g.bezierCurveTo(-112, 346, -214, 124, -184, -118);
+    g.bezierCurveTo(-158, -326, -86, -460, -10, -508);
+  };
+
+  g.save();
+  g.shadowColor = 'rgba(20, 20, 56, .34)';
+  g.shadowBlur = 42;
+  g.shadowOffsetX = 18;
+  g.shadowOffsetY = 28;
+  g.fillStyle = 'rgba(75, 18, 58, .42)';
+  petalPath();
+  g.fill();
+  g.restore();
+
+  const petal = g.createRadialGradient(-68, -320, 40, 24, 38, 650);
+  petal.addColorStop(0, 'rgba(255,255,252,.99)');
+  petal.addColorStop(.13, 'rgba(255,228,232,.99)');
+  petal.addColorStop(.34, 'rgba(248,140,178,.98)');
+  petal.addColorStop(.58, 'rgba(202,62,132,.94)');
+  petal.addColorStop(.80, 'rgba(112,26,94,.82)');
+  petal.addColorStop(1, 'rgba(28,8,42,.34)');
+  g.fillStyle = petal;
+  petalPath();
+  g.fill();
+
+  g.save();
+  g.globalCompositeOperation = 'multiply';
+  const shade = g.createLinearGradient(-210, -470, 166, 516);
+  shade.addColorStop(0, 'rgba(255,255,255,0)');
+  shade.addColorStop(.34, 'rgba(112,24,84,.045)');
+  shade.addColorStop(.62, 'rgba(72,12,70,.16)');
+  shade.addColorStop(1, 'rgba(16,4,30,.38)');
+  g.fillStyle = shade;
+  petalPath();
+  g.fill();
+  g.restore();
+
+  g.save();
+  g.globalCompositeOperation = 'screen';
+  const glaze = g.createLinearGradient(-176, -488, 138, 398);
+  glaze.addColorStop(0, 'rgba(255,255,255,.60)');
+  glaze.addColorStop(.24, 'rgba(255,232,238,.28)');
+  glaze.addColorStop(.55, 'rgba(255,159,196,.12)');
+  glaze.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = glaze;
+  g.beginPath();
+  g.moveTo(-28, -476);
+  g.bezierCurveTo(46, -370, 74, -130, 30, 120);
+  g.bezierCurveTo(2, 276, -28, 392, -12, 484);
+  g.bezierCurveTo(-112, 292, -162, 70, -142, -118);
+  g.bezierCurveTo(-122, -304, -76, -420, -28, -476);
+  g.fill();
+  g.restore();
+
+  g.save();
+  g.globalCompositeOperation = 'screen';
+  g.strokeStyle = 'rgba(255,255,250,.78)';
+  g.lineWidth = 7.8;
+  g.lineCap = 'round';
+  g.beginPath();
+  g.moveTo(-4, -458);
+  g.bezierCurveTo(34, -244, 26, 88, -2, 456);
+  g.stroke();
+  g.strokeStyle = 'rgba(255,255,255,.22)';
+  g.lineWidth = 18;
+  g.beginPath();
+  g.moveTo(-82, -420);
+  g.bezierCurveTo(-158, -176, -142, 190, -34, 438);
+  g.stroke();
+  g.strokeStyle = 'rgba(255,249,241,.30)';
+  g.lineWidth = 2.1;
+  for(let i=0;i<76;i++){
+    const u = i / 75;
+    const y = lerp(-410, 420, u);
+    const side = i % 2 ? -1 : 1;
+    const span = Math.sin(u * Math.PI) * lerp(54, 156, Math.sin(u*Math.PI));
+    const bend = Math.sin(u * Math.PI) * lerp(14, 42, rand(i*5.3));
+    g.strokeStyle = `rgba(255,248,238,${lerp(.055,.24,Math.sin(u*Math.PI))})`;
+    g.beginPath();
+    g.moveTo(side*4, y);
+    g.bezierCurveTo(side*span*.22, y + bend*.25, side*span*.56, y + bend*.68, side*span*.88, y + bend);
+    g.stroke();
+  }
+  g.restore();
+
+  g.save();
+  g.globalCompositeOperation = 'multiply';
+  petalPath();
+  g.clip();
+  for(let i=0;i<2200;i++){
+    const a = rand(i*4.13) * TAU;
+    const r = Math.sqrt(rand(i*5.77)) * 474;
+    const x = Math.cos(a) * r * .40 + Math.sin(r*.02) * 10;
+    const y = Math.sin(a) * r * 1.02;
+    g.fillStyle = `rgba(84,18,55,${lerp(.006,.046,rand(i*7.91))})`;
+    g.beginPath();
+    g.ellipse(x, y, lerp(.22,2.6,rand(i*9.21)), lerp(.14,1.45,rand(i*10.51)), a, 0, TAU);
+    g.fill();
+  }
+  g.restore();
+
+  g.save();
+  g.globalCompositeOperation = 'overlay';
+  petalPath();
+  g.clip();
+  for(let i=0;i<160;i++){
+    const u = i / 159;
+    const y = lerp(-438, 446, u);
+    const width = Math.sin(u * Math.PI) * 164;
+    const x = lerp(-width*.55, width*.55, rand(i*15.8));
+    const len = lerp(32, 128, rand(i*18.4)) * Math.sin(u*Math.PI);
+    const alpha = lerp(.025,.095,rand(i*19.7));
+    g.strokeStyle = `rgba(255,235,228,${alpha})`;
+    g.lineWidth = lerp(.55,1.25,rand(i*20.9));
+    g.beginPath();
+    g.moveTo(x, y);
+    g.bezierCurveTo(x + len*.18, y + len*.12, x + len*.22, y + len*.34, x + len*.08, y + len*.60);
+    g.stroke();
+  }
+  g.restore();
+
+  g.save();
+  g.globalCompositeOperation = 'source-over';
+  g.strokeStyle = 'rgba(255,230,230,.72)';
+  g.lineWidth = 4.4;
+  petalPath();
+  g.stroke();
+  g.globalCompositeOperation = 'screen';
+  g.strokeStyle = 'rgba(255,255,255,.58)';
+  g.lineWidth = 2.2;
+  g.beginPath();
+  g.moveTo(8, -494);
+  g.bezierCurveTo(142, -350, 184, -94, 122, 130);
+  g.bezierCurveTo(82, 292, 28, 406, -2, 502);
+  g.stroke();
+  g.globalCompositeOperation = 'multiply';
+  g.strokeStyle = 'rgba(58,8,46,.28)';
+  g.lineWidth = 2.4;
+  g.beginPath();
+  g.moveTo(-52, -466);
+  g.bezierCurveTo(-156, -252, -170, 110, -50, 428);
+  g.stroke();
+  g.restore();
+
+  g.globalCompositeOperation = 'screen';
+  g.strokeStyle = 'rgba(255,250,245,.22)';
+  g.lineWidth = 1.3;
+  for(let i=0;i<28;i++){
+    const u = i / 27;
+    const y = lerp(-382, 392, u);
+    const w = Math.sin(u * Math.PI) * 118;
+    g.beginPath();
+    g.moveTo(-w*.28, y);
+    g.quadraticCurveTo(0, y + 18, w*.30, y + 32);
+    g.stroke();
+  }
+  g.globalCompositeOperation = 'multiply';
+  g.strokeStyle = 'rgba(74,14,48,.13)';
+  g.lineWidth = 1.2;
+  for(let i=0;i<34;i++){
+    const u = i / 33;
+    const y = lerp(-372, 386, u);
+    const side = i % 2 ? -1 : 1;
+    const span = Math.sin(u*Math.PI) * 126;
+    g.beginPath();
+    g.moveTo(0, y);
+    g.quadraticCurveTo(side*span*.36, y + 20, side*span*.82, y + 52);
+    g.stroke();
+  }
+  return c;
+}
+
+let weatherPetal = makeWeatherPetal();
+
+function updateFooterClock(){
+  const now = new Date();
+  let hour = now.getHours();
+  const minute = String(now.getMinutes()).padStart(2, '0');
+  const ampm = hour < 12 ? '오전' : '오후';
+  hour = hour % 12 || 12;
+  footerClock.textContent = `${now.getMonth()+1}월 ${now.getDate()}일 ${ampm} ${String(hour).padStart(2, '0')}:${minute}`;
+}
+
+function updateWeatherLabel(){
+  const t = Number.isFinite(tempC) ? tempC.toFixed(1) : '--';
+  const h = Number.isFinite(humidity) ? humidity.toFixed(0) : '--';
+  const w = Number.isFinite(windKmh) ? windKmh.toFixed(1) : '--';
+  const g = Number.isFinite(gustKmh) ? gustKmh.toFixed(1) : '--';
+  const d = Number.isFinite(windDir) ? windDir.toFixed(0) : '--';
+  windData.textContent = `대구 ${t}°C · 바람 ${w}km/h · 돌풍 ${g}km/h`;
+  wTemp.textContent = `${t} °C`;
+  wHumidity.textContent = `${h} %`;
+  wWind.textContent = `${w} km/h`;
+  wGust.textContent = `${g} km/h`;
+  wDir.textContent = `${d} °`;
+  wSource.textContent = windUpdated ? `Open-Meteo · ${windUpdated}` : 'Open-Meteo · 수신중';
+  updateFooterClock();
+}
+
+async function fetchDaeguWeather(){
+  try{
+    const url = 'https://api.open-meteo.com/v1/forecast?latitude=35.8714&longitude=128.6014&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,wind_gusts_10m&timezone=Asia%2FSeoul';
+    const res = await fetch(url, { cache:'no-store' });
+    const data = await res.json();
+    if(data && data.current){
+      tempC = Number(data.current.temperature_2m ?? tempC);
+      humidity = Number(data.current.relative_humidity_2m ?? humidity);
+      windKmh = Number(data.current.wind_speed_10m ?? windKmh);
+      gustKmh = Number(data.current.wind_gusts_10m ?? gustKmh);
+      windDir = Number(data.current.wind_direction_10m ?? windDir);
+      windUpdated = data.current.time || '';
+      windTarget = clamp((windKmh + gustKmh * .18) / 34, .04, 1.15);
+      updateWeatherLabel();
+    }
+  }catch(err){
+    updateWeatherLabel();
+    console.warn('weather unavailable, using fallback values', err);
+  }
+}
+fetchDaeguWeather();
+updateWeatherLabel();
+updateFooterClock();
+setInterval(fetchDaeguWeather, 15 * 60 * 1000);
+setInterval(updateFooterClock, 20 * 1000);
+
+function getSolarState(){
+  const now = new Date();
+  const hour = now.getHours() + now.getMinutes()/60 + now.getSeconds()/3600;
+  const day = smoothstep(5.6, 7.35, hour) * (1 - smoothstep(18.35, 20.05, hour));
+  const dawn = 1 - Math.min(1, Math.abs(hour - 6.45) / 1.45);
+  const dusk = 1 - Math.min(1, Math.abs(hour - 18.55) / 1.65);
+  const golden = clamp(Math.max(dawn, dusk), 0, 1) * day;
+  const progress = clamp((hour - 6.0) / 12.8, 0, 1);
+  const sunX = W * lerp(.11, .89, progress);
+  const sunY = H * (.76 - Math.sin(progress * Math.PI) * .58);
+  return { hour, day, golden, progress, sunX, sunY, night:1-day };
+}
+
+function drawSoftSkyClouds(t, solar){
+  const daylight = clamp(solar.day, 0, 1);
+  if(daylight < .05) return;
+  ctx.save();
+  ctx.globalCompositeOperation = 'screen';
+  ctx.filter = `blur(${Math.max(8, Math.min(W,H) * .018)}px)`;
+  const layers = [
+    { seed:12.4, y:.15, scale:.30, count:4, alpha:.052, speed:2.2 },
+    { seed:38.7, y:.31, scale:.42, count:4, alpha:.038, speed:1.3 },
+    { seed:71.2, y:.48, scale:.52, count:3, alpha:.026, speed:.82 }
+  ];
+  layers.forEach(layer => {
+    const drift = (t * layer.speed + layer.seed * 93) % (W * 1.42);
+    for(let i=0;i<layer.count;i++){
+      const seed = layer.seed + i * 17.31;
+      const x = ((i / layer.count) * W * 1.34 + drift) % (W * 1.42) - W * .18;
+      const y = H * layer.y + Math.sin(t * .025 + seed) * H * .025;
+      const w = W * layer.scale * lerp(.72, 1.18, rand(seed));
+      const h = H * layer.scale * lerp(.16, .28, rand(seed + 8));
+      const a = layer.alpha * daylight * lerp(.65, 1.15, rand(seed + 21));
+      for(let b=0;b<9;b++){
+        const bx = x + (rand(seed + b * 4.7) - .5) * w * .82;
+        const by = y + (rand(seed + b * 6.1) - .5) * h * .48;
+        const rx = w * lerp(.24, .52, rand(seed + b * 8.3));
+        const ry = h * lerp(.22, .46, rand(seed + b * 9.9));
+        const cloud = ctx.createRadialGradient(bx, by, 0, bx, by, Math.max(rx, ry));
+        cloud.addColorStop(0, `rgba(255,255,255,${a*.72})`);
+        cloud.addColorStop(.52, `rgba(226,241,255,${a*.28})`);
+        cloud.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = cloud;
+        ctx.beginPath();
+        ctx.ellipse(bx, by, rx, ry, Math.sin(seed + b) * .08, 0, TAU);
+        ctx.fill();
+      }
+    }
+  });
+  ctx.restore();
+}
+
+function drawAirborneLeaves(t){
+  const wind = clamp(windEnergy, 0, 1.2);
+  const gust = clamp(gustKmh / 48, 0, 1.4);
+  const pulse = Math.pow(smoothstep(.45, .98, Math.sin(t * .17) * .5 + .5), 2.4);
+  const presence = clamp((.10 + wind * .50 + gust * .20) * pulse, 0, .68);
+  if(presence < .025) return;
+  const a = (windDir - 90) * Math.PI / 180;
+  const dx = Math.cos(a);
+  const dy = Math.sin(a);
+  ctx.save();
+  ctx.globalCompositeOperation = 'screen';
+  for(const leaf of airborneLeaves){
+    const cycle = (t * (.035 + wind * .050) + leaf.delay) % 1;
+    const lift = Math.sin(cycle * Math.PI);
+    if(lift <= .02) continue;
+    const lane = (leaf.y - .5) * H * .86;
+    const flow = (cycle - .5) * W * 1.25;
+    const baseX = W * (.48 + (leaf.x - .5) * .28);
+    const baseY = H * (.66 - leaf.depth * .46);
+    const x = baseX + dx * flow + Math.sin(t * .8 + leaf.seed) * 24 * leaf.depth;
+    const y = baseY + dy * flow * .25 + lane * .16 - lift * H * (.22 + wind * .16);
+    if(x < -60 || x > W + 60 || y < -80 || y > H + 80) continue;
+    const size = leaf.s * (1 + lift * .95) * (1 + wind * .18);
+    const alpha = presence * lift * lerp(.35, .88, leaf.depth);
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(t * leaf.spin * (1.8 + wind * 2.2) + leaf.seed);
+    ctx.scale(1 + Math.sin(t * 1.7 + leaf.seed) * .12, .42 + Math.cos(t * 1.3 + leaf.seed) * .08);
+    const grad = ctx.createLinearGradient(-size, 0, size, 0);
+    grad.addColorStop(0, `hsla(${leaf.hue+14},54%,72%,${alpha*.40})`);
+    grad.addColorStop(.42, `hsla(${leaf.hue},54%,42%,${alpha})`);
+    grad.addColorStop(1, `hsla(${leaf.hue-20},48%,24%,${alpha*.42})`);
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.moveTo(-size, 0);
+    ctx.bezierCurveTo(-size*.42, -size*.34, size*.34, -size*.30, size, 0);
+    ctx.bezierCurveTo(size*.34, size*.30, -size*.42, size*.34, -size, 0);
+    ctx.fill();
+    ctx.strokeStyle = `rgba(238,255,211,${alpha*.36})`;
+    ctx.lineWidth = .8;
+    ctx.beginPath();
+    ctx.moveTo(-size*.74, 0);
+    ctx.lineTo(size*.74, 0);
+    ctx.stroke();
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+function drawWeatherBackground(t){
+  const warmth = clamp((tempC - 0) / 35, 0, 1);
+  const wind = windEnergy;
+  const solar = getSolarState();
+  const day = solar.day;
+  const night = solar.night;
+  const golden = solar.golden;
+  const bg = ctx.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, `rgb(${Math.floor(5 + day*84 + golden*34)},${Math.floor(18 + day*126 + golden*36)},${Math.floor(44 + day*168)})`);
+  bg.addColorStop(.44, `rgb(${Math.floor(10 + day*96 + golden*48)},${Math.floor(45 + day*138 + golden*40)},${Math.floor(86 + day*154)})`);
+  bg.addColorStop(.78, `rgb(${Math.floor(18 + day*116 + golden*62)},${Math.floor(56 + day*148 + golden*54)},${Math.floor(94 + day*144 + golden*16)})`);
+  bg.addColorStop(1, `rgb(${Math.floor(5 + day*74 + golden*48)},${Math.floor(18 + day*92 + golden*40)},${Math.floor(46 + day*92)})`);
+  ctx.fillStyle = bg;
+  ctx.fillRect(0,0,W,H);
+
+  const horizon = ctx.createLinearGradient(0, H*.46, 0, H);
+  horizon.addColorStop(0, 'rgba(255,255,255,0)');
+  horizon.addColorStop(.58, `rgba(255,246,225,${(.05 + golden*.10) * day})`);
+  horizon.addColorStop(1, `rgba(185,222,255,${(.08 + warmth*.035) * day})`);
+  ctx.fillStyle = horizon;
+  ctx.fillRect(0,0,W,H);
+
+  const glow = ctx.createRadialGradient(solar.sunX,solar.sunY,0,solar.sunX,solar.sunY,Math.max(W,H)*.78);
+  glow.addColorStop(0, `rgba(255,${Math.floor(230 - golden*34)},${Math.floor(192 - golden*62)},${(.07 + day*.12 + golden*.11)})`);
+  glow.addColorStop(.36, `rgba(185,224,255,${(.04 + day*.07 + wind*.018)})`);
+  glow.addColorStop(1, 'rgba(0,40,110,0)');
+  ctx.fillStyle = glow;
+  ctx.fillRect(0,0,W,H);
+
+  drawSoftSkyClouds(t, solar);
+
+  ctx.save();
+  ctx.globalCompositeOperation = 'screen';
+  if(day > .05){
+    const r = Math.min(W,H) * (.018 + golden*.008);
+    const sun = ctx.createRadialGradient(solar.sunX,solar.sunY,0,solar.sunX,solar.sunY,r*7.5);
+    sun.addColorStop(0, `rgba(255,232,188,${.16*day})`);
+    sun.addColorStop(.18, `rgba(255,204,138,${.085*day})`);
+    sun.addColorStop(.58, `rgba(244,158,92,${.035 + .045*golden})`);
+    sun.addColorStop(1, 'rgba(255,220,160,0)');
+    ctx.fillStyle = sun;
+    ctx.beginPath();
+    ctx.arc(solar.sunX, solar.sunY, r*7.5, 0, TAU);
+    ctx.fill();
+    ctx.fillStyle = `rgba(255,232,194,${.24*day})`;
+    ctx.beginPath();
+    ctx.arc(solar.sunX, solar.sunY, r, 0, TAU);
+    ctx.fill();
+
+    ctx.globalAlpha = day * (.006 + golden*.014);
+    ctx.strokeStyle = 'rgba(255,198,126,1)';
+    ctx.lineWidth = Math.max(W,H) * .018;
+    ctx.lineCap = 'round';
+    for(let i=0;i<5;i++){
+      const spread = (i - 2) * W * .13;
+      const endX = W*.50 + spread + Math.sin(t*.09+i) * 34;
+      const endY = H*(.72 + i*.035);
+      ctx.beginPath();
+      ctx.moveTo(solar.sunX, solar.sunY);
+      ctx.bezierCurveTo(
+        lerp(solar.sunX,endX,.28), lerp(solar.sunY,endY,.18),
+        lerp(solar.sunX,endX,.68), lerp(solar.sunY,endY,.72),
+        endX, endY
+      );
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }else{
+    const moonX = W * .78;
+    const moonY = H * .18;
+    const moon = ctx.createRadialGradient(moonX,moonY,0,moonX,moonY,Math.min(W,H)*.18);
+    moon.addColorStop(0, `rgba(204,226,255,${.18 + night*.22})`);
+    moon.addColorStop(1, 'rgba(204,226,255,0)');
+    ctx.fillStyle = moon;
+    ctx.beginPath();
+    ctx.arc(moonX, moonY, Math.min(W,H)*.18, 0, TAU);
+    ctx.fill();
+    ctx.fillStyle = `rgba(224,238,255,${.35*night})`;
+    ctx.beginPath();
+    ctx.arc(moonX, moonY, Math.min(W,H)*.018, 0, TAU);
+    ctx.fill();
+  }
+  ctx.restore();
+
+  ctx.save();
+  ctx.globalCompositeOperation = 'screen';
+  const a = (windDir - 90) * Math.PI / 180;
+  const dx = Math.cos(a);
+  const dy = Math.sin(a);
+  const px = -dy;
+  const py = dx;
+  const span = Math.hypot(W,H);
+  const flow = (t * (10 + wind * 28)) % (span * .36);
+  for(let i=0;i<34;i++){
+    const lane = (i / 33 - .5) * span * 1.12;
+    const offset = ((rand(i*3.2) * span + flow + i*37) % (span * .92)) - span*.46;
+    const cx = W*.5 + px*lane + dx*offset;
+    const cy = H*.5 + py*lane + dy*offset;
+    const len = lerp(120, 320, rand(i*8.4)) * (1 + wind*.46);
+    const wobble = Math.sin(t*.18 + i) * 18;
+    ctx.strokeStyle = `rgba(214,236,255,${.055 + wind*.075})`;
+    ctx.lineWidth = lerp(.7, 2.2, rand(i*11.4));
+    ctx.beginPath();
+    ctx.moveTo(cx - dx*len*.5 + px*wobble, cy - dy*len*.5 + py*wobble);
+    ctx.bezierCurveTo(
+      cx - dx*len*.18 + px*(wobble+22), cy - dy*len*.18 + py*(wobble+22),
+      cx + dx*len*.18 + px*(wobble-22), cy + dy*len*.18 + py*(wobble-22),
+      cx + dx*len*.5 + px*wobble, cy + dy*len*.5 + py*wobble
+    );
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  drawAirborneLeaves(t);
+}
+
+function drawWeatherPetal(t, active){
+  windEnergy = lerp(windEnergy, windTarget, .025);
+  const warmth = clamp((tempC - 0) / 35, 0, 1);
+  const gust = clamp(gustKmh / 45, 0, 1.4);
+  const windRad = (windDir - 90) * Math.PI / 180;
+  const speed = .0025 + windEnergy * .018;
+  petalAngle += speed;
+  petalPulse = lerp(petalPulse, active, .035);
+
+  const cx = W * .5 + Math.cos(windRad) * W * .045 * windEnergy + Math.sin(t*.38) * 10 * gust;
+  const cy = H * .50 + Math.sin(windRad) * H * .035 * windEnergy + Math.cos(t*.31) * 7 * gust;
+  const s = Math.min(W,H) * lerp(.49,.62,warmth) * (1 + petalPulse*.08);
+  const tilt = Math.sin(t*.7) * (.045 + windEnergy*.12);
+
+  ctx.save();
+  ctx.globalCompositeOperation = 'screen';
+  const halo = ctx.createRadialGradient(cx,cy,0,cx,cy,s*.82);
+  halo.addColorStop(0, `rgba(255,${Math.floor(160+warmth*64)},${Math.floor(188+warmth*42)},${.16 + windEnergy*.10})`);
+  halo.addColorStop(1, 'rgba(90,150,255,0)');
+  ctx.fillStyle = halo;
+  ctx.beginPath();
+  ctx.arc(cx,cy,s*.82,0,TAU);
+  ctx.fill();
+  ctx.restore();
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(petalAngle*.38);
+  ctx.globalCompositeOperation = 'screen';
+  for(let i=0;i<3;i++){
+    const r = s * (.37 + i*.095);
+    ctx.strokeStyle = `rgba(224,241,255,${.055 + windEnergy*.035 - i*.008})`;
+    ctx.lineWidth = .9;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, r*.72, r*1.12, i*.46, -TAU*.18, TAU*(.54 + windEnergy*.18));
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(petalAngle + tilt);
+  ctx.save();
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.globalAlpha = .22;
+  ctx.fillStyle = 'rgba(8,18,48,.78)';
+  ctx.beginPath();
+  ctx.ellipse(20, 52, s*.28, s*.44, -.34, 0, TAU);
+  ctx.fill();
+  ctx.restore();
+  const baseW = weatherPetal.width;
+  const baseH = weatherPetal.height;
+  ctx.scale(s/baseW, s/baseW);
+  ctx.globalAlpha = .98;
+  ctx.drawImage(weatherPetal, -baseW*.5, -baseH*.5, baseW, baseH);
+  ctx.restore();
+
+  ctx.save();
+  ctx.globalCompositeOperation = 'screen';
+  ctx.strokeStyle = `rgba(220,238,255,${.12 + windEnergy*.12})`;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(cx, cy, s*.46, petalAngle*.7, petalAngle*.7 + TAU * clamp(windEnergy, .12, .86));
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawBackground(t, active){
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0,0,W,H);
+
+  if(active < .035) return;
+
+  const aurora = ctx.createRadialGradient(W*(.50+Math.sin(t*.05)*.025),H*.52,0,W*.5,H*.52,W*.62);
+  aurora.addColorStop(0, `rgba(255,126,160,${.035 + active*.12})`);
+  aurora.addColorStop(.38, `rgba(142,72,112,${.018 + active*.065})`);
+  aurora.addColorStop(1, 'rgba(20,45,28,0)');
+  ctx.fillStyle = aurora;
+  ctx.fillRect(0,0,W,H);
+
+  ctx.save();
+  ctx.globalCompositeOperation = 'screen';
+  ctx.globalAlpha = .18 + active*.12;
+  for(let i=0;i<120;i++){
+    const x = rand(i*4.19) * W;
+    const y = rand(i*5.27) * H;
+    const len = lerp(5,22,rand(i*6.83));
+    const a = rand(i*7.21) * TAU + t*.04;
+    ctx.strokeStyle = `hsla(${lerp(315,50,rand(i*8.62))},${lerp(30,62,rand(i*9.11))}%,${lerp(46,72,rand(i*10.2))}%,${lerp(.035,.15,rand(i*11.2))})`;
+    ctx.lineWidth = lerp(.45,1.8,rand(i*12.3));
+    ctx.beginPath();
+    ctx.moveTo(x,y);
+    ctx.lineTo(x+Math.cos(a)*len,y+Math.sin(a)*len*.28);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawCloud(x,y,w,h,alpha,phase){
+  ctx.save();
+  ctx.globalCompositeOperation = 'screen';
+  for(let i=0;i<9;i++){
+    const ox = (rand(phase+i*2.1)-.5) * w * .75;
+    const oy = (rand(phase+i*3.3)-.5) * h * .9;
+    const rx = w * lerp(.18,.44,rand(phase+i*4.1));
+    const ry = h * lerp(.62,1.36,rand(phase+i*5.2));
+    const g = ctx.createRadialGradient(x+ox,y+oy,0,x+ox,y+oy,rx);
+    g.addColorStop(0, `rgba(255,238,221,${alpha*.42})`);
+    g.addColorStop(.52, `rgba(214,230,198,${alpha*.24})`);
+    g.addColorStop(1, 'rgba(214,230,198,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.ellipse(x+ox,y+oy,rx,ry,0,0,TAU);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawStem(x,y,len,lean,scale,t,active){
+  ctx.save();
+  ctx.strokeStyle = `rgba(${Math.floor(86+active*34)},${Math.floor(132+active*42)},${Math.floor(62+active*22)},.70)`;
+  ctx.lineWidth = Math.max(.85, 1.55*scale);
+  ctx.beginPath();
+  ctx.moveTo(x,y+len*.10);
+  ctx.bezierCurveTo(x+lean*len*.30,y-len*.18,x+lean*len*.58,y-len*.70,x+lean*len,y-len);
+  ctx.stroke();
+
+  ctx.fillStyle = `rgba(${Math.floor(74+active*28)},${Math.floor(124+active*46)},${Math.floor(54+active*16)},.42)`;
+  for(let i=0;i<2;i++){
+    const u = .32 + i*.25;
+    const side = i % 2 ? -1 : 1;
+    const bx = x + lean*len*(u*.65);
+    const by = y - len*u;
+    const leafLen = len * lerp(.10,.18,scale) * (i ? .82 : 1);
+    ctx.save();
+    ctx.translate(bx,by);
+    ctx.rotate(side*(.72 + lean*.25) + Math.sin(t*.55+u*9)*.05);
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.bezierCurveTo(side*leafLen*.44,-leafLen*.22,side*leafLen*.78,-leafLen*.12,side*leafLen,0);
+    ctx.bezierCurveTo(side*leafLen*.66,leafLen*.25,side*leafLen*.25,leafLen*.20,0,0);
+    ctx.fill();
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+function drawFlower(f,t,active){
+  const ix = handSeen ? handX : pointerX;
+  const iy = handSeen ? handY : pointerY;
+  const x = f.x * W;
+  const y = f.y * H;
+  const maxSize = f.size * 3.7;
+  if(x + maxSize < -100 || x - maxSize > W + 100 || y + maxSize < -100 || y - maxSize > H + 100) return;
+  const dx = f.x - ix;
+  const dy = (f.y - iy) * 1.65;
+  const influence = smoothstep(.42,0,Math.sqrt(dx*dx + dy*dy));
+  const wave = smoothstep(.05,1.0,bloom) * influence;
+  const base = .46 + active*.26 + Math.sin(t*.35 + f.phase)*.035;
+  const openness = clamp(base + wave*.58 + smoothstep(.72,1.0,f.depth)*.20, 0, 1);
+  const open = smoothstep(.04,.94,openness);
+  const scale = lerp(.22,1.0,f.depth);
+  const sway = Math.sin(t*.75 + f.phase) * lerp(.7,3.8,f.depth) * (1 + active*.55);
+  const stemLen = 0;
+  const headX = x + sway;
+  const headY = y + Math.sin(t*.40+f.phase)*2.2*scale;
+  const size = f.size * scale * lerp(.52,1.08,easeOutBack(open));
+
+  ctx.save();
+  ctx.translate(headX, headY);
+  ctx.rotate(Math.sin(t*.18 + f.phase)*.10 + f.lean*.22 + f.tilt);
+  ctx.globalCompositeOperation = 'source-over';
+
+  const sprite = flowerSprites[f.sprite % flowerSprites.length];
+  const petalOpen = lerp(.36, 1.06, easeOutBack(open));
+  const drawSize = size * 3.45 * petalOpen;
+  ctx.globalAlpha = lerp(.48,.98,open) * lerp(.55,1.0,f.depth);
+  ctx.drawImage(sprite, -drawSize*.5, -drawSize*.5, drawSize, drawSize);
+
+  if(size > 18 && active > .08){
+    ctx.globalCompositeOperation = 'screen';
+    ctx.globalAlpha = (.03 + wave*.08) * open;
+    ctx.fillStyle = `hsla(${f.hue+20},90%,82%,1)`;
+    ctx.beginPath();
+    ctx.arc(0,0,drawSize*.28,0,TAU);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawFireflies(t,active){
+  if(active < .08) return;
+  ctx.save();
+  ctx.globalCompositeOperation = 'screen';
+  for(const f of fireflies){
+    const x = (f.x + Math.sin(t*f.speed+f.phase)*.018) * W;
+    const y = (f.y + Math.cos(t*f.speed*.8+f.phase)*.012) * H;
+    const pulse = (.35 + .65*Math.sin(t*.8 + f.phase)*.5+.5) * (.22 + active*.78);
+    ctx.fillStyle = `rgba(255,210,172,${.22*pulse})`;
+    ctx.beginPath();
+    ctx.arc(x,y,f.r*1.7,0,TAU);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawHeartField(t,active){
+  if(active < .06) return;
+  const x = (handSeen ? handX : pointerX) * W;
+  const y = (handSeen ? handY : pointerY) * H;
+  ctx.save();
+  ctx.globalCompositeOperation = 'screen';
+  for(let i=0;i<3;i++){
+    const r = (70 + i*58 + Math.sin(t*.55+i)*16) * active;
+    ctx.strokeStyle = `rgba(255,205,190,${(.16-i*.022)*active})`;
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.ellipse(x,y,r*1.2,r*.72,Math.sin(t*.12)*.25,0,TAU);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function animate(ms){
+  if(ms - lastFrame < 33){
+    requestAnimationFrame(animate);
+    return;
+  }
+  lastFrame = ms;
+  time = ms * .001;
+  const target = 0;
+  bloom = lerp(bloom, target, .045);
+  pointerGlow = 0;
+  bloomTarget = lerp(bloomTarget, 0, handSeen ? .006 : .018);
+  const active = 0;
+
+  drawWeatherBackground(time);
+
+  if(masterGain && audioCtx){
+    const musicPresence = .06 + clamp(windEnergy,0,1) * .16 + active * .10;
+    masterGain.gain.setTargetAtTime(musicPresence, audioCtx.currentTime, .8);
+  }
+
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+
+function addInteraction(x,y,power=.75){
+  pointerX = clamp(x / W, 0, 1);
+  pointerY = clamp(y / H, 0, 1);
+}
+addEventListener('pointermove', e => addInteraction(e.clientX, e.clientY, .55));
+addEventListener('pointerdown', e => addInteraction(e.clientX, e.clientY, 1));
+
+function startAudio(){
+  if(audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  masterGain = audioCtx.createGain();
+  masterGain.gain.value = 0;
+  masterGain.connect(audioCtx.destination);
+
+  const notes = [261.63, 329.63, 392.00, 523.25, 659.25];
+  notes.forEach((freq,i)=>{
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = i % 2 ? 'sine' : 'triangle';
+    osc.frequency.value = freq * (i > 2 ? .5 : .25);
+    gain.gain.value = .045 / (i+1);
+    osc.connect(gain).connect(masterGain);
+    osc.start();
+  });
+
+  const lfo = audioCtx.createOscillator();
+  const lfoGain = audioCtx.createGain();
+  lfo.frequency.value = .055;
+  lfoGain.gain.value = 8;
+  lfo.connect(lfoGain);
+  lfo.start();
+
+  for(let i=0;i<4;i++){
+    const bell = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    bell.type = 'sine';
+    bell.frequency.value = 880 + i*132;
+    gain.gain.value = .006;
+    bell.connect(gain).connect(masterGain);
+    bell.start(audioCtx.currentTime + i*.17);
+  }
+}
+
+function handOpenness(lm){
+  const wrist = lm[0];
+  const tips = [8,12,16,20].map(i=>lm[i]);
+  const palm = Math.hypot(lm[5].x-lm[17].x, lm[5].y-lm[17].y) + .001;
+  let d = 0;
+  for(const tip of tips) d += Math.hypot(tip.x-wrist.x, tip.y-wrist.y);
+  d /= tips.length;
+  return smoothstep(1.25,2.85,d/palm);
+}
+
+async function startHands(){
+  if(handCamera || !window.Hands || !window.Camera) return;
+  const hands = new Hands({
+    locateFile:file=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+  });
+  hands.setOptions({
+    maxNumHands:2,
+    modelComplexity:1,
+    minDetectionConfidence:.64,
+    minTrackingConfidence:.58
+  });
+  hands.onResults(results=>{
+    if(results.multiHandLandmarks && results.multiHandLandmarks.length){
+      let sx = 0, sy = 0, open = 0;
+      for(const lm of results.multiHandLandmarks){
+        sx += 1 - lm[9].x;
+        sy += lm[9].y;
+        open += handOpenness(lm);
+      }
+      const n = results.multiHandLandmarks.length;
+      handX = lerp(handX, sx/n, .35);
+      handY = lerp(handY, sy/n, .35);
+      bloomTarget = Math.max(bloomTarget, clamp(open/n, 0, 1));
+      handSeen = true;
+    }else{
+      handSeen = false;
+    }
+  });
+  handCamera = new Camera(video, {
+    onFrame:async()=>{ await hands.send({image:video}); },
+    width:640,
+    height:480
+  });
+  try{
+    await handCamera.start();
+  }catch(err){
+    console.warn('camera unavailable, pointer interaction remains active', err);
+    handSeen = false;
+  }
+}
+
+startBloom.addEventListener('click', async()=>{
+  overlay.classList.add('hidden');
+  startAudio();
+  if(audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
+  bloomTarget = 0;
+  fetchDaeguWeather();
+});
+
+window.__getDaeguWeatherArtState = function(){
+  return {
+    time,
+    tempC,
+    humidity,
+    windKmh,
+    gustKmh,
+    windDir,
+    windEnergy,
+    bloom,
+    solar:getSolarState(),
+    W,
+    H
+  };
+};
+</script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
+import { FBXLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/loaders/FBXLoader.js';
+
+const layer = document.getElementById('treeLayer');
+const status = document.getElementById('modelStatus');
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(34, innerWidth / innerHeight, .1, 120);
+function updateTreeCamera(){
+  const portrait = innerWidth < innerHeight;
+  const compact = innerWidth < 720 || innerHeight < 760;
+  camera.position.set(0, portrait ? 1.42 : 1.22, compact ? 8.45 : 7.85);
+  camera.fov = compact ? 38 : 34;
+  camera.updateProjectionMatrix();
+}
+updateTreeCamera();
+
+const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true, powerPreference:'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.35));
+renderer.setSize(innerWidth, innerHeight);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.08;
+layer.appendChild(renderer.domElement);
+
+const root = new THREE.Group();
+scene.add(root);
+
+const key = new THREE.DirectionalLight(0xffffff, 3.4);
+key.position.set(-3.2, 5.2, 5.4);
+scene.add(key);
+const rim = new THREE.DirectionalLight(0x9fd0ff, 2.6);
+rim.position.set(4.2, 2.6, -3.4);
+scene.add(rim);
+const fill = new THREE.HemisphereLight(0xdaf0ff, 0x1a2d3d, 2.2);
+scene.add(fill);
+
+const windField = new THREE.Group();
+scene.add(windField);
+const windRibbons = [];
+
+function makeWindRibbon(seed){
+  const points = [];
+  const lane = (seed % 9 - 4) * .42;
+  const height = -1.65 + Math.floor(seed / 9) * .48;
+  const depth = -1.65 + ((seed * 5) % 13) * .26;
+  const wave = .12 + ((seed * 17) % 11) * .012;
+  for(let i=0;i<32;i++){
+    const u = i / 31;
+    const x = THREE.MathUtils.lerp(-4.8, 4.8, u);
+    const y = height + Math.sin(u * Math.PI * 2.0 + seed) * wave + Math.sin(u * Math.PI) * .12;
+    const z = depth + Math.cos(u * Math.PI * 1.55 + seed * .7) * (.18 + wave);
+    points.push(new THREE.Vector3(x, y + lane*.06, z));
+  }
+  const geometry = new THREE.BufferGeometry().setFromPoints(points);
+  const material = new THREE.LineBasicMaterial({
+    color: seed % 3 === 0 ? 0xdaf3ff : seed % 3 === 1 ? 0xb9e3ff : 0xf4fbff,
+    transparent:true,
+    opacity:.18,
+    blending:THREE.AdditiveBlending,
+    depthWrite:false
+  });
+  const line = new THREE.Line(geometry, material);
+  line.userData = {
+    seed,
+    lane,
+    baseY:height,
+    baseZ:depth,
+    speed:.24 + (seed % 7) * .045,
+    amp:.08 + (seed % 5) * .018,
+    phase:seed * 1.73
+  };
+  windField.add(line);
+  windRibbons.push(line);
+}
+for(let i=0;i<45;i++) makeWindRibbon(i);
+
+let tree = null;
+let treeParts = [];
+let treeMaterials = [];
+let leafMaterials = [];
+let barkOverlay = null;
+let baseScale = 1;
+let loadFailed = false;
+const modelBaseUrl = new URL('./상상연필 미디어아트 코덱스/1v2tko5l1w-Broad_Leaf_Straight_Trunk/', window.location.href).href;
+const modelTextureUrl = new URL('./상상연필 미디어아트 코덱스/1v2tko5l1w-Broad_Leaf_Straight_Trunk/Broad_Leaf_1.png', window.location.href).href;
+
+function makeKeyedTreeTexture(image){
+  const c = document.createElement('canvas');
+  const maxSize = 2048;
+  const ratio = Math.min(1, maxSize / Math.max(image.width, image.height));
+  c.width = Math.max(1, Math.floor(image.width * ratio));
+  c.height = Math.max(1, Math.floor(image.height * ratio));
+  const g = c.getContext('2d', { willReadFrequently:true });
+  g.drawImage(image, 0, 0, c.width, c.height);
+  const data = g.getImageData(0, 0, c.width, c.height);
+  const p = data.data;
+  for(let i=0;i<p.length;i+=4){
+    const r = p[i], gr = p[i+1], b = p[i+2];
+    const greenDominance = gr - Math.max(r, b);
+    const isAtlasBorder = r < 18 && gr < 18 && b < 18;
+    const isLeafPlate = gr > 92 && greenDominance > 22 && r > 62 && b < 150;
+    const isTwigInk =
+      (r > 86 && r > gr * .86 && b > gr * .58 && b < r * 1.12) ||
+      (r > 78 && gr < 112 && b < 92 && r > gr * .90);
+    const isTextureLeaf = Math.abs(r-gr) > 34 || Math.abs(gr-b) > 34 || r > 160 || b > 135;
+    if(isAtlasBorder){
+      p[i+3] = 0;
+    }else if(isLeafPlate && !isTextureLeaf){
+      p[i+3] = 4;
+    }else if(isTwigInk){
+      const shade = Math.max(0, Math.min(1, (r + gr + b) / 420));
+      p[i] = Math.floor(70 + shade * 52);
+      p[i+1] = Math.floor(38 + shade * 30);
+      p[i+2] = Math.floor(20 + shade * 16);
+      p[i+3] = 255;
+    }else{
+      p[i] = Math.floor(r * .70);
+      p[i+1] = Math.floor(gr * .82);
+      p[i+2] = Math.floor(b * .62);
+      p[i+3] = 255;
+    }
+  }
+  g.putImageData(data, 0, 0);
+  const texture = new THREE.CanvasTexture(c);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.wrapS = THREE.ClampToEdgeWrapping;
+  texture.wrapT = THREE.ClampToEdgeWrapping;
+  texture.generateMipmaps = true;
+  texture.needsUpdate = true;
+  return texture;
+}
+
+function loadTreeMaterial(){
+  return new Promise((resolve, reject)=>{
+    new THREE.ImageLoader().load(
+      modelTextureUrl,
+      image => {
+        const map = makeKeyedTreeTexture(image);
+        resolve(new THREE.MeshBasicMaterial({
+          map,
+          color:0x8fbf68,
+          transparent:true,
+          alphaTest:.10,
+          side:THREE.DoubleSide,
+          toneMapped:false
+        }));
+      },
+      undefined,
+      reject
+    );
+  });
+}
+
+function makeBarkMaterial(){
+  return new THREE.MeshBasicMaterial({
+    color:0x714525,
+    side:THREE.DoubleSide,
+    transparent:true,
+    opacity:.74,
+    toneMapped:false
+  });
+}
+
+function makeBranch(material, from, to, radius){
+  const start = new THREE.Vector3(...from);
+  const end = new THREE.Vector3(...to);
+  const mid = start.clone().lerp(end, .52);
+  const lean = (end.y - start.y) * .035;
+  mid.x += end.x >= start.x ? lean : -lean;
+  mid.z += .045;
+  const curve = new THREE.CatmullRomCurve3([start, mid, end]);
+  const geom = new THREE.TubeGeometry(curve, 22, radius, 7, false);
+  const mesh = new THREE.Mesh(geom, material.clone());
+  return mesh;
+}
+
+function buildBarkOverlay(material){
+  const group = new THREE.Group();
+  group.position.z = .24;
+  const pieces = [
+    [[0,-2.72,.0],[.03,.82,.0],.044],
+    [[.00,-1.28,.0],[-.18,.50,.02],.022],
+    [[.05,-1.08,.0],[.22,.70,.02],.020],
+    [[0,-2.44,.03],[-.42,-2.78,.12],.022],
+    [[0,-2.44,.03],[.40,-2.78,.12],.022],
+    [[-.04,-2.56,.04],[-.62,-2.66,.16],.015],
+    [[.04,-2.56,.04],[.60,-2.66,.16],.015]
+  ];
+  for(const p of pieces) group.add(makeBranch(material, p[0], p[1], p[2]));
+  return group;
+}
+
+function placeLoadedTree(object){
+    tree = object;
+    treeMaterials = [];
+    leafMaterials = [];
+    if(barkOverlay){
+      root.remove(barkOverlay);
+      barkOverlay = null;
+    }
+    const box = new THREE.Box3().setFromObject(tree);
+    const size = new THREE.Vector3();
+    const center = new THREE.Vector3();
+    box.getSize(size);
+    box.getCenter(center);
+    const maxDim = Math.max(size.x, size.y, size.z) || 1;
+    baseScale = 5.15 / maxDim;
+    tree.scale.setScalar(baseScale);
+    tree.position.set(-center.x * baseScale, -box.min.y * baseScale - 2.75, -center.z * baseScale);
+
+    tree.traverse(obj => {
+      if(obj.isMesh){
+        obj.castShadow = false;
+        obj.receiveShadow = false;
+        if(obj.material){
+          obj.material.side = THREE.DoubleSide;
+          if('roughness' in obj.material) obj.material.roughness = Math.min(1, (obj.material.roughness ?? .68) + .08);
+          if('metalness' in obj.material) obj.material.metalness = Math.max(0, (obj.material.metalness ?? 0) * .18);
+          if(obj.material.map) obj.material.map.colorSpace = THREE.SRGBColorSpace;
+          treeMaterials.push(obj.material);
+          if(obj.userData.isLeaf && obj.material.color) leafMaterials.push(obj.material);
+        }
+      }
+    });
+    root.add(tree);
+    barkOverlay = buildBarkOverlay(makeBarkMaterial());
+    root.add(barkOverlay);
+
+    const worldBox = new THREE.Box3().setFromObject(tree);
+    const minY = worldBox.min.y;
+    const spanY = Math.max(.001, worldBox.max.y - worldBox.min.y);
+    treeParts = [];
+    tree.traverse(obj => {
+      if(obj.isMesh || obj.type === 'Group'){
+        const partBox = new THREE.Box3().setFromObject(obj);
+        const h = THREE.MathUtils.clamp((partBox.getCenter(new THREE.Vector3()).y - minY) / spanY, 0, 1);
+        treeParts.push({
+          obj,
+          h,
+          rotX: obj.rotation.x,
+          rotY: obj.rotation.y,
+          rotZ: obj.rotation.z,
+          posX: obj.position.x
+        });
+      }
+    });
+
+    window.__daeguTreeLoaded = true;
+    status.style.opacity = '0';
+    setTimeout(()=>{ status.style.display = 'none'; }, 900);
+}
+
+Promise.all([loadTreeMaterial(), Promise.resolve(makeBarkMaterial())]).then(([leafMaterial, barkMaterial]) => {
+  const manager = new THREE.LoadingManager();
+  manager.setURLModifier(url => url.replaceAll(' ', '%20'));
+  const fbxLoader = new FBXLoader(manager);
+  fbxLoader.setPath(modelBaseUrl);
+  fbxLoader.load(
+    'tree.fbx',
+    object => {
+      const modelBox = new THREE.Box3().setFromObject(object);
+      const modelSize = new THREE.Vector3();
+      modelBox.getSize(modelSize);
+      const modelMinY = modelBox.min.y;
+      const modelSpanY = Math.max(.001, modelSize.y);
+      object.traverse(obj => {
+        if(obj.isMesh){
+          const b = new THREE.Box3().setFromObject(obj);
+          const s = new THREE.Vector3();
+          const c = new THREE.Vector3();
+          b.getSize(s);
+          b.getCenter(c);
+          const h = (c.y - modelMinY) / modelSpanY;
+          const meshName = `${obj.name || ''}`;
+          const isNamedBark = /trunk|bark|root|stem|branch|petiole/i.test(meshName);
+          const isBark = isNamedBark;
+          obj.userData.isLeaf = !isBark;
+          if(isBark){
+            obj.material = barkMaterial.clone();
+          }else{
+            obj.material = leafMaterial.clone();
+          }
+        }
+      });
+      placeLoadedTree(object);
+    },
+    progress => {
+      if(progress.total){
+        const pct = Math.floor(progress.loaded / progress.total * 100);
+        status.textContent = `대구의 나무 불러오는 중 ${pct}%`;
+      }
+    },
+    err => {
+      console.warn('tree fbx load failed', err);
+      loadFailed = true;
+      status.textContent = '나무 모델을 불러오지 못했습니다';
+    }
+  );
+}).catch(err => {
+  console.warn('tree setup failed', err);
+  loadFailed = true;
+  status.textContent = '나무를 불러오지 못했습니다';
+});
+
+function weatherState(){
+  return window.__getDaeguWeatherArtState ? window.__getDaeguWeatherArtState() : {
+    time: performance.now() * .001,
+    tempC: 22,
+    windKmh: 3,
+    gustKmh: 10,
+    windDir: 300,
+    windEnergy: .2,
+    bloom: 0
+  };
+}
+
+function animateTree(){
+  requestAnimationFrame(animateTree);
+  const s = weatherState();
+  const t = s.time || performance.now() * .001;
+  const wind = THREE.MathUtils.clamp(((s.windKmh || 0) + (s.gustKmh || 0) * .2) / 38, .06, 1.25);
+  const gust = THREE.MathUtils.clamp((s.gustKmh || 0) / 50, 0, 1.4);
+  const gustPulse = Math.pow(THREE.MathUtils.smoothstep(Math.sin(t * .17) * .5 + .5, .45, .98), 2.2);
+  const dir = ((s.windDir || 0) - 90) * Math.PI / 180;
+  const breathe = Math.sin(t * .42) * .018;
+  const solar = s.solar || { day:1, night:0, golden:0, progress:.5 };
+  const day = THREE.MathUtils.clamp(solar.day ?? 1, 0, 1);
+  const night = THREE.MathUtils.clamp(solar.night ?? 0, 0, 1);
+  const golden = THREE.MathUtils.clamp(solar.golden ?? 0, 0, 1);
+  const sunAngle = THREE.MathUtils.lerp(-1.15, 1.15, solar.progress ?? .5);
+  const sunHeight = .26 + Math.sin((solar.progress ?? .5) * Math.PI) * 4.9;
+  key.position.set(Math.cos(sunAngle) * 5.4, sunHeight, Math.sin(sunAngle) * 4.2 + 2.0);
+  key.color.setRGB(1, .82 + golden*.12, .58 + golden*.20);
+  key.intensity = .18 + day * 1.05 + golden * .32;
+  rim.intensity = 1.15 + night * 1.65 + wind * .42;
+  fill.intensity = .62 + day * .72 + night * .48;
+  renderer.toneMappingExposure = .68 + day * .12 + golden * .06;
+
+  windField.rotation.y = -dir * .42;
+  windField.rotation.z = Math.sin(dir) * .08;
+  windField.position.y = Math.sin(t * .12) * .035;
+  for(const line of windRibbons){
+    const d = line.userData;
+    const flow = (t * (d.speed + wind * .64) + d.phase) % 8.8;
+    line.position.x = flow - 4.4;
+    line.position.y = Math.sin(t * (.32 + wind*.18) + d.phase) * d.amp;
+    line.position.z = Math.cos(t * (.22 + wind*.10) + d.phase) * d.amp * .9;
+    line.material.opacity = (.035 + wind * .16 + gust * .035) * (line.userData.seed % 4 === 0 ? 1.35 : 1);
+    line.scale.x = .62 + wind * .72;
+  }
+
+  if(tree && !loadFailed){
+    const sway = Math.sin(t * (.42 + wind * .42)) * (.012 + wind * .050) + Math.sin(t * 1.18) * gust * (.012 + gustPulse*.020);
+    root.rotation.y = Math.sin(t * .08) * .18 + dir * .035;
+    root.rotation.z = Math.cos(dir) * sway;
+    root.position.x = Math.cos(t * .24) * .035 * wind;
+    root.scale.setScalar(1 + breathe);
+
+    for(const p of treeParts){
+      const upper = Math.pow(p.h, 1.55);
+      const fine = Math.sin(t * (1.4 + wind) + p.h * 8.0) * (.010 + wind * .034 + gustPulse * gust * .018) * upper;
+      p.obj.rotation.x = p.rotX + fine * Math.sin(dir);
+      p.obj.rotation.z = p.rotZ + fine * Math.cos(dir);
+      p.obj.position.x = p.posX + fine * .18;
+    }
+  }
+
+  renderer.render(scene, camera);
+}
+animateTree();
+
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  updateTreeCamera();
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.35));
+  renderer.setSize(innerWidth, innerHeight);
+});
+</script>
+</body>
+</html>

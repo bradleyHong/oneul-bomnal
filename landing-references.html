@@ -1267,6 +1267,44 @@
         font-size: 20px;
       }
 
+      .media-live-table {
+        width: 100%;
+        overflow: hidden;
+        border: 1px solid rgba(32, 50, 41, 0.14);
+        border-radius: 8px;
+        border-collapse: separate;
+        border-spacing: 0;
+        background: rgba(255, 255, 255, 0.68);
+        font-size: 13px;
+      }
+
+      .media-live-table caption {
+        padding: 12px 14px;
+        color: rgba(32, 50, 41, 0.58);
+        font-size: 12px;
+        font-weight: 950;
+        text-align: left;
+      }
+
+      .media-live-table th,
+      .media-live-table td {
+        padding: 12px 14px;
+        border-top: 1px solid rgba(32, 50, 41, 0.1);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .media-live-table th {
+        width: 34%;
+        color: rgba(32, 50, 41, 0.56);
+        font-weight: 950;
+      }
+
+      .media-live-table td {
+        color: #203229;
+        font-weight: 850;
+      }
+
       .media-console-head {
         display: flex;
         justify-content: space-between;
@@ -2033,7 +2071,7 @@
             <span><b>데이터 연동</b>공공 API, 응답 데이터, 결과 보고표까지 연결</span>
           </div>
           <div class="hero-badges">
-            <div><b>34</b><span>분야별 제작 예시</span></div>
+            <div><b>41</b><span>분야별 제작 예시</span></div>
             <div><b>5단계</b><span>기획·제작·연동·배포·보고</span></div>
             <div><b>QR</b><span>미디어아트와 참여 페이지 연결</span></div>
           </div>
@@ -2151,7 +2189,7 @@
         <div class="section-head">
           <div>
             <p class="kicker">Reference Index</p>
-            <h2>설문, 행사 소개, 모집, 예약, LED 미디어아트까지 다른 34개 샘플.</h2>
+            <h2>설문, 행사 소개, 모집, 예약, LED 미디어아트까지 다른 41개 샘플.</h2>
           </div>
           <p>
             각 카드는 실제 제안서에 넣을 수 있는 페이지 시안 방향입니다. 단순 설문뿐 아니라 행사 홍보, 참여 인증, 사은품 수령,
@@ -2206,6 +2244,10 @@
         ["market-coupon", "소상공인", "전통시장 모바일 쿠폰 이벤트", "행사 소개, 상점 지도, 구매 인증, 쿠폰 수령을 연결하는 전통시장 활성화 페이지.", "쿠폰 받기", "event", "쿠폰"],
         ["smallbiz-support", "관공서", "소상공인 디지털 전환 지원", "지원사업 안내와 신청 상담을 받는 B2G 사업 랜딩.", "지원 상담 신청", "public", "상담"],
         ["employee-esg", "기업/공공", "임직원 ESG 참여 캠페인", "조직 내부 ESG 실천 인증과 설문을 함께 받는 캠페인.", "ESG 실천 참여", "report", "ESG"],
+        ["spring-day-clock", "미디어아트", "오늘은 봄날", "대구의 오늘 날씨, 현재 시각, 바람, 구름을 꽃잎과 빛의 궤도로 바꾸는 실시간 미디어아트.", "실시간 작품 보기", "media", "봄날"],
+        ["light-walk-air", "미디어아트", "빛의 산책로", "대구 미세먼지와 초미세먼지 데이터를 야외활동 가능 신호와 산책로 빛의 색으로 바꾸는 공공 사이니지.", "공기질 작품 보기", "media", "공기"],
+        ["breathing-temperature-garden", "미디어아트", "숨 쉬는 정원", "현재 온도와 체감온도를 꽃의 크기, 색온도, 호흡 리듬으로 시각화하는 실내 미디어월.", "온도 작품 보기", "media", "온도"],
+        ["city-flower-rain", "미디어아트", "도시의 꽃비", "강수 확률과 강수량 예보를 꽃비의 밀도, 낙하 속도, 하늘 밝기로 보여주는 축제형 미디어파사드.", "강수 작품 보기", "media", "강수"],
         ["air-garden-led", "미디어아트", "숨쉬는 공기정원 LED", "대구 미세먼지와 초미세먼지 데이터를 꽃잎 밀도와 빛의 투명도로 바꾸는 공공 사이니지 미디어아트.", "미디어월 예시 보기", "media", "공기"],
         ["river-level-wall", "미디어아트", "금호강 수위의 빛", "하천 수위와 강수량 데이터를 물결의 높이, 속도, 색으로 보여주는 LED 미디어월 콘텐츠.", "하천 데이터 연출", "media", "수위"],
         ["bus-flow-screen", "미디어아트", "도시 이동의 리듬", "버스 도착 정보와 정류장 혼잡도를 흐르는 선과 점의 군집으로 시각화하는 교통 데이터 사이니지.", "교통 데이터 연출", "media", "이동"],
@@ -2216,6 +2258,9 @@
         ["noise-calm-wall", "미디어아트", "소음이 잠드는 벽", "도시 소음 데이터를 물결과 호흡 패턴으로 바꿔 조용한 방향을 제안하는 힐링형 공공 미디어아트.", "소음 데이터 연출", "media", "소음"],
         ["solar-energy-bloom", "미디어아트", "태양광 꽃시계", "공공청사 태양광 발전량과 일사량 데이터를 꽃의 방향과 빛의 밝기로 시각화하는 ESG 사이니지.", "에너지 데이터 연출", "media", "태양"],
         ["safe-walk-light", "미디어아트", "안심귀가 빛길", "보행량, 가로등, 안전지수 데이터를 활용해 밤길의 밝기와 동선을 시각화하는 야간 경관 미디어아트.", "안전 데이터 연출", "media", "안심"],
+        ["daegu-air-interaction", "미디어아트", "대구 공기 정원 인터랙션", "대구 공기질 데이터를 3D 입자와 정원의 호흡으로 바꾸는 실시간 공공예술 레퍼런스.", "독립 작품 열기", "media", "공기"],
+        ["daegu-culture-map", "미디어아트", "대구 컬처 데이터 맵", "대구 구·군별 문화공간과 공공데이터를 지도, 노드, 흐름으로 보여주는 데이터 시각화 미디어아트.", "독립 작품 열기", "media", "문화"],
+        ["eternal-flower", "미디어아트", "영화 永花", "바람, 습도, 온도 변화에 반응해 꽃의 움직임과 공간의 깊이가 달라지는 몰입형 미디어아트.", "독립 작품 열기", "media", "꽃"],
       ].map(([id, group, title, summary, cta, template, badge], index) => ({ id, group, title, summary, cta, template, badge, index }));
 
       const englishTitles = [
@@ -2243,6 +2288,10 @@
         "Market Coupon Event",
         "Small Business Support",
         "Employee ESG Campaign",
+        "Today Is Spring Weather Clock",
+        "Light Walk Air Quality Path",
+        "Breathing Temperature Garden",
+        "City Flower Rain Facade",
         "Breathing Air Garden LED",
         "River Level Light Wall",
         "Urban Mobility Rhythm",
@@ -2253,6 +2302,9 @@
         "Noise Calming Wall",
         "Solar Energy Flower Clock",
         "Safe Walk Light Path",
+        "Daegu Air Garden Interaction",
+        "Daegu Culture Data Map",
+        "Eternal Flower Media Art",
       ];
 
       const imagePool = [
@@ -2280,6 +2332,10 @@
         "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80",
         "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80",
         "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1462275646964-a0e3386b89fa?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?auto=format&fit=crop&w=1200&q=80",
         "https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=1200&q=80",
         "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80",
         "https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1200&q=80",
@@ -2290,6 +2346,9 @@
         "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80",
         "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=1200&q=80",
         "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1200&q=80",
       ];
 
       const caseBlueprints = {
@@ -2396,7 +2455,7 @@
           trust: ["공공데이터", "LED 송출", "QR 연결"],
           steps: ["데이터 수집", "화면 조건 변화", "QR 참여 연결"],
           stats: ["API", "LED", "QR", "MINI PC"],
-          fields: ["연결 API", "화면 비율", "운영 시간", "QR 연결 페이지"],
+          fields: ["연결 데이터", "현재 수치", "화면 반응", "송출 환경"],
           metrics: ["데이터 상태", "화면 반응", "참여 연결", "운영 안정성"],
           output: "공공데이터 조건에 따라 달라지는 사이니지 화면과 QR 참여 흐름을 함께 설계합니다.",
         },
@@ -2421,6 +2480,13 @@
         "market-coupon": { trust: ["전통시장", "구매 인증", "쿠폰"], stats: ["방문 시장", "구매 인증", "쿠폰 발급"], fields: ["방문 시장", "구매 인증", "휴대폰", "동의"], output: "시장별 방문 인증과 모바일 쿠폰 신청을 집계합니다." },
         "smallbiz-support": { trust: ["소상공인", "지원 상담", "대상 분류"], stats: ["업종", "매장 위치", "필요 지원", "상담"], fields: ["업종", "매장 위치", "필요 지원", "상담 신청"], output: "지원 대상 사업자를 업종과 필요 지원별로 분류합니다." },
         "employee-esg": { trust: ["ESG", "임직원 참여", "인증 리포트"], stats: ["소속", "실천 항목", "인증 사진", "소감"], fields: ["소속", "실천 항목", "인증 사진", "참여 소감"], output: "조직 내부 ESG 참여 인증과 결과 리포트를 만듭니다." },
+        "spring-day-clock": { trust: ["대구 날씨", "현재 시각", "실시간 송출"], stats: ["날씨·시간", "불러오는 중", "꽃잎 궤도", "미니 PC"], fields: ["기온·풍속·구름", "현재 날씨 수치", "시침·초침·꽃잎", "LED/미디어월"], output: "오늘의 하늘과 시간을 예술 화면으로 바꾸고 QR 참여 페이지까지 연결할 수 있습니다." },
+        "light-walk-air": { trust: ["미세먼지 API", "야외활동 안내", "어린이 공원"], stats: ["PM10·PM2.5", "불러오는 중", "빛 색상·밀도", "미니 PC"], fields: ["미세먼지·초미세먼지", "현재 공기질", "야외활동 신호", "LED/키오스크"], output: "공원과 학교 앞에서 아이들의 야외활동 가능 여부를 시각적으로 안내합니다." },
+        "breathing-temperature-garden": { trust: ["현재 온도", "체감온도", "힐링 미디어월"], stats: ["기온·체감", "불러오는 중", "꽃 크기·호흡", "미니 PC"], fields: ["현재 온도", "실시간 온도 수치", "정원 호흡 리듬", "실내 미디어월"], output: "온도 변화를 정원의 호흡처럼 보여주는 병원, 도서관, 복지관형 미디어월입니다." },
+        "city-flower-rain": { trust: ["강수 예보", "꽃비 연출", "축제 파사드"], stats: ["강수량·확률", "불러오는 중", "꽃비 밀도", "미니 PC"], fields: ["강수량·예보", "현재 강수 신호", "꽃비 양과 낙하 속도", "LED/프로젝션"], output: "오늘 비 예보를 축제형 꽃비 연출로 보여주고 현장 QR 이벤트와 연결합니다." },
+        "daegu-air-interaction": { trust: ["공기질 API", "3D 인터랙션", "독립 송출"], stats: ["PM10·PM2.5", "실시간", "입자 밀도", "미니 PC"], fields: ["대구 공기질", "현재 미세먼지 수치", "3D 입자·정원 호흡", "브라우저 송출"], output: "공기질 변화에 반응하는 독립형 HTML 미디어아트로 LED와 키오스크 송출에 활용할 수 있습니다.", sampleUrl: "./공기질을 통한 인터렉션.html" },
+        "daegu-culture-map": { trust: ["대구 공공데이터", "구·군 지도", "문화공간"], stats: ["문화공간", "구·군", "데이터 노드", "미니 PC"], fields: ["대구 문화 데이터", "구·군별 수치", "지도·노드·흐름", "브라우저 송출"], output: "대구 문화공간 데이터를 지도형 미디어아트로 보여주는 공공 홍보·전시형 레퍼런스입니다.", sampleUrl: "./대구컬쳐.html" },
+        "eternal-flower": { trust: ["날씨 API", "몰입형 꽃", "3D 공간"], stats: ["온도·습도", "바람", "꽃 움직임", "미니 PC"], fields: ["온도·습도·바람", "현재 날씨 수치", "꽃의 움직임·깊이", "브라우저 송출"], output: "기상 데이터가 꽃의 움직임과 공간감을 바꾸는 몰입형 독립 미디어아트입니다.", sampleUrl: "./영화 (永花).html" },
       };
 
       function blueprintFor(item) {
@@ -2601,8 +2667,18 @@
                   <div class="media-qr-card"><i></i><b>QR 참여 연결</b><small>설문 · 이벤트 · 신청</small></div>
                 </div>
                 <div class="media-telemetry">
-                  ${bp.fields.map((field, index) => `<div><span>${field}</span><b>${bp.stats[index] || "LIVE"}</b></div>`).join("")}
+                  ${bp.fields.map((field, index) => `<div><span>${field}</span><b data-media-stat="${index}">${bp.stats[index] || "LIVE"}</b></div>`).join("")}
                 </div>
+                <table class="media-live-table" aria-label="실시간 공공데이터 수치 표">
+                  <caption>대구 기준 실시간 데이터</caption>
+                  <tbody>
+                    <tr><th scope="row">날짜·시간</th><td data-live="time">불러오는 중</td></tr>
+                    <tr><th scope="row">연결 데이터</th><td data-live="source">${bp.fields[0]}</td></tr>
+                    <tr><th scope="row">현재 수치</th><td data-live="value">불러오는 중</td></tr>
+                    <tr><th scope="row">화면 변화</th><td data-live="reaction">${bp.fields[2]}</td></tr>
+                    <tr><th scope="row">운영 판단</th><td data-live="judgement">미니 PC 송출 / QR 연결 가능</td></tr>
+                  </tbody>
+                </table>
                 <div class="media-deliverables">
                   <span><b>01 화면</b>LED / 미디어월 비율별 제작</span>
                   <span><b>02 데이터</b>API 조건별 화면 변화</span>
@@ -2653,11 +2729,111 @@
                 <h3>운영자가 바로 쓰는 결과물</h3>
                 <p>${blueprintFor(item).output}</p>
                 <div class="detail-checks"><b>응답 데이터 정리</b><b>관리자 확인용 표</b><b>결과 보고 요약</b></div>
+                ${blueprintFor(item).sampleUrl ? `<a class="button primary" href="${blueprintFor(item).sampleUrl}" target="_blank" rel="noopener">독립 작품 HTML 열기</a>` : ""}
               </article>
             </div>
           </section>
         `;
         document.title = `${item.title} | 오늘은 봄날 레퍼런스`;
+        if (item.template === "media") updateMediaLiveData(item.id);
+      }
+
+      const dataFormatter = new Intl.DateTimeFormat("ko-KR", {
+        dateStyle: "medium",
+        timeStyle: "short",
+        timeZone: "Asia/Seoul",
+      });
+
+      function weatherText(code) {
+        if ([0, 1].includes(code)) return "맑음";
+        if ([2, 3].includes(code)) return "구름";
+        if ([45, 48].includes(code)) return "안개";
+        if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) return "비";
+        if ([71, 73, 75, 77, 85, 86].includes(code)) return "눈";
+        return "변화";
+      }
+
+      function setLiveRows({ time, source, value, reaction, judgement, stats }) {
+        const set = (selector, text) => {
+          const node = document.querySelector(selector);
+          if (node) node.textContent = text;
+        };
+        set('[data-live="time"]', time);
+        set('[data-live="source"]', source);
+        set('[data-live="value"]', value);
+        set('[data-live="reaction"]', reaction);
+        set('[data-live="judgement"]', judgement);
+        stats.forEach((text, index) => set(`[data-media-stat="${index}"]`, text));
+      }
+
+      async function updateMediaLiveData(id) {
+        const fallback = {
+          time: dataFormatter.format(new Date()),
+          source: "대구 공공데이터/API",
+          value: "데모 수치 표시 중",
+          reaction: "조건에 따라 빛, 꽃, 선의 밀도가 변합니다.",
+          judgement: "미니 PC 송출 / QR 연결 가능",
+          stats: ["API", "LIVE", "화면 변화", "MINI PC"],
+        };
+        try {
+          const weatherUrl = "https://api.open-meteo.com/v1/forecast?latitude=35.8714&longitude=128.6014&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,cloud_cover,precipitation&hourly=precipitation_probability&timezone=Asia%2FSeoul";
+          const airUrl = "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=35.8714&longitude=128.6014&current=pm10,pm2_5&timezone=Asia%2FSeoul";
+          const [weatherResponse, airResponse] = await Promise.all([fetch(weatherUrl), fetch(airUrl)]);
+          const weather = await weatherResponse.json();
+          const air = await airResponse.json();
+          const current = weather.current || {};
+          const airCurrent = air.current || {};
+          const time = dataFormatter.format(new Date(current.time || airCurrent.time || Date.now()));
+          const temp = Math.round(Number(current.temperature_2m ?? 0));
+          const apparent = Math.round(Number(current.apparent_temperature ?? temp));
+          const wind = Number(current.wind_speed_10m ?? 0).toFixed(1);
+          const cloud = Math.round(Number(current.cloud_cover ?? 0));
+          const rain = Number(current.precipitation ?? 0).toFixed(1);
+          const rainProb = Math.round(Number(weather.hourly?.precipitation_probability?.[0] ?? 0));
+          const pm10 = Number(airCurrent.pm10 ?? 0).toFixed(1);
+          const pm25 = Number(airCurrent.pm2_5 ?? 0).toFixed(1);
+          const sky = weatherText(Number(current.weather_code ?? 0));
+          const configs = {
+            "spring-day-clock": {
+              source: "대구 날씨·시간·바람·구름",
+              value: `${sky}, ${temp}°C, 바람 ${wind}m/s, 구름 ${cloud}%`,
+              reaction: "날씨는 배경색, 바람은 꽃잎 속도, 시간은 시침·초침 궤도로 반영",
+              judgement: "실시간 봄날 시계 송출 가능",
+              stats: [`${temp}°C`, sky, `${wind}m/s`, "MINI PC"],
+            },
+            "light-walk-air": {
+              source: "대구 미세먼지·초미세먼지",
+              value: `PM10 ${pm10}µg/m³, PM2.5 ${pm25}µg/m³`,
+              reaction: "공기질이 좋을수록 산책로 빛이 밝고 촘촘하게 흐름",
+              judgement: Number(pm25) <= 15 ? "야외활동 가능 신호" : "실내활동 권장 신호",
+              stats: [`PM10 ${pm10}`, `PM2.5 ${pm25}`, "빛 색상", "MINI PC"],
+            },
+            "breathing-temperature-garden": {
+              source: "대구 현재 온도·체감온도",
+              value: `현재 ${temp}°C, 체감 ${apparent}°C`,
+              reaction: "온도가 높을수록 꽃이 커지고 호흡 속도가 느리게 확장",
+              judgement: "실내 미디어월 장시간 송출 가능",
+              stats: [`${temp}°C`, `체감 ${apparent}°C`, "꽃 크기", "MINI PC"],
+            },
+            "city-flower-rain": {
+              source: "대구 강수량·강수확률",
+              value: `강수 ${rain}mm, 강수확률 ${rainProb}%`,
+              reaction: "비 예보가 높을수록 꽃비 밀도와 낙하 속도 증가",
+              judgement: rainProb >= 50 || Number(rain) > 0 ? "꽃비 연출 강화" : "맑은 하늘 연출",
+              stats: [`${rain}mm`, `${rainProb}%`, "꽃비 밀도", "MINI PC"],
+            },
+          };
+          const config = configs[id] || {
+            source: "대구 공공데이터/API",
+            value: `기온 ${temp}°C, PM2.5 ${pm25}, 강수 ${rain}mm`,
+            reaction: "연결 데이터 조건에 따라 화면의 색, 밀도, 속도가 변화",
+            judgement: "LED/사이니지 송출 가능",
+            stats: ["API", "LIVE", "QR", "MINI PC"],
+          };
+          setLiveRows({ time, ...config });
+        } catch (error) {
+          setLiveRows(fallback);
+        }
       }
 
       const params = new URLSearchParams(window.location.search);

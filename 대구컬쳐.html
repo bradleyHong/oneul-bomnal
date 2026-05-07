@@ -1,0 +1,2519 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>대구의 문화 맥박</title>
+    <style>
+      @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+
+      :root {
+        color-scheme: light;
+        --bg: #f5f7ed;
+        --ink: #17231f;
+        --muted: rgba(23, 35, 31, 0.66);
+        --soft: rgba(255, 255, 255, 0.72);
+        --line: rgba(23, 35, 31, 0.14);
+        --red: #e95f55;
+        --blue: #66b8d4;
+        --yellow: #ecc65e;
+        --green: #70bd8a;
+        --violet: #a98bd8;
+        --black: #10130f;
+        --paper: #fffdf4;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        background: var(--bg);
+      }
+
+      body {
+        min-width: 320px;
+        margin: 0;
+        background:
+          linear-gradient(180deg, rgba(255, 253, 244, 0.58), var(--bg) 680px),
+          radial-gradient(circle at 18% 10%, rgba(236, 198, 94, 0.2), transparent 25rem),
+          radial-gradient(circle at 84% 18%, rgba(102, 184, 212, 0.22), transparent 28rem),
+          linear-gradient(135deg, #fffdf4 0%, #ecf4e7 54%, #d9eef0 100%),
+          var(--bg);
+        color: var(--ink);
+        font-family: "Pretendard", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      button,
+      a {
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .app {
+        min-height: 100svh;
+        padding: clamp(18px, 3.5vw, 42px);
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: clamp(26px, 5vw, 64px);
+      }
+
+      .top-status {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      .brand {
+        display: grid;
+        gap: 6px;
+      }
+
+      .brand strong {
+        font-size: clamp(1.24rem, 2.8vw, 2rem);
+        letter-spacing: 0;
+      }
+
+      .brand span,
+      .status,
+      .clock {
+        color: var(--muted);
+        font-size: 0.92rem;
+        line-height: 1.5;
+        word-break: keep-all;
+      }
+
+      .status,
+      .clock {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 40px;
+        padding: 0 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.64);
+        backdrop-filter: blur(16px);
+        white-space: nowrap;
+      }
+
+      .status i,
+      .clock i {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 22px var(--green);
+      }
+
+      .clock {
+        color: rgba(23, 35, 31, 0.78);
+        font-weight: 780;
+      }
+
+      .clock i {
+        background: var(--blue);
+        box-shadow: 0 0 22px var(--blue);
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
+        gap: clamp(22px, 4vw, 58px);
+        align-items: stretch;
+      }
+
+      .pulse-stage {
+        position: relative;
+        min-height: clamp(540px, 72svh, 820px);
+        overflow: hidden;
+        border: 1px solid rgba(102, 184, 212, 0.28);
+        border-radius: 8px;
+        background:
+          radial-gradient(circle at 58% 54%, rgba(102, 184, 212, 0.26), transparent 22rem),
+          radial-gradient(circle at 35% 62%, rgba(112, 189, 138, 0.18), transparent 20rem),
+          linear-gradient(135deg, rgba(13, 32, 32, 0.96), rgba(23, 43, 39, 0.9) 45%, rgba(240, 253, 246, 0.36));
+        box-shadow: 0 30px 90px rgba(16, 38, 34, 0.22), inset 0 0 80px rgba(102, 184, 212, 0.12);
+      }
+
+      #pulse-canvas {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+
+      .lite-motion #pulse-canvas {
+        display: none;
+      }
+
+      .stage-copy {
+        position: absolute;
+        left: clamp(18px, 3vw, 34px);
+        right: clamp(18px, 3vw, 34px);
+        top: clamp(16px, 2.6vw, 28px);
+        z-index: 4;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        pointer-events: none;
+      }
+
+      h1 {
+        max-width: 11em;
+        margin: 0;
+        color: rgba(248, 255, 250, 0.94);
+        font-size: clamp(2.2rem, 5.4vw, 5.2rem);
+        line-height: 0.96;
+        letter-spacing: 0;
+        text-shadow: 0 0 24px rgba(102, 184, 212, 0.18);
+      }
+
+      .art-note {
+        position: absolute;
+        left: clamp(18px, 3vw, 34px);
+        right: clamp(18px, 3vw, 34px);
+        bottom: clamp(18px, 3vw, 34px);
+        z-index: 4;
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 18px;
+        color: rgba(248, 255, 250, 0.68);
+        font-size: clamp(0.86rem, 1.3vw, 1rem);
+        line-height: 1.65;
+        word-break: keep-all;
+        pointer-events: none;
+      }
+
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+        max-width: 380px;
+      }
+
+      .legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 26px;
+        padding: 0 8px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        color: rgba(248, 255, 250, 0.78);
+        backdrop-filter: blur(14px);
+      }
+
+      .legend i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--c);
+      }
+
+      .live-count {
+        display: grid;
+        justify-items: end;
+        gap: 4px;
+        min-width: 104px;
+      }
+
+      .live-count b {
+        font-size: clamp(2.8rem, 7vw, 6.2rem);
+        line-height: 0.86;
+      }
+
+      .live-count span {
+        color: rgba(248, 255, 250, 0.64);
+        font-size: 0.9rem;
+      }
+
+      .pulse-stage .live-count b {
+        color: rgba(248, 255, 250, 0.96);
+      }
+
+      .districts {
+        display: none;
+      }
+
+      .map-art {
+        position: absolute;
+        inset: 15% -7% 4%;
+        z-index: 3;
+        pointer-events: auto;
+      }
+
+      .map-art svg {
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+      }
+
+      .map-shape {
+        fill: rgba(112, 189, 138, 0.24);
+        stroke: rgba(23, 35, 31, 0.16);
+        stroke-width: 1.6;
+      }
+
+      .map-shape.gunwi {
+        fill: rgba(233, 95, 120, 0.24);
+      }
+
+      .map-core {
+        fill: rgba(255, 255, 255, 0.38);
+        stroke: rgba(23, 35, 31, 0.18);
+        stroke-width: 1;
+      }
+
+      .map-grid {
+        fill: none;
+        stroke: rgba(23, 35, 31, 0.08);
+        stroke-width: 1;
+      }
+
+      .map-district {
+        fill: color-mix(in srgb, var(--area-color, #ffffff) 36%, white 64%);
+        stroke: rgba(23, 35, 31, 0.24);
+        stroke-width: 1.5;
+        cursor: pointer;
+        pointer-events: auto;
+        transition: fill 220ms ease, filter 220ms ease, opacity 220ms ease, stroke 220ms ease;
+      }
+
+      .map-district.gunwi {
+        fill: color-mix(in srgb, var(--area-color, #e95f78) 38%, white 62%);
+      }
+
+      .map-district.is-dim {
+        opacity: 0.58;
+      }
+
+      .map-district.is-active {
+        fill: color-mix(in srgb, var(--area-color, #70bd8a) 64%, white 36%);
+        stroke: rgba(23, 35, 31, 0.46);
+        stroke-width: 1.5;
+        filter: none;
+      }
+
+      .map-district.is-selected {
+        fill: color-mix(in srgb, var(--area-color, #70bd8a) 74%, white 26%);
+        stroke: rgba(23, 35, 31, 0.62);
+        stroke-width: 1.5;
+        filter: none;
+      }
+
+      .map-district[data-area="군위군"] {
+        --area-color: #ef89a7;
+      }
+
+      .map-district[data-area="북구"] {
+        --area-color: #8cc36f;
+      }
+
+      .map-district[data-area="동구"] {
+        --area-color: #83cbd6;
+      }
+
+      .map-district[data-area="서구"] {
+        --area-color: #f2ba63;
+      }
+
+      .map-district[data-area="중구"] {
+        --area-color: #f08b75;
+      }
+
+      .map-district[data-area="남구"] {
+        --area-color: #c6a5e7;
+      }
+
+      .map-district[data-area="수성구"] {
+        --area-color: #7cb6e8;
+      }
+
+      .map-district[data-area="달서구"] {
+        --area-color: #f0d66a;
+      }
+
+      .map-district[data-area="달성군"] {
+        --area-color: #9fd18d;
+      }
+
+      .map-label {
+        fill: rgba(23, 35, 31, 0.34);
+        font-size: 8px;
+        font-weight: 800;
+        letter-spacing: 0;
+        pointer-events: none;
+      }
+
+      .pulse-line {
+        fill: none;
+        stroke: rgba(233, 95, 85, 0.24);
+        stroke-width: 1.6;
+        stroke-linecap: round;
+        stroke-dasharray: 1 13;
+        opacity: 0.68;
+        animation: dash 2.4s linear infinite;
+        pointer-events: none;
+      }
+
+      .pulse-line.fine {
+        stroke: rgba(102, 184, 212, 0.22);
+        stroke-width: 0.85;
+        stroke-dasharray: 1 8;
+        opacity: 0.58;
+      }
+
+      .data-flow {
+        fill: none;
+        stroke: var(--flow-color, #70bd8a);
+        stroke-linecap: round;
+        stroke-width: var(--flow-width, 2);
+        stroke-dasharray: 0.5 10;
+        opacity: 0.72;
+        animation: flowDash 1.08s linear infinite;
+        pointer-events: none;
+      }
+
+      .data-flow.echo {
+        stroke-width: calc(var(--flow-width, 2) * 2.8);
+        stroke-dasharray: 22 34;
+        opacity: 0.1;
+        animation-duration: 2.6s;
+      }
+
+      .lite-motion .pulse-line,
+      .lite-motion .data-flow,
+      .lite-motion .svg-node .node-pulse {
+        animation: none;
+      }
+
+      .lite-motion .data-flow.echo {
+        display: none;
+      }
+
+      @keyframes dash {
+        to {
+          stroke-dashoffset: -44;
+        }
+      }
+
+      @keyframes flowDash {
+        to {
+          stroke-dashoffset: -52;
+        }
+      }
+
+      .district {
+        position: absolute;
+        display: grid;
+        place-items: center;
+        width: clamp(52px, 5.8vw, 72px);
+        aspect-ratio: 1;
+        border: 0;
+        border-radius: 50%;
+        background: transparent;
+        color: rgba(23, 35, 31, 0.74);
+        font-size: clamp(0.58rem, 0.74vw, 0.7rem);
+        font-weight: 820;
+        transform: translate(-50%, -50%) scale(var(--scale, 1));
+        transition: transform 240ms ease, background 240ms ease, color 240ms ease;
+      }
+
+      .district span {
+        position: relative;
+        z-index: 2;
+        display: grid;
+        place-items: center;
+        gap: 1px;
+        width: clamp(44px, 4.8vw, 58px);
+        aspect-ratio: 1;
+        padding: 4px;
+        border: 2px solid color-mix(in srgb, var(--tone, #70bd8a) 42%, white 58%);
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.86);
+        box-shadow: 0 10px 24px rgba(39, 72, 62, 0.16);
+        text-align: center;
+      }
+
+      .district small {
+        color: rgba(23, 35, 31, 0.52);
+        font-size: 0.54rem;
+        font-weight: 760;
+      }
+
+      .district::after,
+      .district::before {
+        position: absolute;
+        inset: 7%;
+        border: 2px solid color-mix(in srgb, var(--tone, var(--blue)) 72%, transparent);
+        border-radius: inherit;
+        content: "";
+        opacity: calc(0.2 + var(--heat, 0.2) * 0.62);
+        animation: throb var(--tempo, 2.6s) ease-out infinite;
+        box-shadow: 0 0 24px color-mix(in srgb, var(--tone, var(--blue)) 32%, transparent);
+      }
+
+      .district[data-count="0"]::before {
+        opacity: 0.2;
+        animation-duration: 3.8s;
+      }
+
+      .district::after {
+        inset: 39%;
+        border: 0;
+        background: var(--tone, var(--blue));
+        opacity: 0.9;
+        animation: beat var(--tempo, 2.6s) ease-in-out infinite;
+      }
+
+      .district[data-count="0"]::after {
+        opacity: 0.36;
+      }
+
+      .svg-node .node-pulse {
+        fill: none;
+        stroke: var(--tone, #70bd8a);
+        stroke-width: 3;
+        opacity: 0.4;
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: svgPulse 2.4s ease-out infinite;
+        pointer-events: none;
+      }
+
+      .svg-node .node-core {
+        fill: rgba(255, 255, 255, 0.9);
+        stroke: color-mix(in srgb, var(--tone, #70bd8a) 42%, white 58%);
+        stroke-width: 2.5;
+        cursor: pointer;
+        pointer-events: auto;
+        filter: none;
+      }
+
+      .svg-node.is-active .node-core {
+        fill: color-mix(in srgb, var(--tone, #70bd8a) 18%, white 82%);
+        stroke: var(--tone, #70bd8a);
+        stroke-width: 2.5;
+        filter: none;
+      }
+
+      .svg-node.is-selected .node-core {
+        fill: #fffdf4;
+        stroke-width: 2.5;
+        filter: none;
+      }
+
+      .svg-node text {
+        fill: rgba(23, 35, 31, 0.82);
+        font-weight: 900;
+        letter-spacing: 0;
+        text-anchor: middle;
+        pointer-events: none;
+      }
+
+      .svg-node .node-name {
+        font-size: 15px;
+      }
+
+      .svg-node .node-count {
+        fill: rgba(23, 35, 31, 0.58);
+        font-size: 11px;
+        font-weight: 760;
+      }
+
+      @keyframes svgPulse {
+        0% {
+          transform: scale(0.82);
+          opacity: 0.42;
+        }
+
+        72%,
+        100% {
+          transform: scale(1.52);
+          opacity: 0;
+        }
+      }
+
+      @keyframes throb {
+        0% {
+          transform: scale(0.72);
+          opacity: 0.62;
+        }
+
+        72%,
+        100% {
+          transform: scale(1.52);
+          opacity: 0;
+        }
+      }
+
+      @keyframes beat {
+        0%,
+        100% {
+          transform: scale(0.9);
+        }
+
+        18% {
+          transform: scale(1.24);
+        }
+
+        32% {
+          transform: scale(0.96);
+        }
+      }
+
+      .filters-panel {
+        display: grid;
+        align-content: start;
+        gap: 16px;
+      }
+
+      .toolbar,
+      .results,
+      .detail {
+        border: 1px solid rgba(102, 184, 212, 0.28);
+        border-radius: 8px;
+        background:
+          linear-gradient(135deg, rgba(13, 32, 32, 0.9), rgba(23, 43, 39, 0.78)),
+          rgba(8, 26, 28, 0.72);
+        color: rgba(248, 255, 250, 0.9);
+        backdrop-filter: blur(20px);
+        box-shadow: 0 18px 58px rgba(7, 19, 20, 0.16), inset 0 0 28px rgba(102, 184, 212, 0.08);
+      }
+
+      .toolbar {
+        display: grid;
+        gap: 14px;
+        padding: 16px;
+      }
+
+      .map-insight {
+        position: absolute;
+        left: clamp(18px, 3vw, 34px);
+        right: clamp(18px, 3vw, 34px);
+        top: clamp(138px, 18vw, 205px);
+        z-index: 4;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        pointer-events: none;
+      }
+
+      .map-insight span {
+        display: inline-flex;
+        align-items: center;
+        min-height: 32px;
+        padding: 0 10px;
+        border: 1px solid rgba(102, 184, 212, 0.28);
+        border-radius: 999px;
+        background: rgba(8, 28, 28, 0.42);
+        color: rgba(248, 255, 250, 0.8);
+        font-size: 0.82rem;
+        font-weight: 760;
+        backdrop-filter: blur(14px);
+      }
+
+      .data-orbit {
+        position: absolute;
+        inset: 0;
+        z-index: 5;
+        pointer-events: none;
+      }
+
+      .orbit-node {
+        position: absolute;
+        left: var(--x);
+        top: var(--y);
+        width: clamp(132px, 15vw, 190px);
+        min-height: 68px;
+        padding: 10px 11px 10px 13px;
+        border: 1px solid color-mix(in srgb, var(--node-color, #66b8d4) 68%, transparent);
+        border-left-width: 3px;
+        border-radius: 8px;
+        background:
+          linear-gradient(90deg, color-mix(in srgb, var(--node-color, #66b8d4) 18%, transparent), rgba(11, 32, 34, 0.62)),
+          rgba(7, 22, 24, 0.68);
+        color: rgba(248, 255, 250, 0.94);
+        cursor: pointer;
+        pointer-events: auto;
+        text-align: left;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 16px 38px rgba(4, 16, 18, 0.22), inset 0 0 22px rgba(102, 184, 212, 0.08);
+        backdrop-filter: blur(14px);
+      }
+
+      .orbit-node::before {
+        position: absolute;
+        left: -12px;
+        top: 50%;
+        width: 8px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: var(--node-color, #66b8d4);
+        box-shadow: 0 0 18px var(--node-color, #66b8d4);
+        content: "";
+        transform: translateY(-50%);
+      }
+
+      .orbit-node::after {
+        position: absolute;
+        left: -68px;
+        top: 50%;
+        width: 56px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--node-color, #66b8d4) 72%, transparent));
+        content: "";
+      }
+
+      .orbit-node b {
+        display: block;
+        overflow: hidden;
+        margin-bottom: 5px;
+        font-size: 0.84rem;
+        line-height: 1.25;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .orbit-node span {
+        display: block;
+        color: rgba(248, 255, 250, 0.62);
+        font-size: 0.7rem;
+        font-weight: 760;
+        line-height: 1.35;
+      }
+
+      .orbit-node.is-selected {
+        background:
+          linear-gradient(90deg, color-mix(in srgb, var(--node-color, #66b8d4) 34%, transparent), rgba(16, 48, 50, 0.76)),
+          rgba(7, 22, 24, 0.82);
+        outline: 2px solid color-mix(in srgb, var(--node-color, #66b8d4) 62%, white 8%);
+      }
+
+      .outdoor-card {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 12px;
+        align-items: center;
+        padding: 13px;
+        border: 1px solid rgba(112, 189, 138, 0.28);
+        border-radius: 8px;
+        background: rgba(112, 189, 138, 0.14);
+      }
+
+      .outdoor-card b {
+        font-size: 1.05rem;
+      }
+
+      .outdoor-card p {
+        margin: 2px 0 0;
+        color: rgba(248, 255, 250, 0.68);
+        font-size: 0.88rem;
+        line-height: 1.5;
+        word-break: keep-all;
+      }
+
+      .outdoor-score {
+        display: grid;
+        place-items: center;
+        width: 54px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: #70bd8a;
+        color: white;
+        font-weight: 900;
+        box-shadow: 0 10px 24px rgba(112, 189, 138, 0.24);
+      }
+
+      .search-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+      }
+
+      .search-row input {
+        min-width: 0;
+        height: 44px;
+        padding: 0 13px;
+        border: 1px solid rgba(102, 184, 212, 0.24);
+        border-radius: 8px;
+        outline: 0;
+        background: rgba(255, 255, 255, 0.08);
+        color: rgba(248, 255, 250, 0.92);
+      }
+
+      .search-row input::placeholder {
+        color: rgba(248, 255, 250, 0.48);
+      }
+
+      .icon-button,
+      .chip {
+        min-height: 40px;
+        border: 1px solid rgba(102, 184, 212, 0.24);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.08);
+        color: rgba(248, 255, 250, 0.78);
+        cursor: pointer;
+      }
+
+      .icon-button {
+        width: 44px;
+        display: grid;
+        place-items: center;
+      }
+
+      .icon-button svg {
+        width: 18px;
+        height: 18px;
+        stroke: currentColor;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+      }
+
+      .data-tabs {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .data-tab {
+        min-height: 48px;
+        padding: 0 10px;
+        border: 1px solid rgba(102, 184, 212, 0.24);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.08);
+        color: rgba(248, 255, 250, 0.68);
+        cursor: pointer;
+      }
+
+      .data-tab[aria-pressed="true"] {
+        border-color: rgba(112, 189, 138, 0.54);
+        background: rgba(112, 189, 138, 0.2);
+        color: rgba(248, 255, 250, 0.94);
+        font-weight: 820;
+      }
+
+      .chip {
+        padding: 0 12px;
+        color: rgba(248, 255, 250, 0.74);
+      }
+
+      .chip[aria-pressed="true"] {
+        border-color: color-mix(in srgb, var(--chip, var(--yellow)) 70%, white 8%);
+        background: color-mix(in srgb, var(--chip, var(--yellow)) 32%, transparent);
+        color: rgba(248, 255, 250, 0.94);
+        box-shadow: 0 10px 28px color-mix(in srgb, var(--chip, var(--yellow)) 18%, transparent);
+      }
+
+      .meta-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        color: rgba(248, 255, 250, 0.58);
+        font-size: 0.86rem;
+      }
+
+      .results {
+        overflow: hidden;
+      }
+
+      .result-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 15px 16px;
+        border-bottom: 1px solid rgba(102, 184, 212, 0.18);
+      }
+
+      .result-head strong {
+        font-size: 1.06rem;
+      }
+
+      .result-list {
+        display: grid;
+        max-height: 48svh;
+        overflow: auto;
+      }
+
+      .event-card {
+        display: grid;
+        gap: 10px;
+        padding: 16px;
+        border: 0;
+        border-bottom: 1px solid rgba(102, 184, 212, 0.16);
+        background:
+          linear-gradient(90deg, rgba(102, 184, 212, 0.07), transparent 42%),
+          transparent;
+        color: inherit;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .event-card:hover,
+      .event-card:focus-visible,
+      .event-card.active {
+        outline: 0;
+        background: rgba(112, 189, 138, 0.14);
+      }
+
+      .event-card h2 {
+        margin: 0;
+        font-size: clamp(1rem, 1.6vw, 1.24rem);
+        line-height: 1.35;
+        letter-spacing: 0;
+        word-break: keep-all;
+      }
+
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        min-height: 25px;
+        padding: 0 8px;
+        border: 1px solid rgba(102, 184, 212, 0.2);
+        border-radius: 999px;
+        color: rgba(248, 255, 250, 0.62);
+        font-size: 0.78rem;
+      }
+
+      .event-meta {
+        color: rgba(248, 255, 250, 0.62);
+        font-size: 0.9rem;
+        line-height: 1.55;
+        word-break: keep-all;
+      }
+
+      .detail {
+        display: grid;
+        gap: 14px;
+        padding: 17px;
+      }
+
+      .detail h2 {
+        margin: 0;
+        font-size: clamp(1.28rem, 2.2vw, 1.8rem);
+        line-height: 1.28;
+        letter-spacing: 0;
+        word-break: keep-all;
+      }
+
+      .detail p {
+        margin: 0;
+        color: rgba(248, 255, 250, 0.68);
+        line-height: 1.72;
+        word-break: keep-all;
+      }
+
+      .detail-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .link-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 13px;
+        border: 1px solid rgba(102, 184, 212, 0.24);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.08);
+        color: rgba(248, 255, 250, 0.86);
+        font-weight: 720;
+      }
+
+      .link-button.primary {
+        border-color: transparent;
+        background: rgba(248, 255, 250, 0.9);
+        color: var(--ink);
+      }
+
+      .empty {
+        padding: 32px 18px;
+        color: var(--muted);
+        line-height: 1.6;
+        text-align: center;
+      }
+
+      @media (max-width: 980px) {
+        body {
+          background-attachment: scroll;
+        }
+
+        .topbar,
+        .hero,
+        .stage-copy {
+          grid-template-columns: 1fr;
+        }
+
+        .topbar,
+        .stage-copy {
+          align-items: start;
+        }
+
+        .status {
+          white-space: normal;
+        }
+
+        .hero {
+          display: grid;
+        }
+
+        .pulse-stage {
+          min-height: 520px;
+        }
+
+        .stage-copy {
+          display: grid;
+        }
+
+        .art-note {
+          display: grid;
+        }
+
+        .legend {
+          justify-content: flex-start;
+        }
+
+        .live-count {
+          justify-items: start;
+        }
+
+        .map-insight {
+          top: 190px;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .app {
+          padding: 14px;
+        }
+
+        .topbar {
+          margin-bottom: 18px;
+        }
+
+        .brand strong {
+          font-size: 1.16rem;
+        }
+
+        .brand span {
+          font-size: 0.84rem;
+        }
+
+        .top-status {
+          justify-content: flex-start;
+          width: 100%;
+        }
+
+        .clock,
+        .status {
+          min-height: 34px;
+          padding: 0 10px;
+          font-size: 0.78rem;
+        }
+
+        .pulse-stage {
+          min-height: 610px;
+          overflow: visible;
+        }
+
+        .districts {
+          inset: 22% -12% 6%;
+        }
+
+        .map-art {
+          inset: 184px -15% 74px;
+        }
+
+        .district {
+          width: 56px;
+          font-size: 0.6rem;
+        }
+
+        .stage-copy {
+          left: 18px;
+          right: 18px;
+          top: 18px;
+          gap: 12px;
+        }
+
+        h1 {
+          max-width: 9em;
+          font-size: 2rem;
+          line-height: 1;
+        }
+
+        .live-count {
+          display: flex;
+          align-items: end;
+          gap: 8px;
+        }
+
+        .live-count b {
+          font-size: 2.8rem;
+          line-height: 0.9;
+        }
+
+        .live-count span {
+          padding-bottom: 4px;
+          font-size: 0.78rem;
+        }
+
+        .map-insight {
+          top: 142px;
+          gap: 6px;
+        }
+
+        .map-insight span {
+          min-height: 28px;
+          padding: 0 8px;
+          font-size: 0.72rem;
+        }
+
+        .art-note {
+          left: 18px;
+          right: 18px;
+          bottom: 16px;
+          gap: 10px;
+          font-size: 0.72rem;
+          line-height: 1.5;
+        }
+
+        .legend {
+          gap: 6px;
+        }
+
+        .legend span {
+          min-height: 24px;
+          padding: 0 7px;
+        }
+
+        .search-row {
+          grid-template-columns: 1fr;
+        }
+
+        .icon-button {
+          width: 100%;
+        }
+
+        .data-tabs {
+          grid-template-columns: 1fr;
+        }
+
+        .data-orbit {
+          position: absolute;
+          left: 16px;
+          right: 16px;
+          top: 176px;
+          bottom: auto;
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 8px;
+          padding: 0;
+        }
+
+        .orbit-node {
+          position: relative;
+          left: auto;
+          top: auto;
+          width: 100%;
+          min-height: 58px;
+          transform: none;
+        }
+
+        .orbit-node:nth-child(n + 5) {
+          display: none;
+        }
+
+        .orbit-node::after {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <div class="brand">
+          <strong>대구 초록 공원·대기 신호</strong>
+          <span>문화행사, 아이랑 가기 좋은 공원, 대기질과 온도를 함께 보여주는 공공 데이터 웹앱</span>
+        </div>
+        <div class="top-status">
+          <div class="clock" id="clock"><i></i><span>대구 시간 확인 중</span></div>
+          <div class="status" id="status"><i></i><span>문화 데이터를 불러오는 중</span></div>
+        </div>
+      </header>
+
+      <section class="hero" aria-label="대구 문화정보 탐색">
+        <div class="pulse-stage">
+          <div class="map-art" aria-hidden="true">
+            <svg id="daegu-map-svg" viewBox="0 0 760 820" role="img">
+              <path class="map-district gunwi" data-area="군위군" d="M 207.4 45.4 L 207.7 47.2 L 223.4 51.5 L 225.7 54.4 L 225.4 60.3 L 236.7 65.0 L 240.1 64.4 L 243.6 68.5 L 259.7 68.9 L 263.5 71.9 L 270.8 70.6 L 278.8 73.3 L 282.2 78.9 L 288.7 76.8 L 295.9 78.8 L 300.9 84.0 L 306.0 98.4 L 323.4 98.3 L 329.3 92.9 L 348.3 95.2 L 353.2 102.5 L 362.9 101.8 L 390.4 111.6 L 395.0 115.6 L 392.7 123.9 L 395.7 128.5 L 393.1 130.3 L 393.8 132.0 L 387.4 134.7 L 391.0 140.4 L 388.7 142.3 L 391.5 145.5 L 387.2 148.0 L 390.6 149.7 L 389.2 155.2 L 386.1 157.5 L 389.7 164.8 L 393.8 166.3 L 403.2 155.6 L 407.5 156.5 L 414.4 152.2 L 419.3 154.7 L 422.1 161.6 L 426.7 165.6 L 429.6 161.0 L 436.9 158.4 L 445.2 161.5 L 449.3 159.7 L 455.0 164.9 L 451.4 171.7 L 459.5 174.8 L 472.0 173.4 L 476.4 175.8 L 481.0 173.1 L 485.0 175.1 L 490.6 173.1 L 497.4 175.4 L 501.6 179.5 L 505.4 178.0 L 508.5 171.0 L 513.8 171.0 L 526.0 180.5 L 536.8 179.6 L 550.7 183.3 L 552.8 183.2 L 558.0 176.0 L 560.3 170.7 L 558.1 168.0 L 561.7 166.8 L 561.4 163.5 L 570.0 163.2 L 583.3 155.4 L 587.5 155.6 L 591.1 159.1 L 600.1 157.5 L 609.7 161.1 L 616.5 166.5 L 628.5 168.7 L 633.4 175.2 L 640.7 175.5 L 638.2 183.8 L 641.0 185.6 L 641.2 190.2 L 647.9 192.1 L 648.5 198.0 L 652.6 201.0 L 652.1 204.9 L 657.9 212.0 L 649.2 219.4 L 647.6 227.3 L 649.2 231.1 L 647.4 232.1 L 615.7 229.6 L 607.7 237.3 L 610.5 246.4 L 608.0 250.6 L 609.5 253.6 L 608.0 256.8 L 602.0 258.6 L 600.1 262.1 L 594.7 261.9 L 594.2 267.2 L 589.5 273.2 L 579.0 274.7 L 573.0 283.0 L 558.5 289.4 L 545.2 289.4 L 543.6 285.7 L 532.6 279.6 L 525.5 278.3 L 521.5 274.6 L 514.5 278.4 L 509.5 284.5 L 506.7 283.5 L 508.6 279.4 L 507.4 272.1 L 500.7 265.7 L 499.4 273.1 L 491.4 276.0 L 489.2 281.0 L 482.0 282.0 L 478.3 285.0 L 484.8 292.7 L 482.4 298.4 L 478.2 302.2 L 469.3 300.0 L 467.2 308.8 L 458.9 317.7 L 459.3 331.5 L 451.5 340.9 L 454.9 349.0 L 449.2 358.0 L 450.7 360.1 L 424.3 363.0 L 405.5 369.1 L 395.1 365.8 L 391.2 359.4 L 375.5 350.9 L 376.8 337.8 L 381.9 330.8 L 383.6 323.1 L 382.6 315.9 L 384.8 315.7 L 386.9 308.8 L 381.8 306.6 L 385.7 300.1 L 381.9 295.3 L 375.3 298.4 L 351.7 300.5 L 351.4 308.7 L 348.2 312.8 L 340.6 312.0 L 337.1 307.7 L 322.5 317.0 L 320.1 308.6 L 317.2 305.8 L 322.4 286.8 L 321.0 279.7 L 316.1 275.5 L 318.3 271.2 L 318.6 265.4 L 316.2 263.9 L 317.4 259.1 L 314.9 255.6 L 308.1 253.3 L 305.7 246.5 L 301.7 243.8 L 306.1 235.6 L 301.4 233.9 L 303.4 223.9 L 295.5 219.8 L 293.1 213.3 L 297.6 208.3 L 305.6 209.4 L 310.2 197.0 L 302.0 196.4 L 289.6 179.0 L 280.4 176.4 L 275.6 172.4 L 268.8 174.2 L 266.1 181.7 L 259.7 188.5 L 255.5 189.2 L 251.4 177.9 L 247.9 177.5 L 245.7 173.2 L 245.7 164.6 L 240.1 158.1 L 241.6 153.3 L 237.4 149.3 L 231.8 149.1 L 238.0 143.2 L 237.4 139.9 L 230.7 138.7 L 223.8 144.3 L 219.5 143.2 L 202.8 151.9 L 195.7 152.4 L 192.7 155.3 L 185.7 139.1 L 175.4 136.4 L 175.4 131.1 L 169.1 127.4 L 171.6 119.4 L 167.6 115.4 L 172.1 113.4 L 172.7 105.3 L 178.0 97.5 L 164.9 89.9 L 161.8 85.6 L 165.3 81.4 L 164.2 79.0 L 169.2 73.3 L 179.5 73.7 L 184.3 67.6 L 190.3 67.4 L 189.8 58.4 L 196.9 54.0 L 203.5 45.0 L 207.4 45.4 Z" />
+              <path class="map-district" data-area="북구" d="M 369.3 397.0 L 373.7 400.7 L 372.4 406.2 L 377.3 411.3 L 376.4 414.6 L 381.2 418.7 L 377.4 424.8 L 377.3 430.8 L 380.9 431.7 L 378.9 440.6 L 386.4 453.3 L 386.0 468.3 L 381.1 472.5 L 386.1 484.7 L 382.1 488.4 L 376.2 485.4 L 371.4 488.6 L 360.5 501.3 L 363.7 503.5 L 358.1 504.2 L 333.6 499.0 L 335.5 492.8 L 308.2 487.0 L 303.8 482.2 L 293.8 484.6 L 286.7 492.5 L 281.8 492.1 L 267.9 485.2 L 260.6 484.6 L 256.8 486.4 L 259.5 471.6 L 262.7 467.7 L 269.7 465.7 L 278.5 454.4 L 282.0 453.8 L 286.3 444.9 L 287.8 438.8 L 285.0 427.0 L 287.8 418.5 L 283.4 415.6 L 281.9 411.4 L 279.5 401.3 L 281.9 399.6 L 281.3 396.4 L 289.1 397.3 L 296.6 402.0 L 299.8 411.2 L 306.6 416.3 L 309.1 404.6 L 318.1 403.9 L 326.3 398.4 L 336.8 399.5 L 343.9 397.5 L 346.8 395.9 L 346.7 393.3 L 357.4 390.6 L 357.2 388.6 L 363.5 391.0 L 369.3 397.0 Z" />
+              <path class="map-district" data-area="동구" d="M 451.1 360.7 L 456.5 365.5 L 473.2 368.2 L 482.3 373.2 L 483.7 378.1 L 487.4 379.0 L 490.4 383.6 L 486.5 391.3 L 494.4 400.0 L 501.9 403.9 L 498.7 417.0 L 493.6 421.1 L 499.8 433.2 L 492.3 447.7 L 498.3 457.1 L 512.4 464.1 L 515.7 470.8 L 512.6 473.0 L 513.4 481.5 L 518.6 489.4 L 512.8 500.2 L 517.2 503.7 L 513.6 508.1 L 515.7 512.1 L 510.9 514.6 L 506.5 520.8 L 494.2 527.1 L 489.0 526.0 L 479.6 518.3 L 470.9 516.8 L 458.3 520.8 L 440.3 519.2 L 435.2 516.6 L 433.1 507.9 L 428.9 504.1 L 419.7 505.6 L 414.0 501.6 L 404.6 499.7 L 388.4 506.6 L 383.9 511.6 L 368.8 510.0 L 366.4 504.1 L 360.5 501.3 L 376.2 485.4 L 382.1 488.4 L 386.0 484.9 L 381.1 472.5 L 386.0 468.3 L 386.7 456.9 L 385.8 450.1 L 381.2 447.0 L 378.9 440.6 L 381.3 432.9 L 377.3 430.8 L 377.4 424.8 L 381.2 418.7 L 376.4 414.6 L 377.3 411.3 L 372.4 406.2 L 373.7 400.7 L 363.9 391.3 L 357.2 388.6 L 369.7 375.5 L 371.5 369.6 L 384.8 369.2 L 395.2 365.8 L 405.5 369.1 L 424.3 363.0 L 451.1 360.7 Z" />
+              <path class="map-district" data-area="서구" d="M 335.5 492.8 L 333.6 499.0 L 331.4 498.5 L 332.8 502.6 L 330.3 501.9 L 329.0 504.2 L 330.4 506.2 L 333.1 505.3 L 333.1 507.8 L 327.3 512.8 L 327.7 515.6 L 301.2 523.9 L 300.6 521.8 L 293.3 522.1 L 293.0 519.5 L 286.3 519.5 L 286.8 516.3 L 280.4 516.6 L 277.7 511.1 L 273.4 510.7 L 271.8 508.6 L 274.1 505.7 L 273.3 502.1 L 269.1 495.2 L 278.6 489.9 L 287.2 492.3 L 293.8 484.6 L 303.3 482.2 L 308.2 487.0 L 335.5 492.8 Z" />
+              <path class="map-district" data-area="중구" d="M 353.5 502.9 L 364.2 503.1 L 367.5 506.4 L 368.8 510.0 L 362.6 517.6 L 362.3 523.4 L 336.5 522.0 L 328.1 518.3 L 327.3 512.8 L 333.1 507.8 L 333.1 505.3 L 329.0 504.6 L 330.2 501.9 L 332.8 502.6 L 331.4 498.5 L 353.5 502.9 Z" />
+              <path class="map-district" data-area="남구" d="M 333.0 520.5 L 362.3 523.4 L 362.8 524.9 L 359.7 543.2 L 361.7 551.6 L 358.9 552.1 L 354.0 563.9 L 339.8 571.5 L 330.1 562.0 L 324.4 559.8 L 321.8 554.2 L 316.4 554.3 L 308.6 544.2 L 315.5 534.9 L 327.1 527.2 L 328.0 518.1 L 333.0 520.5 Z" />
+              <path class="map-district" data-area="수성구" d="M 345.4 569.8 L 348.3 565.7 L 354.9 563.0 L 358.9 552.1 L 361.7 551.6 L 359.7 543.2 L 362.8 526.1 L 362.1 519.0 L 368.8 510.0 L 383.9 511.6 L 388.9 506.3 L 405.3 499.7 L 409.9 502.1 L 414.0 501.6 L 419.7 505.6 L 430.7 504.7 L 434.8 511.5 L 434.9 516.1 L 440.3 519.2 L 458.3 520.8 L 470.9 516.8 L 479.6 518.3 L 481.0 520.5 L 477.3 521.4 L 480.9 524.6 L 482.3 531.0 L 479.5 539.2 L 480.5 542.5 L 473.7 543.1 L 463.9 552.1 L 464.3 557.2 L 469.2 561.3 L 472.9 572.1 L 465.4 574.7 L 462.9 578.9 L 457.8 580.5 L 454.9 584.1 L 447.9 582.1 L 444.8 586.4 L 437.3 589.3 L 434.7 585.7 L 408.1 579.7 L 403.7 575.5 L 383.4 576.4 L 374.5 572.9 L 371.1 576.2 L 352.7 573.3 L 345.4 569.8 Z" />
+              <path class="map-district" data-area="달서구" d="M 271.9 508.7 L 280.3 513.3 L 280.4 516.6 L 286.8 516.3 L 286.3 519.5 L 293.0 519.5 L 293.3 522.1 L 300.6 521.8 L 301.2 523.9 L 327.7 515.6 L 327.1 527.2 L 315.5 534.9 L 308.6 544.2 L 316.4 554.3 L 321.8 554.2 L 324.4 559.8 L 330.1 562.0 L 338.7 571.6 L 341.2 571.2 L 341.3 573.7 L 339.8 580.0 L 331.3 583.4 L 324.0 581.7 L 321.4 583.9 L 323.9 599.2 L 318.7 604.9 L 307.5 606.4 L 305.2 600.0 L 294.3 590.0 L 290.2 592.5 L 281.6 591.0 L 280.1 586.3 L 277.0 586.6 L 269.4 579.8 L 267.3 573.0 L 260.5 572.8 L 266.1 569.1 L 265.4 567.7 L 255.4 562.4 L 242.4 559.7 L 235.0 563.3 L 233.5 548.6 L 225.0 545.2 L 220.8 540.1 L 225.6 520.3 L 234.0 509.9 L 253.6 514.8 L 260.4 512.2 L 262.1 508.5 L 268.4 510.4 L 271.9 508.7 Z" />
+              <path class="map-district" data-area="달성군" d="M 250.3 560.7 L 265.4 567.7 L 266.1 569.1 L 260.5 572.8 L 267.3 573.0 L 269.4 579.8 L 277.0 586.6 L 280.1 586.3 L 281.6 591.0 L 290.2 592.5 L 294.3 590.0 L 298.5 593.0 L 305.2 600.0 L 308.0 606.5 L 317.2 605.6 L 323.9 599.2 L 321.4 583.9 L 324.0 581.7 L 331.3 583.4 L 339.8 580.0 L 341.2 571.2 L 344.7 569.8 L 352.7 573.3 L 371.1 576.2 L 375.0 573.0 L 383.4 576.4 L 403.7 575.5 L 408.1 579.7 L 434.7 585.7 L 437.4 589.0 L 436.7 596.2 L 442.0 603.9 L 441.3 610.7 L 444.4 612.3 L 446.2 619.3 L 450.5 623.9 L 447.5 633.0 L 448.7 636.1 L 444.1 640.0 L 447.0 644.6 L 446.0 649.0 L 438.0 654.4 L 438.1 658.6 L 428.1 659.1 L 425.4 661.2 L 415.7 660.0 L 401.7 668.7 L 400.6 672.1 L 392.6 674.5 L 385.2 673.5 L 378.1 678.0 L 373.9 677.4 L 367.9 670.4 L 368.0 666.0 L 371.0 662.5 L 363.9 655.1 L 369.0 649.6 L 366.4 641.3 L 348.0 642.8 L 343.3 648.4 L 336.0 641.5 L 325.2 645.3 L 318.1 643.1 L 314.3 650.2 L 305.7 653.4 L 297.2 660.6 L 280.8 667.4 L 286.9 677.0 L 284.8 683.8 L 288.3 686.4 L 284.3 692.6 L 284.7 697.2 L 270.9 701.2 L 267.5 705.2 L 260.2 707.8 L 261.6 719.0 L 258.3 726.0 L 263.4 735.3 L 258.9 741.6 L 248.2 742.1 L 235.0 746.2 L 230.8 740.6 L 222.9 744.5 L 218.4 744.4 L 213.1 740.4 L 205.3 744.2 L 198.3 742.7 L 197.6 746.2 L 192.9 747.2 L 192.2 750.6 L 189.3 750.6 L 182.6 759.7 L 174.5 756.1 L 170.5 761.7 L 168.1 759.4 L 161.5 766.3 L 157.8 767.2 L 154.2 764.1 L 154.2 766.2 L 150.5 765.5 L 135.5 771.6 L 133.4 775.0 L 131.2 772.3 L 129.1 774.7 L 123.6 773.1 L 122.0 771.3 L 124.3 769.0 L 139.5 763.5 L 152.5 748.5 L 151.3 735.5 L 113.1 705.1 L 103.9 689.5 L 102.4 676.3 L 109.6 671.5 L 133.0 678.8 L 166.9 684.4 L 177.0 681.1 L 184.8 674.4 L 186.5 669.7 L 183.5 654.4 L 173.2 646.8 L 142.4 631.4 L 134.5 619.5 L 148.8 600.7 L 159.5 579.8 L 161.9 579.7 L 163.8 576.2 L 167.2 576.2 L 167.2 572.9 L 172.3 572.7 L 172.3 569.6 L 192.7 569.6 L 192.8 572.9 L 222.6 573.0 L 237.1 561.3 L 250.3 560.7 Z M 209.8 435.6 L 215.1 438.7 L 221.8 438.6 L 228.7 442.9 L 224.9 463.1 L 217.5 469.1 L 220.5 478.3 L 227.5 483.4 L 230.7 481.0 L 237.0 483.9 L 237.3 481.3 L 243.0 480.2 L 248.8 488.7 L 251.9 488.0 L 252.9 491.5 L 260.6 484.6 L 276.6 488.3 L 278.7 490.9 L 269.1 495.2 L 273.3 502.1 L 272.9 507.6 L 268.9 510.4 L 262.1 508.5 L 260.4 512.2 L 253.6 514.8 L 234.0 509.9 L 225.6 520.3 L 220.9 539.0 L 196.5 530.5 L 167.4 526.6 L 137.6 527.1 L 134.5 525.5 L 135.3 512.5 L 149.3 485.1 L 150.2 477.8 L 158.5 477.0 L 167.9 464.9 L 169.6 456.2 L 175.0 454.7 L 176.5 449.3 L 179.1 450.1 L 183.6 445.8 L 190.5 445.8 L 193.3 442.1 L 202.2 442.3 L 204.7 440.7 L 206.1 434.0 L 209.8 435.6 Z" />
+              <path class="pulse-line" d="M 120 610 C 210 536 270 458 340 510 S 432 565 516 490 S 590 380 662 420" />
+              <path class="pulse-line" d="M 178 714 C 260 640 334 662 386 574 S 462 466 610 482" style="animation-delay:-.55s" />
+              <path class="pulse-line" d="M 180 180 C 270 120 354 198 448 162 S 554 154 652 212" style="animation-delay:-1.05s" />
+              <path class="pulse-line fine" d="M 118 500 C 206 490 248 534 318 520 S 430 464 514 476 S 608 522 686 500" style="animation-delay:-.25s" />
+              <path class="pulse-line fine" d="M 210 658 C 282 594 320 618 386 560 S 462 532 546 556" style="animation-delay:-.82s" />
+              <path class="pulse-line fine" d="M 250 338 C 318 374 352 364 420 368 S 512 398 590 352" style="animation-delay:-1.42s" />
+              <g id="svg-nodes"></g>
+              <text class="map-label" x="393.0" y="195.6">군위군</text>
+              <text class="map-label" x="325.4" y="451.9">북구</text>
+              <text class="map-label" x="469.1" y="457.3">동구</text>
+              <text class="map-label" x="301.8" y="503.4">서구</text>
+              <text class="map-label" x="346.4" y="509.0">중구</text>
+              <text class="map-label" x="334.1" y="547.4">남구</text>
+              <text class="map-label" x="435.1" y="547.5">수성구</text>
+              <text class="map-label" x="285.5" y="554.6">달서구</text>
+              <text class="map-label" x="235.7" y="622.5">달성군</text>
+            </svg>
+          </div>
+          <canvas id="pulse-canvas"></canvas>
+          <div class="stage-copy">
+            <h1>공공 데이터가 빛으로 뛰는 대구</h1>
+            <div class="live-count">
+              <b id="live-count">0</b>
+              <span id="live-label">확인된 문화 신호</span>
+            </div>
+          </div>
+          <div class="map-insight" id="map-insight"></div>
+          <div class="data-orbit" id="data-orbit" aria-label="공공 데이터 노드"></div>
+          <div class="districts" id="districts" aria-hidden="true"></div>
+          <div class="art-note">
+            <p>문화, 공원, 대기 데이터가 구·군별 맥박과 이동하는 빛으로 변환됩니다.</p>
+            <div class="legend">
+              <span><i style="--c:#70bd8a"></i>공원</span>
+              <span><i style="--c:#e95f55"></i>문화</span>
+              <span><i style="--c:#66b8d4"></i>대기</span>
+              <span><i style="--c:#ecc65e"></i>활성 구·군</span>
+            </div>
+          </div>
+        </div>
+
+        <aside class="filters-panel">
+          <section class="toolbar" aria-label="문화정보 필터">
+            <div class="search-row">
+              <input id="search" type="search" placeholder="공연명, 장소, 구 이름 검색" autocomplete="off" />
+              <button class="icon-button" id="refresh" type="button" title="새로고침" aria-label="새로고침">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 12a9 9 0 0 1-15.1 6.6" />
+                  <path d="M3 12A9 9 0 0 1 18.1 5.4" />
+                  <path d="M18 2v5h-5" />
+                  <path d="M6 22v-5h5" />
+                </svg>
+              </button>
+            </div>
+            <div class="outdoor-card" id="outdoor-card"></div>
+            <div class="data-tabs" id="data-tabs"></div>
+            <div class="chips" id="chips"></div>
+            <div class="meta-row">
+              <span id="date-label"></span>
+              <span id="source-label">대구광역시 공연·전시 정보</span>
+            </div>
+          </section>
+
+          <section class="results" aria-live="polite">
+            <div class="result-head">
+              <strong id="result-title">바로 볼 수 있는 문화정보</strong>
+              <span id="count-label">0개</span>
+            </div>
+            <div class="result-list" id="result-list"></div>
+          </section>
+
+          <section class="detail" id="detail" aria-label="선택한 문화정보"></section>
+        </aside>
+      </section>
+    </main>
+
+    <script>
+      const API_URL = "/api/cultural-events";
+      const FALLBACK_EVENTS = [
+        {
+          event_seq: "sample-1",
+          event_gubun: "공연",
+          subject: "숲속열린음악회 with 이현공원",
+          start_date: "2026-05-09",
+          end_date: "2026-05-09",
+          place: "이현공원 잔디광장",
+          event_area: "서구",
+          pay_gubun: "무료",
+          pay: "무료",
+          homepage: "",
+          contact: "053-663-3081",
+          content: "공연일시: 5. 9.(토) 19:00 / 관람연령: 중학생 이상 관람가",
+        },
+        {
+          event_seq: "sample-2",
+          event_gubun: "전시",
+          subject: "대구 청년작가 기획전",
+          start_date: "2026-05-01",
+          end_date: "2026-05-31",
+          place: "대구예술발전소",
+          event_area: "중구",
+          pay_gubun: "무료",
+          pay: "무료",
+          homepage: "",
+          contact: "",
+          content: "가족 관람 가능 / 동시대 미술 전시",
+        },
+        {
+          event_seq: "sample-3",
+          event_gubun: "체험",
+          subject: "어린이 문화예술 체험 교실",
+          start_date: "2026-05-06",
+          end_date: "2026-05-10",
+          place: "수성아트피아",
+          event_area: "수성구",
+          pay_gubun: "유료",
+          pay: "5천원",
+          homepage: "",
+          contact: "",
+          content: "어린이, 가족 대상 체험 프로그램 / 10:00~17:00",
+        },
+      ];
+
+      const CULTURE_ANCHOR_EVENTS = [
+        {
+          event_seq: "anchor-dam-seohwa",
+          event_gubun: "전시",
+          subject: "대구미술관 개관 15주년 기념 특별전 《서화무진 書畵無盡》",
+          start_date: "2026-03-17",
+          end_date: "2026-06-14",
+          place: "대구미술관 어미홀, 1~3전시실",
+          event_area: "수성구",
+          pay_gubun: "유료",
+          pay: "성인 1,000원",
+          homepage: "https://daeguartmuseum.or.kr/index.do?ehi_id=EHI_00000332&menu_id=00000729&menu_link=%2Ffront%2Fehi%2FehiViewFront.do",
+          contact: "053-430-7500",
+          content: "참여작가 83명, 회화·영상·설치 등 200여 점으로 한국화와 시서화의 흐름을 조명하는 장기 전시입니다. 문화가 있는 날은 전시 관람료 무료입니다.",
+        },
+        {
+          event_seq: "anchor-dam-collection",
+          event_gubun: "전시",
+          subject: "대구미술관 《2025 신소장품 보고전》",
+          start_date: "2026-02-10",
+          end_date: "2026-08-09",
+          place: "대구미술관 6전시실",
+          event_area: "수성구",
+          pay_gubun: "유료",
+          pay: "성인 1,000원",
+          homepage: "https://daeguartmuseum.or.kr/index.do?ehi_id=EHI_00000330&menu_id=00000721&menu_link=%2Ffront%2Fehi%2FehiViewFront.do",
+          contact: "053-430-7500",
+          content: "2025년 수집 작품 중 회화, 조각, 영상 등 28점을 소개하는 소장품 공개 전시입니다. 근대미술과 1980년대 대구미술의 흐름을 함께 볼 수 있습니다.",
+        },
+        {
+          event_seq: "anchor-dam-family",
+          event_gubun: "체험",
+          subject: "대구미술관 가정의 달 특별 워크숍 <다정한 드로잉 클래스>",
+          start_date: "2026-05-05",
+          end_date: "2026-05-16",
+          place: "대구미술관",
+          event_area: "수성구",
+          pay_gubun: "예약",
+          pay: "예약/확인",
+          homepage: "https://daeguartmuseum.or.kr/",
+          contact: "053-430-7500",
+          content: "어린이를 포함한 가족 대상 전시 연계 워크숍입니다. 아이와 미술관을 함께 경험하기 좋은 교육 신호로 표시합니다.",
+        },
+        {
+          event_seq: "anchor-dam-tour",
+          event_gubun: "교육",
+          subject: "대구미술관 《2025 신소장품 보고전》 큐레이터 투어",
+          start_date: "2026-02-24",
+          end_date: "2026-07-31",
+          place: "대구미술관",
+          event_area: "수성구",
+          pay_gubun: "예약",
+          pay: "사전접수",
+          homepage: "https://daeguartmuseum.or.kr/",
+          contact: "053-430-7500",
+          content: "관심 있는 시민을 대상으로 진행되는 신소장품 보고전 연계 투어입니다.",
+        },
+        {
+          event_seq: "anchor-national-daegu-child",
+          event_gubun: "전시",
+          subject: "국립대구박물관 상설주제전 《알록달록 동자상》",
+          start_date: "2025-09-30",
+          end_date: "2026-10-05",
+          place: "국립대구박물관 특별전시실",
+          event_area: "수성구",
+          pay_gubun: "무료",
+          pay: "무료",
+          homepage: "https://daegu.museum.go.kr/",
+          contact: "053-768-6051",
+          content: "동자상을 주제로 한 장기 전시입니다. 국립대구박물관 상설전시실은 누구나 무료로 관람할 수 있습니다.",
+        },
+        {
+          event_seq: "anchor-national-daegu-permanent",
+          event_gubun: "전시",
+          subject: "국립대구박물관 상설전시 고대문화실·복식문화실",
+          start_date: "2026-01-01",
+          end_date: "2026-12-31",
+          place: "국립대구박물관",
+          event_area: "수성구",
+          pay_gubun: "무료",
+          pay: "무료",
+          homepage: "https://daegu.museum.go.kr/",
+          contact: "053-768-6051",
+          content: "대구·경북 문화유산과 복식문화를 볼 수 있는 상설 전시입니다. 화요일부터 일요일까지 기본 관람 동선으로 추천합니다.",
+        },
+        {
+          event_seq: "anchor-dmhm-radio",
+          event_gubun: "전시",
+          subject: "대구근대역사관 기증유물 작은전시 《박물관으로 온 라디오》",
+          start_date: "2026-04-14",
+          end_date: "2026-06-28",
+          place: "대구근대역사관 1층 기증자 명예의 전당 앞",
+          event_area: "중구",
+          pay_gubun: "무료",
+          pay: "무료",
+          homepage: "https://www.dmhm.or.kr/dmhm/content.html?md=0197&seq=58162&vmode=view",
+          contact: "053-430-7915",
+          content: "1930년대부터 1980년대까지 라디오의 변화와 생활상을 살펴보는 작은 전시입니다.",
+        },
+      ];
+
+      const districtPositions = {
+        군위군: { x: 51.7, y: 23.8 },
+        북구: { x: 42.8, y: 55.1 },
+        동구: { x: 61.7, y: 55.8 },
+        서구: { x: 39.7, y: 61.4 },
+        중구: { x: 45.6, y: 62.1 },
+        남구: { x: 44.0, y: 66.8 },
+        수성구: { x: 57.2, y: 66.8 },
+        달서구: { x: 37.6, y: 67.6 },
+        달성군: { x: 31.0, y: 75.9 },
+      };
+
+      const districtSvgPositions = {
+        군위군: { x: 393.0, y: 195.6 },
+        북구: { x: 325.4, y: 451.9 },
+        동구: { x: 469.1, y: 457.3 },
+        서구: { x: 301.8, y: 503.4 },
+        중구: { x: 346.4, y: 509.0 },
+        남구: { x: 334.1, y: 547.4 },
+        수성구: { x: 435.1, y: 547.5 },
+        달서구: { x: 285.5, y: 554.6 },
+        달성군: { x: 235.7, y: 622.5 },
+      };
+
+      const areaColors = {
+        군위군: "#ef89a7",
+        북구: "#8cc36f",
+        동구: "#83cbd6",
+        서구: "#f2ba63",
+        중구: "#f08b75",
+        남구: "#c6a5e7",
+        수성구: "#7cb6e8",
+        달서구: "#f0d66a",
+        달성군: "#9fd18d",
+      };
+
+      const districtCenters = {
+        중구: [35.8693, 128.6062],
+        동구: [35.8867, 128.6356],
+        서구: [35.8719, 128.5592],
+        남구: [35.846, 128.597],
+        북구: [35.8858, 128.5829],
+        수성구: [35.8582, 128.6308],
+        달서구: [35.8299, 128.5327],
+        달성군: [35.7746, 128.4314],
+        군위군: [36.2429, 128.5727],
+      };
+
+      const filterConfig = [
+        { id: "today", label: "오늘 볼 수 있는 것", color: "#ecc65e" },
+        { id: "weekend", label: "이번 주말", color: "#e95f55" },
+        { id: "free", label: "무료 행사", color: "#70bd8a" },
+        { id: "kids", label: "아이와 갈 수 있는 곳", color: "#66b8d4" },
+        { id: "exhibition", label: "전시", color: "#a98bd8" },
+        { id: "performance", label: "공연", color: "#e95f55" },
+        { id: "near", label: "내 위치 근처", color: "#70bd8a" },
+        { id: "open", label: "지금 열려 있음", color: "#ecc65e" },
+      ];
+
+      const viewConfig = [
+        { id: "culture", label: "문화 신호", countLabel: "확인된 문화 신호", resultTitle: "바로 볼 수 있는 문화정보", source: "대구광역시 공연·전시 정보" },
+        { id: "parks", label: "아이랑 공원", countLabel: "추천 초록 공원", resultTitle: "아이랑 가기 좋은 공원", source: "대구 공원·야외활동 정보" },
+      ];
+
+      const modeFilters = {
+        culture: filterConfig,
+        parks: [
+          { id: "kids", label: "아이와 갈 수 있는 곳", color: "#66b8d4" },
+          { id: "free", label: "무료", color: "#70bd8a" },
+          { id: "near", label: "내 위치 근처", color: "#70bd8a" },
+        ],
+      };
+
+      const outdoorSignal = {
+        grade: "좋음",
+        temp: 24,
+        pm10: 34,
+        pm25: 16,
+        message: "가벼운 야외활동과 공원 산책에 좋은 상태입니다.",
+      };
+
+      const PARK_ITEMS = [
+        {
+          id: "park-duryu",
+          title: "두류공원",
+          type: "초록공원",
+          area: "달서구",
+          place: "대구 달서구 공원순환로",
+          pay: "무료",
+          content: "넓은 산책로와 잔디, 문화시설 접근성이 좋아 아이와 반나절 머물기 좋습니다.",
+          facilities: ["넓은 산책로", "잔디광장", "문화시설"],
+          bestFor: "반나절 산책",
+          homepage: "",
+          text: "두류공원 달서구 아이 가족 산책 무료 공원",
+        },
+        {
+          id: "park-wolgwang",
+          title: "월광수변공원",
+          type: "수변공원",
+          area: "달서구",
+          place: "대구 달서구 월곡로",
+          pay: "무료",
+          content: "저수지 둘레길과 넓은 휴식 공간이 이어져 아이와 천천히 걷기 좋은 수변 공원입니다.",
+          facilities: ["수변 둘레길", "휴식 데크", "저녁 산책"],
+          bestFor: "물가 산책",
+          homepage: "",
+          text: "월광수변공원 달서구 아이 가족 산책 무료 수변 공원",
+        },
+        {
+          id: "park-suseong",
+          title: "수성못",
+          type: "수변공원",
+          area: "수성구",
+          place: "대구 수성구 두산동",
+          pay: "무료",
+          content: "물가 산책과 야간 경관을 함께 볼 수 있어 유모차 산책, 짧은 가족 나들이에 좋습니다.",
+          facilities: ["수변 산책", "야간 경관", "카페 접근"],
+          bestFor: "유모차 산책",
+          homepage: "",
+          text: "수성못 수성구 아이 가족 산책 무료 수변 공원",
+        },
+        {
+          id: "park-suseong-family",
+          title: "수성패밀리파크",
+          type: "가족공원",
+          area: "수성구",
+          place: "대구 수성구 팔현길 일대",
+          pay: "무료",
+          content: "잔디와 산책 공간이 넓어 아이가 뛰어놀기 좋고, 가족 피크닉 장소로 쓰기 좋은 초록 공원입니다.",
+          facilities: ["잔디광장", "어린이 놀이", "피크닉"],
+          bestFor: "가족 피크닉",
+          homepage: "",
+          text: "수성패밀리파크 수성구 아이 가족 피크닉 놀이터 잔디 무료 공원",
+        },
+        {
+          id: "park-beomeo",
+          title: "범어공원",
+          type: "생활공원",
+          area: "수성구",
+          place: "대구 수성구 범어동",
+          pay: "무료",
+          content: "생활권 가까이에 숲길과 산책로가 있어 짧은 외출과 가벼운 자연 놀이에 좋습니다.",
+          facilities: ["숲길", "동네 산책", "휴식 공간"],
+          bestFor: "짧은 외출",
+          homepage: "",
+          text: "범어공원 수성구 아이 가족 숲길 산책 무료 공원",
+        },
+        {
+          id: "park-daegu-arboretum",
+          title: "대구수목원",
+          type: "생태공원",
+          area: "달서구",
+          place: "대구 달서구 화암로 342",
+          pay: "무료",
+          content: "식물 관찰과 계절 정원을 함께 볼 수 있는 생태형 나들이 장소입니다.",
+          facilities: ["계절 정원", "식물 관찰", "생태 학습"],
+          bestFor: "자연 관찰",
+          homepage: "",
+          text: "대구수목원 달서구 아이 가족 생태 무료 공원",
+        },
+        {
+          id: "park-apsan",
+          title: "앞산공원",
+          type: "숲공원",
+          area: "남구",
+          place: "대구 남구 앞산순환로",
+          pay: "무료",
+          content: "숲길, 전망, 산책을 함께 경험할 수 있는 대구 대표 녹지입니다.",
+          facilities: ["숲길", "전망", "가벼운 등산"],
+          bestFor: "숲 산책",
+          homepage: "",
+          text: "앞산공원 남구 아이 가족 산책 숲 무료 공원",
+        },
+        {
+          id: "park-apsan-wash",
+          title: "앞산빨래터공원",
+          type: "생활공원",
+          area: "남구",
+          place: "대구 남구 대명동",
+          pay: "무료",
+          content: "앞산 아래 열린 광장과 산책 동선이 있어 아이와 사진 찍고 쉬어가기 좋은 도심 공원입니다.",
+          facilities: ["열린 광장", "산책 동선", "앞산 접근"],
+          bestFor: "도심 산책",
+          homepage: "",
+          text: "앞산빨래터공원 남구 아이 가족 산책 광장 무료 공원",
+        },
+        {
+          id: "park-hajungdo",
+          title: "금호강 하중도",
+          type: "강변공원",
+          area: "북구",
+          place: "대구 북구 노곡동",
+          pay: "무료",
+          content: "계절 꽃밭과 강변 산책이 좋아 사진 찍기와 짧은 야외 활동에 잘 맞습니다.",
+          facilities: ["강변 산책", "계절 꽃밭", "사진 명소"],
+          bestFor: "짧은 야외활동",
+          homepage: "",
+          text: "금호강 하중도 북구 아이 가족 꽃밭 강변 무료 공원",
+        },
+        {
+          id: "park-chimsan",
+          title: "침산공원",
+          type: "숲공원",
+          area: "북구",
+          place: "대구 북구 침산동",
+          pay: "무료",
+          content: "언덕형 산책로와 전망 포인트가 있어 짧은 숲길 나들이에 어울립니다.",
+          facilities: ["숲 산책", "전망", "운동 공간"],
+          bestFor: "전망 산책",
+          homepage: "",
+          text: "침산공원 북구 아이 가족 숲 산책 무료 공원",
+        },
+        {
+          id: "park-hamji",
+          title: "함지공원",
+          type: "생활공원",
+          area: "북구",
+          place: "대구 북구 구암동",
+          pay: "무료",
+          content: "주거지 가까운 생활형 공원으로 놀이터와 산책을 함께 쓰기 좋은 후보입니다.",
+          facilities: ["놀이터", "생활 산책", "휴식 공간"],
+          bestFor: "동네 놀이",
+          homepage: "",
+          text: "함지공원 북구 아이 가족 놀이터 산책 무료 공원",
+        },
+        {
+          id: "park-yulha",
+          title: "율하체육공원",
+          type: "체육공원",
+          area: "동구",
+          place: "대구 동구 율하동",
+          pay: "무료",
+          content: "넓은 운동장과 산책 공간이 있어 뛰어놀기, 자전거, 가벼운 가족 운동에 좋습니다.",
+          facilities: ["운동장", "산책로", "자전거"],
+          bestFor: "뛰어놀기",
+          homepage: "",
+          text: "율하체육공원 동구 아이 가족 운동 산책 무료 공원",
+        },
+        {
+          id: "park-bongmu",
+          title: "봉무공원",
+          type: "수변공원",
+          area: "동구",
+          place: "대구 동구 봉무동",
+          pay: "무료",
+          content: "단산지 주변 산책과 숲길이 이어져 자연 관찰과 조용한 가족 나들이에 좋습니다.",
+          facilities: ["저수지 산책", "숲길", "자연 관찰"],
+          bestFor: "자연 나들이",
+          homepage: "",
+          text: "봉무공원 동구 아이 가족 자연 산책 무료 수변 공원",
+        },
+        {
+          id: "park-bullo",
+          title: "불로고분공원",
+          type: "역사공원",
+          area: "동구",
+          place: "대구 동구 불로동",
+          pay: "무료",
+          content: "고분군 경관과 낮은 산책로를 함께 볼 수 있어 역사 이야기와 야외활동을 묶기 좋습니다.",
+          facilities: ["역사 산책", "야외 학습", "넓은 경관"],
+          bestFor: "역사 산책",
+          homepage: "",
+          text: "불로고분공원 동구 아이 가족 역사 산책 무료 공원",
+        },
+        {
+          id: "park-iheon",
+          title: "이현공원",
+          type: "생활공원",
+          area: "서구",
+          place: "대구 서구 이현동",
+          pay: "무료",
+          content: "잔디광장과 생활권 녹지가 있어 근처 가족 나들이 후보로 좋습니다.",
+          facilities: ["잔디광장", "생활권 녹지", "공연 접근"],
+          bestFor: "동네 나들이",
+          homepage: "",
+          text: "이현공원 서구 아이 가족 잔디 무료 공원",
+        },
+        {
+          id: "park-pyeongni",
+          title: "평리공원",
+          type: "생활공원",
+          area: "서구",
+          place: "대구 서구 평리동",
+          pay: "무료",
+          content: "동네 가까운 휴식과 가벼운 산책을 위한 생활권 공원입니다.",
+          facilities: ["생활 산책", "휴식 공간", "근린 녹지"],
+          bestFor: "근처 외출",
+          homepage: "",
+          text: "평리공원 서구 아이 가족 산책 무료 생활 공원",
+        },
+        {
+          id: "park-gukchae",
+          title: "국채보상운동기념공원",
+          type: "도심공원",
+          area: "중구",
+          place: "대구 중구 공평동",
+          pay: "무료",
+          content: "도심 한가운데에서 광장, 산책, 역사 상징을 함께 볼 수 있는 접근성 좋은 공원입니다.",
+          facilities: ["도심 광장", "역사 상징", "그늘 산책"],
+          bestFor: "도심 쉼",
+          homepage: "",
+          text: "국채보상운동기념공원 중구 아이 가족 역사 산책 무료 도심 공원",
+        },
+        {
+          id: "park-228",
+          title: "2.28기념중앙공원",
+          type: "도심공원",
+          area: "중구",
+          place: "대구 중구 동성로2가",
+          pay: "무료",
+          content: "동성로와 가까워 문화 일정 전후에 아이와 잠깐 쉬어가기 좋은 중심 공원입니다.",
+          facilities: ["도심 휴식", "문화 접근", "짧은 산책"],
+          bestFor: "문화 전후",
+          homepage: "",
+          text: "2.28기념중앙공원 중구 아이 가족 도심 산책 무료 공원",
+        },
+        {
+          id: "park-gyeongsang",
+          title: "경상감영공원",
+          type: "역사공원",
+          area: "중구",
+          place: "대구 중구 경상감영길",
+          pay: "무료",
+          content: "역사 건축과 작은 정원을 함께 둘러볼 수 있어 짧은 도심 학습 산책에 맞습니다.",
+          facilities: ["역사 건축", "정원 산책", "도심 접근"],
+          bestFor: "역사 학습",
+          homepage: "",
+          text: "경상감영공원 중구 아이 가족 역사 학습 무료 공원",
+        },
+        {
+          id: "park-songhae",
+          title: "송해공원",
+          type: "수변공원",
+          area: "달성군",
+          place: "대구 달성군 옥포읍",
+          pay: "무료",
+          content: "옥연지 둘레 산책과 수변 경관이 좋아 주말 가족 나들이 코스로 쓰기 좋습니다.",
+          facilities: ["수변 산책", "전망", "주말 나들이"],
+          bestFor: "주말 산책",
+          homepage: "",
+          text: "송해공원 달성군 아이 가족 수변 산책 무료 공원",
+        },
+        {
+          id: "park-hwawon",
+          title: "화원동산",
+          type: "강변공원",
+          area: "달성군",
+          place: "대구 달성군 화원읍",
+          pay: "무료",
+          content: "낙동강 전망과 넓은 녹지를 함께 즐길 수 있어 가족 소풍 후보로 좋습니다.",
+          facilities: ["강변 전망", "넓은 녹지", "소풍"],
+          bestFor: "가족 소풍",
+          homepage: "",
+          text: "화원동산 달성군 아이 가족 소풍 산책 무료 강변 공원",
+        },
+        {
+          id: "park-biseul",
+          title: "비슬산 자연휴양림",
+          type: "숲공원",
+          area: "달성군",
+          place: "대구 달성군 유가읍",
+          pay: "일부 유료",
+          content: "숲 체험과 계절 경관이 강한 자연형 장소로, 날씨가 좋은 날 긴 야외활동에 어울립니다.",
+          facilities: ["숲 체험", "계절 경관", "자연 학습"],
+          bestFor: "긴 숲나들이",
+          homepage: "",
+          text: "비슬산 자연휴양림 달성군 아이 가족 숲 자연 일부 유료 공원",
+        },
+        {
+          id: "park-samguk",
+          title: "삼국유사테마파크",
+          type: "테마공원",
+          area: "군위군",
+          place: "대구 군위군 의흥면",
+          pay: "유료",
+          content: "이야기형 전시와 야외 공간이 결합된 가족형 장소로, 아이와 하루 코스로 보기 좋습니다.",
+          facilities: ["테마 전시", "야외 공간", "가족 체험"],
+          bestFor: "하루 체험",
+          homepage: "",
+          text: "삼국유사테마파크 군위군 아이 가족 체험 테마 공원",
+        },
+        {
+          id: "park-gunwi-life",
+          title: "군위생활체육공원",
+          type: "체육공원",
+          area: "군위군",
+          place: "대구 군위군 군위읍",
+          pay: "무료",
+          content: "생활 체육과 산책을 함께 할 수 있는 군위권 가족 야외활동 후보입니다.",
+          facilities: ["운동 공간", "산책", "생활 녹지"],
+          bestFor: "가벼운 운동",
+          homepage: "",
+          text: "군위생활체육공원 군위군 아이 가족 운동 산책 무료 공원",
+        },
+      ];
+
+      const state = {
+        mode: "culture",
+        raw: [],
+        events: [],
+        filtered: [],
+        activeFilters: new Set(["today"]),
+        selectedId: null,
+        selectedArea: "",
+        search: "",
+        nearestDistrict: "",
+        loadState: "loading",
+        updatedAt: null,
+      };
+
+      const els = {
+        status: document.querySelector("#status span"),
+        clock: document.querySelector("#clock span"),
+        liveCount: document.querySelector("#live-count"),
+        liveLabel: document.querySelector("#live-label"),
+        districts: document.querySelector("#districts"),
+        mapArt: document.querySelector(".map-art"),
+        mapInsight: document.querySelector("#map-insight"),
+        dataOrbit: document.querySelector("#data-orbit"),
+        svgNodes: document.querySelector("#svg-nodes"),
+        dataTabs: document.querySelector("#data-tabs"),
+        outdoorCard: document.querySelector("#outdoor-card"),
+        chips: document.querySelector("#chips"),
+        search: document.querySelector("#search"),
+        refresh: document.querySelector("#refresh"),
+        dateLabel: document.querySelector("#date-label"),
+        countLabel: document.querySelector("#count-label"),
+        resultTitle: document.querySelector("#result-title"),
+        list: document.querySelector("#result-list"),
+        detail: document.querySelector("#detail"),
+        canvas: document.querySelector("#pulse-canvas"),
+      };
+
+      const pad = (value) => String(value).padStart(2, "0");
+      const toDateKey = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+      const today = () => {
+        const now = new Date();
+        return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      };
+
+      function stripHtml(value = "") {
+        const div = document.createElement("div");
+        div.innerHTML = String(value).replaceAll("<br>", "\n");
+        return div.textContent.replace(/\s+/g, " ").trim();
+      }
+
+      function escapeHtml(value = "") {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function parseDate(value) {
+        if (!value) return null;
+        const [year, month, day] = String(value).split("-").map(Number);
+        if (!year || !month || !day) return null;
+        return new Date(year, month - 1, day);
+      }
+
+      function normalizeEvent(item) {
+        const content = stripHtml(item.content);
+        const type = item.event_gubun || "행사";
+        const start = parseDate(item.start_date);
+        const end = parseDate(item.end_date) || start;
+        const text = `${item.subject} ${item.place} ${item.event_area} ${type} ${item.pay} ${item.pay_gubun} ${content}`.toLowerCase();
+        const timeMatch = content.match(/(\d{1,2})[:시](?:\s?(\d{2})분?)?/);
+        const payText = `${item.pay_gubun || ""} ${item.pay || ""}`.trim();
+        const isFree = /무료|free/i.test(payText) || /(?:^|\s)0\s*원(?:\s|$)/.test(payText);
+        return {
+          id: item.event_seq || `${item.subject}-${item.start_date}`,
+          title: item.subject?.trim() || "제목 없는 문화행사",
+          type,
+          start,
+          end,
+          startKey: item.start_date,
+          endKey: item.end_date || item.start_date,
+          place: item.place?.trim() || "장소 미정",
+          area: item.event_area?.trim() || "대구",
+          pay: item.pay?.trim() || item.pay_gubun?.trim() || "요금 정보 없음",
+          isFree,
+          homepage: item.homepage?.trim() || "",
+          contact: item.contact?.trim() || "",
+          content,
+          text,
+          hour: timeMatch ? Number(timeMatch[1]) : null,
+          minute: timeMatch ? Number(timeMatch[2] || 0) : null,
+        };
+      }
+
+      function isInRange(event, date) {
+        if (!event.start || !event.end) return false;
+        const target = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        return event.start <= target && target <= event.end;
+      }
+
+      function weekendRange() {
+        const base = today();
+        const day = base.getDay();
+        const daysUntilSaturday = (6 - day + 7) % 7;
+        const saturday = new Date(base);
+        saturday.setDate(base.getDate() + daysUntilSaturday);
+        const sunday = new Date(saturday);
+        sunday.setDate(saturday.getDate() + 1);
+        return [saturday, sunday];
+      }
+
+      function overlapsWeekend(event) {
+        const [sat, sun] = weekendRange();
+        return event.start && event.end && event.start <= sun && event.end >= sat;
+      }
+
+      function isOpenNow(event) {
+        const now = new Date();
+        if (!isInRange(event, now)) return false;
+        if (event.hour === null) return true;
+        const eventMinutes = event.hour * 60 + event.minute;
+        const nowMinutes = now.getHours() * 60 + now.getMinutes();
+        return nowMinutes >= eventMinutes && nowMinutes <= eventMinutes + 180;
+      }
+
+      function isKidFriendly(event) {
+        return /아이|어린이|아동|가족|패밀리|체험|초등|전체관람|전체 관람|유아|청소년/.test(event.text);
+      }
+
+      function distanceKm([lat1, lon1], [lat2, lon2]) {
+        const radius = 6371;
+        const toRad = (value) => (value * Math.PI) / 180;
+        const dLat = toRad(lat2 - lat1);
+        const dLon = toRad(lon2 - lon1);
+        const a =
+          Math.sin(dLat / 2) ** 2 +
+          Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+        return radius * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      }
+
+      function closestDistrict(coords) {
+        return Object.entries(districtCenters)
+          .map(([name, center]) => [name, distanceKm(coords, center)])
+          .sort((a, b) => a[1] - b[1])[0]?.[0];
+      }
+
+      function getTypeColor(type) {
+        if (/공원|수변|생태|숲|강변|생활|가족|체육|역사|테마/.test(type)) return "#70bd8a";
+        if (/공연/.test(type)) return "#e95f55";
+        if (/전시/.test(type)) return "#a98bd8";
+        if (/체험|교육/.test(type)) return "#66b8d4";
+        if (/축제|행사/.test(type)) return "#ecc65e";
+        return "#70bd8a";
+      }
+
+      function selectArea(area) {
+        state.selectedArea = state.selectedArea === area ? "" : area;
+        state.selectedId = null;
+        applyFilters();
+      }
+
+      function applyFilters() {
+        const query = state.search.trim().toLowerCase();
+        const filters = state.activeFilters;
+        if (state.mode !== "culture") {
+          let source = PARK_ITEMS;
+          let next = source.filter((item) => {
+            if (query && !item.text.toLowerCase().includes(query)) return false;
+            if (state.selectedArea && item.area !== state.selectedArea) return false;
+            if (filters.has("kids") && !/아이|가족|공원|산책/.test(item.text)) return false;
+            if (filters.has("free") && !/무료/.test(item.pay)) return false;
+            if (filters.has("near") && state.nearestDistrict && item.area !== "대구" && item.area !== state.nearestDistrict) return false;
+            return true;
+          });
+          state.filtered = next;
+          if (!next.some((item) => item.id === state.selectedId)) state.selectedId = next[0]?.id || null;
+          render();
+          return;
+        }
+
+        const timeFilters = [
+          filters.has("today") && ((event) => isInRange(event, today())),
+          filters.has("weekend") && overlapsWeekend,
+          filters.has("open") && isOpenNow,
+        ].filter(Boolean);
+        const typeFilters = [
+          filters.has("kids") && isKidFriendly,
+          filters.has("exhibition") && ((event) => /전시/.test(event.type)),
+          filters.has("performance") && ((event) => /공연/.test(event.type)),
+        ].filter(Boolean);
+
+        let next = state.events.filter((event) => {
+          if (query && !event.text.includes(query)) return false;
+          if (state.selectedArea && event.area !== state.selectedArea) return false;
+          if (timeFilters.length && !timeFilters.some((passes) => passes(event))) return false;
+          if (typeFilters.length && !typeFilters.some((passes) => passes(event))) return false;
+          if (filters.has("free") && !event.isFree) return false;
+          if (filters.has("near") && state.nearestDistrict && event.area !== state.nearestDistrict) return false;
+          return true;
+        });
+
+        next = next.sort((a, b) => {
+          const aTime = a.start?.getTime() || Number.MAX_SAFE_INTEGER;
+          const bTime = b.start?.getTime() || Number.MAX_SAFE_INTEGER;
+          return aTime - bTime || a.title.localeCompare(b.title, "ko");
+        });
+
+        state.filtered = next;
+        if (!next.some((event) => event.id === state.selectedId)) {
+          state.selectedId = next[0]?.id || null;
+        }
+        render();
+      }
+
+      function renderChips() {
+        els.chips.innerHTML = "";
+        modeFilters[state.mode].forEach((filter) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "chip";
+          button.textContent = filter.label;
+          button.style.setProperty("--chip", filter.color);
+          button.setAttribute("aria-pressed", state.activeFilters.has(filter.id));
+          button.addEventListener("click", () => {
+            if (filter.id === "near" && !state.nearestDistrict) {
+              requestLocation();
+              return;
+            }
+            if (state.activeFilters.has(filter.id)) state.activeFilters.delete(filter.id);
+            else state.activeFilters.add(filter.id);
+            applyFilters();
+          });
+          els.chips.append(button);
+        });
+      }
+
+      function renderDataTabs() {
+        els.dataTabs.innerHTML = "";
+        viewConfig.forEach((view) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "data-tab";
+          button.textContent = view.label;
+          button.setAttribute("aria-pressed", state.mode === view.id);
+          button.addEventListener("click", () => {
+            state.mode = view.id;
+            state.activeFilters = new Set(view.id === "culture" ? ["today"] : []);
+            state.selectedId = null;
+            applyFilters();
+          });
+          els.dataTabs.append(button);
+        });
+      }
+
+      function renderOutdoorSignal() {
+        const score = outdoorSignal.grade === "좋음" ? "OK" : outdoorSignal.grade === "보통" ? "MID" : "주의";
+        els.outdoorCard.innerHTML = `
+          <div class="outdoor-score">${score}</div>
+          <div>
+            <b>야외활동 ${escapeHtml(outdoorSignal.grade)}</b>
+            <p>기온 ${outdoorSignal.temp}도 · 미세먼지 ${outdoorSignal.pm10} · 초미세먼지 ${outdoorSignal.pm25}<br>${escapeHtml(outdoorSignal.message)}</p>
+          </div>
+        `;
+      }
+
+      function renderMapInsight() {
+        const cultureCount = state.mode === "culture" ? state.filtered.length : state.events.filter((event) => isInRange(event, today())).length;
+        const parkCount = PARK_ITEMS.length;
+        const activeAreas = new Set(state.filtered.map((item) => item.area).filter((area) => area && area !== "대구")).size;
+        els.mapInsight.innerHTML = `
+          ${state.selectedArea ? `<span>${escapeHtml(state.selectedArea)}만 보기</span>` : ""}
+          <span>오늘 문화 ${cultureCount}개</span>
+          <span>아이랑 공원 ${parkCount}곳</span>
+          <span>활성 구·군 ${activeAreas}곳</span>
+          <span>야외활동 ${escapeHtml(outdoorSignal.grade)}</span>
+        `;
+      }
+
+      function renderDistricts() {
+        const counts = Object.fromEntries(Object.keys(districtPositions).map((name) => [name, 0]));
+        state.filtered.forEach((item) => {
+          counts[item.area] = (counts[item.area] || 0) + 1;
+        });
+        document.querySelectorAll(".map-district").forEach((path) => {
+          const area = path.dataset.area;
+          const count = counts[area] || 0;
+          const selected = state.selectedArea === area;
+          path.classList.toggle("is-selected", selected);
+          path.classList.toggle("is-active", selected || count > 0);
+          path.classList.toggle("is-dim", state.selectedArea ? !selected : count === 0);
+          path.onclick = () => selectArea(area);
+        });
+        els.districts.innerHTML = "";
+        els.svgNodes.innerHTML = "";
+        const activeAreas = Object.entries(districtSvgPositions).filter(([name]) => (counts[name] || 0) > 0);
+        const hub = { x: state.mode === "culture" ? 382 : 360, y: state.mode === "culture" ? 522 : 546 };
+        activeAreas.forEach(([name, pos], index) => {
+          const count = counts[name] || 0;
+          const tone = areaColors[name] || "#70bd8a";
+          const drift = (index % 2 === 0 ? -1 : 1) * (24 + index * 5);
+          const bendY = (hub.y + pos.y) / 2 - 34 - index * 3;
+          const d = `M ${hub.x} ${hub.y} C ${hub.x + drift} ${bendY}, ${pos.x - drift} ${bendY}, ${pos.x} ${pos.y}`;
+          ["echo", ""].forEach((variant) => {
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            path.setAttribute("class", `data-flow${variant ? ` ${variant}` : ""}`);
+            path.setAttribute("d", d);
+            path.style.setProperty("--flow-color", tone);
+            path.style.setProperty("--flow-width", String(1.3 + Math.min(count, 4) * 0.42));
+            path.style.animationDelay = `${index * -0.17}s`;
+            els.svgNodes.append(path);
+          });
+        });
+        Object.entries(districtSvgPositions).forEach(([name, pos]) => {
+          const count = counts[name] || 0;
+          const tone = areaColors[name] || "#70bd8a";
+          const radius = 31;
+          const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+          const selected = state.selectedArea === name;
+          g.setAttribute("class", `svg-node${count || selected ? " is-active" : ""}${selected ? " is-selected" : ""}`);
+          g.setAttribute("transform", `translate(${pos.x} ${pos.y})`);
+          g.setAttribute("role", "button");
+          g.setAttribute("aria-label", `${name} 정보만 보기`);
+          g.tabIndex = 0;
+          g.style.setProperty("--tone", tone);
+          g.innerHTML = `
+            <circle class="node-pulse" r="${radius + 3}"></circle>
+            <circle class="node-core" r="${radius}"></circle>
+            <text class="node-name" y="-3">${name}</text>
+            <text class="node-count" y="14">${count}개</text>
+          `;
+          g.addEventListener("click", () => selectArea(name));
+          g.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              selectArea(name);
+            }
+          });
+          els.svgNodes.append(g);
+        });
+      }
+
+      function renderDataOrbit() {
+        const slots = [
+          { x: "18%", y: "35%" },
+          { x: "82%", y: "31%" },
+          { x: "17%", y: "58%" },
+          { x: "84%", y: "57%" },
+          { x: "27%", y: "76%" },
+          { x: "72%", y: "75%" },
+          { x: "50%", y: "86%" },
+          { x: "50%", y: "24%" },
+        ];
+        const ranked = [...state.filtered]
+          .sort((a, b) => {
+            const selectedScore = (b.id === state.selectedId) - (a.id === state.selectedId);
+            const areaScore = (b.area === state.selectedArea) - (a.area === state.selectedArea);
+            return selectedScore || areaScore || String(a.title).localeCompare(String(b.title), "ko");
+          })
+          .slice(0, slots.length);
+        els.dataOrbit.innerHTML = "";
+        ranked.forEach((item, index) => {
+          const slot = slots[index];
+          const node = document.createElement("button");
+          node.type = "button";
+          node.className = `orbit-node${item.id === state.selectedId ? " is-selected" : ""}`;
+          node.style.setProperty("--x", slot.x);
+          node.style.setProperty("--y", slot.y);
+          node.style.setProperty("--node-color", areaColors[item.area] || getTypeColor(item.type));
+          node.innerHTML = `
+            <b>${escapeHtml(item.title)}</b>
+            <span>${escapeHtml(item.area)} · ${escapeHtml(item.type)} · ${escapeHtml(state.mode === "culture" ? formatPeriod(item) : item.bestFor || item.pay)}</span>
+          `;
+          node.addEventListener("click", () => {
+            state.selectedId = item.id;
+            render();
+          });
+          els.dataOrbit.append(node);
+        });
+      }
+
+      function formatPeriod(event) {
+        if (!event.startKey) return "일정 미정";
+        if (event.startKey === event.endKey) return event.startKey;
+        return `${event.startKey} - ${event.endKey}`;
+      }
+
+      function renderList() {
+        els.list.innerHTML = "";
+        if (!state.filtered.length) {
+          els.list.innerHTML = '<div class="empty">선택한 조건에 맞는 정보가 없습니다. 필터를 줄이거나 새로고침해 주세요.</div>';
+          return;
+        }
+
+        state.filtered.slice(0, 80).forEach((event) => {
+          const card = document.createElement("button");
+          card.type = "button";
+          card.className = `event-card ${event.id === state.selectedId ? "active" : ""}`;
+          card.innerHTML = `
+            <div class="tags">
+              <span class="tag">${escapeHtml(event.type)}</span>
+              <span class="tag">${escapeHtml(event.area)}</span>
+              ${event.isFree || event.pay === "무료" ? '<span class="tag">무료</span>' : ""}
+              ${isKidFriendly(event) ? '<span class="tag">가족</span>' : ""}
+              ${event.bestFor ? `<span class="tag">${escapeHtml(event.bestFor)}</span>` : ""}
+            </div>
+            <h2>${escapeHtml(event.title)}</h2>
+            <div class="event-meta">${escapeHtml(state.mode === "culture" ? formatPeriod(event) : event.pay)}<br>${escapeHtml(event.place)}</div>
+          `;
+          card.addEventListener("click", () => {
+            state.selectedId = event.id;
+            render();
+          });
+          els.list.append(card);
+        });
+      }
+
+      function renderDetail() {
+        const event = state.filtered.find((item) => item.id === state.selectedId);
+        if (!event) {
+          els.detail.innerHTML = "<p>정보를 선택하면 상세 내용이 표시됩니다.</p>";
+          return;
+        }
+        const maps = `https://map.kakao.com/link/search/${encodeURIComponent(event.place)}`;
+        const calendar = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${event.startKey?.replaceAll("-", "") || ""}/${event.endKey?.replaceAll("-", "") || event.startKey?.replaceAll("-", "") || ""}&details=${encodeURIComponent(event.content)}&location=${encodeURIComponent(event.place)}`;
+        els.detail.innerHTML = `
+          <div class="tags">
+            <span class="tag">${escapeHtml(event.type)}</span>
+            <span class="tag">${escapeHtml(event.area)}</span>
+            <span class="tag">${escapeHtml(event.pay)}</span>
+          </div>
+          <h2>${escapeHtml(event.title)}</h2>
+          <p>${escapeHtml(state.mode === "culture" ? formatPeriod(event) : event.pay)} · ${escapeHtml(event.place)}</p>
+          <p>${escapeHtml(event.content || "상세 설명은 공식 페이지에서 확인할 수 있습니다.")}</p>
+          ${event.facilities ? `<p>${event.facilities.map(escapeHtml).join(" · ")}</p>` : ""}
+          ${event.contact ? `<p>문의 ${escapeHtml(event.contact)}</p>` : ""}
+          <div class="detail-actions">
+            ${event.homepage ? `<a class="link-button primary" href="${escapeHtml(event.homepage)}" target="_blank" rel="noreferrer">상세 보기</a>` : ""}
+            <a class="link-button" href="${maps}" target="_blank" rel="noreferrer">길찾기</a>
+            ${state.mode === "culture" ? `<a class="link-button" href="${calendar}" target="_blank" rel="noreferrer">일정 담기</a>` : ""}
+          </div>
+        `;
+      }
+
+      function renderClock() {
+        const now = new Date();
+        const weekday = ["일", "월", "화", "수", "목", "금", "토"][now.getDay()];
+        els.clock.textContent = `${now.getFullYear()}.${pad(now.getMonth() + 1)}.${pad(now.getDate())}(${weekday}) ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+      }
+
+      function renderMeta() {
+        const [sat, sun] = weekendRange();
+        els.dateLabel.textContent = `오늘 ${toDateKey(today())} · 주말 ${toDateKey(sat)}-${toDateKey(sun).slice(5)}`;
+        els.countLabel.textContent = `${state.filtered.length}개`;
+        els.liveCount.textContent = state.filtered.length;
+        const view = viewConfig.find((item) => item.id === state.mode) || viewConfig[0];
+        els.liveLabel.textContent = view.countLabel;
+        els.resultTitle.textContent = view.resultTitle;
+        document.querySelector("#source-label").textContent = view.source;
+        const locationLabel = state.nearestDistrict ? ` · 가까운 곳 ${state.nearestDistrict}` : "";
+        const source = state.loadState === "live" ? "실시간 API+공식 거점" : "임시 샘플+공식 거점";
+        const updated = state.updatedAt
+          ? ` · ${pad(state.updatedAt.getHours())}:${pad(state.updatedAt.getMinutes())} 갱신`
+          : "";
+        els.status.textContent = state.mode === "culture" ? `${source} 연결${locationLabel}${updated}` : `${view.label} 보기${locationLabel}${updated}`;
+      }
+
+      function render() {
+        renderDataTabs();
+        renderOutdoorSignal();
+        renderMapInsight();
+        renderChips();
+        renderDistricts();
+        renderDataOrbit();
+        renderList();
+        renderDetail();
+        renderMeta();
+        drawPulse();
+      }
+
+      async function loadEvents(refresh = false) {
+        state.loadState = "loading";
+        els.status.textContent = "문화 데이터를 불러오는 중";
+        if (location.protocol === "file:") {
+          state.raw = FALLBACK_EVENTS;
+          state.loadState = "sample";
+          state.updatedAt = new Date();
+          state.events = [...state.raw, ...CULTURE_ANCHOR_EVENTS].map(normalizeEvent).filter((event) => event.start);
+          applyFilters();
+          return;
+        }
+        try {
+          const response = await fetch(`${API_URL}${refresh ? "?refresh=1" : ""}`);
+          if (!response.ok) throw new Error(`API ${response.status}`);
+          const data = await response.json();
+          state.raw = Array.isArray(data) ? data : [];
+          state.loadState = "live";
+          state.updatedAt = new Date();
+        } catch (error) {
+          console.warn(error);
+          state.raw = FALLBACK_EVENTS;
+          state.loadState = "sample";
+          state.updatedAt = new Date();
+        }
+        state.events = [...state.raw, ...CULTURE_ANCHOR_EVENTS].map(normalizeEvent).filter((event) => event.start);
+        applyFilters();
+      }
+
+      function requestLocation() {
+        if (!navigator.geolocation) {
+          state.nearestDistrict = "중구";
+          state.activeFilters.add("near");
+          applyFilters();
+          return;
+        }
+        els.status.textContent = "현재 위치를 확인하는 중";
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            state.nearestDistrict = closestDistrict([position.coords.latitude, position.coords.longitude]) || "중구";
+            state.activeFilters.add("near");
+            applyFilters();
+          },
+          () => {
+            state.nearestDistrict = "중구";
+            state.activeFilters.add("near");
+            applyFilters();
+          },
+          { enableHighAccuracy: false, timeout: 7000, maximumAge: 600000 },
+        );
+      }
+
+      els.search.addEventListener("input", (event) => {
+        state.search = event.target.value;
+        applyFilters();
+      });
+      els.refresh.addEventListener("click", () => loadEvents(true));
+
+      const ctx = els.canvas.getContext("2d");
+      const liteMotion =
+        location.protocol === "file:" ||
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      document.documentElement.classList.toggle("lite-motion", liteMotion);
+      let particles = [];
+      let flows = [];
+      let lastFrame = 0;
+
+      function resizeCanvas() {
+        if (liteMotion) return;
+        const rect = els.canvas.getBoundingClientRect();
+        const scale = Math.min(window.devicePixelRatio || 1, 1.4);
+        els.canvas.width = Math.max(1, Math.floor(rect.width * scale));
+        els.canvas.height = Math.max(1, Math.floor(rect.height * scale));
+        ctx.setTransform(scale, 0, 0, scale, 0, 0);
+      }
+
+      function svgToCanvasPoint(point) {
+        const canvasRect = els.canvas.getBoundingClientRect();
+        const mapRect = els.mapArt.getBoundingClientRect();
+        return {
+          x: mapRect.left - canvasRect.left + (point.x / 760) * mapRect.width,
+          y: mapRect.top - canvasRect.top + (point.y / 820) * mapRect.height,
+        };
+      }
+
+      function drawPulse() {
+        if (liteMotion) {
+          particles = [];
+          flows = [];
+          return;
+        }
+        const count = Math.max(18, Math.min(54, state.filtered.length * 2));
+        particles = Array.from({ length: count }, (_, index) => {
+          const event = state.filtered[index % Math.max(1, state.filtered.length)];
+          const pos = svgToCanvasPoint(districtSvgPositions[event?.area] || { x: 380, y: 520 });
+          const tone = areaColors[event?.area] || getTypeColor(event?.type || "행사");
+          return {
+            x: pos.x + (Math.random() - 0.5) * 58,
+            y: pos.y + (Math.random() - 0.5) * 58,
+            r: 2 + Math.random() * 6,
+            phase: Math.random() * Math.PI * 2,
+            color: tone,
+            speed: 0.012 + Math.random() * 0.018,
+          };
+        });
+        const hub = svgToCanvasPoint(state.mode === "culture" ? { x: 382, y: 522 } : { x: 360, y: 546 });
+        flows = state.filtered.slice(0, 18).map((event, index) => {
+          const pos = svgToCanvasPoint(districtSvgPositions[event.area] || { x: 380, y: 520 });
+          const end = {
+            x: pos.x + Math.sin(index * 1.7) * 18,
+            y: pos.y + Math.cos(index * 1.3) * 16,
+          };
+          const bend = {
+            x: (hub.x + end.x) / 2 + (index % 2 === 0 ? -1 : 1) * (32 + (index % 5) * 9),
+            y: (hub.y + end.y) / 2 - 70 + Math.sin(index) * 34,
+          };
+          return {
+            start: hub,
+            control: bend,
+            end,
+            color: areaColors[event.area] || getTypeColor(event.type),
+            width: 0.75 + Math.min(2.2, Math.max(0.8, state.filtered.length / 18)) + (index % 3) * 0.14,
+            speed: 0.055 + (index % 7) * 0.006,
+            phase: (index * 0.137) % 1,
+            glow: 7 + (index % 3) * 3,
+          };
+        });
+      }
+
+      function pointOnCurve(flow, t) {
+        const inv = 1 - t;
+        return {
+          x: inv * inv * flow.start.x + 2 * inv * t * flow.control.x + t * t * flow.end.x,
+          y: inv * inv * flow.start.y + 2 * inv * t * flow.control.y + t * t * flow.end.y,
+        };
+      }
+
+      function animate(timestamp = 0) {
+        if (liteMotion) return;
+        if (document.hidden) {
+          requestAnimationFrame(animate);
+          return;
+        }
+        if (timestamp - lastFrame < 33) {
+          requestAnimationFrame(animate);
+          return;
+        }
+        lastFrame = timestamp;
+        const rect = els.canvas.getBoundingClientRect();
+        ctx.clearRect(0, 0, rect.width, rect.height);
+        const now = timestamp * 0.001;
+
+        ctx.globalCompositeOperation = "screen";
+        flows.forEach((flow, index) => {
+          ctx.beginPath();
+          ctx.strokeStyle = flow.color;
+          ctx.globalAlpha = 0.08;
+          ctx.lineWidth = flow.width * 3.4;
+          ctx.shadowBlur = flow.glow;
+          ctx.shadowColor = flow.color;
+          ctx.moveTo(flow.start.x, flow.start.y);
+          ctx.quadraticCurveTo(flow.control.x, flow.control.y + Math.sin(now * 0.9 + index) * 10, flow.end.x, flow.end.y);
+          ctx.stroke();
+
+          ctx.setLineDash([1, 13]);
+          ctx.lineDashOffset = -now * 58 - index * 9;
+          ctx.beginPath();
+          ctx.strokeStyle = flow.color;
+          ctx.globalAlpha = 0.3;
+          ctx.lineWidth = flow.width * 1.1;
+          ctx.moveTo(flow.start.x, flow.start.y);
+          ctx.quadraticCurveTo(flow.control.x, flow.control.y + Math.sin(now * 0.9 + index) * 10, flow.end.x, flow.end.y);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          for (let i = 0; i < 2; i += 1) {
+            const t = (flow.phase + now * flow.speed + i * 0.5) % 1;
+            const head = pointOnCurve(flow, t);
+            const halo = ctx.createRadialGradient(head.x, head.y, 0, head.x, head.y, 15 + flow.glow);
+            halo.addColorStop(0, "rgba(255,255,255,0.92)");
+            halo.addColorStop(0.24, flow.color);
+            halo.addColorStop(1, "rgba(255,255,255,0)");
+            ctx.beginPath();
+            ctx.fillStyle = halo;
+            ctx.globalAlpha = 0.22 + Math.sin(now * 2 + index + i) * 0.04;
+            ctx.arc(head.x, head.y, 15 + flow.glow, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.fillStyle = "#fffdf4";
+            ctx.globalAlpha = 0.72;
+            ctx.arc(head.x, head.y, 1.8 + flow.width * 0.7, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        });
+
+        particles.forEach((p) => {
+          const pulse = 0.55 + Math.sin(now * 2.2 + p.phase) * 0.45;
+          ctx.beginPath();
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = 0.08 + pulse * 0.2;
+          ctx.shadowBlur = 10;
+          ctx.shadowColor = p.color;
+          ctx.arc(p.x + Math.sin(now + p.phase) * 6, p.y + Math.cos(now * 0.8 + p.phase) * 6, p.r + pulse * 4.5, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        ctx.shadowBlur = 0;
+        ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = "source-over";
+        requestAnimationFrame(animate);
+      }
+
+      window.addEventListener("resize", () => {
+        resizeCanvas();
+        drawPulse();
+      });
+
+      resizeCanvas();
+      renderClock();
+      animate();
+      loadEvents();
+      setInterval(renderClock, 1000);
+      setInterval(() => loadEvents(true), 10 * 60 * 1000);
+      setInterval(applyFilters, 60 * 1000);
+    </script>
+  </body>
+</html>
