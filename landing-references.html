@@ -985,6 +985,58 @@
         line-height: 1.7;
       }
 
+      .trust-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 24px;
+      }
+
+      .trust-row span {
+        display: inline-flex;
+        min-height: 34px;
+        align-items: center;
+        padding: 0 12px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 999px;
+        color: rgba(248, 251, 244, 0.76);
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .case-hero.variant-1 {
+        background-position: 72% center;
+      }
+
+      .case-hero.variant-2 {
+        background-position: 28% center;
+      }
+
+      .case-hero.variant-3 {
+        background-blend-mode: multiply, normal, normal;
+      }
+
+      .case-hero.variant-1 .case-copy,
+      .case-hero.variant-3 .case-copy {
+        order: 2;
+      }
+
+      .case-hero.variant-1 .promo-offer,
+      .case-hero.variant-1 .doctor-card,
+      .case-hero.variant-1 .public-console,
+      .case-hero.variant-1 .stamp-pass,
+      .case-hero.variant-1 .contest-console,
+      .case-hero.variant-1 .report-panel,
+      .case-hero.variant-3 .promo-offer,
+      .case-hero.variant-3 .doctor-card,
+      .case-hero.variant-3 .public-console,
+      .case-hero.variant-3 .stamp-pass,
+      .case-hero.variant-3 .contest-console,
+      .case-hero.variant-3 .report-panel {
+        order: 1;
+      }
+
       .detail-section {
         padding: clamp(58px, 8vw, 106px) clamp(22px, 6vw, 92px);
         color: #1f2a24;
@@ -1303,6 +1355,137 @@
         "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80",
       ];
 
+      const caseBlueprints = {
+        "insurance-event-survey": {
+          trust: ["경품 이벤트", "개인정보 동의", "상담 전환"],
+          steps: ["건강습관 체크", "이벤트 응모", "관심 보장 선택"],
+          stats: ["참여 예상 1,200명", "상담 전환 18%", "응답 3분"],
+          fields: ["이름 / 연락처", "관심 보장", "건강 습관", "이벤트 동의"],
+          metrics: ["응답률", "상담희망", "관심상품", "완료율"],
+          output: "이벤트 참여자 명단과 상담 희망 고객을 분리 정리합니다.",
+        },
+        "insurance-review": {
+          trust: ["무료 진단", "보장 점검", "상담 예약"],
+          steps: ["가입 현황 입력", "월 보험료 체크", "상담 시간 선택"],
+          stats: ["보장 점검", "월보험료", "부족 보장", "상담 예약"],
+          fields: ["연령대", "보험 개수", "월 보험료", "상담 희망 시간"],
+          metrics: ["보장 공백", "보험료 부담", "리모델링 관심", "상담 전환"],
+          output: "상담 전 고객 상황을 요약한 진단 리포트를 만듭니다.",
+        },
+        "child-safety-insurance": {
+          trust: ["학부모 대상", "안전 체크", "어린이보험"],
+          steps: ["자녀 연령", "통학 방식", "걱정 사고"],
+          stats: ["안전점수", "통학위험", "보험관심", "상담신청"],
+          fields: ["자녀 나이", "등하교 방식", "최근 사고 경험", "상담 동의"],
+          metrics: ["안전 관심도", "통학 위험", "보장 니즈", "참여 완료"],
+          output: "학부모 캠페인 참여 현황과 상담 대상자를 정리합니다.",
+        },
+        "senior-health-check": {
+          trust: ["검진 안내", "시니어 상담", "예약 연결"],
+          steps: ["출생연도", "관심 검진", "지역 선택"],
+          stats: ["오늘 상담", "검진 문의", "지역 분류", "콜백 예약"],
+          fields: ["출생연도", "희망 검진", "거주 지역", "보호자 연락처"],
+          metrics: ["검진 관심", "예약 의향", "상담 필요", "완료율"],
+          output: "검진 희망자와 보호자 상담 요청을 분리합니다.",
+        },
+        "pet-insurance": {
+          trust: ["펫보험", "체험 이벤트", "병원 이용"],
+          steps: ["반려동물 정보", "병원 이용", "혜택 신청"],
+          stats: ["쿠폰", "펫 나이", "병원 빈도"],
+          fields: ["반려동물 종류", "나이", "병원 이용 빈도", "상담 동의"],
+          metrics: ["이벤트 참여", "펫보험 관심", "상담 전환", "쿠폰 신청"],
+          output: "펫보험 관심 고객과 이벤트 쿠폰 신청자를 모읍니다.",
+        },
+        "retirement-plan": {
+          trust: ["은퇴설계", "연금 상담", "진단 리포트"],
+          steps: ["은퇴 예정", "월 저축액", "연금 관심"],
+          stats: ["은퇴시점", "준비금", "연금관심", "상담예약"],
+          fields: ["연령대", "은퇴 예정 시점", "월 저축액", "상담 희망"],
+          metrics: ["준비도", "연금 니즈", "저축 여력", "상담 전환"],
+          output: "은퇴 준비 점수와 상담 우선순위를 보여줍니다.",
+        },
+      };
+
+      const defaultBlueprints = {
+        medical: {
+          trust: ["예약 접수", "모바일 문진", "콜백 연결"],
+          steps: ["희망 일정", "진료/검진 선택", "연락처 확인"],
+          stats: ["오늘 상담", "이번 주 예약", "모바일 문진", "콜백"],
+          fields: ["이름 / 연락처", "희망 날짜", "희망 항목", "상담 동의"],
+          metrics: ["예약 문의", "콜백 요청", "검진 관심", "완료율"],
+          output: "예약 문의와 콜백 요청을 관리자용 표로 정리합니다.",
+        },
+        public: {
+          trust: ["공공사업", "참여자 모집", "결과 보고"],
+          steps: ["대상 확인", "회차 선택", "신청 완료"],
+          stats: ["모집 인원", "신청 상태", "운영 회차", "결과 보고"],
+          fields: ["이름", "거주지", "희망 회차", "참여 동기"],
+          metrics: ["신청 수", "회차별 정원", "지역 분포", "참여 완료"],
+          output: "신청자 명단, 회차별 정원, 결과 보고용 수치를 정리합니다.",
+        },
+        event: {
+          trust: ["모바일 인증", "현장 QR", "경품 접수"],
+          steps: ["방문 인증", "스탬프 저장", "경품 신청"],
+          stats: ["01", "02", "03"],
+          fields: ["방문 장소", "인증 사진", "연락처", "개인정보 동의"],
+          metrics: ["방문 인증", "쿠폰 신청", "재방문", "완료율"],
+          output: "현장 방문 인증과 경품 신청 데이터를 함께 모읍니다.",
+        },
+        contest: {
+          trust: ["공모 접수", "파일 업로드", "심사 자료"],
+          steps: ["제안서 작성", "첨부 파일", "접수 완료"],
+          stats: ["PDF", "IMAGE", "DOC"],
+          fields: ["제안 제목", "제안 내용", "첨부 파일", "연락처"],
+          metrics: ["접수 건수", "첨부율", "심사대상", "완료율"],
+          output: "심사위원이 바로 볼 수 있는 제출 자료 목록을 만듭니다.",
+        },
+        report: {
+          trust: ["설문 분석", "지표 시각화", "결과 리포트"],
+          steps: ["응답 수집", "지표 분석", "결과 공유"],
+          stats: ["관심도", "참여율", "상담 전환", "만족도"],
+          fields: ["기본 정보", "만족도", "관심 항목", "자유 의견"],
+          metrics: ["관심도", "참여율", "상담 전환", "만족도"],
+          output: "응답 결과를 사업 결과 보고용 그래프로 정리합니다.",
+        },
+        promo: {
+          trust: ["이벤트", "설문", "상담"],
+          steps: ["참여 정보", "설문 응답", "혜택 신청"],
+          stats: ["EVENT", "SURVEY", "LEAD"],
+          fields: ["이름 / 연락처", "관심 항목", "설문 응답", "동의"],
+          metrics: ["응답률", "참여율", "전환율", "완료율"],
+          output: "이벤트 참여자와 상담 희망자를 구분해 저장합니다.",
+        },
+      };
+
+      const blueprintOverrides = {
+        "hospital-checkup": { trust: ["검진 패키지", "상담 콜백", "예약 문의"], stats: ["오늘 상담", "검진 패키지", "희망 날짜", "콜백"], fields: ["희망 검진", "희망 날짜", "보호자 연락처", "상담 동의"], output: "검진 패키지별 문의와 콜백 요청을 정리합니다." },
+        "hospital-appointment": { trust: ["초진/재진", "증상 사전접수", "대기 단축"], stats: ["진료 과목", "초진/재진", "증상 메모", "내원 시간"], fields: ["진료 과목", "증상 메모", "초진 여부", "희망 시간"], output: "접수 전 증상 정보를 받아 병원 전화응대를 줄입니다." },
+        "hospital-patient-survey": { trust: ["환자경험", "대기시간", "서비스 개선"], stats: ["대기 만족", "응대 만족", "재방문", "개선 의견"], fields: ["방문 과목", "대기 만족도", "응대 만족도", "개선 의견"], output: "월별 환자경험 리포트와 개선 의견을 정리합니다." },
+        "hospital-health-class": { trust: ["건강강좌", "지역 주민", "참석자 명단"], stats: ["모집 인원", "강좌 주제", "참석 확정", "문자 안내"], fields: ["참석 인원", "관심 주제", "연령대", "연락처"], output: "건강강좌 신청자와 안내 문자 발송 명단을 만듭니다." },
+        "city-program-recruit": { trust: ["청년 대상", "회차별 모집", "문자 안내"], stats: ["모집 인원", "신청 상태", "운영 회차", "대기자"], fields: ["이름", "거주지", "희망 회차", "참여 동기"], output: "회차별 정원과 대기자를 구분해 관리합니다." },
+        "public-survey": { trust: ["정책 수요", "QR 설문", "의견 분석"], stats: ["응답 수", "관심 정책", "만족도", "자유 의견"], fields: ["거주 지역", "관심 정책", "만족도", "자유 의견"], output: "정책 수요와 시민 의견을 결과 보고 표로 만듭니다." },
+        "festival-volunteer": { trust: ["자원봉사", "시간대 배정", "1365"], stats: ["봉사자", "가능 날짜", "업무 배정", "사전 안내"], fields: ["가능 날짜", "가능 시간", "희망 업무", "1365 ID"], output: "시간대별 봉사자 배치표를 만듭니다." },
+        "tour-stamp": { trust: ["방문 인증", "스탬프", "경품 신청"], stats: ["코스 01", "코스 02", "코스 03"], fields: ["방문 장소", "인증 사진", "연락처", "동의"], output: "관광지별 방문 인증과 경품 신청을 모읍니다." },
+        "carbon-challenge": { trust: ["탄소중립", "실천 인증", "성과 집계"], stats: ["실천 항목", "인증 사진", "동네", "소감"], fields: ["실천 항목", "인증 사진", "동네", "참여 소감"], output: "시민 실천 인증을 캠페인 성과로 집계합니다." },
+        "safety-education": { trust: ["재난안전", "교육 신청", "참석자"], stats: ["교육 날짜", "참석 인원", "소속", "안내"], fields: ["교육 날짜", "참석 인원", "소속", "연락처"], output: "교육 참석자 명단과 안내 메시지 대상을 정리합니다." },
+        "traffic-safety": { trust: ["안전 서약", "퀴즈", "캠페인"], stats: ["학교명", "학년", "안전 퀴즈", "서약"], fields: ["학교명", "학년", "안전 퀴즈", "서약 동의"], output: "학교별 캠페인 참여율과 퀴즈 결과를 정리합니다." },
+        "birthcare-support": { trust: ["지원 대상", "복지 안내", "상담"], stats: ["자녀 연령", "거주지", "필요 지원", "상담"], fields: ["자녀 연령", "거주지", "필요 지원", "상담 신청"], output: "지원 대상 확인과 상담 요청을 분류합니다." },
+        "idea-contest": { trust: ["제안 접수", "파일 업로드", "심사 자료"], stats: ["PDF", "이미지", "연락처"], fields: ["제안 제목", "제안 내용", "첨부 파일", "연락처"], output: "제안서와 첨부파일을 심사용 목록으로 정리합니다." },
+        "media-art-workshop": { trust: ["미디어아트", "보호자 동의", "회차 모집"], stats: ["참가자 연령", "보호자", "희망 회차", "동의"], fields: ["참가자 연령", "보호자 연락처", "희망 회차", "개인정보 동의"], output: "어린이·청소년 워크숍 신청자와 보호자 동의를 관리합니다." },
+        "hometown-donation": { trust: ["답례품", "기부 혜택", "문의 수집"], stats: ["답례품", "거주 지역", "문의 유형"], fields: ["관심 답례품", "거주 지역", "문의 유형", "연락처"], output: "답례품 관심도와 기부 문의를 함께 정리합니다." },
+        "market-coupon": { trust: ["전통시장", "구매 인증", "쿠폰"], stats: ["방문 시장", "구매 인증", "쿠폰 발급"], fields: ["방문 시장", "구매 인증", "휴대폰", "동의"], output: "시장별 방문 인증과 모바일 쿠폰 신청을 집계합니다." },
+        "smallbiz-support": { trust: ["소상공인", "지원 상담", "대상 분류"], stats: ["업종", "매장 위치", "필요 지원", "상담"], fields: ["업종", "매장 위치", "필요 지원", "상담 신청"], output: "지원 대상 사업자를 업종과 필요 지원별로 분류합니다." },
+        "employee-esg": { trust: ["ESG", "임직원 참여", "인증 리포트"], stats: ["소속", "실천 항목", "인증 사진", "소감"], fields: ["소속", "실천 항목", "인증 사진", "참여 소감"], output: "조직 내부 ESG 참여 인증과 결과 리포트를 만듭니다." },
+      };
+
+      function blueprintFor(item) {
+        return {
+          ...defaultBlueprints[item.template],
+          ...(caseBlueprints[item.id] || {}),
+          ...(blueprintOverrides[item.id] || {}),
+        };
+      }
+
       const palettes = [
         ["#ffe879", "#ffb06b", "#3b221a", "#5a3427", "#fff4cd"],
         ["#cfe8ff", "#8db8d8", "#153049", "#224b67", "#edf8ff"],
@@ -1348,12 +1531,13 @@
           .join("");
       }
 
-      function caseCopy(item, english) {
+      function caseCopy(item, english, bp) {
         return `
           <span class="case-eyebrow">${item.group} · ${item.template} reference · Korean / English</span>
           <h1 class="case-title">${item.title}</h1>
           <span class="case-title-en">${english}</span>
           <p class="case-lead">${item.summary}</p>
+          <div class="trust-row">${bp.trust.map((text) => `<span>${text}</span>`).join("")}</div>
           <div class="actions">
             <a class="button primary" href="#details">${item.cta}</a>
             <a class="button" href="./landing-references.html">다른 레퍼런스 보기</a>
@@ -1362,21 +1546,21 @@
       }
 
       function renderCaseHero(item, english, image) {
+        const bp = blueprintFor(item);
+        const variant = `variant-${item.index % 4}`;
         if (item.template === "promo") {
           return `
-            <section class="case-hero promo-stage">
+            <section class="case-hero promo-stage ${variant}">
               <div>
-                ${caseCopy(item, english)}
+                ${caseCopy(item, english, bp)}
                 <aside class="survey-ticket">
-                  <span><b>Step 01</b><strong>건강습관 체크</strong></span>
-                  <span><b>Step 02</b><strong>이벤트 응모</strong></span>
-                  <span><b>Step 03</b><strong>상담 희망 선택</strong></span>
+                  ${bp.steps.map((step, index) => `<span><b>Step ${String(index + 1).padStart(2, "0")}</b><strong>${step}</strong></span>`).join("")}
                 </aside>
               </div>
               <div class="promo-offer">
-                <p>Monthly Event</p>
-                <strong>보험<br />EVENT</strong>
-                <p>Survey reward, lead capture, consultation flow.</p>
+                <p>${bp.stats[0]}</p>
+                <strong>${item.badge}<br />EVENT</strong>
+                <p>${bp.output}</p>
               </div>
             </section>
           `;
@@ -1384,18 +1568,15 @@
 
         if (item.template === "medical") {
           return `
-            <section class="case-hero medical-stage">
+            <section class="case-hero medical-stage ${variant}">
               <figure class="doctor-card">
                 <img src="${image}" alt="${english}" />
                 <div><span class="case-eyebrow">Hospital Booking System</span><h2>${english}</h2></div>
               </figure>
               <div>
-                ${caseCopy(item, english)}
+                ${caseCopy(item, english, bp)}
                 <div class="medical-slots">
-                  <span><b>오늘</b><p>상담 가능</p></span>
-                  <span><b>이번 주</b><p>예약 여유</p></span>
-                  <span><b>모바일</b><p>문진 확인</p></span>
-                  <span><b>콜백</b><p>담당자 연결</p></span>
+                  ${bp.stats.map((stat, index) => `<span><b>${index === 0 ? "01" : index === 1 ? "02" : index === 2 ? "03" : "04"}</b><p>${stat}</p></span>`).join("")}
                 </div>
               </div>
             </section>
@@ -1404,13 +1585,10 @@
 
         if (item.template === "public") {
           return `
-            <section class="case-hero public-stage">
-              <div>${caseCopy(item, english)}</div>
+            <section class="case-hero public-stage ${variant}">
+              <div>${caseCopy(item, english, bp)}</div>
               <aside class="public-console">
-                <div><span>모집 인원</span><b>120명</b></div>
-                <div><span>신청 상태</span><b>OPEN</b></div>
-                <div><span>운영 회차</span><b>04</b></div>
-                <div><span>결과 보고</span><b>PDF</b></div>
+                ${bp.stats.map((stat, index) => `<div><span>${bp.fields[index] || `항목 ${index + 1}`}</span><b>${stat}</b></div>`).join("")}
               </aside>
             </section>
           `;
@@ -1418,11 +1596,11 @@
 
         if (item.template === "event") {
           return `
-            <section class="case-hero event-stage">
-              <div>${caseCopy(item, english)}</div>
+            <section class="case-hero event-stage ${variant}">
+              <div>${caseCopy(item, english, bp)}</div>
               <aside class="stamp-pass">
                 <img src="${image}" alt="${english}" />
-                <div class="stamp-row"><span>01</span><span>02</span><span>03</span></div>
+                <div class="stamp-row">${bp.stats.slice(0, 3).map((stat) => `<span>${stat}</span>`).join("")}</div>
               </aside>
             </section>
           `;
@@ -1430,27 +1608,22 @@
 
         if (item.template === "contest") {
           return `
-            <section class="case-hero contest-stage">
-              <div>${caseCopy(item, english)}</div>
+            <section class="case-hero contest-stage ${variant}">
+              <div>${caseCopy(item, english, bp)}</div>
               <aside class="contest-console">
-                <div class="drop"><strong>PDF / IMAGE</strong><p>제안서와 첨부파일 업로드</p></div>
-                <span>제안 제목</span>
-                <span>제안 내용</span>
-                <span>연락처 / 개인정보 동의</span>
+                <div class="drop"><strong>${bp.stats.join(" / ")}</strong><p>${bp.output}</p></div>
+                ${bp.fields.slice(0, 3).map((field) => `<span>${field}</span>`).join("")}
               </aside>
             </section>
           `;
         }
 
         return `
-          <section class="case-hero report-stage">
+          <section class="case-hero report-stage ${variant}">
             <aside class="report-panel">
-              <span>관심도 <i style="--value: 82%"></i></span>
-              <span>참여율 <i style="--value: 64%"></i></span>
-              <span>상담 전환 <i style="--value: 43%"></i></span>
-              <span>만족도 <i style="--value: 76%"></i></span>
+              ${bp.metrics.map((metric, index) => `<span>${metric} <i style="--value: ${[82, 64, 43, 76][index] || 58}%"></i></span>`).join("")}
             </aside>
-            <div>${caseCopy(item, english)}</div>
+            <div>${caseCopy(item, english, bp)}</div>
           </section>
         `;
       }
@@ -1470,8 +1643,8 @@
           <section class="detail-section" id="details">
             <div class="detail-grid">
               <article><span>01 Strategy</span><h3>첫 화면 목적이 다르게 보입니다.</h3><p>${item.group} 사용자가 바로 이해할 수 있도록 제목, 행동 버튼, 정보 구조를 주제별로 바꿉니다.</p></article>
-              <article><span>02 Form</span><h3>폼도 목적에 맞춰 설계합니다.</h3><p>설문, 예약, 모집, 업로드, 쿠폰, 리포트형 중 프로젝트에 맞는 입력 흐름을 사용합니다.</p></article>
-              <article><span>03 Report</span><h3>사업 결과로 정리됩니다.</h3><p>QR 유입, 신청자, 응답 데이터, 참여 결과를 공공사업 보고 자료로 정리할 수 있습니다.</p></article>
+              <article><span>02 Form</span><h3>${blueprintFor(item).fields.slice(0, 2).join(" · ")}</h3><p>${blueprintFor(item).fields.slice(2).join(", ")} 항목까지 프로젝트에 맞게 받습니다.</p></article>
+              <article><span>03 Report</span><h3>사업 결과로 정리됩니다.</h3><p>${blueprintFor(item).output}</p></article>
             </div>
           </section>
         `;
