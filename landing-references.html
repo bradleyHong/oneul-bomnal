@@ -184,6 +184,14 @@
         line-height: 1.7;
       }
 
+      .image-note {
+        display: block;
+        margin-top: 28px;
+        color: rgba(31, 42, 36, 0.56);
+        font-size: 13px;
+        font-weight: 850;
+      }
+
       .reference-grid {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -192,10 +200,11 @@
 
       .ref-card {
         position: relative;
-        display: grid;
+        display: flex;
+        flex-direction: column;
         min-height: 420px;
         overflow: hidden;
-        padding: 26px;
+        padding: 0;
         border: 1px solid rgba(31, 42, 36, 0.12);
         border-radius: 8px;
         color: var(--card-ink);
@@ -212,9 +221,10 @@
       }
 
       .ref-card::before {
-        inset: 20px;
+        inset: 16px;
         border: 1px solid color-mix(in srgb, var(--card-ink) 18%, transparent);
         border-radius: 8px;
+        z-index: 2;
       }
 
       .ref-card::after {
@@ -223,7 +233,8 @@
         width: 190px;
         aspect-ratio: 1;
         border-radius: 50%;
-        background: color-mix(in srgb, var(--card-ink) 12%, transparent);
+        background: color-mix(in srgb, var(--card-ink) 8%, transparent);
+        z-index: 1;
       }
 
       .ref-card:nth-child(3n) {
@@ -234,10 +245,40 @@
         grid-column: span 2;
       }
 
+      .ref-photo {
+        position: relative;
+        z-index: 0;
+        min-height: 190px;
+        overflow: hidden;
+      }
+
+      .ref-photo img {
+        width: 100%;
+        height: 100%;
+        min-height: 220px;
+        object-fit: cover;
+        filter: saturate(0.9) contrast(0.96);
+        transform: scale(1.03);
+      }
+
+      .ref-photo::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, transparent 25%, color-mix(in srgb, var(--card-a) 78%, transparent));
+      }
+
+      .ref-body {
+        position: relative;
+        z-index: 3;
+        display: grid;
+        flex: 1;
+        padding: 24px 26px 26px;
+      }
+
       .ref-top,
       .ref-bottom {
         position: relative;
-        z-index: 1;
       }
 
       .ref-top {
@@ -250,23 +291,31 @@
       }
 
       .ref-icon {
-        font-size: 36px;
+        margin-top: 30px;
+        font-size: 28px;
         font-weight: 950;
+      }
+
+      .en-label {
+        display: block;
+        margin-top: 8px;
+        color: color-mix(in srgb, var(--card-ink) 58%, transparent);
+        font-size: 12px;
+        font-weight: 950;
+        text-transform: uppercase;
       }
 
       .ref-card h3 {
         position: relative;
-        z-index: 1;
-        align-self: center;
+        margin-top: 20px;
         max-width: 420px;
-        font-size: clamp(28px, 3vw, 46px);
+        font-size: clamp(24px, 2.5vw, 38px);
         line-height: 1.05;
       }
 
       .ref-card p {
         position: relative;
-        z-index: 1;
-        align-self: end;
+        margin-top: 18px;
         max-width: 460px;
         color: color-mix(in srgb, var(--card-ink) 74%, transparent);
         font-size: 16px;
@@ -275,7 +324,7 @@
 
       .ref-bottom {
         align-self: end;
-        margin-top: 24px;
+        margin-top: 34px;
         font-size: 14px;
         font-weight: 950;
       }
@@ -296,6 +345,8 @@
         padding: clamp(54px, 8vw, 110px) clamp(22px, 6vw, 92px);
         color: var(--case-ink);
         background: var(--case-bg);
+        background-position: center;
+        background-size: cover;
       }
 
       .case-hero .actions {
@@ -313,11 +364,55 @@
         line-height: 1.7;
       }
 
+      .case-title-en {
+        display: block;
+        max-width: 820px;
+        margin-top: 18px;
+        color: color-mix(in srgb, var(--case-ink) 62%, transparent);
+        font-size: clamp(18px, 2.2vw, 28px);
+        font-weight: 950;
+        line-height: 1.2;
+        text-transform: uppercase;
+      }
+
       .mock {
         border: 1px solid color-mix(in srgb, var(--case-ink) 18%, transparent);
         border-radius: 8px;
         background: color-mix(in srgb, var(--case-ink) 8%, transparent);
         box-shadow: 0 30px 80px rgba(0, 0, 0, 0.18);
+        backdrop-filter: blur(10px);
+      }
+
+      .image-window {
+        position: relative;
+        overflow: hidden;
+        min-height: 560px;
+      }
+
+      .image-window img {
+        width: 100%;
+        height: 100%;
+        min-height: 560px;
+        object-fit: cover;
+        filter: saturate(0.92) contrast(0.95);
+      }
+
+      .image-window::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.38));
+      }
+
+      .image-window figcaption {
+        position: absolute;
+        left: 24px;
+        right: 24px;
+        bottom: 24px;
+        z-index: 1;
+        font-size: clamp(26px, 4vw, 48px);
+        font-weight: 950;
+        line-height: 1.05;
       }
 
       .template-promo .case-hero {
@@ -404,7 +499,7 @@
 
       .template-event .case-hero {
         display: grid;
-        grid-template-columns: minmax(0, 0.68fr) minmax(300px, 0.7fr);
+        grid-template-columns: minmax(0, 0.62fr) minmax(360px, 0.76fr);
         gap: clamp(30px, 6vw, 88px);
         align-items: center;
       }
@@ -476,7 +571,7 @@
 
       .template-report .case-hero {
         display: grid;
-        grid-template-columns: minmax(0, 0.72fr) minmax(320px, 0.68fr);
+        grid-template-columns: minmax(0, 0.62fr) minmax(360px, 0.76fr);
         gap: clamp(30px, 6vw, 88px);
         align-items: center;
       }
@@ -607,6 +702,15 @@
           min-height: 360px;
         }
 
+        .image-window {
+          width: 100%;
+          min-height: 360px;
+        }
+
+        .image-window img {
+          min-height: 360px;
+        }
+
         .appointment-board span {
           grid-template-columns: 1fr;
         }
@@ -652,6 +756,7 @@
           </div>
           <p>
             각 카드는 실제 제안서에 넣을 수 있는 페이지 시안 방향입니다. 클릭하면 주제에 맞춘 상세 랜딩 레이아웃이 열립니다.
+            <span class="image-note">Free stock images from Unsplash are used as proposal mockup assets.</span>
           </p>
         </div>
         <div class="reference-grid" id="cards"></div>
@@ -688,6 +793,60 @@
         ["employee-esg", "기업/공공", "임직원 ESG 참여 캠페인", "조직 내부 ESG 실천 인증과 설문을 함께 받는 캠페인.", "ESG 실천 참여", "report", "ESG"],
       ].map(([id, group, title, summary, cta, template, badge], index) => ({ id, group, title, summary, cta, template, badge, index }));
 
+      const englishTitles = [
+        "Wellness Event Survey",
+        "Insurance Coverage Review",
+        "Child Safety Campaign",
+        "Senior Health Checkup",
+        "Pet Insurance Event",
+        "Retirement Planning Checkup",
+        "Hospital Checkup Booking",
+        "Clinic Pre-Appointment",
+        "Patient Experience Survey",
+        "Community Health Class",
+        "Youth Culture Program",
+        "Public Opinion Survey",
+        "Festival Volunteer Recruitment",
+        "Daegu Alley Stamp Tour",
+        "Carbon Neutral Challenge",
+        "Disaster Safety Class",
+        "Children Traffic Safety",
+        "Birthcare Support Guide",
+        "Citizen Idea Contest",
+        "Media Art Workshop",
+        "Hometown Donation Campaign",
+        "Market Coupon Event",
+        "Small Business Support",
+        "Employee ESG Campaign",
+      ];
+
+      const imagePool = [
+        "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1542810634-71277d95dcbb?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1550831107-1553da8c8464?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1497436072909-f5e4be1713d1?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80",
+      ];
+
       const palettes = [
         ["#ffe879", "#ffb06b", "#3b221a", "#5a3427", "#fff4cd"],
         ["#cfe8ff", "#8db8d8", "#153049", "#224b67", "#edf8ff"],
@@ -719,11 +878,14 @@
           .map(
             (item) => `
               <a class="ref-card" href="./landing-references.html?case=${item.id}" style="${cardStyle(item)}">
-                <div class="ref-top"><span>${String(item.index + 1).padStart(2, "0")} · ${item.group}</span><b>${item.template}</b></div>
-                <div class="ref-icon">${item.badge}</div>
-                <h3>${item.title}</h3>
-                <p>${item.summary}</p>
-                <div class="ref-bottom">${item.cta}</div>
+                <div class="ref-photo"><img src="${imagePool[item.index]}" alt="${englishTitles[item.index]}" loading="lazy" /></div>
+                <div class="ref-body">
+                  <div class="ref-top"><span>${String(item.index + 1).padStart(2, "0")} · ${item.group}</span><b>${item.template}</b></div>
+                  <div class="ref-icon">${item.badge}<span class="en-label">${englishTitles[item.index]}</span></div>
+                  <h3>${item.title}</h3>
+                  <p>${item.summary}</p>
+                  <div class="ref-bottom">${item.cta}</div>
+                </div>
               </a>
             `,
           )
@@ -731,8 +893,10 @@
       }
 
       function mockup(item) {
+        const image = imagePool[item.index];
+        const english = englishTitles[item.index];
         if (item.template === "promo") {
-          return `<aside class="promo-wheel"><div><strong>${item.badge}<br />EVENT</strong><p>${item.cta}</p></div></aside>`;
+          return `<aside class="promo-wheel"><div><strong>${item.badge}<br />EVENT</strong><p>${english}</p></div></aside>`;
         }
         if (item.template === "medical") {
           return `<aside class="mock appointment-board">
@@ -751,7 +915,7 @@
           </aside>`;
         }
         if (item.template === "event") {
-          return `<aside class="mock stamp-map"><span>01</span><span>02</span><span>03</span></aside>`;
+          return `<figure class="mock image-window"><img src="${image}" alt="${english}" /><figcaption>${item.badge}<br />${english}</figcaption></figure>`;
         }
         if (item.template === "contest") {
           return `<aside class="mock submit-stack">
@@ -759,27 +923,25 @@
             <span>제안 제목</span><span>제안 내용</span><span>첨부 파일</span>
           </aside>`;
         }
-        return `<aside class="mock report-bars">
-          <span>관심도 <i style="--value: 82%"></i></span>
-          <span>참여율 <i style="--value: 64%"></i></span>
-          <span>상담 전환 <i style="--value: 43%"></i></span>
-          <span>만족도 <i style="--value: 76%"></i></span>
-        </aside>`;
+        return `<figure class="mock image-window"><img src="${image}" alt="${english}" /><figcaption>${item.badge}<br />${english}</figcaption></figure>`;
       }
 
       function renderCase(item) {
         const [, , dark, mid, paper] = palette(item.index);
+        const image = imagePool[item.index];
+        const english = englishTitles[item.index];
         const caseEl = document.querySelector("#case");
         document.querySelector("#gallery").style.display = "none";
         caseEl.className = `case active template-${item.template}`;
         caseEl.style.setProperty("--case-ink", "#f8fbf4");
         caseEl.style.setProperty("--case-paper", paper);
-        caseEl.style.setProperty("--case-bg", `linear-gradient(135deg, ${dark}, ${mid})`);
+        caseEl.style.setProperty("--case-bg", `linear-gradient(135deg, color-mix(in srgb, ${dark} 88%, transparent), color-mix(in srgb, ${mid} 78%, transparent)), linear-gradient(90deg, rgba(0,0,0,.36), rgba(0,0,0,.14)), url("${image}")`);
         caseEl.innerHTML = `
           <section class="case-hero">
             <div class="case-copy">
-              <p class="kicker">${item.group} · ${item.template} reference</p>
+              <p class="kicker">${item.group} · ${item.template} reference · Korean / English</p>
               <h1 class="case-title">${item.title}</h1>
+              <span class="case-title-en">${english}</span>
               <p>${item.summary}</p>
               <div class="actions">
                 <a class="button primary" href="#details">${item.cta}</a>
