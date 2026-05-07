@@ -758,6 +758,233 @@
         background: linear-gradient(90deg, #ffe879 var(--value), rgba(255, 255, 255, 0.18) var(--value));
       }
 
+      .promo-stage {
+        display: grid;
+        grid-template-columns: minmax(0, 0.9fr) minmax(340px, 0.58fr);
+        gap: clamp(30px, 6vw, 88px);
+        align-items: center;
+      }
+
+      .promo-offer {
+        display: grid;
+        gap: 18px;
+        padding: clamp(24px, 4vw, 42px);
+        color: #241712;
+        background: #ffe879;
+        border-radius: 8px;
+        box-shadow: 0 28px 90px rgba(0, 0, 0, 0.22);
+      }
+
+      .promo-offer strong {
+        font-size: clamp(44px, 8vw, 118px);
+        line-height: 0.9;
+      }
+
+      .survey-ticket {
+        display: grid;
+        gap: 12px;
+        padding: 26px;
+        color: #f8fbf4;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        backdrop-filter: blur(14px);
+      }
+
+      .survey-ticket span {
+        display: grid;
+        grid-template-columns: 1fr 88px;
+        gap: 14px;
+        padding: 16px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      .medical-stage {
+        display: grid;
+        grid-template-columns: minmax(340px, 0.58fr) minmax(0, 0.82fr);
+        gap: clamp(30px, 6vw, 88px);
+        align-items: center;
+      }
+
+      .doctor-card {
+        overflow: hidden;
+        min-height: 640px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      .doctor-card img {
+        width: 100%;
+        height: 420px;
+        object-fit: cover;
+      }
+
+      .doctor-card div {
+        padding: 26px;
+      }
+
+      .medical-slots {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 34px;
+      }
+
+      .medical-slots span {
+        min-height: 116px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .public-stage {
+        display: grid;
+        grid-template-columns: minmax(0, 0.72fr) minmax(360px, 0.7fr);
+        gap: clamp(30px, 6vw, 88px);
+        align-items: stretch;
+      }
+
+      .public-console {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .public-console div {
+        display: grid;
+        align-content: space-between;
+        min-height: 210px;
+        padding: 26px;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .public-console b {
+        font-size: clamp(38px, 5vw, 72px);
+      }
+
+      .event-stage {
+        display: grid;
+        grid-template-columns: minmax(0, 0.65fr) minmax(360px, 0.68fr);
+        gap: clamp(30px, 6vw, 88px);
+        align-items: center;
+      }
+
+      .stamp-pass {
+        display: grid;
+        gap: 14px;
+        padding: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      .stamp-pass img {
+        width: 100%;
+        height: 330px;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+
+      .stamp-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+
+      .stamp-row span {
+        display: grid;
+        place-items: center;
+        min-height: 96px;
+        border-radius: 50%;
+        color: #17231e;
+        background: #ffe879;
+        font-weight: 950;
+      }
+
+      .contest-stage {
+        display: grid;
+        grid-template-columns: minmax(0, 0.7fr) minmax(380px, 0.68fr);
+        gap: clamp(30px, 6vw, 88px);
+        align-items: center;
+      }
+
+      .contest-console {
+        display: grid;
+        gap: 12px;
+        padding: 28px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .contest-console .drop {
+        display: grid;
+        place-items: center;
+        min-height: 260px;
+        border: 1px dashed rgba(255, 255, 255, 0.42);
+        border-radius: 8px;
+        text-align: center;
+      }
+
+      .contest-console span {
+        padding: 16px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      .report-stage {
+        display: grid;
+        grid-template-columns: minmax(360px, 0.64fr) minmax(0, 0.78fr);
+        gap: clamp(30px, 6vw, 88px);
+        align-items: center;
+      }
+
+      .report-panel {
+        display: grid;
+        gap: 16px;
+        padding: 28px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .report-panel span {
+        padding: 18px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      .report-panel i {
+        display: block;
+        height: 16px;
+        margin-top: 14px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #ffe879 var(--value), rgba(255, 255, 255, 0.2) var(--value));
+      }
+
+      .case-eyebrow {
+        display: inline-flex;
+        margin-bottom: 22px;
+        color: rgba(248, 251, 244, 0.68);
+        font-size: 14px;
+        font-weight: 950;
+      }
+
+      .case-lead {
+        max-width: 720px;
+        margin-top: 24px;
+        color: rgba(248, 251, 244, 0.76);
+        font-size: clamp(18px, 2.1vw, 24px);
+        line-height: 1.7;
+      }
+
       .detail-section {
         padding: clamp(58px, 8vw, 106px) clamp(22px, 6vw, 92px);
         color: #1f2a24;
@@ -812,6 +1039,12 @@
         .gallery-hero,
         .section-head,
         .spotlight-grid,
+        .promo-stage,
+        .medical-stage,
+        .public-stage,
+        .event-stage,
+        .contest-stage,
+        .report-stage,
         .template-promo .case-hero,
         .template-medical .case-hero,
         .template-public .case-hero,
@@ -823,6 +1056,11 @@
         }
 
         .public-dashboard {
+          grid-template-columns: 1fr;
+        }
+
+        .public-console,
+        .medical-slots {
           grid-template-columns: 1fr;
         }
 
@@ -885,6 +1123,13 @@
 
         .appointment-board span {
           grid-template-columns: 1fr;
+        }
+
+        .doctor-card,
+        .promo-offer,
+        .survey-ticket,
+        .public-console div {
+          min-height: auto;
         }
       }
     </style>
@@ -1103,38 +1348,111 @@
           .join("");
       }
 
-      function mockup(item) {
-        const image = imagePool[item.index];
-        const english = englishTitles[item.index];
+      function caseCopy(item, english) {
+        return `
+          <span class="case-eyebrow">${item.group} · ${item.template} reference · Korean / English</span>
+          <h1 class="case-title">${item.title}</h1>
+          <span class="case-title-en">${english}</span>
+          <p class="case-lead">${item.summary}</p>
+          <div class="actions">
+            <a class="button primary" href="#details">${item.cta}</a>
+            <a class="button" href="./landing-references.html">다른 레퍼런스 보기</a>
+          </div>
+        `;
+      }
+
+      function renderCaseHero(item, english, image) {
         if (item.template === "promo") {
-          return `<aside class="promo-wheel"><div><strong>${item.badge}<br />EVENT</strong><p>${english}</p></div></aside>`;
+          return `
+            <section class="case-hero promo-stage">
+              <div>
+                ${caseCopy(item, english)}
+                <aside class="survey-ticket">
+                  <span><b>Step 01</b><strong>건강습관 체크</strong></span>
+                  <span><b>Step 02</b><strong>이벤트 응모</strong></span>
+                  <span><b>Step 03</b><strong>상담 희망 선택</strong></span>
+                </aside>
+              </div>
+              <div class="promo-offer">
+                <p>Monthly Event</p>
+                <strong>보험<br />EVENT</strong>
+                <p>Survey reward, lead capture, consultation flow.</p>
+              </div>
+            </section>
+          `;
         }
+
         if (item.template === "medical") {
-          return `<aside class="mock appointment-board">
-            <span><b>오늘</b><strong>상담 가능</strong><em>OK</em></span>
-            <span><b>이번 주</b><strong>예약 여유</strong><em>12</em></span>
-            <span><b>모바일</b><strong>문진 확인</strong><em>QR</em></span>
-            <span><b>콜백</b><strong>${item.cta}</strong><em>ON</em></span>
-          </aside>`;
+          return `
+            <section class="case-hero medical-stage">
+              <figure class="doctor-card">
+                <img src="${image}" alt="${english}" />
+                <div><span class="case-eyebrow">Hospital Booking System</span><h2>${english}</h2></div>
+              </figure>
+              <div>
+                ${caseCopy(item, english)}
+                <div class="medical-slots">
+                  <span><b>오늘</b><p>상담 가능</p></span>
+                  <span><b>이번 주</b><p>예약 여유</p></span>
+                  <span><b>모바일</b><p>문진 확인</p></span>
+                  <span><b>콜백</b><p>담당자 연결</p></span>
+                </div>
+              </div>
+            </section>
+          `;
         }
+
         if (item.template === "public") {
-          return `<aside class="mock public-dashboard">
-            <div><span>모집 인원</span><b>120명</b></div>
-            <div><span>접수 상태</span><b>진행중</b></div>
-            <div><span>참여 대상</span><b>시민</b></div>
-            <div><span>결과 정리</span><b>리포트</b></div>
-          </aside>`;
+          return `
+            <section class="case-hero public-stage">
+              <div>${caseCopy(item, english)}</div>
+              <aside class="public-console">
+                <div><span>모집 인원</span><b>120명</b></div>
+                <div><span>신청 상태</span><b>OPEN</b></div>
+                <div><span>운영 회차</span><b>04</b></div>
+                <div><span>결과 보고</span><b>PDF</b></div>
+              </aside>
+            </section>
+          `;
         }
+
         if (item.template === "event") {
-          return `<figure class="mock image-window"><img src="${image}" alt="${english}" /><figcaption>${item.badge}<br />${english}</figcaption></figure>`;
+          return `
+            <section class="case-hero event-stage">
+              <div>${caseCopy(item, english)}</div>
+              <aside class="stamp-pass">
+                <img src="${image}" alt="${english}" />
+                <div class="stamp-row"><span>01</span><span>02</span><span>03</span></div>
+              </aside>
+            </section>
+          `;
         }
+
         if (item.template === "contest") {
-          return `<aside class="mock submit-stack">
-            <div class="upload-zone"><strong>PDF / 이미지</strong><p>제안서와 첨부파일을 함께 제출</p></div>
-            <span>제안 제목</span><span>제안 내용</span><span>첨부 파일</span>
-          </aside>`;
+          return `
+            <section class="case-hero contest-stage">
+              <div>${caseCopy(item, english)}</div>
+              <aside class="contest-console">
+                <div class="drop"><strong>PDF / IMAGE</strong><p>제안서와 첨부파일 업로드</p></div>
+                <span>제안 제목</span>
+                <span>제안 내용</span>
+                <span>연락처 / 개인정보 동의</span>
+              </aside>
+            </section>
+          `;
         }
-        return `<figure class="mock image-window"><img src="${image}" alt="${english}" /><figcaption>${item.badge}<br />${english}</figcaption></figure>`;
+
+        return `
+          <section class="case-hero report-stage">
+            <aside class="report-panel">
+              <span>관심도 <i style="--value: 82%"></i></span>
+              <span>참여율 <i style="--value: 64%"></i></span>
+              <span>상담 전환 <i style="--value: 43%"></i></span>
+              <span>만족도 <i style="--value: 76%"></i></span>
+            </aside>
+            <div>${caseCopy(item, english)}</div>
+          </section>
+        `;
       }
 
       function renderCase(item) {
@@ -1148,19 +1466,7 @@
         caseEl.style.setProperty("--case-paper", paper);
         caseEl.style.setProperty("--case-bg", `linear-gradient(135deg, color-mix(in srgb, ${dark} 88%, transparent), color-mix(in srgb, ${mid} 78%, transparent)), linear-gradient(90deg, rgba(0,0,0,.36), rgba(0,0,0,.14)), url("${image}")`);
         caseEl.innerHTML = `
-          <section class="case-hero">
-            <div class="case-copy">
-              <p class="kicker">${item.group} · ${item.template} reference · Korean / English</p>
-              <h1 class="case-title">${item.title}</h1>
-              <span class="case-title-en">${english}</span>
-              <p>${item.summary}</p>
-              <div class="actions">
-                <a class="button primary" href="#details">${item.cta}</a>
-                <a class="button" href="./landing-references.html">다른 레퍼런스 보기</a>
-              </div>
-            </div>
-            ${mockup(item)}
-          </section>
+          ${renderCaseHero(item, english, image)}
           <section class="detail-section" id="details">
             <div class="detail-grid">
               <article><span>01 Strategy</span><h3>첫 화면 목적이 다르게 보입니다.</h3><p>${item.group} 사용자가 바로 이해할 수 있도록 제목, 행동 버튼, 정보 구조를 주제별로 바꿉니다.</p></article>
