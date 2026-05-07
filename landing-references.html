@@ -92,6 +92,23 @@
         background: #ffe879;
       }
 
+      .button:hover,
+      .ref-card:hover,
+      .spotlight-card:hover,
+      .showcase-card:hover {
+        transform: translateY(-2px);
+      }
+
+      .button,
+      .ref-card,
+      .spotlight-card,
+      .showcase-card {
+        transition:
+          transform 180ms ease,
+          border-color 180ms ease,
+          box-shadow 180ms ease;
+      }
+
       .actions {
         display: flex;
         flex-wrap: wrap;
@@ -325,6 +342,45 @@
         padding: clamp(64px, 9vw, 116px) clamp(22px, 6vw, 92px);
       }
 
+      .service-matrix {
+        color: #f8fbf4;
+        background: #20372f;
+      }
+
+      .matrix-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.16);
+      }
+
+      .matrix-grid article {
+        min-height: 250px;
+        padding: 28px;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .matrix-grid span {
+        color: rgba(248, 251, 244, 0.58);
+        font-size: 12px;
+        font-weight: 950;
+      }
+
+      .matrix-grid h3 {
+        margin-top: 48px;
+        font-size: clamp(24px, 3vw, 34px);
+        line-height: 1.12;
+      }
+
+      .matrix-grid p {
+        margin-top: 16px;
+        color: rgba(248, 251, 244, 0.72);
+        line-height: 1.65;
+      }
+
       .section-head {
         display: grid;
         grid-template-columns: minmax(0, 0.75fr) minmax(280px, 0.42fr);
@@ -353,6 +409,31 @@
         font-weight: 850;
       }
 
+      .filter-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 24px;
+      }
+
+      .filter-bar button {
+        min-height: 40px;
+        padding: 0 14px;
+        color: rgba(31, 42, 36, 0.68);
+        border: 1px solid rgba(31, 42, 36, 0.14);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.28);
+        font: inherit;
+        font-size: 14px;
+        font-weight: 950;
+        cursor: pointer;
+      }
+
+      .filter-bar button.active {
+        color: #f8fbf4;
+        background: #1f2a24;
+      }
+
       .reference-grid {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -372,6 +453,11 @@
         background:
           radial-gradient(circle at var(--spot-x) var(--spot-y), var(--glow), transparent 28%),
           linear-gradient(150deg, var(--card-a), var(--card-b));
+      }
+
+      .ref-card:hover {
+        border-color: rgba(31, 42, 36, 0.32);
+        box-shadow: 0 22px 60px rgba(31, 42, 36, 0.16);
       }
 
       .ref-card::before,
@@ -487,6 +573,25 @@
         align-self: end;
         margin-top: 34px;
         font-size: 14px;
+        font-weight: 950;
+      }
+
+      .ref-specs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 18px;
+      }
+
+      .ref-specs span {
+        display: inline-flex;
+        min-height: 28px;
+        align-items: center;
+        padding: 0 9px;
+        border: 1px solid color-mix(in srgb, var(--card-ink) 16%, transparent);
+        border-radius: 999px;
+        color: color-mix(in srgb, var(--card-ink) 68%, transparent);
+        font-size: 11px;
         font-weight: 950;
       }
 
@@ -1077,6 +1182,20 @@
         line-height: 1.65;
       }
 
+      .detail-checks {
+        display: grid;
+        gap: 10px;
+        margin-top: 22px;
+      }
+
+      .detail-checks b {
+        display: block;
+        padding-top: 10px;
+        border-top: 1px solid rgba(31, 42, 36, 0.12);
+        color: rgba(31, 42, 36, 0.78);
+        font-size: 14px;
+      }
+
       @media (max-width: 1060px) {
         .reference-grid {
           grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1091,6 +1210,7 @@
         .gallery-hero,
         .section-head,
         .spotlight-grid,
+        .matrix-grid,
         .promo-stage,
         .medical-stage,
         .public-stage,
@@ -1256,6 +1376,22 @@
         </div>
       </section>
 
+      <section class="section service-matrix">
+        <div class="section-head">
+          <div>
+            <p class="kicker">Production Scope</p>
+            <h2>페이지 제작은 디자인만이 아니라, 운영 흐름까지 설계합니다.</h2>
+          </div>
+          <p>랜딩페이지, 설문, 신청접수, 결과 정리까지 공공사업과 기관 캠페인에 필요한 범위를 묶어서 제안합니다.</p>
+        </div>
+        <div class="matrix-grid">
+          <article><span>01 UX</span><h3>목적별 첫 화면</h3><p>이벤트, 예약, 모집, 공모전, 설문마다 다른 CTA와 정보 우선순위를 잡습니다.</p></article>
+          <article><span>02 Form</span><h3>입력 항목 설계</h3><p>개인정보 동의, 신청 정보, 첨부파일, 만족도, 인증 사진 등 실제 운영 항목을 반영합니다.</p></article>
+          <article><span>03 Data</span><h3>응답 데이터 정리</h3><p>관리자가 확인하기 쉬운 시트 구조와 결과 보고용 요약 지표를 함께 설계합니다.</p></article>
+          <article><span>04 Delivery</span><h3>QR 배포 대응</h3><p>모바일 접속, 현장 QR, 행사 후 아카이브까지 납품 범위를 확장할 수 있습니다.</p></article>
+        </div>
+      </section>
+
       <section class="section" id="referenceGrid">
         <div class="section-head">
           <div>
@@ -1266,6 +1402,14 @@
             각 카드는 실제 제안서에 넣을 수 있는 페이지 시안 방향입니다. 클릭하면 주제에 맞춘 상세 랜딩 레이아웃이 열립니다.
             <span class="image-note">Free stock images from Unsplash are used as proposal mockup assets.</span>
           </p>
+        </div>
+        <div class="filter-bar" aria-label="레퍼런스 필터">
+          <button class="active" type="button" data-filter="all">전체</button>
+          <button type="button" data-filter="보험사">보험사</button>
+          <button type="button" data-filter="병원">병원</button>
+          <button type="button" data-filter="관공서">관공서</button>
+          <button type="button" data-filter="관광">관광/이벤트</button>
+          <button type="button" data-filter="기업">기업/공공</button>
         </div>
         <div class="reference-grid" id="cards"></div>
       </section>
@@ -1516,13 +1660,14 @@
         document.querySelector("#cards").innerHTML = references
           .map(
             (item) => `
-              <a class="ref-card" href="./landing-references.html?case=${item.id}" style="${cardStyle(item)}">
+              <a class="ref-card" href="./landing-references.html?case=${item.id}" data-group="${item.group}" style="${cardStyle(item)}">
                 <div class="ref-photo"><img src="${imagePool[item.index]}" alt="${englishTitles[item.index]}" loading="lazy" /></div>
                 <div class="ref-body">
                   <div class="ref-top"><span>${String(item.index + 1).padStart(2, "0")} · ${item.group}</span><b>${item.template}</b></div>
                   <div class="ref-icon">${item.badge}<span class="en-label">${englishTitles[item.index]}</span></div>
                   <h3>${item.title}</h3>
                   <p>${item.summary}</p>
+                  <div class="ref-specs">${blueprintFor(item).trust.slice(0, 3).map((text) => `<span>${text}</span>`).join("")}</div>
                   <div class="ref-bottom">${item.cta}</div>
                 </div>
               </a>
@@ -1642,9 +1787,23 @@
           ${renderCaseHero(item, english, image)}
           <section class="detail-section" id="details">
             <div class="detail-grid">
-              <article><span>01 Strategy</span><h3>첫 화면 목적이 다르게 보입니다.</h3><p>${item.group} 사용자가 바로 이해할 수 있도록 제목, 행동 버튼, 정보 구조를 주제별로 바꿉니다.</p></article>
-              <article><span>02 Form</span><h3>${blueprintFor(item).fields.slice(0, 2).join(" · ")}</h3><p>${blueprintFor(item).fields.slice(2).join(", ")} 항목까지 프로젝트에 맞게 받습니다.</p></article>
-              <article><span>03 Report</span><h3>사업 결과로 정리됩니다.</h3><p>${blueprintFor(item).output}</p></article>
+              <article>
+                <span>01 Strategy</span>
+                <h3>${blueprintFor(item).trust.join(" · ")}</h3>
+                <p>${item.group} 사용자가 바로 신뢰할 수 있도록 첫 화면에 목적, 대상, 참여 이유를 분명히 둡니다.</p>
+              </article>
+              <article>
+                <span>02 Data Form</span>
+                <h3>${blueprintFor(item).fields.slice(0, 2).join(" · ")}</h3>
+                <p>${blueprintFor(item).fields.slice(2).join(", ")} 항목까지 프로젝트에 맞게 받습니다.</p>
+                <div class="detail-checks">${blueprintFor(item).fields.map((field) => `<b>${field}</b>`).join("")}</div>
+              </article>
+              <article>
+                <span>03 Admin Output</span>
+                <h3>운영자가 바로 쓰는 결과물</h3>
+                <p>${blueprintFor(item).output}</p>
+                <div class="detail-checks"><b>응답 데이터 정리</b><b>관리자 확인용 표</b><b>결과 보고 요약</b></div>
+              </article>
             </div>
           </section>
         `;
@@ -1658,6 +1817,22 @@
         renderCase(selected);
       } else {
         renderGallery();
+        document.querySelectorAll(".filter-bar button").forEach((button) => {
+          button.addEventListener("click", () => {
+            const filter = button.dataset.filter;
+            document.querySelectorAll(".filter-bar button").forEach((item) => item.classList.toggle("active", item === button));
+            document.querySelectorAll(".ref-card").forEach((card) => {
+              const group = card.dataset.group;
+              const visible =
+                filter === "all" ||
+                group === filter ||
+                (filter === "관광" && ["관광", "소상공인"].includes(group)) ||
+                (filter === "기업" && ["기업/공공", "문화재단", "공공 캠페인"].includes(group)) ||
+                (filter === "관공서" && ["관공서"].includes(group));
+              card.style.display = visible ? "" : "none";
+            });
+          });
+        });
       }
     </script>
   </body>
