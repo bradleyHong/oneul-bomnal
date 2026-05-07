@@ -54,7 +54,7 @@
   <body class="site-page">
     <header class="site-nav">
       <a class="brand" href="#top" aria-label="오늘은 봄날 홈">
-        <img src="./assets/logo-bomnal.png" alt="오늘은 봄날" />
+        <strong>오늘은 봄날</strong>
         <span>대구 여성기업 · 공공예술 콘텐츠</span>
       </a>
       <nav aria-label="주요 메뉴">
@@ -269,7 +269,7 @@
           </div>
           <div class="proposal-panels">
             <article class="proposal-panel active" data-panel="weather">
-              <div class="proposal-visual proposal-weather" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="proposal-visual proposal-weather" aria-hidden="true"><canvas id="propWeatherCanvas"></canvas></div>
               <div class="proposal-copy">
                 <span>Weather / Season API</span>
                 <h4>계절이 바뀌는 공공 미디어월</h4>
@@ -282,7 +282,7 @@
               </div>
             </article>
             <article class="proposal-panel" data-panel="air">
-              <div class="proposal-visual proposal-air" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="proposal-visual proposal-air" aria-hidden="true"><canvas id="propAirCanvas"></canvas></div>
               <div class="proposal-copy">
                 <span>Air Quality / Safety</span>
                 <h4>아이들의 야외활동 신호등</h4>
@@ -295,7 +295,7 @@
               </div>
             </article>
             <article class="proposal-panel" data-panel="water">
-              <div class="proposal-visual proposal-water" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="proposal-visual proposal-water" aria-hidden="true"><canvas id="propWaterCanvas"></canvas></div>
               <div class="proposal-copy">
                 <span>River / Rainfall Data</span>
                 <h4>도시의 물결과 수위가 보이는 벽</h4>
@@ -308,7 +308,7 @@
               </div>
             </article>
             <article class="proposal-panel" data-panel="mobility">
-              <div class="proposal-visual proposal-mobility" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="proposal-visual proposal-mobility" aria-hidden="true"><canvas id="propMobilityCanvas"></canvas></div>
               <div class="proposal-copy">
                 <span>Traffic / Mobility</span>
                 <h4>도시 이동의 리듬</h4>
@@ -321,7 +321,7 @@
               </div>
             </article>
             <article class="proposal-panel" data-panel="energy">
-              <div class="proposal-visual proposal-energy" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="proposal-visual proposal-energy" aria-hidden="true"><canvas id="propEnergyCanvas"></canvas></div>
               <div class="proposal-copy">
                 <span>Energy / ESG</span>
                 <h4>태양광 꽃시계와 탄소중립 정원</h4>
@@ -334,7 +334,7 @@
               </div>
             </article>
             <article class="proposal-panel" data-panel="festival">
-              <div class="proposal-visual proposal-festival" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="proposal-visual proposal-festival" aria-hidden="true"><canvas id="propFestivalCanvas"></canvas></div>
               <div class="proposal-copy">
                 <span>Festival / QR Participation</span>
                 <h4>참여자가 많아질수록 피어나는 축제 파사드</h4>
@@ -424,7 +424,7 @@
           <h3>프로젝트 문의폼</h3>
           <label>
             <span>기관이름</span>
-            <input name="organization" type="text" placeholder="예: ㅇㅇ구청, ㅇㅇ문화재단" required />
+            <input name="organization" type="text" placeholder="예: 대구광역시 동구청, 대구문화재단" required />
           </label>
           <div class="form-row">
             <label>

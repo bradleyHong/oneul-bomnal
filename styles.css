@@ -72,9 +72,8 @@ button {
   gap: 24px;
   min-height: 72px;
   padding: 16px clamp(18px, 4vw, 56px);
-  color: var(--ink);
-  background: linear-gradient(rgba(255, 248, 232, 0.9), rgba(255, 248, 232, 0));
-  backdrop-filter: blur(14px);
+  color: #fff;
+  background: transparent;
 }
 
 .brand {
@@ -86,23 +85,19 @@ button {
 .brand strong {
   font-size: clamp(16px, 1.6vw, 20px);
   font-weight: 850;
-}
-
-.brand img {
-  display: block;
-  width: clamp(132px, 15vw, 178px);
-  height: auto;
-  mix-blend-mode: multiply;
+  color: #fff;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.35);
 }
 
 .brand span,
 .site-nav nav {
-  color: rgba(36, 48, 41, 0.62);
+  color: rgba(255, 255, 255, 0.72);
   font-size: 13px;
   font-weight: 760;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
 }
 
-.brand img + span {
+.brand strong + span {
   font-size: 12px;
 }
 
@@ -385,6 +380,7 @@ h1 {
   inset: 0;
   width: 100%;
   height: 100%;
+  z-index: 1;
 }
 
 .preview-river {
@@ -686,6 +682,14 @@ h1 {
     radial-gradient(circle at 54% 58%, rgba(255, 233, 139, 0.78), transparent 18%),
     radial-gradient(circle at 82% 30%, rgba(175, 154, 235, 0.62), transparent 14%),
     linear-gradient(145deg, #fff4f7, #e8f5dc);
+}
+
+.proposal-visual canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 }
 
 .proposal-copy {

@@ -1,5 +1,5 @@
 const canvas = document.querySelector("#springCanvas");
-const ctx = canvas.getContext("2d");
+const ctx = canvas?.getContext("2d");
 const miniCanvas = document.querySelector("#miniSpringCanvas");
 const miniCtx = miniCanvas?.getContext("2d");
 const dustWalkCanvas = document.querySelector("#dustWalkCanvas");
@@ -8,6 +8,20 @@ const temperatureGardenCanvas = document.querySelector("#temperatureGardenCanvas
 const temperatureGardenCtx = temperatureGardenCanvas?.getContext("2d");
 const rainFlowerCanvas = document.querySelector("#rainFlowerCanvas");
 const rainFlowerCtx = rainFlowerCanvas?.getContext("2d");
+const refArtCanvas = document.querySelector("#refArtCanvas");
+const refArtCtx = refArtCanvas?.getContext("2d");
+const propWeatherCanvas = document.querySelector("#propWeatherCanvas");
+const propWeatherCtx = propWeatherCanvas?.getContext("2d");
+const propAirCanvas = document.querySelector("#propAirCanvas");
+const propAirCtx = propAirCanvas?.getContext("2d");
+const propWaterCanvas = document.querySelector("#propWaterCanvas");
+const propWaterCtx = propWaterCanvas?.getContext("2d");
+const propMobilityCanvas = document.querySelector("#propMobilityCanvas");
+const propMobilityCtx = propMobilityCanvas?.getContext("2d");
+const propEnergyCanvas = document.querySelector("#propEnergyCanvas");
+const propEnergyCtx = propEnergyCanvas?.getContext("2d");
+const propFestivalCanvas = document.querySelector("#propFestivalCanvas");
+const propFestivalCtx = propFestivalCanvas?.getContext("2d");
 const placeLabel = document.querySelector("#placeLabel");
 const weatherLine = document.querySelector("#weatherLine");
 const tempValue = document.querySelector("#tempValue");
@@ -73,11 +87,13 @@ function resize() {
   dpr = Math.min(window.devicePixelRatio || 1, 2);
   width = Math.floor(window.innerWidth);
   height = Math.floor(window.innerHeight);
-  canvas.width = Math.floor(width * dpr);
-  canvas.height = Math.floor(height * dpr);
-  canvas.style.width = `${width}px`;
-  canvas.style.height = `${height}px`;
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (canvas && ctx) {
+    canvas.width = Math.floor(width * dpr);
+    canvas.height = Math.floor(height * dpr);
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
   buildGarden();
 }
 
@@ -123,6 +139,11 @@ function hueWrap(value) {
 }
 
 function weatherMood() {
+  const now = new Date();
+  const hour = now.getHours() + now.getMinutes() / 60;
+  const dayLight = 0.5 + 0.5 * Math.cos((Math.PI * (hour - 12)) / 12);
+  const nightFactor = 1 - dayLight;
+
   const tempWarmth = Math.max(0, Math.min(1, (weather.temp + 2) / 32));
   const windPower = Math.max(0.2, Math.min(2.8, weather.wind / 4));
   const wetness = Math.max(0, Math.min(1, weather.rain / 2.5));
@@ -137,14 +158,25 @@ function weatherMood() {
     cloud,
     isSnow,
     isStorm,
-    light: 1 - cloud * 0.36 - wetness * 0.18,
+    light: (1 - cloud * 0.36 - wetness * 0.18) * dayLight,
+    nightFactor,
+    dayLight,
   };
 }
 
 function drawBackground(mood) {
-  const top = `hsl(${190 - mood.cloud * 30}, ${48 - mood.cloud * 16}%, ${82 - mood.cloud * 14}%)`;
-  const middle = `hsl(${48 + mood.tempWarmth * 16}, 78%, ${88 - mood.wetness * 9}%)`;
-  const bottom = `hsl(${126 - mood.wetness * 28}, ${44 - mood.cloud * 10}%, ${76 - mood.cloud * 8}%)`;
+  const n = mood.nightFactor;
+  const dim = n * 40;
+
+  const topHue = n > 0.5 ? 218 + (n - 0.5) * 24 : 190 - mood.cloud * 30;
+  const midHue = n > 0.5 ? 220 : 48 + mood.tempWarmth * 16;
+  const botHue = n > 0.5 ? 212 : 126 - mood.wetness * 28;
+  const midSat = n > 0.5 ? 30 - (n - 0.5) * 14 : 78;
+  const botSat = n > 0.5 ? 26 : 44 - mood.cloud * 10;
+
+  const top = `hsl(${topHue}, ${48 - mood.cloud * 16}%, ${Math.max(5, 82 - mood.cloud * 14 - dim)}%)`;
+  const middle = `hsl(${midHue}, ${midSat}%, ${Math.max(5, 88 - mood.wetness * 9 - dim)}%)`;
+  const bottom = `hsl(${botHue}, ${botSat}%, ${Math.max(5, 76 - mood.cloud * 8 - dim)}%)`;
   const gradient = ctx.createLinearGradient(0, 0, width, height);
   gradient.addColorStop(0, top);
   gradient.addColorStop(0.52, middle);
@@ -152,22 +184,95 @@ function drawBackground(mood) {
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, width, height);
 
-  ctx.globalAlpha = 0.36 + mood.light * 0.26;
-  ctx.fillStyle = `hsl(${42 + mood.tempWarmth * 18}, 92%, 76%)`;
-  ctx.beginPath();
-  ctx.arc(width * 0.18, height * 0.18, Math.min(width, height) * 0.18, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.globalAlpha = 1;
+  const celestialR = Math.min(width, height);
+  if (n > 0.55) {
+    // 달
+    const moonR = celestialR * 0.07;
+    ctx.save();
+    ctx.globalAlpha = 0.5 + n * 0.36;
+    ctx.shadowColor = "rgba(240, 235, 180, 0.55)";
+    ctx.shadowBlur = 22;
+    ctx.fillStyle = `hsl(52, 16%, 93%)`;
+    ctx.beginPath();
+    ctx.arc(width * 0.18, height * 0.14, moonR, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  } else if (n < 0.45) {
+    // 해
+    ctx.globalAlpha = (0.36 + mood.light * 0.26) * Math.max(0, 1 - n * 2.2);
+    ctx.fillStyle = `hsl(${42 + mood.tempWarmth * 18}, 92%, 76%)`;
+    ctx.beginPath();
+    ctx.arc(width * 0.18, height * 0.18, celestialR * 0.18, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
 
+  const cloudAlpha = (0.05 + mood.cloud * 0.075) * (1 - n * 0.72);
+  const cloudColor = n > 0.5 ? "rgba(150, 168, 218, 0.45)" : "#ffffff";
   for (let i = 0; i < 8; i += 1) {
     const y = height * (0.16 + i * 0.075) + Math.sin(time * 0.0003 + i) * 12;
-    ctx.globalAlpha = 0.05 + mood.cloud * 0.075;
-    ctx.fillStyle = "#ffffff";
+    ctx.globalAlpha = cloudAlpha;
+    ctx.fillStyle = cloudColor;
     ctx.beginPath();
     ctx.ellipse(width * (0.2 + (i % 4) * 0.22), y, width * 0.17, 28 + mood.cloud * 36, 0, 0, Math.PI * 2);
     ctx.fill();
   }
   ctx.globalAlpha = 1;
+}
+
+function drawNightSky(mood) {
+  if (mood.nightFactor < 0.12) return;
+  const n = mood.nightFactor;
+
+  ctx.globalAlpha = n * 0.5;
+  const ng = ctx.createLinearGradient(0, 0, 0, height * 0.65);
+  ng.addColorStop(0, "hsl(222, 46%, 8%)");
+  ng.addColorStop(1, "rgba(18, 30, 52, 0)");
+  ctx.fillStyle = ng;
+  ctx.fillRect(0, 0, width, height * 0.65);
+  ctx.globalAlpha = 1;
+
+  if (n < 0.28) return;
+  const sv = (n - 0.28) / 0.72;
+  for (let i = 0; i < 160; i++) {
+    const sx = (((i * 7919 + 31337) % 99991) / 99991) * width;
+    const sy = (((i * 6271 + 12289) % 99991) / 99991) * height * 0.52;
+    const sr = 0.32 + (i % 6) * 0.22;
+    const twinkle = 0.35 + 0.65 * Math.sin(time * 0.0016 + i * 2.31);
+    ctx.globalAlpha = sv * 0.7 * twinkle;
+    ctx.fillStyle =
+      i % 11 === 0 ? "hsl(44, 100%, 90%)" : i % 7 === 0 ? "hsl(196, 82%, 88%)" : "#ffffff";
+    ctx.beginPath();
+    ctx.arc(sx, sy, sr, 0, TAU);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+
+function applyNightDim(context, w, h, nightFactor) {
+  if (nightFactor < 0.08) return;
+  const n = nightFactor;
+  context.globalAlpha = n * 0.58;
+  const ng = context.createLinearGradient(0, 0, 0, h);
+  ng.addColorStop(0, "hsl(222, 44%, 8%)");
+  ng.addColorStop(1, "hsl(215, 32%, 13%)");
+  context.fillStyle = ng;
+  context.fillRect(0, 0, w, h);
+  if (n > 0.28) {
+    const sv = (n - 0.28) / 0.72;
+    for (let i = 0; i < 32; i++) {
+      const sx = (((i * 7919 + 31337) % 99991) / 99991) * w;
+      const sy = (((i * 6271 + 12289) % 99991) / 99991) * h * 0.42;
+      const r = 0.28 + (i % 4) * 0.2;
+      const twinkle = 0.35 + 0.65 * Math.sin(time * 0.0016 + i * 2.31);
+      context.globalAlpha = sv * 0.65 * twinkle;
+      context.fillStyle = "#ffffff";
+      context.beginPath();
+      context.arc(sx, sy, r, 0, TAU);
+      context.fill();
+    }
+  }
+  context.globalAlpha = 1;
 }
 
 function drawRainOrSnow(mood) {
@@ -421,16 +526,26 @@ function animate(now) {
   time = now;
   pointer.force *= 0.94;
   const mood = weatherMood();
-  drawBackground(mood);
-  drawBreath(mood);
-  drawClockArt(mood);
-  drawGarden(mood);
-  drawPetals(mood);
-  drawRainOrSnow(mood);
+  if (ctx) {
+    drawBackground(mood);
+    drawBreath(mood);
+    drawNightSky(mood);
+    drawClockArt(mood);
+    drawGarden(mood);
+    drawPetals(mood);
+    drawRainOrSnow(mood);
+  }
   drawMiniWork(mood, now);
   drawDustWalk(mood, now);
   drawTemperatureGarden(mood, now);
   drawRainFlowerCity(mood, now);
+  drawRefArt(mood, now);
+  drawPropWeather(mood, now);
+  drawPropAir(mood, now);
+  drawPropWater(mood, now);
+  drawPropMobility(mood, now);
+  drawPropEnergy(mood, now);
+  drawPropFestival(mood, now);
   requestAnimationFrame(animate);
 }
 
@@ -592,6 +707,7 @@ function drawMiniWork(mood, now) {
     miniCtx.fill();
   }
   miniCtx.globalAlpha = 1;
+  applyNightDim(miniCtx, miniWidth, miniHeight, mood.nightFactor);
   drawArtDataPanel(
     miniCtx,
     miniWidth,
@@ -666,6 +782,7 @@ function drawDustWalk(mood, now) {
   dustWalkCtx.arc(previewWidth * 0.13, previewHeight * 0.18, 16 + cleanScore * 8, 0, Math.PI * 2);
   dustWalkCtx.fill();
   dustWalkCtx.globalAlpha = 1;
+  applyNightDim(dustWalkCtx, previewWidth, previewHeight, mood.nightFactor);
   const fineLevel =
     pm10 <= 30 && pm25 <= 15 ? "좋음" : pm10 <= 80 && pm25 <= 35 ? "보통" : "주의";
   const activity = fineLevel === "좋음" ? "야외활동 가능" : fineLevel === "보통" ? "짧은 활동" : "실내 권장";
@@ -725,6 +842,7 @@ function drawTemperatureGarden(mood, now) {
     temperatureGardenCtx.fill();
   }
   temperatureGardenCtx.globalAlpha = 1;
+  applyNightDim(temperatureGardenCtx, previewWidth, previewHeight, mood.nightFactor);
   const tempMode = weather.temp >= 28 ? "더움" : weather.temp >= 18 ? "쾌적" : "서늘";
   drawArtDataPanel(
     temperatureGardenCtx,
@@ -793,6 +911,7 @@ function drawRainFlowerCity(mood, now) {
     rainFlowerCtx.restore();
   }
   rainFlowerCtx.globalAlpha = 1;
+  applyNightDim(rainFlowerCtx, previewWidth, previewHeight, mood.nightFactor);
   drawArtDataPanel(
     rainFlowerCtx,
     previewWidth,
@@ -809,14 +928,422 @@ function drawRainFlowerCity(mood, now) {
   );
 }
 
+function drawPropWeather(mood, now) {
+  const preview = preparePreview(propWeatherCanvas, propWeatherCtx);
+  if (!preview) return;
+  const { previewWidth: w, previewHeight: h } = preview;
+  const c = propWeatherCtx;
+  const bg = c.createLinearGradient(0, 0, w, h);
+  bg.addColorStop(0, `hsl(${190 - mood.cloud * 30}, 52%, ${82 - mood.cloud * 14}%)`);
+  bg.addColorStop(0.55, `hsl(${48 + mood.tempWarmth * 16}, 74%, ${88 - mood.wetness * 9}%)`);
+  bg.addColorStop(1, `hsl(${126 - mood.wetness * 28}, 44%, ${76 - mood.cloud * 8}%)`);
+  c.fillStyle = bg; c.fillRect(0, 0, w, h);
+
+  c.globalAlpha = (0.3 + mood.light * 0.22) * (1 - mood.nightFactor * 0.7);
+  c.fillStyle = `hsl(${42 + mood.tempWarmth * 18}, 92%, 76%)`;
+  c.beginPath(); c.arc(w * 0.2, h * 0.22, w * 0.14, 0, TAU); c.fill();
+  c.globalAlpha = 1;
+
+  const petalCount = 24;
+  for (let i = 0; i < petalCount; i++) {
+    const px = ((i * 43 + now * (0.015 + mood.windPower * 0.006)) % (w + 40)) - 20;
+    const py = ((i * 67 + now * (0.02 + mood.wetness * 0.02)) % (h + 40)) - 20;
+    const pr = 2.5 + mood.tempWarmth * 3 + (i % 3);
+    c.save(); c.translate(px, py); c.rotate(Math.sin(now * 0.002 + i));
+    c.globalAlpha = 0.52 + mood.light * 0.28;
+    c.fillStyle = `hsl(${hueWrap(336 + i * 14 + mood.tempWarmth * 22)}, 82%, 74%)`;
+    c.beginPath(); c.ellipse(0, 0, pr * 1.4, pr * 0.6, 0, 0, TAU); c.fill();
+    c.restore();
+  }
+  c.globalAlpha = 1;
+  applyNightDim(c, w, h, mood.nightFactor);
+}
+
+function drawPropAir(mood, now) {
+  const preview = preparePreview(propAirCanvas, propAirCtx);
+  if (!preview) return;
+  const { previewWidth: w, previewHeight: h } = preview;
+  const c = propAirCtx;
+  const pm10 = airQuality.pm10 ?? 42;
+  const pm25 = airQuality.pm25 ?? 18;
+  const dustLevel = Math.min(1, (pm10 / 150 + pm25 / 75) / 2);
+  const bg = c.createLinearGradient(0, 0, w, h);
+  bg.addColorStop(0, `hsl(${152 - dustLevel * 40}, ${64 - dustLevel * 30}%, ${88 - dustLevel * 20}%)`);
+  bg.addColorStop(1, `hsl(${112 - dustLevel * 16}, ${38 - dustLevel * 18}%, ${72 - dustLevel * 16}%)`);
+  c.fillStyle = bg; c.fillRect(0, 0, w, h);
+
+  for (let i = 0; i < 48; i++) {
+    const x = ((i * 97 + now * 0.02 * (1 + dustLevel)) % (w + 60)) - 30;
+    const y = ((i * 53 + now * 0.012) % (h + 40)) - 20;
+    const r = 1 + dustLevel * 4 + (i % 4) * 0.6;
+    c.globalAlpha = 0.1 + dustLevel * 0.24;
+    c.fillStyle = `hsl(${hueWrap(38 + i * 6)}, 68%, 62%)`;
+    c.beginPath(); c.arc(x, y, r, 0, TAU); c.fill();
+  }
+
+  const fineLevel = pm10 <= 30 && pm25 <= 15 ? 0 : pm10 <= 80 && pm25 <= 35 ? 0.5 : 1;
+  const signalColors = ["hsl(152, 72%, 54%)", "hsl(52, 92%, 58%)", "hsl(0, 82%, 64%)"];
+  const signalColor = signalColors[Math.round(fineLevel * 2)];
+  const pulse = 0.5 + 0.5 * Math.sin(now * 0.002);
+  c.globalAlpha = 0.28 + pulse * 0.18;
+  c.fillStyle = signalColor;
+  c.beginPath(); c.arc(w * 0.5, h * 0.5, w * (0.14 + pulse * 0.04), 0, TAU); c.fill();
+  c.globalAlpha = 0.7;
+  c.fillStyle = signalColor;
+  c.beginPath(); c.arc(w * 0.5, h * 0.5, w * 0.07, 0, TAU); c.fill();
+  c.globalAlpha = 1;
+  applyNightDim(c, w, h, mood.nightFactor);
+}
+
+function drawPropWater(mood, now) {
+  const preview = preparePreview(propWaterCanvas, propWaterCtx);
+  if (!preview) return;
+  const { previewWidth: w, previewHeight: h } = preview;
+  const c = propWaterCtx;
+  const waterLevel = Math.min(1, weather.rain / 3 + mood.wetness * 0.5);
+  const bg = c.createLinearGradient(0, 0, 0, h);
+  bg.addColorStop(0, `hsl(${196 - waterLevel * 22}, ${48 - waterLevel * 10}%, ${84 - waterLevel * 14}%)`);
+  bg.addColorStop(1, `hsl(${206 + waterLevel * 18}, ${62 + waterLevel * 16}%, ${52 - waterLevel * 12}%)`);
+  c.fillStyle = bg; c.fillRect(0, 0, w, h);
+
+  const waveY = h * (0.45 + waterLevel * 0.28);
+  for (let wave = 0; wave < 3; wave++) {
+    const speed = 0.0008 + wave * 0.0003;
+    const amp = (8 + wave * 4) * (0.4 + waterLevel * 0.6);
+    c.globalAlpha = 0.18 + wave * 0.08 + waterLevel * 0.12;
+    c.fillStyle = `hsl(${206 + wave * 8}, 72%, ${62 - wave * 8}%)`;
+    c.beginPath(); c.moveTo(0, h);
+    for (let x = 0; x <= w; x += 4) {
+      const y = waveY + Math.sin(x * 0.012 + now * speed + wave * 1.8) * amp;
+      wave === 0 && x === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
+    }
+    c.lineTo(w, h); c.lineTo(0, h); c.closePath(); c.fill();
+  }
+  c.globalAlpha = 1;
+  applyNightDim(c, w, h, mood.nightFactor);
+}
+
+function drawPropMobility(mood, now) {
+  const preview = preparePreview(propMobilityCanvas, propMobilityCtx);
+  if (!preview) return;
+  const { previewWidth: w, previewHeight: h } = preview;
+  const c = propMobilityCtx;
+  const bg = c.createLinearGradient(0, 0, w, h);
+  bg.addColorStop(0, `hsl(210, 22%, ${88 - mood.cloud * 10}%)`);
+  bg.addColorStop(1, `hsl(${126 - mood.cloud * 14}, 32%, ${78 - mood.cloud * 8}%)`);
+  c.fillStyle = bg; c.fillRect(0, 0, w, h);
+
+  const lineCount = 6;
+  for (let i = 0; i < lineCount; i++) {
+    const y = h * (0.2 + i * 0.12);
+    const speed = (0.8 + i * 0.3) * (1 + mood.windPower * 0.2);
+    c.strokeStyle = `hsl(${hueWrap(196 + i * 22)}, 62%, 62%)`;
+    c.lineWidth = 1.5 + (i % 2);
+    c.globalAlpha = 0.32 + mood.light * 0.18;
+    c.beginPath();
+    for (let x = 0; x <= w; x += 8) {
+      const dy = Math.sin(x * 0.018 + now * 0.001 * speed + i * 0.8) * (8 + i * 3);
+      x === 0 ? c.moveTo(x, y + dy) : c.lineTo(x, y + dy);
+    }
+    c.stroke();
+  }
+
+  for (let i = 0; i < 14; i++) {
+    const dotX = ((i * 113 + now * 0.06 * (1 + (i % 3) * 0.4)) % (w + 20)) - 10;
+    const dotY = h * (0.2 + (i % lineCount) * 0.12);
+    c.globalAlpha = 0.62;
+    c.fillStyle = `hsl(${hueWrap(340 + i * 18)}, 78%, 68%)`;
+    c.beginPath(); c.arc(dotX, dotY, 4 + (i % 3), 0, TAU); c.fill();
+  }
+  c.globalAlpha = 1;
+  applyNightDim(c, w, h, mood.nightFactor);
+}
+
+function drawPropEnergy(mood, now) {
+  const preview = preparePreview(propEnergyCanvas, propEnergyCtx);
+  if (!preview) return;
+  const { previewWidth: w, previewHeight: h } = preview;
+  const c = propEnergyCtx;
+  const solarPower = mood.light;
+  const bg = c.createLinearGradient(0, 0, w, h);
+  bg.addColorStop(0, `hsl(${48 + solarPower * 12}, ${82 + solarPower * 10}%, ${88 - mood.nightFactor * 20}%)`);
+  bg.addColorStop(1, `hsl(152, 52%, ${80 - mood.nightFactor * 18}%)`);
+  c.fillStyle = bg; c.fillRect(0, 0, w, h);
+
+  c.globalAlpha = (0.4 + solarPower * 0.4) * (1 - mood.nightFactor * 0.7);
+  c.fillStyle = `hsl(${42 + solarPower * 18}, 92%, 72%)`;
+  c.beginPath(); c.arc(w * 0.78, h * 0.2, w * 0.12, 0, TAU); c.fill();
+  c.globalAlpha = 1;
+
+  const bloomCount = Math.floor(6 + solarPower * 14);
+  for (let i = 0; i < bloomCount; i++) {
+    const stemX = (w / (bloomCount + 1)) * (i + 1);
+    const stemH = h * (0.18 + solarPower * 0.24) * (0.6 + (i % 3) * 0.2);
+    const tipX = stemX + Math.sin(now * 0.001 + i) * 7;
+    const tipY = h * 0.72 - stemH;
+    c.strokeStyle = `hsla(128, 36%, 36%, 0.5)`;
+    c.lineWidth = 1.4; c.globalAlpha = 0.7;
+    c.beginPath(); c.moveTo(stemX, h * 0.75); c.quadraticCurveTo(stemX, h * 0.75 - stemH * 0.5, tipX, tipY); c.stroke();
+    const bs = 5 + solarPower * 12;
+    c.fillStyle = `hsl(${hueWrap(46 + solarPower * 28 + i * 9)}, 88%, ${66 + solarPower * 8}%)`;
+    for (let p = 0; p < 5; p++) {
+      const a = (TAU * p / 5) + now * 0.0004;
+      c.globalAlpha = 0.65 + solarPower * 0.2;
+      c.beginPath();
+      c.ellipse(tipX + Math.cos(a) * bs * 0.35, tipY + Math.sin(a) * bs * 0.25, bs * 0.35, bs * 0.18, a, 0, TAU);
+      c.fill();
+    }
+  }
+  c.globalAlpha = 1;
+  applyNightDim(c, w, h, mood.nightFactor);
+}
+
+function drawPropFestival(mood, now) {
+  const preview = preparePreview(propFestivalCanvas, propFestivalCtx);
+  if (!preview) return;
+  const { previewWidth: w, previewHeight: h } = preview;
+  const c = propFestivalCtx;
+  const bg = c.createLinearGradient(0, 0, w, h);
+  bg.addColorStop(0, `hsl(340, 62%, ${88 - mood.nightFactor * 18}%)`);
+  bg.addColorStop(0.5, `hsl(${48 + mood.tempWarmth * 12}, 78%, ${90 - mood.nightFactor * 16}%)`);
+  bg.addColorStop(1, `hsl(${268 + mood.tempWarmth * 8}, 52%, ${86 - mood.nightFactor * 16}%)`);
+  c.fillStyle = bg; c.fillRect(0, 0, w, h);
+
+  const starCount = 32;
+  for (let i = 0; i < starCount; i++) {
+    const sx = (((i * 7919 + 31337) % 99991) / 99991) * w;
+    const sy = (((i * 6271 + 12289) % 99991) / 99991) * h * 0.7;
+    const sr = 1.2 + (i % 4) * 0.8;
+    const twinkle = 0.4 + 0.6 * Math.sin(now * 0.002 + i * 2.31);
+    c.globalAlpha = 0.4 + twinkle * 0.4;
+    c.fillStyle = i % 5 === 0 ? `hsl(${hueWrap(338 + i * 22)}, 88%, 72%)` : i % 3 === 0 ? "hsl(44, 100%, 78%)" : `hsl(${hueWrap(268 + i * 18)}, 72%, 76%)`;
+    c.beginPath(); c.arc(sx, sy, sr, 0, TAU); c.fill();
+  }
+
+  const flowerCount = Math.floor(18 + mood.tempWarmth * 22);
+  for (let i = 0; i < flowerCount; i++) {
+    const fx = ((i * 53 + now * 0.018) % (w + 30)) - 15;
+    const fy = ((i * 79 + now * 0.026) % (h + 30)) - 15;
+    const fr = 2.5 + mood.tempWarmth * 3.5 + (i % 3);
+    c.save(); c.translate(fx, fy); c.rotate(Math.sin(now * 0.002 + i));
+    c.globalAlpha = 0.56;
+    c.fillStyle = `hsl(${hueWrap(338 + i * 19)}, 84%, 72%)`;
+    for (let p = 0; p < 5; p++) {
+      const a = (TAU * p / 5);
+      c.beginPath(); c.ellipse(Math.cos(a) * fr, Math.sin(a) * fr, fr, fr * 0.45, a, 0, TAU); c.fill();
+    }
+    c.restore();
+  }
+  c.globalAlpha = 1;
+  applyNightDim(c, w, h, mood.nightFactor);
+}
+
+function drawRefArt(mood, now) {
+  if (!refArtCanvas || !refArtCtx) return;
+  const artworkId = refArtCanvas.dataset.artwork;
+  const preview = preparePreview(refArtCanvas, refArtCtx);
+  if (!preview) return;
+  const { previewWidth, previewHeight } = preview;
+
+  const savedCanvas = canvas;
+  const savedCtx = ctx;
+  const savedWidth = width;
+  const savedHeight = height;
+
+  // Temporarily redirect global canvas/ctx/dimensions to refArtCanvas
+  // We draw by routing to a local mini-art based on artworkId
+  if (artworkId === "spring-day-clock" || artworkId === "오늘은봄날") {
+    drawRefSpringClock(refArtCtx, previewWidth, previewHeight, mood, now);
+  } else if (artworkId === "light-walk-air" || artworkId === "빛의산책로") {
+    drawRefDustWalkArt(refArtCtx, previewWidth, previewHeight, mood, now);
+  } else if (artworkId === "breathing-temperature-garden" || artworkId === "숨쉬는정원") {
+    drawRefTemperatureArt(refArtCtx, previewWidth, previewHeight, mood, now);
+  } else if (artworkId === "city-flower-rain" || artworkId === "도시의꽃비") {
+    drawRefRainFlowerArt(refArtCtx, previewWidth, previewHeight, mood, now);
+  }
+}
+
+function drawRefSpringClock(c, w, h, mood, now) {
+  const n = mood.nightFactor;
+  const topHue = n > 0.5 ? 222 : 190 - mood.cloud * 30;
+  const bg = c.createLinearGradient(0, 0, w, h);
+  bg.addColorStop(0, `hsl(${topHue}, ${48 - mood.cloud * 16}%, ${Math.max(5, 82 - mood.cloud * 14 - n * 40)}%)`);
+  bg.addColorStop(1, `hsl(${n > 0.5 ? 212 : 126}, ${n > 0.5 ? 26 : 44}%, ${Math.max(5, 76 - mood.cloud * 8 - n * 40)}%)`);
+  c.fillStyle = bg;
+  c.fillRect(0, 0, w, h);
+
+  const cx = w * 0.5, cy = h * 0.5;
+  const r = Math.min(w, h) * 0.34;
+  const date = new Date();
+  const sec = date.getSeconds() + date.getMilliseconds() / 1000;
+  const min = date.getMinutes() + sec / 60;
+  const hr = (date.getHours() % 12) + min / 60;
+
+  c.save();
+  c.globalCompositeOperation = "screen";
+  const aura = c.createRadialGradient(cx, cy, r * 0.08, cx, cy, r * 1.4);
+  aura.addColorStop(0, `hsla(${46 + mood.tempWarmth * 34}, 94%, 78%, 0.35)`);
+  aura.addColorStop(1, "rgba(255,255,255,0)");
+  c.fillStyle = aura;
+  c.beginPath(); c.arc(cx, cy, r * 1.4, 0, TAU); c.fill();
+  c.globalCompositeOperation = "source-over";
+  c.restore();
+
+  for (let i = 0; i < 60; i++) {
+    const mk = clockMarks[i];
+    const a = (i / 60) * TAU - Math.PI / 2;
+    const inner = r * (i % 5 === 0 ? 0.76 : 0.86);
+    c.save();
+    c.globalAlpha = 0.6;
+    c.strokeStyle = `hsl(${hueWrap(mk.hue)}, 78%, 68%)`;
+    c.lineWidth = mk.width;
+    c.beginPath();
+    c.moveTo(cx + Math.cos(a) * inner, cy + Math.sin(a) * inner);
+    c.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+    c.stroke();
+    c.restore();
+  }
+
+  const hands = [
+    { angle: (hr / 12) * TAU - Math.PI / 2, len: r * 0.55, width: 3.5, color: `hsl(${hueWrap(34 + mood.tempWarmth * 28)}, 88%, 62%)` },
+    { angle: (min / 60) * TAU - Math.PI / 2, len: r * 0.78, width: 2.2, color: `hsl(${hueWrap(168 - mood.cloud * 22)}, 82%, 66%)` },
+    { angle: (sec / 60) * TAU - Math.PI / 2, len: r * 0.88, width: 1.1, color: `hsl(${hueWrap(338 + mood.wetness * 24)}, 92%, 72%)` },
+  ];
+  hands.forEach(({ angle, len, width: lw, color }) => {
+    c.save();
+    c.strokeStyle = color; c.lineWidth = lw; c.lineCap = "round";
+    c.shadowColor = color; c.shadowBlur = lw * 3;
+    c.beginPath();
+    c.moveTo(cx, cy);
+    c.lineTo(cx + Math.cos(angle) * len, cy + Math.sin(angle) * len);
+    c.stroke();
+    c.restore();
+  });
+
+  for (let i = 0; i < 18; i++) {
+    const px = (i * 43 + now * 0.018) % (w + 30) - 15;
+    const py = (i * 67 + now * 0.028) % (h + 30) - 15;
+    const pr = 2 + (i % 3);
+    c.save(); c.translate(px, py); c.rotate(Math.sin(now * 0.002 + i));
+    c.globalAlpha = 0.5;
+    c.fillStyle = `hsl(${hueWrap(338 + mood.tempWarmth * 28 + i * 12)}, 82%, 76%)`;
+    c.beginPath(); c.ellipse(0, 0, pr * 1.4, pr * 0.6, 0, 0, TAU); c.fill();
+    c.restore();
+  }
+  applyNightDim(c, w, h, mood.nightFactor);
+}
+
+function drawRefDustWalkArt(c, w, h, mood, now) {
+  const pm10 = airQuality.pm10 ?? 42;
+  const pm25 = airQuality.pm25 ?? 18;
+  const dustLevel = Math.min(1, (pm10 / 150 + pm25 / 75) / 2);
+  const bg = c.createLinearGradient(0, 0, w, h);
+  bg.addColorStop(0, `hsl(${196 - dustLevel * 38}, ${52 - dustLevel * 28}%, ${84 - dustLevel * 22}%)`);
+  bg.addColorStop(1, `hsl(${112 - dustLevel * 16}, ${38 - dustLevel * 18}%, ${68 - dustLevel * 16}%)`);
+  c.fillStyle = bg; c.fillRect(0, 0, w, h);
+
+  for (let i = 0; i < 60; i++) {
+    const x = ((i * 97 + now * 0.022 * (1 + dustLevel)) % (w + 60)) - 30;
+    const y = ((i * 53 + now * 0.014) % (h + 40)) - 20;
+    const r = 1.2 + dustLevel * 3.5 + (i % 4) * 0.8;
+    c.globalAlpha = 0.14 + dustLevel * 0.28;
+    c.fillStyle = `hsl(${hueWrap(38 + i * 7)}, 68%, 64%)`;
+    c.beginPath(); c.arc(x, y, r, 0, TAU); c.fill();
+  }
+
+  const personX = w * 0.5 + Math.sin(now * 0.0008) * w * 0.12;
+  const personY = h * 0.62;
+  c.globalAlpha = 0.72;
+  c.fillStyle = `hsl(${hueWrap(34 - dustLevel * 22)}, 72%, 52%)`;
+  c.beginPath(); c.arc(personX, personY - 18, 9, 0, TAU); c.fill();
+  c.strokeStyle = `hsl(${hueWrap(34 - dustLevel * 22)}, 72%, 52%)`;
+  c.lineWidth = 3; c.lineCap = "round";
+  c.beginPath(); c.moveTo(personX, personY - 9); c.lineTo(personX, personY + 22); c.stroke();
+  c.beginPath(); c.moveTo(personX - 12, personY + 6); c.lineTo(personX + 12, personY + 6); c.stroke();
+  c.beginPath(); c.moveTo(personX, personY + 22); c.lineTo(personX - 10, personY + 42); c.stroke();
+  c.beginPath(); c.moveTo(personX, personY + 22); c.lineTo(personX + 10, personY + 42); c.stroke();
+  c.globalAlpha = 1;
+  applyNightDim(c, w, h, mood.nightFactor);
+}
+
+function drawRefTemperatureArt(c, w, h, mood, now) {
+  const warmth = mood.tempWarmth;
+  const bg = c.createLinearGradient(0, 0, w, h);
+  bg.addColorStop(0, `hsl(${196 - warmth * 56}, 52%, ${84 - warmth * 14}%)`);
+  bg.addColorStop(0.5, `hsl(${52 + warmth * 22}, 74%, ${88 - warmth * 12}%)`);
+  bg.addColorStop(1, `hsl(${126 - warmth * 38}, ${38 + warmth * 16}%, ${72 - warmth * 10}%)`);
+  c.fillStyle = bg; c.fillRect(0, 0, w, h);
+
+  const count = Math.floor(8 + warmth * 18);
+  for (let i = 0; i < count; i++) {
+    const stemX = (w / (count + 1)) * (i + 1) + Math.sin(now * 0.0014 + i) * 8;
+    const stemH = h * (0.22 + warmth * 0.2) * (0.6 + (i % 3) * 0.22);
+    const tipX = stemX + Math.sin(now * 0.001 + i) * 10;
+    const tipY = h * 0.75 - stemH;
+    c.strokeStyle = `hsla(${128 - mood.cloud * 22}, 36%, 36%, 0.5)`;
+    c.lineWidth = 1.6;
+    c.beginPath(); c.moveTo(stemX, h * 0.78); c.quadraticCurveTo(stemX, h * 0.78 - stemH * 0.5, tipX, tipY); c.stroke();
+    const bs = 6 + warmth * 14;
+    c.fillStyle = `hsl(${hueWrap(342 + warmth * 36 + i * 8)}, 78%, ${72 - mood.cloud * 8}%)`;
+    for (let p = 0; p < 5; p++) {
+      const a = (TAU * p / 5) + now * 0.00035;
+      c.globalAlpha = 0.7;
+      c.beginPath();
+      c.ellipse(tipX + Math.cos(a) * bs * 0.35, tipY + Math.sin(a) * bs * 0.25, bs * 0.35, bs * 0.18, a, 0, TAU);
+      c.fill();
+    }
+  }
+  c.globalAlpha = 1;
+  applyNightDim(c, w, h, mood.nightFactor);
+}
+
+function drawRefRainFlowerArt(c, w, h, mood, now) {
+  const rainy = weather.rain > 0.1 || [51, 53, 55, 61, 63, 65, 80, 81, 82, 95].includes(weather.code);
+  const rainPower = rainy ? Math.max(0.38, Math.min(1, weather.rain / 4 + mood.cloud * 0.45)) : Math.max(0.06, mood.cloud * 0.16);
+  const bg = c.createLinearGradient(0, 0, w, h);
+  bg.addColorStop(0, `hsl(${194 - rainPower * 28}, ${40 - rainPower * 10}%, ${82 - rainPower * 18}%)`);
+  bg.addColorStop(0.6, `hsl(${52 - rainPower * 14}, 74%, ${86 - rainPower * 18}%)`);
+  bg.addColorStop(1, `hsl(${112 - rainPower * 12}, 35%, ${70 - rainPower * 12}%)`);
+  c.fillStyle = bg; c.fillRect(0, 0, w, h);
+
+  c.globalAlpha = 0.36;
+  c.fillStyle = "#fff7b4";
+  c.beginPath(); c.arc(w * 0.52, h * 0.28, w * 0.18, 0, TAU); c.fill();
+
+  for (let i = 0; i < 7; i++) {
+    const x = w * (0.18 + i * 0.11);
+    c.globalAlpha = 0.22 + rainPower * 0.24;
+    c.strokeStyle = `rgba(53,70,61,${0.32 + rainPower * 0.26})`;
+    c.lineWidth = 3; c.lineCap = "round";
+    c.beginPath(); c.moveTo(x, h * 0.3); c.lineTo(x, h); c.stroke();
+  }
+
+  const flowerCount = Math.floor(22 + rainPower * 52);
+  for (let i = 0; i < flowerCount; i++) {
+    const fx = (i * 43 + now * (rainy ? 0.05 : 0.018)) % (w + 30) - 15;
+    const fy = (i * 67 + now * (rainy ? 0.09 : 0.035)) % (h + 30) - 15;
+    const fr = 3 + rainPower * 4 + (i % 3);
+    c.save(); c.translate(fx, fy); c.rotate(Math.sin(now * 0.002 + i));
+    c.globalAlpha = 0.5 + rainPower * 0.3;
+    c.fillStyle = rainy ? "hsl(202, 78%, 72%)" : `hsl(${hueWrap(336 + i * 12)}, 78%, 73%)`;
+    for (let p = 0; p < 5; p++) {
+      const a = (TAU * p / 5);
+      c.beginPath(); c.ellipse(Math.cos(a) * fr, Math.sin(a) * fr, fr, fr * 0.45, a, 0, TAU); c.fill();
+    }
+    c.restore();
+  }
+  c.globalAlpha = 1;
+  applyNightDim(c, w, h, mood.nightFactor);
+}
+
 function describeWeather() {
   const sky = skyNames.get(weather.code) || weather.label;
   const gentle = weather.wind < 4 ? "천천히" : weather.wind < 9 ? "조금 빠르게" : "힘 있게";
   const rainPhrase = weather.rain > 0.2 ? "비의 무게를 품고" : "빛을 가볍게 머금고";
-  weatherLine.textContent = `${sky}인 오늘, 시침은 깊게 머물고 초침은 ${gentle} 꽃잎의 잔상을 그리며 ${rainPhrase} 번집니다.`;
-  tempValue.textContent = `${Math.round(weather.temp)}°C`;
-  skyValue.textContent = sky;
-  windValue.textContent = `${Math.round(weather.wind)} m/s`;
+  if (weatherLine) weatherLine.textContent = `${sky}인 오늘, 시침은 깊게 머물고 초침은 ${gentle} 꽃잎의 잔상을 그리며 ${rainPhrase} 번집니다.`;
+  if (tempValue) tempValue.textContent = `${Math.round(weather.temp)}°C`;
+  if (skyValue) skyValue.textContent = sky;
+  if (windValue) windValue.textContent = `${Math.round(weather.wind)} m/s`;
   updatePublicDataTable();
 }
 
@@ -877,8 +1404,8 @@ async function getPosition() {
 }
 
 async function loadWeather() {
-  placeLabel.textContent = "대구의 하늘을 읽는 중";
-  refreshButton.disabled = true;
+  if (placeLabel) placeLabel.textContent = "대구의 하늘을 읽는 중";
+  if (refreshButton) refreshButton.disabled = true;
 
   try {
     const place = await getPosition();
@@ -900,7 +1427,7 @@ async function loadWeather() {
     weather.rain = current.precipitation;
     weather.label = skyNames.get(weather.code) || "변화하는 하늘";
 
-    placeLabel.textContent = `${place.label} · ${new Date().toLocaleDateString("ko-KR", {
+    if (placeLabel) placeLabel.textContent = `${place.label} · ${new Date().toLocaleDateString("ko-KR", {
       month: "long",
       day: "numeric",
       weekday: "long",
@@ -913,11 +1440,11 @@ async function loadWeather() {
       updatePublicDataTable();
     }
   } catch (error) {
-    placeLabel.textContent = "대구의 봄날 · 날씨 연결 전";
-    weatherLine.textContent = "날씨를 가져오지 못해도 봄날은 여기서 천천히 움직입니다.";
+    if (placeLabel) placeLabel.textContent = "대구의 봄날 · 날씨 연결 전";
+    if (weatherLine) weatherLine.textContent = "날씨를 가져오지 못해도 봄날은 여기서 천천히 움직입니다.";
   } finally {
     describeWeather();
-    refreshButton.disabled = false;
+    if (refreshButton) refreshButton.disabled = false;
   }
 }
 
@@ -952,9 +1479,36 @@ window.addEventListener("touchmove", setPointer, { passive: true });
 window.addEventListener("pointerleave", () => {
   pointer.active = false;
 });
-refreshButton.addEventListener("click", loadWeather);
+refreshButton?.addEventListener("click", loadWeather);
+
+function initMiniCanvases() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  [
+    [miniCanvas, miniCtx],
+    [dustWalkCanvas, dustWalkCtx],
+    [temperatureGardenCanvas, temperatureGardenCtx],
+    [rainFlowerCanvas, rainFlowerCtx],
+    [refArtCanvas, refArtCtx],
+    [propWeatherCanvas, propWeatherCtx],
+    [propAirCanvas, propAirCtx],
+    [propWaterCanvas, propWaterCtx],
+    [propMobilityCanvas, propMobilityCtx],
+    [propEnergyCanvas, propEnergyCtx],
+    [propFestivalCanvas, propFestivalCtx],
+  ].forEach(([cvs, cctx]) => {
+    if (!cvs || !cctx) return;
+    const parent = cvs.parentElement;
+    if (!parent) return;
+    const w = Math.max(1, parent.offsetWidth);
+    const h = Math.max(1, parent.offsetHeight);
+    cvs.width = Math.floor(w * dpr);
+    cvs.height = Math.floor(h * dpr);
+    cctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  });
+}
 
 resize();
 describeWeather();
 loadWeather();
+window.addEventListener("load", initMiniCanvases);
 requestAnimationFrame(animate);

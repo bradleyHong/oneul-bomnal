@@ -64,7 +64,6 @@
         color: var(--nav-ink, #1f2a24);
         background: rgba(246, 240, 222, 0.88);
         border-bottom: 1px solid var(--line);
-        backdrop-filter: blur(16px);
       }
 
       .topbar > a:first-child {
@@ -1217,6 +1216,14 @@
         box-shadow: 0 0 26px rgba(255, 255, 255, 0.48);
       }
 
+      #refArtCanvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
+
       .media-screen span:nth-child(1) {
         left: 12%;
         top: 64%;
@@ -1352,17 +1359,12 @@
         z-index: 2;
       }
 
-      .media-qr-card i {
+      .media-qr-card img {
         display: block;
-        width: 52px;
-        aspect-ratio: 1;
+        width: 80px;
+        height: 80px;
         margin-bottom: 10px;
-        background:
-          linear-gradient(90deg, #203229 50%, transparent 0) 0 0 / 14px 14px,
-          linear-gradient(#203229 50%, transparent 0) 0 0 / 14px 14px,
-          #fffdf6;
-        border: 6px solid #fffdf6;
-        box-shadow: inset 0 0 0 2px #203229;
+        border-radius: 4px;
       }
 
       .media-qr-card b,
@@ -2045,7 +2047,7 @@
   </head>
   <body>
     <header class="topbar">
-      <a href="./index.html" aria-label="오늘은 봄날 홈"><img src="./assets/logo-bomnal.png" alt="오늘은 봄날" /></a>
+      <a href="./index.html" aria-label="오늘은 봄날 홈" class="topbar-brand"><strong>오늘은 봄날</strong></a>
       <nav>
         <a href="./company.html">회사소개</a>
         <a href="./data-media-art.html">데이터기반 미디어아트</a>
@@ -2662,9 +2664,9 @@
                   <span class="media-live-badge">DATA LIVE</span>
                 </div>
                 <div class="media-screen" aria-label="공공데이터 미디어아트 송출 화면">
+                  <canvas id="refArtCanvas" data-artwork="${item.id}"></canvas>
                   <div class="media-screen-label"><span>${item.badge} data</span><strong>${item.title}</strong></div>
-                  <span></span><span></span><span></span>
-                  <div class="media-qr-card"><i></i><b>QR 참여 연결</b><small>설문 · 이벤트 · 신청</small></div>
+                  <div class="media-qr-card"><img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(window.location.href)}" alt="QR" width="80" height="80"><b>QR 참여 연결</b><small>현재 페이지 바로가기</small></div>
                 </div>
                 <div class="media-telemetry">
                   ${bp.fields.map((field, index) => `<div><span>${field}</span><b data-media-stat="${index}">${bp.stats[index] || "LIVE"}</b></div>`).join("")}
@@ -2863,5 +2865,6 @@
         });
       }
     </script>
+    <script src="./spring.js"></script>
   </body>
 </html>
