@@ -513,6 +513,215 @@ h1 {
   font-weight: 900;
 }
 
+.proposal-tabs {
+  margin-top: clamp(34px, 5vw, 64px);
+  padding: clamp(22px, 4vw, 38px);
+  border: 1px solid rgba(36, 48, 41, 0.14);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 8% 18%, rgba(255, 186, 200, 0.34), transparent 24%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.74), rgba(232, 245, 236, 0.72));
+}
+
+.proposal-head {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(280px, 0.52fr);
+  gap: clamp(22px, 5vw, 72px);
+  align-items: end;
+  margin-bottom: 24px;
+}
+
+.proposal-head h3 {
+  margin: 0;
+  font-size: clamp(25px, 3.2vw, 42px);
+  line-height: 1.16;
+}
+
+.proposal-head p:not(.section-kicker) {
+  color: rgba(38, 53, 45, 0.68);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.proposal-tab-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.proposal-tab-buttons button {
+  min-height: 38px;
+  padding: 0 13px;
+  border: 1px solid rgba(38, 53, 45, 0.16);
+  border-radius: 999px;
+  color: rgba(38, 53, 45, 0.68);
+  background: rgba(255, 255, 255, 0.54);
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.proposal-tab-buttons button.active {
+  color: #fffdf6;
+  background: #26352d;
+}
+
+.proposal-panels {
+  position: relative;
+}
+
+.proposal-panel {
+  display: none;
+  grid-template-columns: minmax(260px, 0.58fr) minmax(0, 1fr);
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid rgba(38, 53, 45, 0.14);
+  border-radius: 8px;
+  background: rgba(38, 53, 45, 0.14);
+}
+
+.proposal-panel.active {
+  display: grid;
+}
+
+.proposal-visual {
+  position: relative;
+  min-height: 360px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 28% 22%, rgba(255, 233, 139, 0.72), transparent 20%),
+    linear-gradient(135deg, #c7e5df, #f6efc8 56%, #a9d0a6);
+}
+
+.proposal-visual span {
+  position: absolute;
+  display: block;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.56);
+}
+
+.proposal-visual span:nth-child(1) {
+  left: 14%;
+  top: 22%;
+  width: 34%;
+  height: 10px;
+  transform: rotate(-18deg);
+}
+
+.proposal-visual span:nth-child(2) {
+  left: 34%;
+  top: 52%;
+  width: 48%;
+  height: 10px;
+  transform: rotate(16deg);
+}
+
+.proposal-visual span:nth-child(3) {
+  left: 18%;
+  top: 76%;
+  width: 58%;
+  height: 10px;
+}
+
+.proposal-weather {
+  background:
+    radial-gradient(circle at 24% 20%, rgba(255, 233, 139, 0.85), transparent 20%),
+    radial-gradient(circle at 72% 52%, rgba(255, 186, 200, 0.56), transparent 18%),
+    linear-gradient(145deg, #cae9e3, #fff3c8 55%, #b9d99f);
+}
+
+.proposal-air {
+  background:
+    repeating-linear-gradient(135deg, rgba(38, 53, 45, 0.08) 0 2px, transparent 2px 18px),
+    radial-gradient(circle at 70% 22%, rgba(183, 239, 186, 0.82), transparent 20%),
+    linear-gradient(145deg, #dff2ea, #f8fff0);
+}
+
+.proposal-water {
+  background:
+    repeating-radial-gradient(circle at 48% 46%, rgba(255, 255, 255, 0.52) 0 2px, transparent 2px 32px),
+    linear-gradient(145deg, #a5d8e8, #dff2ea 52%, #5ea5b8);
+}
+
+.proposal-mobility {
+  background:
+    linear-gradient(90deg, rgba(38, 53, 45, 0.18) 0 2px, transparent 2px 18px),
+    radial-gradient(circle at 30% 70%, rgba(255, 186, 200, 0.72), transparent 14%),
+    linear-gradient(145deg, #e8eef3, #d7ebc4);
+}
+
+.proposal-energy {
+  background:
+    radial-gradient(circle at 78% 18%, rgba(255, 233, 139, 0.95), transparent 22%),
+    radial-gradient(circle at 22% 70%, rgba(143, 208, 182, 0.72), transparent 20%),
+    linear-gradient(145deg, #fff8d0, #dff2ea);
+}
+
+.proposal-festival {
+  background:
+    radial-gradient(circle at 18% 30%, rgba(255, 186, 200, 0.82), transparent 14%),
+    radial-gradient(circle at 54% 58%, rgba(255, 233, 139, 0.78), transparent 18%),
+    radial-gradient(circle at 82% 30%, rgba(175, 154, 235, 0.62), transparent 14%),
+    linear-gradient(145deg, #fff4f7, #e8f5dc);
+}
+
+.proposal-copy {
+  padding: clamp(24px, 4vw, 44px);
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.proposal-copy span {
+  color: rgba(38, 53, 45, 0.56);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.proposal-copy h4 {
+  max-width: 720px;
+  margin: 28px 0 14px;
+  font-size: clamp(24px, 3vw, 36px);
+  line-height: 1.14;
+}
+
+.proposal-copy p {
+  max-width: 780px;
+  color: rgba(38, 53, 45, 0.74);
+  font-size: 15px;
+  line-height: 1.72;
+}
+
+.proposal-copy dl {
+  display: grid;
+  gap: 1px;
+  margin: 24px 0 0;
+  overflow: hidden;
+  border: 1px solid rgba(38, 53, 45, 0.12);
+  border-radius: 8px;
+  background: rgba(38, 53, 45, 0.12);
+}
+
+.proposal-copy dl div {
+  display: grid;
+  grid-template-columns: 102px 1fr;
+  gap: 14px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.proposal-copy dt,
+.proposal-copy dd {
+  margin: 0;
+  color: rgba(38, 53, 45, 0.72);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.proposal-copy dt {
+  color: rgba(38, 53, 45, 0.54);
+  font-weight: 900;
+}
+
 .product-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1121,6 +1330,102 @@ h1 {
   color: rgba(38, 53, 45, 0.62);
 }
 
+.subpage-main {
+  padding-top: 72px;
+  background: #fffdf6;
+}
+
+.subpage-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 0.82fr) minmax(280px, 0.5fr);
+  gap: clamp(28px, 6vw, 80px);
+  align-items: end;
+  padding: clamp(70px, 9vw, 118px) clamp(22px, 6vw, 88px) clamp(46px, 6vw, 76px);
+  background:
+    radial-gradient(circle at 82% 16%, rgba(255, 233, 139, 0.45), transparent 24%),
+    linear-gradient(135deg, #fff8e8, #e6f3ea 58%, #fff4f7);
+}
+
+.subpage-hero h1 {
+  max-width: 860px;
+  font-size: clamp(38px, 6vw, 76px);
+  line-height: 1.08;
+}
+
+.subpage-hero p {
+  max-width: 740px;
+  margin-top: 22px;
+  color: rgba(38, 53, 45, 0.74);
+  font-size: clamp(15px, 1.7vw, 18px);
+  line-height: 1.78;
+}
+
+.subpage-hero aside {
+  display: grid;
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid rgba(38, 53, 45, 0.14);
+  border-radius: 8px;
+  background: rgba(38, 53, 45, 0.14);
+}
+
+.subpage-hero aside span {
+  min-height: 74px;
+  padding: 16px;
+  color: rgba(38, 53, 45, 0.72);
+  background: rgba(255, 255, 255, 0.56);
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.subpage-hero aside b {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.subpage-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.simple-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid rgba(38, 53, 45, 0.14);
+  border-radius: 8px;
+  background: rgba(38, 53, 45, 0.14);
+}
+
+.simple-cards article {
+  min-height: 220px;
+  padding: clamp(22px, 3vw, 34px);
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.simple-cards span {
+  color: rgba(38, 53, 45, 0.56);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.simple-cards h3 {
+  margin: 40px 0 14px;
+  font-size: clamp(21px, 2.2vw, 28px);
+  line-height: 1.16;
+}
+
+.simple-cards p {
+  color: rgba(38, 53, 45, 0.72);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
 .credential-layout {
   display: grid;
   grid-template-columns: minmax(320px, 0.82fr) minmax(0, 1fr);
@@ -1218,12 +1523,16 @@ h1 {
 
 @media (max-width: 920px) {
   .intro,
+  .subpage-hero,
   .install,
   .grid,
   .works-grid,
   .product-grid,
   .service-layout,
   .service-grid,
+  .proposal-head,
+  .proposal-panel,
+  .simple-cards,
   .reference-strip,
   .profile-layout,
   .profile-grid,

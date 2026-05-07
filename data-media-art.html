@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>데이터기반 미디어아트 | 오늘은 봄날</title>
+    <link rel="stylesheet" href="./styles.css?v=data-proposals-20260507" />
+  </head>
+  <body class="site-page">
+    <header class="site-nav">
+      <a class="brand" href="./index.html" aria-label="오늘은 봄날 홈">
+        <strong>오늘은 봄날</strong>
+        <span>대구 여성기업 · 공공예술 콘텐츠</span>
+      </a>
+      <nav aria-label="주요 메뉴">
+        <a href="./company.html">회사소개</a>
+        <a href="./data-media-art.html">데이터기반 미디어아트</a>
+        <a href="./landing.html">랜딩페이지</a>
+        <a href="./quote.html">무료견적문의</a>
+      </nav>
+    </header>
+    <main class="subpage-main">
+      <section class="subpage-hero">
+        <div>
+          <p class="section-kicker">Data-driven Media Art</p>
+          <h1>공공데이터가 조건이 되는 미디어아트 제안</h1>
+          <p>
+            날씨, 미세먼지, 수위, 교통, 에너지, 축제 참여 데이터를 LED·사이니지·미디어월 화면의 빛과 움직임으로 바꿉니다.
+            작품 화면 안에 QR을 심어 랜딩페이지, 설문, 신청, 사은품 수령까지 연결할 수 있습니다.
+          </p>
+          <div class="subpage-actions">
+            <a class="primary-link" href="./quote.html">무료견적문의</a>
+            <a class="secondary-link" href="./landing-references.html?case=air-garden-led">LED 예시 보기</a>
+          </div>
+        </div>
+        <aside>
+          <span><b>송출</b>미니 PC 기반 LED·사이니지·미디어월 운영</span>
+          <span><b>연동</b>공공 API, 현장 QR, 설문 응답 데이터 연결</span>
+          <span><b>납품</b>기획안, 화면 제작, 운영 방식, 결과 데이터 정리</span>
+        </aside>
+      </section>
+      <section class="section works">
+        <div class="section-head">
+          <p class="section-kicker">Proposal Tabs</p>
+          <h2>데이터 기반 미디어아트 제안탭</h2>
+          <p>발주처가 데이터 소스별로 검토할 수 있도록 제안 유형을 나눴습니다.</p>
+        </div>
+        <div class="proposal-tabs" aria-label="데이터 기반 미디어아트 제안 탭">
+          <div class="proposal-tab-buttons" role="tablist" aria-label="데이터 기반 미디어아트 제안 유형">
+            <button class="active" type="button" data-proposal="weather">날씨·계절</button>
+            <button type="button" data-proposal="air">공기·안전</button>
+            <button type="button" data-proposal="water">물·수위</button>
+            <button type="button" data-proposal="mobility">교통·이동</button>
+            <button type="button" data-proposal="energy">에너지·ESG</button>
+            <button type="button" data-proposal="festival">축제·참여</button>
+          </div>
+          <div class="proposal-panels">
+            <article class="proposal-panel active" data-panel="weather">
+              <div class="proposal-visual proposal-weather" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="proposal-copy">
+                <span>Weather / Season API</span>
+                <h4>계절이 바뀌는 공공 미디어월</h4>
+                <p>기온, 강수확률, 풍속, 하늘 상태를 꽃잎의 속도와 빛의 온도로 바꿉니다.</p>
+                <dl>
+                  <div><dt>연결 데이터</dt><dd>날씨, 시간, 강수 확률</dd></div>
+                  <div><dt>화면 결과</dt><dd>꽃잎 밀도, 빛의 색온도, 바람 궤도</dd></div>
+                  <div><dt>활용 공간</dt><dd>공공청사, 관광안내소, 실내 미디어월</dd></div>
+                </dl>
+              </div>
+            </article>
+            <article class="proposal-panel" data-panel="air">
+              <div class="proposal-visual proposal-air" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="proposal-copy">
+                <span>Air Quality / Safety</span>
+                <h4>아이들의 야외활동 신호등</h4>
+                <p>미세먼지, 초미세먼지, 오존, 체감온도를 조합해 아이들이 밖에서 놀아도 되는지 안내합니다.</p>
+                <dl>
+                  <div><dt>연결 데이터</dt><dd>대구 미세먼지 API, 오존, 체감온도</dd></div>
+                  <div><dt>화면 결과</dt><dd>초록·노랑·분홍 단계, 숨쉬는 정원</dd></div>
+                  <div><dt>활용 공간</dt><dd>공원, 학교 앞, 어린이도서관</dd></div>
+                </dl>
+              </div>
+            </article>
+            <article class="proposal-panel" data-panel="water">
+              <div class="proposal-visual proposal-water" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="proposal-copy">
+                <span>River / Rainfall Data</span>
+                <h4>도시의 물결과 수위가 보이는 벽</h4>
+                <p>하천 수위와 강수량을 물결의 높이, 속도, 위험 단계 컬러로 표현합니다.</p>
+                <dl>
+                  <div><dt>연결 데이터</dt><dd>하천 수위, 강수량, 재난안전 알림</dd></div>
+                  <div><dt>화면 결과</dt><dd>물결 높이, 파동 속도, 위험 단계 컬러</dd></div>
+                  <div><dt>활용 공간</dt><dd>하천 산책로, 야외 LED, 도시재생 거점</dd></div>
+                </dl>
+              </div>
+            </article>
+            <article class="proposal-panel" data-panel="mobility">
+              <div class="proposal-visual proposal-mobility" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="proposal-copy">
+                <span>Traffic / Mobility</span>
+                <h4>도시 이동의 리듬</h4>
+                <p>버스 도착, 보행량, 혼잡도를 선과 점의 흐름으로 시각화합니다.</p>
+                <dl>
+                  <div><dt>연결 데이터</dt><dd>버스 도착 정보, 보행량, 혼잡도</dd></div>
+                  <div><dt>화면 결과</dt><dd>움직이는 선, 정류장 점군, 혼잡도 패턴</dd></div>
+                  <div><dt>활용 공간</dt><dd>환승센터, 스마트쉘터, 공공 로비</dd></div>
+                </dl>
+              </div>
+            </article>
+            <article class="proposal-panel" data-panel="energy">
+              <div class="proposal-visual proposal-energy" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="proposal-copy">
+                <span>Energy / ESG</span>
+                <h4>태양광 꽃시계와 탄소중립 정원</h4>
+                <p>발전량, 전력 사용량, 탄소 절감량을 꽃의 개화와 빛의 밝기로 보여줍니다.</p>
+                <dl>
+                  <div><dt>연결 데이터</dt><dd>태양광 발전량, 전력 사용량, 탄소 절감량</dd></div>
+                  <div><dt>화면 결과</dt><dd>개화 단계, 빛의 밝기, 탄소 절감 그래픽</dd></div>
+                  <div><dt>활용 공간</dt><dd>공공청사, ESG 홍보관, 환경교육관</dd></div>
+                </dl>
+              </div>
+            </article>
+            <article class="proposal-panel" data-panel="festival">
+              <div class="proposal-visual proposal-festival" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="proposal-copy">
+                <span>Festival / QR Participation</span>
+                <h4>참여자가 많아질수록 피어나는 축제 파사드</h4>
+                <p>QR 참여, 설문 응답, 스탬프 인증 데이터를 꽃의 개화 수와 빛의 밀도로 바꿉니다.</p>
+                <dl>
+                  <div><dt>연결 데이터</dt><dd>QR 접속 수, 설문 응답, 인증 사진</dd></div>
+                  <div><dt>화면 결과</dt><dd>꽃 개화 수, 별빛 밀도, 참여자 흐름</dd></div>
+                  <div><dt>활용 공간</dt><dd>축제장 LED, 미디어파사드, 체험부스</dd></div>
+                </dl>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script src="./site-pages.js"></script>
+  </body>
+</html>

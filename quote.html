@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>무료견적문의 | 오늘은 봄날</title>
+    <link rel="stylesheet" href="./styles.css?v=data-proposals-20260507" />
+  </head>
+  <body class="site-page">
+    <header class="site-nav">
+      <a class="brand" href="./index.html"><strong>오늘은 봄날</strong><span>대구 여성기업 · 공공예술 콘텐츠</span></a>
+      <nav aria-label="주요 메뉴">
+        <a href="./company.html">회사소개</a>
+        <a href="./data-media-art.html">데이터기반 미디어아트</a>
+        <a href="./landing.html">랜딩페이지</a>
+        <a href="./quote.html">무료견적문의</a>
+      </nav>
+    </header>
+    <main class="subpage-main">
+      <section class="subpage-hero">
+        <div>
+          <p class="section-kicker">Free Quote</p>
+          <h1>무료견적문의</h1>
+          <p>기관명, 사업영역, 예산 범위만 남겨주시면 검토 후 연락드립니다.</p>
+        </div>
+        <aside>
+          <span><b>랜딩페이지</b>행사 소개, 설문, 신청접수</span>
+          <span><b>미디어아트</b>데이터 기반 LED·사이니지 콘텐츠</span>
+          <span><b>연동</b>QR, 공공 API, 결과 데이터 정리</span>
+        </aside>
+      </section>
+      <section class="section inquiry-section" id="inquiry-form">
+        <div>
+          <p class="section-kicker">Inquiry Form</p>
+          <h2>프로젝트 문의</h2>
+          <p>설치 장소, 행사 일정, 필요한 기능을 간단히 적어주세요.</p>
+        </div>
+        <form class="contact-form" id="contactForm">
+          <h3>프로젝트 문의폼</h3>
+          <label><span>기관이름</span><input name="organization" type="text" placeholder="예: ㅇㅇ구청, ㅇㅇ문화재단" required /></label>
+          <div class="form-row">
+            <label><span>담당자 성함</span><input name="name" type="text" placeholder="성함" required /></label>
+            <label><span>연락처</span><input name="phone" type="tel" placeholder="010-0000-0000" required /></label>
+          </div>
+          <label><span>이메일</span><input name="email" type="email" placeholder="name@example.com" required /></label>
+          <fieldset>
+            <legend>사업영역</legend>
+            <label><input name="service" type="checkbox" value="데이터기반 미디어아트 콘텐츠" /> 데이터기반 미디어아트 콘텐츠</label>
+            <label><input name="service" type="checkbox" value="랜딩페이지" /> 랜딩페이지</label>
+            <label><input name="service" type="checkbox" value="미디어아트" /> 미디어아트</label>
+          </fieldset>
+          <fieldset>
+            <legend>예산</legend>
+            <label><input name="budget" type="radio" value="500~1000만원" required /> 500~1000만원</label>
+            <label><input name="budget" type="radio" value="1000~3000만원" /> 1000~3000만원</label>
+            <label><input name="budget" type="radio" value="3000~4000만원" /> 3000~4000만원</label>
+            <label><input name="budget" type="radio" value="4000~5500만원" /> 4000~5500만원</label>
+          </fieldset>
+          <label><span>문의 내용</span><textarea name="message" rows="4" placeholder="설치 장소, 행사 일정, 필요한 기능을 간단히 적어주세요."></textarea></label>
+          <button class="primary-link" type="submit">문의 내용 메일로 보내기</button>
+        </form>
+      </section>
+    </main>
+    <script src="./site-pages.js"></script>
+  </body>
+</html>
