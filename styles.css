@@ -78,8 +78,9 @@ button {
 }
 
 .brand {
-  display: grid;
-  gap: 2px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .brand strong {
@@ -87,11 +88,22 @@ button {
   font-weight: 850;
 }
 
+.brand img {
+  display: block;
+  width: clamp(132px, 15vw, 178px);
+  height: auto;
+  mix-blend-mode: multiply;
+}
+
 .brand span,
 .site-nav nav {
   color: rgba(36, 48, 41, 0.62);
   font-size: 13px;
   font-weight: 760;
+}
+
+.brand img + span {
+  font-size: 12px;
 }
 
 .site-nav nav {
