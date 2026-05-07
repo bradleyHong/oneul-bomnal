@@ -92,19 +92,45 @@
         background: #ffe879;
       }
 
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 34px;
+      }
+
       .gallery-hero {
+        position: relative;
         display: grid;
-        grid-template-columns: minmax(0, 0.95fr) minmax(320px, 0.5fr);
+        grid-template-columns: minmax(0, 0.82fr) minmax(360px, 0.72fr);
         gap: clamp(36px, 7vw, 104px);
-        align-items: end;
-        min-height: 84vh;
+        align-items: center;
+        min-height: calc(100vh - 65px);
         padding: clamp(74px, 10vw, 136px) clamp(22px, 6vw, 92px);
         color: #f8fbf4;
         background:
+          linear-gradient(90deg, rgba(16, 43, 40, 0.94), rgba(16, 43, 40, 0.64)),
+          linear-gradient(0deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.18)),
+          url("https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1800&q=82");
+        background-position: center;
+        background-size: cover;
+      }
+
+      .gallery-hero::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background:
           linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-          radial-gradient(circle at 75% 18%, rgba(255, 232, 121, 0.22), transparent 24%),
-          linear-gradient(135deg, #102b28, #465f51);
-        background-size: 68px 68px, auto, auto;
+          linear-gradient(0deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+        background-size: 72px 72px;
+        mask-image: linear-gradient(90deg, black, transparent 74%);
+      }
+
+      .gallery-hero > * {
+        position: relative;
+        z-index: 1;
       }
 
       .kicker {
@@ -131,33 +157,168 @@
         line-height: 1.72;
       }
 
-      .hero-index {
+      .hero-badges {
         display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 1px;
+        max-width: 760px;
+        margin-top: 34px;
         overflow: hidden;
         border: 1px solid rgba(255, 255, 255, 0.18);
         border-radius: 8px;
         background: rgba(255, 255, 255, 0.18);
       }
 
-      .hero-index a {
-        display: grid;
-        grid-template-columns: 54px 1fr;
-        gap: 16px;
-        align-items: center;
-        min-height: 76px;
-        padding: 16px;
+      .hero-badges div {
+        min-height: 98px;
+        padding: 18px;
         background: rgba(255, 255, 255, 0.08);
       }
 
-      .hero-index span {
+      .hero-badges b {
+        display: block;
+        color: #ffe879;
+        font-size: clamp(26px, 3vw, 42px);
+        line-height: 1;
+      }
+
+      .hero-badges span {
+        display: block;
+        margin-top: 10px;
+        color: rgba(248, 251, 244, 0.72);
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .hero-showcase {
         display: grid;
-        place-items: center;
-        aspect-ratio: 1;
-        border-radius: 50%;
-        color: #17231e;
-        background: #ffe879;
+        gap: 14px;
+      }
+
+      .showcase-card {
+        position: relative;
+        min-height: 180px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 28px 80px rgba(0, 0, 0, 0.2);
+      }
+
+      .showcase-card.featured {
+        min-height: 340px;
+      }
+
+      .showcase-card img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: saturate(0.9) contrast(0.96);
+      }
+
+      .showcase-card::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.62));
+      }
+
+      .showcase-card div {
+        position: absolute;
+        left: 22px;
+        right: 22px;
+        bottom: 22px;
+        z-index: 1;
+      }
+
+      .showcase-card span {
+        color: rgba(248, 251, 244, 0.7);
+        font-size: 12px;
         font-weight: 950;
+        text-transform: uppercase;
+      }
+
+      .showcase-card strong {
+        display: block;
+        margin-top: 8px;
+        font-size: clamp(24px, 3vw, 42px);
+        line-height: 1.05;
+      }
+
+      .showcase-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+
+      .spotlight {
+        color: #f8fbf4;
+        background: #17231e;
+      }
+
+      .spotlight .section-head p {
+        color: rgba(248, 251, 244, 0.68);
+      }
+
+      .spotlight-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr 0.8fr;
+        gap: 14px;
+      }
+
+      .spotlight-card {
+        position: relative;
+        min-height: 520px;
+        overflow: hidden;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+      }
+
+      .spotlight-card:nth-child(n + 2) {
+        min-height: 380px;
+      }
+
+      .spotlight-card img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .spotlight-card::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, transparent 12%, rgba(0, 0, 0, 0.72));
+      }
+
+      .spotlight-card div {
+        position: absolute;
+        left: 24px;
+        right: 24px;
+        bottom: 24px;
+        z-index: 1;
+      }
+
+      .spotlight-card span {
+        color: #ffe879;
+        font-size: 13px;
+        font-weight: 950;
+      }
+
+      .spotlight-card h3 {
+        margin-top: 12px;
+        font-size: clamp(28px, 4vw, 58px);
+        line-height: 1.02;
+      }
+
+      .spotlight-card p {
+        margin-top: 16px;
+        color: rgba(248, 251, 244, 0.76);
+        line-height: 1.6;
       }
 
       .section {
@@ -650,6 +811,7 @@
       @media (max-width: 860px) {
         .gallery-hero,
         .section-head,
+        .spotlight-grid,
         .template-promo .case-hero,
         .template-medical .case-hero,
         .template-public .case-hero,
@@ -661,6 +823,11 @@
         }
 
         .public-dashboard {
+          grid-template-columns: 1fr;
+        }
+
+        .showcase-row,
+        .hero-badges {
           grid-template-columns: 1fr;
         }
 
@@ -689,6 +856,11 @@
 
         .reference-grid {
           grid-template-columns: 1fr;
+        }
+
+        .spotlight-card,
+        .spotlight-card:nth-child(n + 2) {
+          min-height: 420px;
         }
 
         .gallery-hero h1,
@@ -729,23 +901,62 @@
     <main id="gallery">
       <section class="gallery-hero">
         <div>
-          <p class="kicker">Landing Reference Showroom</p>
-          <h1>한 가지 폼이 아니라, 발주처마다 다른 첫 화면.</h1>
+          <p class="kicker">Landing Reference Showroom · Korean / English</p>
+          <h1>클릭하는 순간, 사업이 시작되는 페이지.</h1>
           <p>
-            보험 이벤트, 병원 예약, 관공서 참여자 모집, 관광 스탬프, 공모전 접수까지 서로 다른 목적과 분위기를 가진
-            랜딩페이지 레퍼런스입니다.
+            보험 이벤트, 병원 예약, 관공서 참여자 모집, 관광 스탬프, 공모전 접수까지 목적별로 다른 첫 화면과 참여 흐름을
+            보여주는 랜딩페이지 쇼룸입니다.
           </p>
+          <div class="hero-badges">
+            <div><b>24</b><span>sample landing pages</span></div>
+            <div><b>6</b><span>layout systems</span></div>
+            <div><b>QR</b><span>survey / booking / recruit</span></div>
+          </div>
           <div class="actions">
-            <a class="button primary" href="#referenceGrid">레퍼런스 보기</a>
+            <a class="button primary" href="#spotlight">대표 데모 보기</a>
             <a class="button" href="./index.html#pages">홈페이지로 돌아가기</a>
           </div>
         </div>
-        <aside class="hero-index">
-          <a href="./landing-references.html?case=insurance-event-survey"><span>01</span><b>보험 이벤트 프로모션</b></a>
-          <a href="./landing-references.html?case=hospital-checkup"><span>02</span><b>병원 건강검진 예약</b></a>
-          <a href="./landing-references.html?case=city-program-recruit"><span>03</span><b>관공서 모집 포털</b></a>
-          <a href="./landing-references.html?case=tour-stamp"><span>04</span><b>관광 스탬프 이벤트</b></a>
+        <aside class="hero-showcase">
+          <a class="showcase-card featured" href="./landing-references.html?case=hospital-checkup">
+            <img src="https://images.unsplash.com/photo-1550831107-1553da8c8464?auto=format&fit=crop&w=1200&q=82" alt="Hospital booking landing page preview" />
+            <div><span>Featured Demo</span><strong>Hospital Checkup Booking</strong></div>
+          </a>
+          <div class="showcase-row">
+            <a class="showcase-card" href="./landing-references.html?case=tour-stamp">
+              <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=82" alt="Tour stamp landing preview" />
+              <div><span>Tourism</span><strong>Stamp Tour</strong></div>
+            </a>
+            <a class="showcase-card" href="./landing-references.html?case=insurance-event-survey">
+              <img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=900&q=82" alt="Insurance event landing preview" />
+              <div><span>Insurance</span><strong>Event Survey</strong></div>
+            </a>
+          </div>
         </aside>
+      </section>
+
+      <section class="section spotlight" id="spotlight">
+        <div class="section-head">
+          <div>
+            <p class="kicker">Featured Live References</p>
+            <h2>발주처가 바로 이해하는 대표 데모.</h2>
+          </div>
+          <p>클릭하면 각 주제에 맞춘 상세 랜딩페이지로 들어갑니다. 첫 화면부터 폼, 예약, 참여 흐름까지 다르게 설계했습니다.</p>
+        </div>
+        <div class="spotlight-grid">
+          <a class="spotlight-card" href="./landing-references.html?case=hospital-checkup">
+            <img src="https://images.unsplash.com/photo-1550831107-1553da8c8464?auto=format&fit=crop&w=1400&q=82" alt="Hospital landing page sample" />
+            <div><span>Hospital / Clinic</span><h3>ㅇㅇ병원 건강검진 예약</h3><p>예약 가능 일정과 상담 흐름이 먼저 보이는 병원형 랜딩.</p></div>
+          </a>
+          <a class="spotlight-card" href="./landing-references.html?case=city-program-recruit">
+            <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1000&q=82" alt="Public recruitment landing page sample" />
+            <div><span>Public Sector</span><h3>청년 프로그램 모집</h3><p>모집 현황과 신청접수를 강조하는 관공서형 페이지.</p></div>
+          </a>
+          <a class="spotlight-card" href="./landing-references.html?case=idea-contest">
+            <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1000&q=82" alt="Idea contest landing page sample" />
+            <div><span>Contest / Submit</span><h3>시민 아이디어 공모전</h3><p>파일 제출과 심사 자료 정리에 맞춘 공모전형 페이지.</p></div>
+          </a>
+        </div>
       </section>
 
       <section class="section" id="referenceGrid">
