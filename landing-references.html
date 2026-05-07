@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>랜딩페이지 레퍼런스 | 오늘은 봄날</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #243029;
+        --paper: #f8f3e2;
+        --line: rgba(36, 48, 41, 0.14);
+        --deep: #193a32;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Apple SD Gothic Neo",
+          "Noto Sans KR",
+          "Segoe UI",
+          sans-serif;
+        background: var(--paper);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        padding: 18px clamp(20px, 5vw, 72px);
+        background: rgba(248, 243, 226, 0.86);
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .topbar strong {
+        font-size: 18px;
+      }
+
+      .topbar nav {
+        display: flex;
+        gap: 18px;
+        color: rgba(36, 48, 41, 0.62);
+        font-size: 14px;
+        font-weight: 850;
+      }
+
+      .hero {
+        padding: clamp(70px, 10vw, 132px) clamp(22px, 6vw, 92px);
+        color: #f8fbf5;
+        background:
+          radial-gradient(circle at 82% 20%, rgba(255, 232, 138, 0.24), transparent 24%),
+          linear-gradient(135deg, #17342e, #4f6b58);
+      }
+
+      .kicker {
+        margin: 0 0 18px;
+        color: rgba(248, 251, 245, 0.68);
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      h1,
+      h2,
+      h3,
+      p,
+      a,
+      li {
+        margin: 0;
+        word-break: keep-all;
+        overflow-wrap: break-word;
+      }
+
+      h1 {
+        max-width: 1050px;
+        font-size: clamp(48px, 8vw, 110px);
+        line-height: 1;
+        letter-spacing: 0;
+      }
+
+      .hero p:not(.kicker) {
+        max-width: 720px;
+        margin-top: 26px;
+        color: rgba(248, 251, 245, 0.78);
+        font-size: clamp(18px, 2.3vw, 24px);
+        line-height: 1.7;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 34px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+        padding: 0 18px;
+        border: 1px solid rgba(248, 251, 245, 0.22);
+        border-radius: 8px;
+        color: #f8fbf5;
+        font-weight: 900;
+      }
+
+      .button.primary {
+        color: #17342e;
+        background: #ffe88a;
+      }
+
+      .section {
+        padding: clamp(64px, 9vw, 118px) clamp(22px, 6vw, 92px);
+      }
+
+      .gallery-head {
+        display: grid;
+        grid-template-columns: minmax(0, 0.9fr) minmax(300px, 0.5fr);
+        gap: clamp(28px, 6vw, 88px);
+        align-items: end;
+        margin-bottom: 46px;
+      }
+
+      h2 {
+        max-width: 860px;
+        font-size: clamp(34px, 5.6vw, 74px);
+        line-height: 1.06;
+      }
+
+      .gallery-head p {
+        color: rgba(36, 48, 41, 0.68);
+        font-size: 18px;
+        line-height: 1.7;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--line);
+      }
+
+      .card {
+        display: grid;
+        min-height: 360px;
+        padding: 28px;
+        background: #fbf7e8;
+      }
+
+      .card span {
+        color: rgba(36, 48, 41, 0.54);
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .card h3 {
+        margin-top: 68px;
+        font-size: clamp(24px, 3vw, 34px);
+        line-height: 1.12;
+      }
+
+      .card p {
+        margin-top: 16px;
+        color: rgba(36, 48, 41, 0.7);
+        font-size: 16px;
+        line-height: 1.62;
+      }
+
+      .card small {
+        align-self: end;
+        color: rgba(36, 48, 41, 0.54);
+        font-weight: 900;
+      }
+
+      .landing {
+        min-height: 100vh;
+        display: none;
+      }
+
+      .landing.active {
+        display: block;
+      }
+
+      .landing-hero {
+        display: grid;
+        grid-template-columns: minmax(0, 0.92fr) minmax(320px, 0.58fr);
+        gap: clamp(34px, 7vw, 100px);
+        align-items: center;
+        min-height: calc(100vh - 66px);
+        padding: clamp(54px, 8vw, 118px) clamp(22px, 6vw, 92px);
+        color: #f8fbf5;
+        background:
+          radial-gradient(circle at 78% 18%, var(--accent-soft), transparent 26%),
+          linear-gradient(135deg, var(--color-a), var(--color-b));
+      }
+
+      .landing-hero h1 {
+        font-size: clamp(48px, 8vw, 104px);
+      }
+
+      .landing-hero p {
+        max-width: 760px;
+        margin-top: 24px;
+        color: rgba(248, 251, 245, 0.8);
+        font-size: clamp(18px, 2.2vw, 24px);
+        line-height: 1.72;
+      }
+
+      .panel {
+        padding: clamp(24px, 4vw, 42px);
+        border: 1px solid rgba(248, 251, 245, 0.18);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .panel h2 {
+        font-size: clamp(28px, 3vw, 40px);
+      }
+
+      .form-preview {
+        display: grid;
+        gap: 12px;
+        margin-top: 28px;
+      }
+
+      .field {
+        display: grid;
+        gap: 8px;
+        padding: 14px;
+        border-radius: 8px;
+        color: rgba(248, 251, 245, 0.82);
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      .field b {
+        font-size: 12px;
+        color: rgba(248, 251, 245, 0.62);
+      }
+
+      .landing-section {
+        padding: clamp(62px, 8vw, 108px) clamp(22px, 6vw, 92px);
+      }
+
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--line);
+      }
+
+      .feature-grid article {
+        min-height: 280px;
+        padding: 32px;
+        background: #fbf7e8;
+      }
+
+      .feature-grid span {
+        color: rgba(36, 48, 41, 0.54);
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .feature-grid h3 {
+        margin-top: 58px;
+        font-size: 30px;
+        line-height: 1.12;
+      }
+
+      .feature-grid p {
+        margin-top: 16px;
+        color: rgba(36, 48, 41, 0.7);
+        font-size: 16px;
+        line-height: 1.65;
+      }
+
+      .notice {
+        display: grid;
+        grid-template-columns: minmax(0, 0.7fr) minmax(300px, 0.45fr);
+        gap: 1px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--line);
+      }
+
+      .notice div {
+        padding: 34px;
+        background: #fbf7e8;
+      }
+
+      .notice ul {
+        margin: 20px 0 0;
+        padding-left: 20px;
+        color: rgba(36, 48, 41, 0.72);
+        line-height: 1.8;
+      }
+
+      @media (max-width: 980px) {
+        .grid,
+        .feature-grid,
+        .gallery-head,
+        .landing-hero,
+        .notice {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <a href="./index.html#pages"><strong>오늘은 봄날</strong></a>
+      <nav>
+        <a href="./landing-references.html">레퍼런스 목록</a>
+        <a href="./index.html#contact">제작 문의</a>
+      </nav>
+    </header>
+
+    <main id="gallery" class="gallery">
+      <section class="hero">
+        <p class="kicker">20+ Landing Page References</p>
+        <h1>보험사, 병원, 관공서가 바로 상상할 수 있는 랜딩페이지 예시.</h1>
+        <p>
+          이벤트 설문조사, 병원 예약, 참여자 모집, 신청접수, 시민 캠페인, 정책 홍보까지 오늘은 봄날이 제작할 수 있는
+          페이지 유형을 20개 이상 정리했습니다.
+        </p>
+        <div class="actions">
+          <a class="button primary" href="./index.html#pages">홈페이지로 돌아가기</a>
+          <a class="button" href="#referenceGrid">레퍼런스 보기</a>
+        </div>
+      </section>
+      <section class="section" id="referenceGrid">
+        <div class="gallery-head">
+          <div>
+            <p class="kicker">Reference Index</p>
+            <h2>주제가 다른 20개 이상 샘플 랜딩페이지.</h2>
+          </div>
+          <p>각 카드를 누르면 해당 주제로 구성된 샘플 랜딩페이지가 열립니다. 실제 프로젝트에서는 로고, 색상, 폼 항목, 데이터 저장 방식까지 맞춤 제작합니다.</p>
+        </div>
+        <div class="grid" id="cards"></div>
+      </section>
+    </main>
+
+    <main id="landing" class="landing"></main>
+
+    <script>
+      const references = [
+        {
+          id: "insurance-event-survey",
+          group: "보험사",
+          title: "ㅇㅇ보험 건강습관 이벤트 설문",
+          summary: "고객 건강습관을 묻고 경품 이벤트 참여까지 연결하는 보험사 설문형 랜딩.",
+          cta: "이벤트 설문 참여하기",
+          accent: ["#17342e", "#53705c", "rgba(255, 232, 138, 0.3)"],
+          fields: ["이름 / 연락처", "관심 보장", "건강습관 체크", "이벤트 동의"],
+          features: ["고객 관심 보장 수집", "경품 이벤트 동의", "상담 전환 연결"],
+        },
+        {
+          id: "insurance-review",
+          group: "보험사",
+          title: "내 보험 리모델링 사전진단",
+          summary: "가입 중인 보험을 점검하고 상담 신청을 받는 리드 수집형 페이지.",
+          cta: "무료 진단 신청",
+          accent: ["#20304a", "#54739a", "rgba(184, 216, 210, 0.35)"],
+          fields: ["연령대", "가입 보험 수", "월 보험료", "상담 희망 시간"],
+          features: ["상담 리드 수집", "보장 관심도 파악", "담당자 배정"],
+        },
+        {
+          id: "child-safety-insurance",
+          group: "보험사",
+          title: "어린이 안전보험 캠페인",
+          summary: "학부모 대상 안전 체크리스트와 어린이보험 상담을 연결합니다.",
+          cta: "안전 체크 시작",
+          accent: ["#254d45", "#7b9b72", "rgba(255, 232, 138, 0.34)"],
+          fields: ["자녀 연령", "통학 방식", "걱정되는 사고", "상담 신청"],
+          features: ["학부모 참여", "안전교육 콘텐츠", "보험 상담 전환"],
+        },
+        {
+          id: "senior-health-check",
+          group: "보험사",
+          title: "시니어 건강검진 신청",
+          summary: "건강검진 안내, 예약 신청, 보험 상담을 한 번에 받는 페이지.",
+          cta: "검진 안내 받기",
+          accent: ["#3f3928", "#8c7a52", "rgba(255, 232, 138, 0.28)"],
+          fields: ["출생연도", "관심 검진", "지역", "연락처"],
+          features: ["시니어 고객 모집", "지역별 상담 분류", "검진 콘텐츠 제공"],
+        },
+        {
+          id: "pet-insurance",
+          group: "보험사",
+          title: "반려동물 보험 체험 이벤트",
+          summary: "반려동물 정보와 관심 보장을 입력받아 펫보험 상담으로 연결합니다.",
+          cta: "펫보험 혜택 보기",
+          accent: ["#3b4a2f", "#8aa075", "rgba(233, 154, 144, 0.28)"],
+          fields: ["반려동물 종류", "나이", "병원 이용 빈도", "상담 동의"],
+          features: ["펫 고객 데이터", "이벤트 참여", "보험 상품 연결"],
+        },
+        {
+          id: "retirement-plan",
+          group: "금융/보험",
+          title: "은퇴설계 체크업",
+          summary: "은퇴 준비 상태를 체크하고 연금/보장 상담으로 연결하는 진단형 페이지.",
+          cta: "은퇴 준비 점검",
+          accent: ["#273442", "#687e8c", "rgba(184, 216, 210, 0.32)"],
+          fields: ["연령대", "은퇴 예정", "월 저축액", "상담 희망"],
+          features: ["진단 결과 제공", "연금 관심 고객", "상담 예약"],
+        },
+        {
+          id: "hospital-checkup",
+          group: "병원",
+          title: "ㅇㅇ병원 건강검진 예약 랜딩",
+          summary: "검진 패키지 안내, 희망 일정 선택, 상담 신청을 한 페이지에서 받는 병원형 랜딩.",
+          cta: "검진 예약 문의",
+          accent: ["#17384a", "#5b8aa3", "rgba(184, 216, 210, 0.34)"],
+          fields: ["이름 / 연락처", "희망 검진", "희망 날짜", "상담 동의"],
+          features: ["검진 예약 문의", "패키지 비교 안내", "상담 콜백 연결"],
+        },
+        {
+          id: "hospital-appointment",
+          group: "병원",
+          title: "ㅇㅇ병원 진료예약 사전접수",
+          summary: "초진/재진 여부와 증상을 미리 받아 접수 대기와 전화 응대를 줄이는 예약 페이지.",
+          cta: "진료예약 접수",
+          accent: ["#223a3e", "#638f8f", "rgba(255, 232, 138, 0.25)"],
+          fields: ["진료 과목", "초진/재진", "증상 메모", "희망 시간"],
+          features: ["진료예약 접수", "증상 사전 확인", "내원 안내 자동화"],
+        },
+        {
+          id: "hospital-patient-survey",
+          group: "병원",
+          title: "ㅇㅇ병원 환자경험 설문",
+          summary: "내원 후 QR로 만족도, 대기시간, 친절도, 개선 의견을 수집하는 병원 설문 페이지.",
+          cta: "환자경험 설문 참여",
+          accent: ["#273442", "#7d879a", "rgba(184, 216, 210, 0.32)"],
+          fields: ["방문 과목", "대기 만족도", "응대 만족도", "개선 의견"],
+          features: ["환자 만족도 조사", "서비스 개선 자료", "월별 리포트 정리"],
+        },
+        {
+          id: "hospital-health-class",
+          group: "병원",
+          title: "ㅇㅇ병원 건강강좌 참여자 모집",
+          summary: "지역 주민 대상 건강강좌, 예방교육, 설명회 신청을 받는 모집형 페이지.",
+          cta: "건강강좌 신청",
+          accent: ["#2f3f30", "#789b72", "rgba(255, 232, 138, 0.28)"],
+          fields: ["참석 인원", "관심 주제", "연령대", "연락처"],
+          features: ["강좌 신청 접수", "지역 홍보", "참석자 명단 관리"],
+        },
+        {
+          id: "city-program-recruit",
+          group: "관공서",
+          title: "청년 문화프로그램 참여자 모집",
+          summary: "청년 대상 교육/문화 프로그램 신청을 받는 관공서 모집 페이지.",
+          cta: "참여 신청하기",
+          accent: ["#193a32", "#5b8a78", "rgba(255, 232, 138, 0.28)"],
+          fields: ["이름", "거주지", "희망 회차", "참여 동기"],
+          features: ["신청자 접수", "회차별 정원 관리", "문자 안내"],
+        },
+        {
+          id: "public-survey",
+          group: "관공서",
+          title: "시민 의견 설문조사",
+          summary: "정책 수요와 시민 의견을 QR로 수집하는 설문조사 페이지.",
+          cta: "시민 의견 남기기",
+          accent: ["#243029", "#6d8b78", "rgba(184, 216, 210, 0.34)"],
+          fields: ["거주 지역", "관심 정책", "만족도", "자유 의견"],
+          features: ["정책 수요 조사", "QR 현장 참여", "결과 정리"],
+        },
+        {
+          id: "festival-volunteer",
+          group: "관공서",
+          title: "지역축제 자원봉사자 모집",
+          summary: "축제 운영 스태프와 자원봉사자를 모집하는 신청접수 페이지.",
+          cta: "봉사자 신청",
+          accent: ["#4a3227", "#9a6d56", "rgba(255, 232, 138, 0.34)"],
+          fields: ["가능 날짜", "가능 시간", "희망 업무", "1365 ID"],
+          features: ["봉사자 명단", "시간대 배정", "사전 안내"],
+        },
+        {
+          id: "tour-stamp",
+          group: "관광",
+          title: "대구 골목여행 스탬프 투어",
+          summary: "관광지 방문 인증과 경품 신청을 연결하는 모바일 랜딩.",
+          cta: "스탬프 시작",
+          accent: ["#21445c", "#6b9ab2", "rgba(255, 232, 138, 0.26)"],
+          fields: ["방문 장소", "인증 사진", "연락처", "개인정보 동의"],
+          features: ["관광 참여 인증", "경품 접수", "방문 데이터"],
+        },
+        {
+          id: "carbon-challenge",
+          group: "관공서",
+          title: "탄소중립 시민 챌린지",
+          summary: "시민이 실천 인증을 남기고 탄소중립 캠페인에 참여합니다.",
+          cta: "실천 인증하기",
+          accent: ["#1f4a3a", "#6da56e", "rgba(184, 216, 210, 0.32)"],
+          fields: ["실천 항목", "인증 사진", "동네", "참여 소감"],
+          features: ["캠페인 참여", "인증 갤러리", "성과 집계"],
+        },
+        {
+          id: "safety-education",
+          group: "관공서",
+          title: "재난안전 교육 신청",
+          summary: "시민 대상 재난안전 교육 일정을 안내하고 신청을 받습니다.",
+          cta: "교육 신청",
+          accent: ["#4a2d26", "#a45f52", "rgba(255, 232, 138, 0.26)"],
+          fields: ["교육 날짜", "참석 인원", "소속", "연락처"],
+          features: ["교육 접수", "참석자 명단", "안내 문자"],
+        },
+        {
+          id: "traffic-safety",
+          group: "공공 캠페인",
+          title: "어린이 교통안전 캠페인",
+          summary: "학교 앞 교통안전 서약과 퀴즈 참여를 받는 캠페인 페이지.",
+          cta: "안전 서약하기",
+          accent: ["#273b4a", "#718aa0", "rgba(255, 232, 138, 0.34)"],
+          fields: ["학교명", "학년", "안전 퀴즈", "서약 동의"],
+          features: ["교육형 퀴즈", "참여 인증", "캠페인 확산"],
+        },
+        {
+          id: "birthcare-support",
+          group: "관공서",
+          title: "출산·육아 지원사업 안내",
+          summary: "지원 대상 확인과 상담 신청을 연결하는 복지정책 랜딩.",
+          cta: "지원 대상 확인",
+          accent: ["#4a3b46", "#9a748a", "rgba(255, 232, 138, 0.26)"],
+          fields: ["자녀 연령", "거주지", "필요 지원", "상담 신청"],
+          features: ["대상 확인", "정책 안내", "상담 연결"],
+        },
+        {
+          id: "idea-contest",
+          group: "관공서",
+          title: "시민 아이디어 공모전",
+          summary: "정책 아이디어를 접수하고 심사 자료로 정리하는 공모전 페이지.",
+          cta: "아이디어 제출",
+          accent: ["#283b30", "#7b946f", "rgba(184, 216, 210, 0.34)"],
+          fields: ["제안 제목", "제안 내용", "첨부 파일", "연락처"],
+          features: ["공모 접수", "파일 업로드", "심사 자료 정리"],
+        },
+        {
+          id: "media-art-workshop",
+          group: "문화재단",
+          title: "미디어아트 체험 워크숍 모집",
+          summary: "어린이·청소년 미디어아트 체험 프로그램 신청접수 페이지.",
+          cta: "워크숍 신청",
+          accent: ["#17342e", "#596f8a", "rgba(233, 154, 144, 0.28)"],
+          fields: ["참가자 연령", "보호자 연락처", "희망 회차", "동의"],
+          features: ["회차별 모집", "보호자 동의", "참가 안내"],
+        },
+        {
+          id: "hometown-donation",
+          group: "관공서",
+          title: "고향사랑기부제 홍보 랜딩",
+          summary: "답례품, 기부 혜택, 참여 방법을 안내하는 정책 홍보 페이지.",
+          cta: "기부 방법 보기",
+          accent: ["#3f3028", "#8d6b52", "rgba(255, 232, 138, 0.34)"],
+          fields: ["관심 답례품", "거주 지역", "문의 유형", "연락처"],
+          features: ["정책 홍보", "답례품 소개", "문의 수집"],
+        },
+        {
+          id: "market-coupon",
+          group: "소상공인",
+          title: "전통시장 모바일 쿠폰 이벤트",
+          summary: "방문 인증과 쿠폰 신청을 받는 전통시장 활성화 페이지.",
+          cta: "쿠폰 받기",
+          accent: ["#4a3422", "#a16d3c", "rgba(255, 232, 138, 0.34)"],
+          fields: ["방문 시장", "구매 인증", "휴대폰", "동의"],
+          features: ["방문 유도", "쿠폰 발급", "상권 데이터"],
+        },
+        {
+          id: "smallbiz-support",
+          group: "관공서",
+          title: "소상공인 디지털 전환 지원",
+          summary: "지원사업 안내와 신청 상담을 받는 B2G 사업 랜딩.",
+          cta: "지원 상담 신청",
+          accent: ["#26374a", "#617a9c", "rgba(184, 216, 210, 0.3)"],
+          fields: ["업종", "매장 위치", "필요 지원", "상담 신청"],
+          features: ["사업 홍보", "상담 신청", "대상자 분류"],
+        },
+        {
+          id: "employee-esg",
+          group: "기업/공공",
+          title: "임직원 ESG 참여 캠페인",
+          summary: "조직 내부 ESG 실천 인증과 설문을 함께 받는 캠페인 페이지.",
+          cta: "ESG 실천 참여",
+          accent: ["#1d463a", "#789d72", "rgba(255, 232, 138, 0.25)"],
+          fields: ["소속", "실천 항목", "인증 사진", "소감"],
+          features: ["내부 캠페인", "참여 인증", "결과 리포트"],
+        },
+      ];
+
+      function renderGallery() {
+        const cards = document.querySelector("#cards");
+        cards.innerHTML = references
+          .map(
+            (item, index) => `
+              <a class="card" href="./landing-references.html?case=${item.id}">
+                <span>${String(index + 1).padStart(2, "0")} · ${item.group}</span>
+                <h3>${item.title}</h3>
+                <p>${item.summary}</p>
+                <small>샘플 페이지 보기</small>
+              </a>
+            `,
+          )
+          .join("");
+      }
+
+      function renderLanding(item) {
+        document.querySelector("#gallery").style.display = "none";
+        const landing = document.querySelector("#landing");
+        landing.classList.add("active");
+        landing.style.setProperty("--color-a", item.accent[0]);
+        landing.style.setProperty("--color-b", item.accent[1]);
+        landing.style.setProperty("--accent-soft", item.accent[2]);
+        landing.innerHTML = `
+          <section class="landing-hero">
+            <div>
+              <p class="kicker">${item.group} Landing Sample</p>
+              <h1>${item.title}</h1>
+              <p>${item.summary}</p>
+              <div class="actions">
+                <a class="button primary" href="#sampleForm">${item.cta}</a>
+                <a class="button" href="./landing-references.html">다른 레퍼런스 보기</a>
+              </div>
+            </div>
+            <aside class="panel" id="sampleForm">
+              <h2>참여 정보 입력</h2>
+              <div class="form-preview">
+                ${item.fields.map((field) => `<div class="field"><b>항목</b>${field}</div>`).join("")}
+              </div>
+            </aside>
+          </section>
+          <section class="landing-section">
+            <div class="feature-grid">
+              ${item.features
+                .map(
+                  (feature, index) => `
+                    <article>
+                      <span>${String(index + 1).padStart(2, "0")}</span>
+                      <h3>${feature}</h3>
+                      <p>실제 제작 시 기관 로고, 개인정보 동의 문구, 관리자 확인 방식, 결과 정리 양식까지 맞춰드립니다.</p>
+                    </article>
+                  `,
+                )
+                .join("")}
+            </div>
+          </section>
+          <section class="landing-section">
+            <div class="notice">
+              <div>
+                <p class="kicker">제작 범위</p>
+                <h2>모바일 접속, QR 배포, 응답 수집까지 한 번에.</h2>
+              </div>
+              <div>
+                <ul>
+                  <li>사업 소개와 참여 안내 문구 작성</li>
+                  <li>설문/신청 폼 항목 설계</li>
+                  <li>개인정보 수집 동의 영역 구성</li>
+                  <li>응답 데이터 정리용 시트 연결 가능</li>
+                  <li>행사 후 결과 아카이브 페이지 제작 가능</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+        `;
+        document.title = `${item.title} | 오늘은 봄날 레퍼런스`;
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const selected = references.find((item) => item.id === params.get("case"));
+
+      if (selected) {
+        renderLanding(selected);
+      } else {
+        renderGallery();
+      }
+    </script>
+  </body>
+</html>

@@ -38,6 +38,16 @@ body {
   background: var(--paper);
 }
 
+h1,
+h2,
+h3,
+p,
+a,
+dd {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -600,13 +610,38 @@ h1 {
 .service-lead h3 {
   max-width: 620px;
   margin: 80px 0 24px;
-  font-size: clamp(30px, 4.6vw, 58px);
+  font-size: clamp(30px, 4.1vw, 50px);
   line-height: 1.05;
 }
 
 .service-lead p {
   color: rgba(248, 251, 245, 0.78);
   font-size: 18px;
+}
+
+.service-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 34px;
+}
+
+.service-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 16px;
+  border: 1px solid rgba(248, 251, 245, 0.22);
+  border-radius: 8px;
+  color: #f8fbf5;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.service-actions a:first-child {
+  color: #1f3a33;
+  background: #ffe88a;
 }
 
 .service-grid {
@@ -624,7 +659,7 @@ h1 {
 
 .service-grid h3 {
   margin: 46px 0 16px;
-  font-size: clamp(24px, 3vw, 34px);
+  font-size: clamp(24px, 2.7vw, 32px);
   line-height: 1.15;
 }
 
@@ -658,6 +693,38 @@ h1 {
 .service-grid dt {
   color: rgba(248, 251, 245, 0.56);
   font-weight: 900;
+}
+
+.reference-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(248, 251, 245, 0.16);
+  border-radius: 8px;
+  background: rgba(248, 251, 245, 0.16);
+}
+
+.reference-strip a {
+  min-height: 118px;
+  padding: 22px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.reference-strip span {
+  display: block;
+  color: rgba(248, 251, 245, 0.56);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.reference-strip strong {
+  display: block;
+  margin-top: 24px;
+  color: #f8fbf5;
+  font-size: clamp(20px, 2vw, 26px);
+  line-height: 1.16;
 }
 
 .grid {
@@ -945,6 +1012,7 @@ h1 {
   .product-grid,
   .service-layout,
   .service-grid,
+  .reference-strip,
   .timeline,
   .use-cases,
   .contact,
