@@ -526,6 +526,7 @@ function animate(now) {
   time = now;
   pointer.force *= 0.94;
   const mood = weatherMood();
+  document.documentElement.classList.toggle("is-night", mood.nightFactor > 0.38);
   if (ctx) {
     drawBackground(mood);
     drawBreath(mood);
