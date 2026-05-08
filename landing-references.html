@@ -60,11 +60,53 @@
         justify-content: space-between;
         align-items: center;
         gap: 24px;
-        padding: 14px clamp(20px, 5vw, 72px);
+        min-height: 64px;
+        padding: 0 clamp(20px, 5vw, 72px);
         color: var(--nav-ink, #1f2a24);
-        background: rgba(246, 240, 222, 0.88);
-        border-bottom: 1px solid var(--line);
+        background: rgba(246, 240, 222, 0.96);
+        border-bottom: 1px solid rgba(31, 42, 36, 0.12);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
       }
+
+      .topbar nav a {
+        white-space: nowrap;
+        padding-bottom: 2px;
+        border-bottom: 1.5px solid transparent;
+        transition: color 160ms, border-color 160ms;
+      }
+
+      .topbar nav a:hover {
+        color: #1f2a24;
+        border-color: rgba(31, 42, 36, 0.3);
+      }
+
+      .topbar-toggle {
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+        width: 40px;
+        height: 40px;
+        padding: 8px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      .topbar-toggle span {
+        display: block;
+        width: 100%;
+        height: 2px;
+        background: #1f2a24;
+        border-radius: 2px;
+        transition: transform 240ms ease, opacity 240ms ease;
+      }
+
+      .topbar-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+      .topbar-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+      .topbar-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
       .topbar > a:first-child {
         display: flex;
@@ -1886,13 +1928,37 @@
       }
 
       @media (max-width: 640px) {
-        .topbar {
-          padding: 16px 24px;
+        .topbar-toggle {
+          display: flex;
         }
 
         .topbar nav {
-          gap: 12px;
-          font-size: 13px;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          display: none;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0;
+          padding: 8px 0 16px;
+          background: rgba(246, 240, 222, 0.98);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border-bottom: 1px solid rgba(31, 42, 36, 0.12);
+          box-shadow: 0 8px 28px rgba(31, 42, 36, 0.1);
+          font-size: 15px;
+        }
+
+        .topbar nav.open {
+          display: flex;
+        }
+
+        .topbar nav a {
+          width: 100%;
+          padding: 14px clamp(20px, 5vw, 72px);
+          border-bottom: 1px solid rgba(31, 42, 36, 0.07);
+          border-left: none;
         }
 
         .gallery-hero,
@@ -2048,12 +2114,15 @@
   <body>
     <header class="topbar">
       <a href="./index.html" aria-label="오늘은 봄날 홈" class="topbar-brand"><strong>오늘은 봄날</strong></a>
-      <nav>
+      <nav id="ref-nav">
         <a href="./company.html">회사소개</a>
-        <a href="./data-media-art.html">데이터기반 미디어아트</a>
+        <a href="./data-media-art.html">미디어아트</a>
         <a href="./landing.html">랜딩페이지</a>
-        <a href="./quote.html">무료견적문의</a>
+        <a href="./quote.html">견적문의</a>
       </nav>
+      <button class="topbar-toggle" aria-label="메뉴 열기" aria-expanded="false" aria-controls="ref-nav">
+        <span></span><span></span><span></span>
+      </button>
     </header>
 
     <main id="gallery">
@@ -2866,5 +2935,32 @@
       }
     </script>
     <script src="./spring.js"></script>
+    <script>
+      const refToggle = document.querySelector('.topbar-toggle');
+      const refNav = document.getElementById('ref-nav');
+      const topbar = document.querySelector('.topbar');
+      if (refToggle && refNav) {
+        refToggle.addEventListener('click', () => {
+          const expanded = refToggle.getAttribute('aria-expanded') === 'true';
+          refToggle.setAttribute('aria-expanded', String(!expanded));
+          refNav.classList.toggle('open', !expanded);
+          refToggle.setAttribute('aria-label', !expanded ? '메뉴 닫기' : '메뉴 열기');
+        });
+        refNav.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', () => {
+            refToggle.setAttribute('aria-expanded', 'false');
+            refNav.classList.remove('open');
+            refToggle.setAttribute('aria-label', '메뉴 열기');
+          });
+        });
+        document.addEventListener('click', (e) => {
+          if (!topbar.contains(e.target)) {
+            refToggle.setAttribute('aria-expanded', 'false');
+            refNav.classList.remove('open');
+            refToggle.setAttribute('aria-label', '메뉴 열기');
+          }
+        });
+      }
+    </script>
   </body>
 </html>

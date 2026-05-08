@@ -107,6 +107,51 @@ button {
   gap: clamp(12px, 2vw, 24px);
 }
 
+.site-nav nav a {
+  white-space: nowrap;
+  padding-bottom: 2px;
+  border-bottom: 1.5px solid transparent;
+  transition: color 160ms, border-color 160ms;
+}
+
+.site-nav nav a:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.site-nav.scrolled {
+  background: rgba(20, 30, 24, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.nav-toggle span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: #fff;
+  border-radius: 2px;
+  transition: transform 240ms ease, opacity 240ms ease;
+}
+
+.nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
 .spring-stage {
   position: relative;
   width: 100%;
@@ -1611,15 +1656,40 @@ h1 {
 
 @media (max-width: 760px) {
   .site-nav {
-    position: absolute;
-    align-items: flex-start;
+    position: fixed;
+    align-items: center;
+  }
+
+  .nav-toggle {
+    display: flex;
   }
 
   .site-nav nav {
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    gap: 12px;
-    font-size: 11px;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    padding: 8px 0 16px;
+    background: rgba(15, 24, 18, 0.94);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 15px;
+  }
+
+  .site-nav nav.open {
+    display: flex;
+  }
+
+  .site-nav nav a {
+    width: 100%;
+    padding: 14px clamp(20px, 4vw, 56px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    border-left: none;
   }
 
   .brand span {

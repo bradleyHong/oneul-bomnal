@@ -57,12 +57,15 @@
         <strong>오늘은 봄날</strong>
         <span>대구 여성기업 · 공공예술 콘텐츠</span>
       </a>
-      <nav aria-label="주요 메뉴">
+      <nav id="main-nav" aria-label="주요 메뉴">
         <a href="./company.html">회사소개</a>
         <a href="./data-media-art.html">데이터기반 미디어아트</a>
         <a href="./landing.html">랜딩페이지</a>
         <a href="./quote.html">무료견적문의</a>
       </nav>
+      <button class="nav-toggle" aria-label="메뉴 열기" aria-expanded="false" aria-controls="main-nav">
+        <span></span><span></span><span></span>
+      </button>
     </header>
 
     <main id="top">
@@ -574,5 +577,38 @@
       }
     </script>
     <script src="./spring.js"></script>
+    <script>
+      // 스크롤 시 헤더 반투명 배경
+      const siteNav = document.querySelector('.site-nav');
+      window.addEventListener('scroll', () => {
+        siteNav.classList.toggle('scrolled', window.scrollY > 40);
+      }, { passive: true });
+
+      // 모바일 햄버거 메뉴
+      const navToggle = document.querySelector('.nav-toggle');
+      const mainNav = document.getElementById('main-nav');
+      if (navToggle && mainNav) {
+        navToggle.addEventListener('click', () => {
+          const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+          navToggle.setAttribute('aria-expanded', String(!expanded));
+          mainNav.classList.toggle('open', !expanded);
+          navToggle.setAttribute('aria-label', !expanded ? '메뉴 닫기' : '메뉴 열기');
+        });
+        mainNav.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', () => {
+            navToggle.setAttribute('aria-expanded', 'false');
+            mainNav.classList.remove('open');
+            navToggle.setAttribute('aria-label', '메뉴 열기');
+          });
+        });
+        document.addEventListener('click', (e) => {
+          if (!siteNav.contains(e.target)) {
+            navToggle.setAttribute('aria-expanded', 'false');
+            mainNav.classList.remove('open');
+            navToggle.setAttribute('aria-label', '메뉴 열기');
+          }
+        });
+      }
+    </script>
   </body>
 </html>
