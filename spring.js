@@ -1289,6 +1289,19 @@ function drawRefAirGardenArt(c, w, h, mood, now) {
   c.beginPath(); c.arc(w * 0.5, h * 0.38, w * (0.1 + pulse * 0.04), 0, TAU); c.fill();
   c.globalAlpha = 1;
   applyNightDim(c, w, h, mood.nightFactor);
+  const pm10a = airQuality.pm10 ?? 42;
+  const pm25a = airQuality.pm25 ?? 18;
+  const lvlA = pm10a <= 30 && pm25a <= 15 ? "좋음" : pm10a <= 80 && pm25a <= 35 ? "보통" : "주의";
+  drawArtDataPanel(
+    c, w, h, "공기질",
+    [
+      ...currentDateRows(),
+      { label: "PM10", value: `${pm10a.toFixed(1)} µg/m³` },
+      { label: "PM2.5", value: `${pm25a.toFixed(1)} µg/m³` },
+      { label: "상태", value: lvlA },
+    ],
+    142, now,
+  );
 }
 
 function drawRefMobilityArt(c, w, h, mood, now) {
@@ -1321,6 +1334,16 @@ function drawRefMobilityArt(c, w, h, mood, now) {
   }
   c.globalAlpha = 1;
   applyNightDim(c, w, h, mood.nightFactor);
+  drawArtDataPanel(
+    c, w, h, "교통 흐름",
+    [
+      ...currentDateRows(),
+      { label: "바람", value: `${Math.round(weather.wind)} m/s` },
+      { label: "하늘", value: skyNames.get(weather.code) || weather.label },
+      { label: "흐름", value: mood.windPower > 0.5 ? "빠름" : "원활" },
+    ],
+    196, now,
+  );
 }
 
 function drawRefLibraryArt(c, w, h, mood, now) {
@@ -1356,6 +1379,16 @@ function drawRefLibraryArt(c, w, h, mood, now) {
   c.beginPath(); c.arc(lampX, lampY, lampR * 0.55, 0, TAU); c.fill();
   c.globalAlpha = 1;
   applyNightDim(c, w, h, mood.nightFactor);
+  drawArtDataPanel(
+    c, w, h, "문화 공간",
+    [
+      ...currentDateRows(),
+      { label: "기온", value: `${Math.round(weather.temp)}°C` },
+      { label: "하늘", value: skyNames.get(weather.code) || weather.label },
+      { label: "분위기", value: mood.nightFactor > 0.4 ? "야간 조명" : "낮 채광" },
+    ],
+    44, now,
+  );
 }
 
 function drawRefCalmWallArt(c, w, h, mood, now) {
@@ -1386,6 +1419,16 @@ function drawRefCalmWallArt(c, w, h, mood, now) {
   c.beginPath(); c.arc(w * 0.5, h * 0.5, w * 0.14 * breathScale, 0, TAU); c.fill();
   c.globalAlpha = 1;
   applyNightDim(c, w, h, mood.nightFactor);
+  drawArtDataPanel(
+    c, w, h, "환경 감지",
+    [
+      ...currentDateRows(),
+      { label: "바람", value: `${Math.round(weather.wind)} m/s` },
+      { label: "강수", value: `${weather.rain.toFixed(1)} mm` },
+      { label: "상태", value: calm > 0.6 ? "안정" : "주의" },
+    ],
+    196, now,
+  );
 }
 
 function drawRefEnergyArt(c, w, h, mood, now) {
@@ -1428,179 +1471,255 @@ function drawRefEnergyArt(c, w, h, mood, now) {
   }
   c.globalAlpha = 1;
   applyNightDim(c, w, h, mood.nightFactor);
+  drawArtDataPanel(
+    c, w, h, "태양에너지",
+    [
+      ...currentDateRows(),
+      { label: "기온", value: `${Math.round(weather.temp)}°C` },
+      { label: "하늘", value: skyNames.get(weather.code) || weather.label },
+      { label: "일조", value: mood.light > 0.6 ? "충분" : mood.light > 0.3 ? "보통" : "부족" },
+    ],
+    48, now,
+  );
 }
 
 function drawRefSpringClock(c, w, h, mood, now) {
-  const n = mood.nightFactor;
-  const topHue = n > 0.5 ? 222 : 190 - mood.cloud * 30;
-  const bg = c.createLinearGradient(0, 0, w, h);
-  bg.addColorStop(0, `hsl(${topHue}, ${48 - mood.cloud * 16}%, ${Math.max(5, 82 - mood.cloud * 14 - n * 40)}%)`);
-  bg.addColorStop(1, `hsl(${n > 0.5 ? 212 : 126}, ${n > 0.5 ? 26 : 44}%, ${Math.max(5, 76 - mood.cloud * 8 - n * 40)}%)`);
-  c.fillStyle = bg;
+  // Identical to drawMiniWork — full-quality spring/weather canvas with data panel
+  const gradient = c.createLinearGradient(0, 0, w, h);
+  gradient.addColorStop(0, `hsl(${184 - mood.cloud * 20}, 48%, 78%)`);
+  gradient.addColorStop(0.55, `hsl(${52 + mood.tempWarmth * 16}, 82%, 84%)`);
+  gradient.addColorStop(1, `hsl(${124 - mood.wetness * 24}, 42%, 70%)`);
+  c.fillStyle = gradient;
   c.fillRect(0, 0, w, h);
 
-  const cx = w * 0.5, cy = h * 0.5;
-  const r = Math.min(w, h) * 0.34;
-  const date = new Date();
-  const sec = date.getSeconds() + date.getMilliseconds() / 1000;
-  const min = date.getMinutes() + sec / 60;
-  const hr = (date.getHours() % 12) + min / 60;
+  c.globalAlpha = 0.48;
+  c.fillStyle = "#fff59a";
+  c.beginPath();
+  c.arc(w * 0.25, h * 0.24, Math.min(w, h) * 0.26, 0, Math.PI * 2);
+  c.fill();
 
-  c.save();
-  c.globalCompositeOperation = "screen";
-  const aura = c.createRadialGradient(cx, cy, r * 0.08, cx, cy, r * 1.4);
-  aura.addColorStop(0, `hsla(${46 + mood.tempWarmth * 34}, 94%, 78%, 0.35)`);
-  aura.addColorStop(1, "rgba(255,255,255,0)");
-  c.fillStyle = aura;
-  c.beginPath(); c.arc(cx, cy, r * 1.4, 0, TAU); c.fill();
-  c.globalCompositeOperation = "source-over";
-  c.restore();
-
-  for (let i = 0; i < 60; i++) {
-    const mk = clockMarks[i];
-    const a = (i / 60) * TAU - Math.PI / 2;
-    const inner = r * (i % 5 === 0 ? 0.76 : 0.86);
+  for (let i = 0; i < 30; i += 1) {
+    const x = (i * 47 + now * 0.1 * (0.8 + mood.windPower)) % (w + 40) - 20;
+    const y = (i * 31 + Math.sin(now * 0.0025 + i) * 16) % (h + 20);
+    const r = 3 + (i % 4);
     c.save();
-    c.globalAlpha = 0.6;
-    c.strokeStyle = `hsl(${hueWrap(mk.hue)}, 78%, 68%)`;
-    c.lineWidth = mk.width;
+    c.translate(x, y);
+    c.rotate(Math.sin(now * 0.005 + i) * 1.6);
+    c.globalAlpha = 0.58;
+    c.fillStyle = `hsl(${hueWrap(338 + i * 17 + mood.tempWarmth * 20)}, 78%, 72%)`;
     c.beginPath();
-    c.moveTo(cx + Math.cos(a) * inner, cy + Math.sin(a) * inner);
-    c.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
-    c.stroke();
+    c.ellipse(0, 0, r * 1.8, r * 0.75, 0, 0, Math.PI * 2);
+    c.fill();
     c.restore();
   }
 
-  const hands = [
-    { angle: (hr / 12) * TAU - Math.PI / 2, len: r * 0.55, width: 3.5, color: `hsl(${hueWrap(34 + mood.tempWarmth * 28)}, 88%, 62%)` },
-    { angle: (min / 60) * TAU - Math.PI / 2, len: r * 0.78, width: 2.2, color: `hsl(${hueWrap(168 - mood.cloud * 22)}, 82%, 66%)` },
-    { angle: (sec / 60) * TAU - Math.PI / 2, len: r * 0.88, width: 1.1, color: `hsl(${hueWrap(338 + mood.wetness * 24)}, 92%, 72%)` },
-  ];
-  hands.forEach(({ angle, len, width: lw, color }) => {
-    c.save();
-    c.strokeStyle = color; c.lineWidth = lw; c.lineCap = "round";
-    c.shadowColor = color; c.shadowBlur = lw * 3;
+  c.globalAlpha = 0.68;
+  c.strokeStyle = "rgba(69, 119, 87, 0.62)";
+  c.lineWidth = 1.2;
+  for (let i = 0; i < 13; i += 1) {
+    const x = (i / 12) * w;
+    const sway = Math.sin(now * 0.004 + i) * 14;
+    const top = h * (0.52 + (i % 4) * 0.06);
     c.beginPath();
-    c.moveTo(cx, cy);
-    c.lineTo(cx + Math.cos(angle) * len, cy + Math.sin(angle) * len);
+    c.moveTo(x, h + 4);
+    c.quadraticCurveTo(x + sway * 0.4, h * 0.74, x + sway, top);
     c.stroke();
-    c.restore();
-  });
-
-  for (let i = 0; i < 18; i++) {
-    const px = (i * 43 + now * 0.018) % (w + 30) - 15;
-    const py = (i * 67 + now * 0.028) % (h + 30) - 15;
-    const pr = 2 + (i % 3);
-    c.save(); c.translate(px, py); c.rotate(Math.sin(now * 0.002 + i));
-    c.globalAlpha = 0.5;
-    c.fillStyle = `hsl(${hueWrap(338 + mood.tempWarmth * 28 + i * 12)}, 82%, 76%)`;
-    c.beginPath(); c.ellipse(0, 0, pr * 1.4, pr * 0.6, 0, 0, TAU); c.fill();
-    c.restore();
+    c.fillStyle = "rgba(244, 126, 116, 0.76)";
+    c.beginPath();
+    c.arc(x + sway, top, 5 + (i % 3), 0, Math.PI * 2);
+    c.fill();
   }
+  c.globalAlpha = 1;
   applyNightDim(c, w, h, mood.nightFactor);
+  drawArtDataPanel(
+    c, w, h, "오늘 날씨",
+    [
+      ...currentDateRows(),
+      { label: "하늘", value: skyNames.get(weather.code) || weather.label },
+      { label: "기온", value: `${Math.round(weather.temp)}°C` },
+      { label: "바람", value: `${Math.round(weather.wind)} m/s` },
+    ],
+    132, now,
+  );
 }
 
 function drawRefDustWalkArt(c, w, h, mood, now) {
+  // Identical to drawDustWalk — full-quality dust/air canvas with data panel
   const pm10 = airQuality.pm10 ?? 42;
   const pm25 = airQuality.pm25 ?? 18;
-  const dustLevel = Math.min(1, (pm10 / 150 + pm25 / 75) / 2);
-  const bg = c.createLinearGradient(0, 0, w, h);
-  bg.addColorStop(0, `hsl(${196 - dustLevel * 38}, ${52 - dustLevel * 28}%, ${84 - dustLevel * 22}%)`);
-  bg.addColorStop(1, `hsl(${112 - dustLevel * 16}, ${38 - dustLevel * 18}%, ${68 - dustLevel * 16}%)`);
-  c.fillStyle = bg; c.fillRect(0, 0, w, h);
+  const cleanScore = Math.max(0, Math.min(1, 1 - Math.max(pm10 / 100, pm25 / 45)));
+  const signalHue = cleanScore > 0.68 ? 142 : cleanScore > 0.42 ? 52 : 8;
 
-  for (let i = 0; i < 60; i++) {
-    const x = ((i * 97 + now * 0.022 * (1 + dustLevel)) % (w + 60)) - 30;
-    const y = ((i * 53 + now * 0.014) % (h + 40)) - 20;
-    const r = 1.2 + dustLevel * 3.5 + (i % 4) * 0.8;
-    c.globalAlpha = 0.14 + dustLevel * 0.28;
-    c.fillStyle = `hsl(${hueWrap(38 + i * 7)}, 68%, 64%)`;
-    c.beginPath(); c.arc(x, y, r, 0, TAU); c.fill();
+  const gradient = c.createLinearGradient(0, 0, w, h);
+  gradient.addColorStop(0, `hsl(${174 - cleanScore * 18}, 45%, 72%)`);
+  gradient.addColorStop(0.58, `hsl(${60 + cleanScore * 28}, 76%, 84%)`);
+  gradient.addColorStop(1, `hsl(${132 + cleanScore * 18}, 36%, 66%)`);
+  c.fillStyle = gradient;
+  c.fillRect(0, 0, w, h);
+
+  c.globalAlpha = 0.2 + cleanScore * 0.2;
+  c.fillStyle = "#ffffff";
+  c.beginPath();
+  c.ellipse(w * 0.64, h * 0.46, w * 0.28, h * 0.2, 0, 0, Math.PI * 2);
+  c.fill();
+
+  c.lineWidth = Math.max(10, w * 0.045);
+  c.lineCap = "round";
+  for (let i = 0; i < 5; i += 1) {
+    const offset = (i - 2) * w * 0.08;
+    c.globalAlpha = 0.18 + cleanScore * 0.32;
+    c.strokeStyle = `hsl(${signalHue}, 82%, ${62 + cleanScore * 14}%)`;
+    c.beginPath();
+    c.moveTo(w * 0.08 + offset, h * 0.9);
+    c.bezierCurveTo(
+      w * 0.28 + offset, h * 0.64 + Math.sin(now * 0.003 + i) * 16,
+      w * 0.42 + offset, h * 0.36,
+      w * 0.78 + offset, h * 0.08,
+    );
+    c.stroke();
   }
 
-  const personX = w * 0.5 + Math.sin(now * 0.0008) * w * 0.12;
-  const personY = h * 0.62;
-  c.globalAlpha = 0.72;
-  c.fillStyle = `hsl(${hueWrap(34 - dustLevel * 22)}, 72%, 52%)`;
-  c.beginPath(); c.arc(personX, personY - 18, 9, 0, TAU); c.fill();
-  c.strokeStyle = `hsl(${hueWrap(34 - dustLevel * 22)}, 72%, 52%)`;
-  c.lineWidth = 3; c.lineCap = "round";
-  c.beginPath(); c.moveTo(personX, personY - 9); c.lineTo(personX, personY + 22); c.stroke();
-  c.beginPath(); c.moveTo(personX - 12, personY + 6); c.lineTo(personX + 12, personY + 6); c.stroke();
-  c.beginPath(); c.moveTo(personX, personY + 22); c.lineTo(personX - 10, personY + 42); c.stroke();
-  c.beginPath(); c.moveTo(personX, personY + 22); c.lineTo(personX + 10, personY + 42); c.stroke();
+  for (let i = 0; i < 18; i += 1) {
+    const x = (i * 59 + now * (0.07 + cleanScore * 0.1)) % (w + 40) - 20;
+    const y = h * (0.28 + ((i * 13) % 42) / 100) + Math.sin(now * 0.003 + i) * 12;
+    c.globalAlpha = 0.18 + (1 - cleanScore) * 0.34;
+    c.fillStyle = `hsl(${34 - cleanScore * 24}, 44%, ${66 - (1 - cleanScore) * 18}%)`;
+    c.beginPath();
+    c.arc(x, y, 2 + (1 - cleanScore) * 5, 0, Math.PI * 2);
+    c.fill();
+  }
+
+  c.globalAlpha = 0.9;
+  c.fillStyle = `hsl(${signalHue}, 80%, 44%)`;
+  c.beginPath();
+  c.arc(w * 0.13, h * 0.18, 16 + cleanScore * 8, 0, Math.PI * 2);
+  c.fill();
   c.globalAlpha = 1;
   applyNightDim(c, w, h, mood.nightFactor);
+  const fineLevel = pm10 <= 30 && pm25 <= 15 ? "좋음" : pm10 <= 80 && pm25 <= 35 ? "보통" : "주의";
+  const activity = fineLevel === "좋음" ? "야외활동 가능" : fineLevel === "보통" ? "짧은 활동" : "실내 권장";
+  drawArtDataPanel(
+    c, w, h, "미세먼지",
+    [
+      ...currentDateRows(),
+      { label: "PM10", value: `${pm10.toFixed(1)} µg/m³` },
+      { label: "PM2.5", value: `${pm25.toFixed(1)} µg/m³` },
+      { label: "판단", value: `${fineLevel} · ${activity}` },
+    ],
+    signalHue, now,
+  );
 }
 
 function drawRefTemperatureArt(c, w, h, mood, now) {
-  const warmth = mood.tempWarmth;
-  const bg = c.createLinearGradient(0, 0, w, h);
-  bg.addColorStop(0, `hsl(${196 - warmth * 56}, 52%, ${84 - warmth * 14}%)`);
-  bg.addColorStop(0.5, `hsl(${52 + warmth * 22}, 74%, ${88 - warmth * 12}%)`);
-  bg.addColorStop(1, `hsl(${126 - warmth * 38}, ${38 + warmth * 16}%, ${72 - warmth * 10}%)`);
-  c.fillStyle = bg; c.fillRect(0, 0, w, h);
+  // Identical to drawTemperatureGarden — full-quality temperature garden with data panel
+  const warmth = Math.max(0, Math.min(1, (weather.temp + 4) / 36));
+  const pulse = 0.5 + Math.sin(now * (0.0025 + warmth * 0.002)) * 0.5;
+  const gradient = c.createLinearGradient(0, 0, w, h);
+  gradient.addColorStop(0, `hsl(${178 - warmth * 42}, 42%, 84%)`);
+  gradient.addColorStop(0.55, `hsl(${58 + warmth * 20}, 74%, ${88 - warmth * 10}%)`);
+  gradient.addColorStop(1, `hsl(${126 - warmth * 12}, 34%, ${70 - warmth * 8}%)`);
+  c.fillStyle = gradient;
+  c.fillRect(0, 0, w, h);
 
-  const count = Math.floor(8 + warmth * 18);
-  for (let i = 0; i < count; i++) {
-    const stemX = (w / (count + 1)) * (i + 1) + Math.sin(now * 0.0014 + i) * 8;
-    const stemH = h * (0.22 + warmth * 0.2) * (0.6 + (i % 3) * 0.22);
-    const tipX = stemX + Math.sin(now * 0.001 + i) * 10;
-    const tipY = h * 0.75 - stemH;
-    c.strokeStyle = `hsla(${128 - mood.cloud * 22}, 36%, 36%, 0.5)`;
-    c.lineWidth = 1.6;
-    c.beginPath(); c.moveTo(stemX, h * 0.78); c.quadraticCurveTo(stemX, h * 0.78 - stemH * 0.5, tipX, tipY); c.stroke();
-    const bs = 6 + warmth * 14;
-    c.fillStyle = `hsl(${hueWrap(342 + warmth * 36 + i * 8)}, 78%, ${72 - mood.cloud * 8}%)`;
-    for (let p = 0; p < 5; p++) {
-      const a = (TAU * p / 5) + now * 0.00035;
-      c.globalAlpha = 0.7;
-      c.beginPath();
-      c.ellipse(tipX + Math.cos(a) * bs * 0.35, tipY + Math.sin(a) * bs * 0.25, bs * 0.35, bs * 0.18, a, 0, TAU);
-      c.fill();
-    }
+  c.globalAlpha = 0.28 + pulse * 0.22;
+  c.fillStyle = `hsl(${44 + warmth * 24}, 88%, 76%)`;
+  c.beginPath();
+  c.arc(w * 0.5, h * 0.4, w * (0.22 + pulse * 0.05), 0, Math.PI * 2);
+  c.fill();
+
+  for (let i = 0; i < 16; i += 1) {
+    const x = (i / 15) * w;
+    const stemTop = h * (0.42 + ((i * 7) % 36) / 100);
+    const sway = Math.sin(now * 0.004 + i) * (10 + warmth * 14);
+    const bloom = 5 + warmth * 13 + Math.sin(now * 0.005 + i) * 4;
+    c.globalAlpha = 0.62;
+    c.strokeStyle = `hsl(${130 - warmth * 20}, 32%, 42%)`;
+    c.lineWidth = 1.2;
+    c.beginPath();
+    c.moveTo(x, h + 6);
+    c.quadraticCurveTo(x + sway * 0.2, h * 0.72, x + sway, stemTop);
+    c.stroke();
+
+    c.globalAlpha = 0.72;
+    c.fillStyle = `hsl(${hueWrap(338 + warmth * 46 + i * 3)}, 78%, ${76 - warmth * 8}%)`;
+    c.beginPath();
+    c.arc(x + sway, stemTop, bloom, 0, Math.PI * 2);
+    c.fill();
   }
   c.globalAlpha = 1;
   applyNightDim(c, w, h, mood.nightFactor);
+  const tempMode = weather.temp >= 28 ? "더움" : weather.temp >= 18 ? "쾌적" : "서늘";
+  drawArtDataPanel(
+    c, w, h, "오늘 온도",
+    [
+      ...currentDateRows(),
+      { label: "현재", value: `${Math.round(weather.temp)}°C` },
+      { label: "감각", value: tempMode },
+      { label: "표현", value: `꽃 크기 ${(warmth * 100).toFixed(0)}%` },
+    ],
+    24 + warmth * 36, now,
+  );
 }
 
 function drawRefRainFlowerArt(c, w, h, mood, now) {
+  // Identical to drawRainFlowerCity — full-quality rain flower canvas with data panel
   const rainy = weather.rain > 0.1 || [51, 53, 55, 61, 63, 65, 80, 81, 82, 95].includes(weather.code);
   const rainPower = rainy ? Math.max(0.38, Math.min(1, weather.rain / 4 + mood.cloud * 0.45)) : Math.max(0.06, mood.cloud * 0.16);
-  const bg = c.createLinearGradient(0, 0, w, h);
-  bg.addColorStop(0, `hsl(${194 - rainPower * 28}, ${40 - rainPower * 10}%, ${82 - rainPower * 18}%)`);
-  bg.addColorStop(0.6, `hsl(${52 - rainPower * 14}, 74%, ${86 - rainPower * 18}%)`);
-  bg.addColorStop(1, `hsl(${112 - rainPower * 12}, 35%, ${70 - rainPower * 12}%)`);
-  c.fillStyle = bg; c.fillRect(0, 0, w, h);
+  const gradient = c.createLinearGradient(0, 0, w, h);
+  gradient.addColorStop(0, `hsl(${194 - rainPower * 28}, ${40 - rainPower * 10}%, ${82 - rainPower * 18}%)`);
+  gradient.addColorStop(0.6, `hsl(${52 - rainPower * 14}, 74%, ${86 - rainPower * 18}%)`);
+  gradient.addColorStop(1, `hsl(${112 - rainPower * 12}, 35%, ${70 - rainPower * 12}%)`);
+  c.fillStyle = gradient;
+  c.fillRect(0, 0, w, h);
 
   c.globalAlpha = 0.36;
   c.fillStyle = "#fff7b4";
-  c.beginPath(); c.arc(w * 0.52, h * 0.28, w * 0.18, 0, TAU); c.fill();
+  c.beginPath();
+  c.arc(w * 0.52, h * 0.28, w * 0.18, 0, Math.PI * 2);
+  c.fill();
 
-  for (let i = 0; i < 7; i++) {
+  c.lineCap = "round";
+  for (let i = 0; i < 7; i += 1) {
     const x = w * (0.18 + i * 0.11);
     c.globalAlpha = 0.22 + rainPower * 0.24;
-    c.strokeStyle = `rgba(53,70,61,${0.32 + rainPower * 0.26})`;
-    c.lineWidth = 3; c.lineCap = "round";
-    c.beginPath(); c.moveTo(x, h * 0.3); c.lineTo(x, h); c.stroke();
+    c.strokeStyle = `rgba(53, 70, 61, ${0.32 + rainPower * 0.26})`;
+    c.lineWidth = 3;
+    c.beginPath();
+    c.moveTo(x, h * 0.3);
+    c.lineTo(x, h);
+    c.stroke();
   }
 
-  const flowerCount = Math.floor(22 + rainPower * 52);
-  for (let i = 0; i < flowerCount; i++) {
-    const fx = (i * 43 + now * (rainy ? 0.05 : 0.018)) % (w + 30) - 15;
-    const fy = (i * 67 + now * (rainy ? 0.09 : 0.035)) % (h + 30) - 15;
-    const fr = 3 + rainPower * 4 + (i % 3);
-    c.save(); c.translate(fx, fy); c.rotate(Math.sin(now * 0.002 + i));
-    c.globalAlpha = 0.5 + rainPower * 0.3;
+  const flowerCount = Math.floor(18 + rainPower * 42);
+  for (let i = 0; i < flowerCount; i += 1) {
+    const x = (i * 43 + now * (rainy ? 0.14 : 0.06)) % (w + 30) - 15;
+    const y = (i * 67 + now * (rainy ? 0.22 : 0.1)) % (h + 30) - 15;
+    const r = 2.5 + rainPower * 3 + (i % 3);
+    c.save();
+    c.translate(x, y);
+    c.rotate(Math.sin(now * 0.005 + i));
+    c.globalAlpha = 0.44 + rainPower * 0.32;
     c.fillStyle = rainy ? "hsl(202, 78%, 72%)" : `hsl(${hueWrap(336 + i * 12)}, 78%, 73%)`;
-    for (let p = 0; p < 5; p++) {
-      const a = (TAU * p / 5);
-      c.beginPath(); c.ellipse(Math.cos(a) * fr, Math.sin(a) * fr, fr, fr * 0.45, a, 0, TAU); c.fill();
+    for (let p = 0; p < 5; p += 1) {
+      const angle = (Math.PI * 2 * p) / 5;
+      c.beginPath();
+      c.ellipse(Math.cos(angle) * r, Math.sin(angle) * r, r, r * 0.45, angle, 0, Math.PI * 2);
+      c.fill();
     }
     c.restore();
   }
   c.globalAlpha = 1;
   applyNightDim(c, w, h, mood.nightFactor);
+  drawArtDataPanel(
+    c, w, h, "비 예보",
+    [
+      ...currentDateRows(),
+      { label: "강수", value: `${weather.rain.toFixed(1)} mm` },
+      { label: "하늘", value: skyNames.get(weather.code) || weather.label },
+      { label: "판단", value: rainy ? "비 예감 · 꽃비 짙음" : "비 낮음 · 꽃비 옅음" },
+    ],
+    rainy ? 204 : 52, now,
+  );
 }
 
 function describeWeather() {
