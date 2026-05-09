@@ -707,12 +707,12 @@ function drawMiniWork(mood, now) {
   miniCtx.fill();
 
   for (let i = 0; i < 30; i += 1) {
-    const x = (i * 47 + now * 0.035 * (0.8 + mood.windPower)) % (miniWidth + 40) - 20;
-    const y = (i * 31 + Math.sin(now * 0.001 + i) * 16) % (miniHeight + 20);
+    const x = (i * 47 + now * 0.1 * (0.8 + mood.windPower)) % (miniWidth + 40) - 20;
+    const y = (i * 31 + Math.sin(now * 0.0025 + i) * 16) % (miniHeight + 20);
     const r = 3 + (i % 4);
     miniCtx.save();
     miniCtx.translate(x, y);
-    miniCtx.rotate(Math.sin(now * 0.002 + i) * 1.6);
+    miniCtx.rotate(Math.sin(now * 0.005 + i) * 1.6);
     miniCtx.globalAlpha = 0.58;
     miniCtx.fillStyle = `hsl(${hueWrap(338 + i * 17 + mood.tempWarmth * 20)}, 78%, 72%)`;
     miniCtx.beginPath();
@@ -726,7 +726,7 @@ function drawMiniWork(mood, now) {
   miniCtx.lineWidth = 1.2;
   for (let i = 0; i < 13; i += 1) {
     const x = (i / 12) * miniWidth;
-    const sway = Math.sin(now * 0.0015 + i) * 9;
+    const sway = Math.sin(now * 0.004 + i) * 14;
     const top = miniHeight * (0.52 + (i % 4) * 0.06);
     miniCtx.beginPath();
     miniCtx.moveTo(x, miniHeight + 4);
@@ -788,7 +788,7 @@ function drawDustWalk(mood, now) {
     dustWalkCtx.moveTo(previewWidth * 0.08 + offset, previewHeight * 0.9);
     dustWalkCtx.bezierCurveTo(
       previewWidth * 0.28 + offset,
-      previewHeight * 0.64 + Math.sin(now * 0.001 + i) * 10,
+      previewHeight * 0.64 + Math.sin(now * 0.003 + i) * 16,
       previewWidth * 0.42 + offset,
       previewHeight * 0.36,
       previewWidth * 0.78 + offset,
@@ -798,8 +798,8 @@ function drawDustWalk(mood, now) {
   }
 
   for (let i = 0; i < 18; i += 1) {
-    const x = (i * 59 + now * (0.018 + cleanScore * 0.045)) % (previewWidth + 40) - 20;
-    const y = previewHeight * (0.28 + ((i * 13) % 42) / 100) + Math.sin(now * 0.0012 + i) * 12;
+    const x = (i * 59 + now * (0.07 + cleanScore * 0.1)) % (previewWidth + 40) - 20;
+    const y = previewHeight * (0.28 + ((i * 13) % 42) / 100) + Math.sin(now * 0.003 + i) * 12;
     dustWalkCtx.globalAlpha = 0.18 + (1 - cleanScore) * 0.34;
     dustWalkCtx.fillStyle = `hsl(${34 - cleanScore * 24}, 44%, ${66 - (1 - cleanScore) * 18}%)`;
     dustWalkCtx.beginPath();
@@ -839,7 +839,7 @@ function drawTemperatureGarden(mood, now) {
 
   const { previewWidth, previewHeight } = preview;
   const warmth = Math.max(0, Math.min(1, (weather.temp + 4) / 36));
-  const pulse = 0.5 + Math.sin(now * (0.001 + warmth * 0.0012)) * 0.5;
+  const pulse = 0.5 + Math.sin(now * (0.0025 + warmth * 0.002)) * 0.5;
   const gradient = temperatureGardenCtx.createLinearGradient(0, 0, previewWidth, previewHeight);
   gradient.addColorStop(0, `hsl(${178 - warmth * 42}, 42%, 84%)`);
   gradient.addColorStop(0.55, `hsl(${58 + warmth * 20}, 74%, ${88 - warmth * 10}%)`);
@@ -856,8 +856,8 @@ function drawTemperatureGarden(mood, now) {
   for (let i = 0; i < 16; i += 1) {
     const x = (i / 15) * previewWidth;
     const stemTop = previewHeight * (0.42 + ((i * 7) % 36) / 100);
-    const sway = Math.sin(now * 0.0014 + i) * (5 + warmth * 9);
-    const bloom = 5 + warmth * 13 + Math.sin(now * 0.002 + i) * 2;
+    const sway = Math.sin(now * 0.004 + i) * (10 + warmth * 14);
+    const bloom = 5 + warmth * 13 + Math.sin(now * 0.005 + i) * 4;
     temperatureGardenCtx.globalAlpha = 0.62;
     temperatureGardenCtx.strokeStyle = `hsl(${130 - warmth * 20}, 32%, 42%)`;
     temperatureGardenCtx.lineWidth = 1.2;
@@ -925,12 +925,12 @@ function drawRainFlowerCity(mood, now) {
 
   const flowerCount = Math.floor(18 + rainPower * 42);
   for (let i = 0; i < flowerCount; i += 1) {
-    const x = (i * 43 + now * (rainy ? 0.05 : 0.018)) % (previewWidth + 30) - 15;
-    const y = (i * 67 + now * (rainy ? 0.09 : 0.035)) % (previewHeight + 30) - 15;
+    const x = (i * 43 + now * (rainy ? 0.14 : 0.06)) % (previewWidth + 30) - 15;
+    const y = (i * 67 + now * (rainy ? 0.22 : 0.1)) % (previewHeight + 30) - 15;
     const r = 2.5 + rainPower * 3 + (i % 3);
     rainFlowerCtx.save();
     rainFlowerCtx.translate(x, y);
-    rainFlowerCtx.rotate(Math.sin(now * 0.002 + i));
+    rainFlowerCtx.rotate(Math.sin(now * 0.005 + i));
     rainFlowerCtx.globalAlpha = 0.44 + rainPower * 0.32;
     rainFlowerCtx.fillStyle = rainy ? "hsl(202, 78%, 72%)" : `hsl(${hueWrap(336 + i * 12)}, 78%, 73%)`;
     for (let p = 0; p < 5; p += 1) {
