@@ -570,6 +570,73 @@ function preparePreview(canvasElement, context) {
   return { previewWidth, previewHeight };
 }
 
+/* ── 메인 work-card용: 하단 HUD 스트립 ─────────────────────────── */
+function drawArtDataStrip(context, w, h, title, dataRows, accentHue, now) {
+  // dataRows: 날짜/시간 제외한 핵심 3개만 (label + value)
+  const keyRows = dataRows.filter(r => r.label !== "날짜" && r.label !== "시간");
+
+  const stripH = Math.min(h * 0.28, 76);
+  const y0 = h - stripH;
+
+  context.save();
+
+  // 그라디언트 배경 (위가 투명 → 아래가 불투명)
+  const bg = context.createLinearGradient(0, y0, 0, h);
+  bg.addColorStop(0, "rgba(10, 18, 14, 0)");
+  bg.addColorStop(0.35, "rgba(10, 18, 14, 0.80)");
+  bg.addColorStop(1, "rgba(10, 18, 14, 0.93)");
+  context.fillStyle = bg;
+  context.fillRect(0, y0, w, stripH);
+
+  // 왼쪽 액센트 세로 바
+  context.fillStyle = `hsl(${accentHue}, 72%, 58%)`;
+  context.fillRect(0, y0 + stripH * 0.18, 3, stripH * 0.64);
+
+  // 제목
+  const fs = Math.max(9, Math.min(11, w * 0.036));
+  context.fillStyle = `hsla(${accentHue}, 60%, 76%, 0.88)`;
+  context.font = `700 ${fs}px system-ui, -apple-system, sans-serif`;
+  context.fillText(title, 10, y0 + 16);
+
+  // 데이터 열 (균등 분할)
+  const colW = (w - 16) / Math.max(1, keyRows.length);
+  keyRows.forEach((row, i) => {
+    const rx = 8 + i * colW;
+    const labelFs = Math.max(8, Math.min(9, w * 0.028));
+    const valueFs = Math.max(10, Math.min(13, w * 0.044));
+
+    context.fillStyle = "rgba(255,255,255,0.44)";
+    context.font = `600 ${labelFs}px system-ui, -apple-system, sans-serif`;
+    context.fillText(row.label, rx, y0 + 36);
+
+    context.fillStyle = "rgba(255,255,255,0.92)";
+    context.font = `800 ${valueFs}px system-ui, -apple-system, sans-serif`;
+    // 긴 값은 말줄임
+    const maxW = colW - 6;
+    const val = row.value;
+    if (context.measureText(val).width <= maxW) {
+      context.fillText(val, rx, y0 + 52);
+    } else {
+      let t = val;
+      while (t.length > 3 && context.measureText(t + "…").width > maxW) t = t.slice(0, -1);
+      context.fillText(t + "…", rx, y0 + 52);
+    }
+  });
+
+  // LIVE 펄스 점
+  if (now !== undefined) {
+    const blink = 0.45 + 0.55 * Math.sin(now * 0.0032);
+    context.globalAlpha = blink;
+    context.fillStyle = `hsl(${accentHue}, 88%, 64%)`;
+    context.beginPath();
+    context.arc(w - 9, y0 + 9, 3.5, 0, Math.PI * 2);
+    context.fill();
+  }
+
+  context.restore();
+}
+
+/* ── 레퍼런스 케이스 뷰용: 중앙 오버레이 패널 ───────────────────── */
 function drawArtDataPanel(context, previewWidth, previewHeight, title, rows, accentHue, now) {
   const panelWidth = Math.min(previewWidth * 0.78, 330);
   const rowHeight = 22;
@@ -739,19 +806,14 @@ function drawMiniWork(mood, now) {
   }
   miniCtx.globalAlpha = 1;
   applyNightDim(miniCtx, miniWidth, miniHeight, mood.nightFactor);
-  drawArtDataPanel(
-    miniCtx,
-    miniWidth,
-    miniHeight,
-    "오늘 날씨",
+  drawArtDataStrip(
+    miniCtx, miniWidth, miniHeight, "오늘 날씨",
     [
-      ...currentDateRows(),
       { label: "하늘", value: skyNames.get(weather.code) || weather.label },
       { label: "기온", value: `${Math.round(weather.temp)}°C` },
       { label: "바람", value: `${Math.round(weather.wind)} m/s` },
     ],
-    132,
-    now,
+    132, now,
   );
 }
 
@@ -817,19 +879,14 @@ function drawDustWalk(mood, now) {
   const fineLevel =
     pm10 <= 30 && pm25 <= 15 ? "좋음" : pm10 <= 80 && pm25 <= 35 ? "보통" : "주의";
   const activity = fineLevel === "좋음" ? "야외활동 가능" : fineLevel === "보통" ? "짧은 활동" : "실내 권장";
-  drawArtDataPanel(
-    dustWalkCtx,
-    previewWidth,
-    previewHeight,
-    "미세먼지",
+  drawArtDataStrip(
+    dustWalkCtx, previewWidth, previewHeight, "미세먼지 공기질",
     [
-      ...currentDateRows(),
-      { label: "PM10", value: `${pm10.toFixed(1)} µg/m³` },
-      { label: "PM2.5", value: `${pm25.toFixed(1)} µg/m³` },
+      { label: "PM10", value: airQuality.pm10 !== null ? `${pm10.toFixed(1)} µg` : "연결 중…" },
+      { label: "PM2.5", value: airQuality.pm25 !== null ? `${pm25.toFixed(1)} µg` : "연결 중…" },
       { label: "판단", value: `${fineLevel} · ${activity}` },
     ],
-    signalHue,
-    now,
+    signalHue, now,
   );
 }
 
@@ -875,19 +932,14 @@ function drawTemperatureGarden(mood, now) {
   temperatureGardenCtx.globalAlpha = 1;
   applyNightDim(temperatureGardenCtx, previewWidth, previewHeight, mood.nightFactor);
   const tempMode = weather.temp >= 28 ? "더움" : weather.temp >= 18 ? "쾌적" : "서늘";
-  drawArtDataPanel(
-    temperatureGardenCtx,
-    previewWidth,
-    previewHeight,
-    "오늘 온도",
+  drawArtDataStrip(
+    temperatureGardenCtx, previewWidth, previewHeight, "오늘 온도",
     [
-      ...currentDateRows(),
       { label: "현재", value: `${Math.round(weather.temp)}°C` },
       { label: "감각", value: tempMode },
-      { label: "표현", value: `꽃 크기 ${(warmth * 100).toFixed(0)}%` },
+      { label: "꽃 크기", value: `${(warmth * 100).toFixed(0)}%` },
     ],
-    24 + warmth * 36,
-    now,
+    24 + warmth * 36, now,
   );
 }
 
@@ -943,19 +995,14 @@ function drawRainFlowerCity(mood, now) {
   }
   rainFlowerCtx.globalAlpha = 1;
   applyNightDim(rainFlowerCtx, previewWidth, previewHeight, mood.nightFactor);
-  drawArtDataPanel(
-    rainFlowerCtx,
-    previewWidth,
-    previewHeight,
-    "비 예보",
+  drawArtDataStrip(
+    rainFlowerCtx, previewWidth, previewHeight, "비 예보",
     [
-      ...currentDateRows(),
       { label: "강수", value: `${weather.rain.toFixed(1)} mm` },
       { label: "하늘", value: skyNames.get(weather.code) || weather.label },
-      { label: "판단", value: rainy ? "비 예감 · 꽃비 짙음" : "비 낮음 · 꽃비 옅음" },
+      { label: "판단", value: rainy ? "꽃비 짙음" : "꽃비 옅음" },
     ],
-    rainy ? 204 : 52,
-    now,
+    rainy ? 204 : 52, now,
   );
 }
 
@@ -1789,9 +1836,17 @@ async function getPosition() {
   return DAEGU;
 }
 
-async function loadWeather() {
-  if (placeLabel) placeLabel.textContent = "대구의 하늘을 읽는 중";
-  if (refreshButton) refreshButton.disabled = true;
+let _weatherRetryTimer = null;
+let _weatherRefreshTimer = null;
+
+async function loadWeather(isRetry = false) {
+  if (!isRetry) {
+    if (placeLabel) placeLabel.textContent = "대구의 하늘을 읽는 중…";
+    if (refreshButton) refreshButton.disabled = true;
+  }
+
+  // 재시도 타이머가 있으면 취소
+  clearTimeout(_weatherRetryTimer);
 
   try {
     const place = await getPosition();
@@ -1801,9 +1856,9 @@ async function loadWeather() {
       current: "temperature_2m,weather_code,cloud_cover,wind_speed_10m,precipitation",
       timezone: "auto",
     });
-    const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`);
-    if (!response.ok) throw new Error("weather request failed");
-    const data = await response.json();
+    const res = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`, { signal: AbortSignal.timeout(10000) });
+    if (!res.ok) throw new Error(`weather ${res.status}`);
+    const data = await res.json();
     const current = data.current;
 
     weather.temp = current.temperature_2m;
@@ -1813,21 +1868,31 @@ async function loadWeather() {
     weather.rain = current.precipitation;
     weather.label = skyNames.get(weather.code) || "변화하는 하늘";
 
-    if (placeLabel) placeLabel.textContent = `${place.label} · ${new Date().toLocaleDateString("ko-KR", {
-      month: "long",
-      day: "numeric",
-      weekday: "long",
-    })}`;
+    if (placeLabel) {
+      placeLabel.textContent = `${place.label} · ${new Date().toLocaleDateString("ko-KR", {
+        month: "long", day: "numeric", weekday: "long",
+      })}`;
+    }
+
+    // 공기질 병렬 로드
     try {
       await loadAirQuality(place);
-    } catch (airError) {
+    } catch {
       airQuality.pm10 = null;
       airQuality.pm25 = null;
-      updatePublicDataTable();
     }
+
+    // 20분마다 자동 새로고침
+    clearTimeout(_weatherRefreshTimer);
+    _weatherRefreshTimer = setTimeout(() => loadWeather(), 20 * 60 * 1000);
+
   } catch (error) {
-    if (placeLabel) placeLabel.textContent = "대구의 봄날 · 날씨 연결 전";
-    if (weatherLine) weatherLine.textContent = "날씨를 가져오지 못해도 봄날은 여기서 천천히 움직입니다.";
+    if (placeLabel) placeLabel.textContent = "대구의 봄날 · 날씨 연결 대기";
+    if (weatherLine) weatherLine.textContent = "날씨를 가져오는 중입니다. 잠시 후 자동으로 재시도합니다.";
+
+    // 30초 후 자동 재시도 (최초 실패 시), 이후 5분
+    const retryDelay = isRetry ? 5 * 60 * 1000 : 30 * 1000;
+    _weatherRetryTimer = setTimeout(() => loadWeather(true), retryDelay);
   } finally {
     describeWeather();
     if (refreshButton) refreshButton.disabled = false;
@@ -1841,10 +1906,9 @@ async function loadAirQuality(place) {
     current: "pm10,pm2_5",
     timezone: "auto",
   });
-  const response = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?${params}`);
-  if (!response.ok) throw new Error("air quality request failed");
-  const data = await response.json();
-
+  const res = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?${params}`, { signal: AbortSignal.timeout(10000) });
+  if (!res.ok) throw new Error(`air-quality ${res.status}`);
+  const data = await res.json();
   airQuality.pm10 = data.current.pm10;
   airQuality.pm25 = data.current.pm2_5;
   updatePublicDataTable();
@@ -1898,3 +1962,13 @@ describeWeather();
 loadWeather();
 window.addEventListener("load", initMiniCanvases);
 requestAnimationFrame(animate);
+
+// 탭이 다시 활성화될 때 30분 이상 지났으면 날씨 재로드
+let _lastWeatherLoad = Date.now();
+const _origLoadWeather = loadWeather;
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && Date.now() - _lastWeatherLoad > 30 * 60 * 1000) {
+    _lastWeatherLoad = Date.now();
+    loadWeather();
+  }
+});
