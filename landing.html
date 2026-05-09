@@ -4,7 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>랜딩페이지 제작 | 오늘은 봄날</title>
+    <meta name="description" content="관공서·병원·보험사·문화재단 프로젝트에 맞춘 모바일 우선 랜딩페이지. 행사 소개부터 설문, 신청, 사은품 수령까지 연결되는 공공 랜딩페이지를 제작합니다." />
     <link rel="canonical" href="https://publicbloom.art/landing.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://publicbloom.art/landing.html" />
+    <meta property="og:title" content="랜딩페이지 제작 | 오늘은 봄날" />
+    <meta property="og:description" content="관공서·병원·보험사·문화재단 프로젝트에 맞춘 모바일 우선 랜딩페이지. 행사 소개, 설문, 신청, 사은품 수령까지 연결." />
+    <meta property="og:image" content="https://publicbloom.art/assets/og-image.png" />
+    <meta property="og:locale" content="ko_KR" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="랜딩페이지 제작 | 오늘은 봄날" />
+    <meta name="twitter:description" content="관공서·병원·보험사·문화재단 프로젝트에 맞춘 모바일 우선 랜딩페이지." />
+    <meta name="twitter:image" content="https://publicbloom.art/assets/og-image.png" />
     <link rel="stylesheet" href="./styles.css?v=data-proposals-20260507" />
     <link rel="icon" href="./assets/favicon.png" type="image/png" />
     <link rel="apple-touch-icon" href="./assets/favicon.png" />
@@ -12,12 +23,15 @@
   <body class="site-page">
     <header class="site-nav">
       <a class="brand" href="./index.html"><strong>오늘은 봄날</strong><span>대구 여성기업 · 공공예술 콘텐츠</span></a>
-      <nav aria-label="주요 메뉴">
+      <nav id="main-nav" aria-label="주요 메뉴">
         <a href="./company.html">회사소개</a>
         <a href="./data-media-art.html">데이터기반 미디어아트</a>
         <a href="./landing.html">랜딩페이지</a>
         <a href="./quote.html">무료견적문의</a>
       </nav>
+      <button class="nav-toggle" aria-label="메뉴 열기" aria-expanded="false" aria-controls="main-nav">
+        <span></span><span></span><span></span>
+      </button>
     </header>
     <main class="subpage-main">
       <section class="subpage-hero">
@@ -49,5 +63,6 @@
         </div>
       </section>
     </main>
+    <script src="./site-pages.js"></script>
   </body>
 </html>

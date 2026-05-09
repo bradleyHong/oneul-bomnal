@@ -1,3 +1,29 @@
+/* 햄버거 메뉴 */
+const navToggle = document.querySelector('.nav-toggle');
+const mainNav = document.getElementById('main-nav');
+if (navToggle && mainNav) {
+  navToggle.addEventListener('click', () => {
+    const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+    navToggle.setAttribute('aria-expanded', String(!expanded));
+    mainNav.classList.toggle('open', !expanded);
+    navToggle.setAttribute('aria-label', !expanded ? '메뉴 닫기' : '메뉴 열기');
+  });
+  mainNav.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      navToggle.setAttribute('aria-expanded', 'false');
+      mainNav.classList.remove('open');
+      navToggle.setAttribute('aria-label', '메뉴 열기');
+    });
+  });
+  document.addEventListener('click', (e) => {
+    if (!navToggle.contains(e.target) && !mainNav.contains(e.target)) {
+      navToggle.setAttribute('aria-expanded', 'false');
+      mainNav.classList.remove('open');
+      navToggle.setAttribute('aria-label', '메뉴 열기');
+    }
+  });
+}
+
 const proposalButtons = document.querySelectorAll("[data-proposal]");
 const proposalPanels = document.querySelectorAll("[data-panel]");
 

@@ -4,7 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>회사소개 | 오늘은 봄날</title>
+    <meta name="description" content="오늘은 봄날은 대구 기반 여성 공공예술 기업입니다. 공공데이터 연동 미디어아트와 B2G 랜딩페이지 전문 제작사." />
     <link rel="canonical" href="https://publicbloom.art/company.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://publicbloom.art/company.html" />
+    <meta property="og:title" content="회사소개 | 오늘은 봄날" />
+    <meta property="og:description" content="대구 기반 여성 공공예술 기업. 공공데이터 연동 미디어아트와 B2G 랜딩페이지 전문 제작사." />
+    <meta property="og:image" content="https://publicbloom.art/assets/og-image.png" />
+    <meta property="og:locale" content="ko_KR" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="회사소개 | 오늘은 봄날" />
+    <meta name="twitter:description" content="대구 기반 여성 공공예술 기업. 공공데이터 연동 미디어아트와 B2G 랜딩페이지 전문 제작사." />
+    <meta name="twitter:image" content="https://publicbloom.art/assets/og-image.png" />
     <link rel="stylesheet" href="./styles.css?v=data-proposals-20260507" />
     <link rel="icon" href="./assets/favicon.png" type="image/png" />
     <link rel="apple-touch-icon" href="./assets/favicon.png" />
@@ -12,12 +23,15 @@
   <body class="site-page">
     <header class="site-nav">
       <a class="brand" href="./index.html"><strong>오늘은 봄날</strong><span>대구 여성기업 · 공공예술 콘텐츠</span></a>
-      <nav aria-label="주요 메뉴">
+      <nav id="main-nav" aria-label="주요 메뉴">
         <a href="./company.html">회사소개</a>
         <a href="./data-media-art.html">데이터기반 미디어아트</a>
         <a href="./landing.html">랜딩페이지</a>
         <a href="./quote.html">무료견적문의</a>
       </nav>
+      <button class="nav-toggle" aria-label="메뉴 열기" aria-expanded="false" aria-controls="main-nav">
+        <span></span><span></span><span></span>
+      </button>
     </header>
     <main class="subpage-main">
       <section class="subpage-hero">
@@ -49,5 +63,6 @@
         </div>
       </section>
     </main>
+    <script src="./site-pages.js"></script>
   </body>
 </html>

@@ -125,6 +125,31 @@ button {
   -webkit-backdrop-filter: blur(16px);
 }
 
+/* 서브페이지: 항상 밝은 헤더 */
+body.site-page .site-nav {
+  background: rgba(252, 250, 244, 0.97);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(31, 42, 36, 0.1);
+  color: #1f2a24;
+}
+body.site-page .brand strong {
+  color: #1f2a24;
+  text-shadow: none;
+}
+body.site-page .brand span,
+body.site-page .site-nav nav {
+  color: rgba(31, 42, 36, 0.6);
+  text-shadow: none;
+}
+body.site-page .site-nav nav a:hover {
+  color: #1f2a24;
+  border-color: rgba(31, 42, 36, 0.3);
+}
+body.site-page .nav-toggle span {
+  background: #1f2a24;
+}
+
 .nav-toggle {
   display: none;
   flex-direction: column;
@@ -1690,6 +1715,15 @@ h1 {
     padding: 14px clamp(20px, 4vw, 56px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.07);
     border-left: none;
+  }
+
+  /* 서브페이지 모바일 드롭다운 밝은 테마 */
+  body.site-page .site-nav nav {
+    background: rgba(252, 250, 244, 0.98);
+    border-bottom: 1px solid rgba(31, 42, 36, 0.1);
+  }
+  body.site-page .site-nav nav a {
+    border-bottom: 1px solid rgba(31, 42, 36, 0.07);
   }
 
   .brand span {
