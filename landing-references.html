@@ -744,52 +744,24 @@
         position: relative;
         display: flex;
         flex-direction: column;
-        min-height: 560px;
+        min-height: 540px;
         overflow: hidden;
         padding: 0;
-        border: 1px solid rgba(31, 42, 36, 0.12);
-        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
         color: var(--card-ink);
-        background:
-          radial-gradient(circle at var(--spot-x) var(--spot-y), var(--glow), transparent 28%),
-          linear-gradient(150deg, var(--card-a), var(--card-b));
+        background: linear-gradient(160deg, var(--card-a), var(--card-b));
+        transition: transform 200ms ease, box-shadow 200ms ease;
       }
 
       .ref-card:hover {
-        border-color: rgba(31, 42, 36, 0.32);
-        box-shadow: 0 22px 60px rgba(31, 42, 36, 0.16);
-      }
-
-      .ref-card::before,
-      .ref-card::after {
-        content: "";
-        position: absolute;
-        pointer-events: none;
-      }
-
-      .ref-card::before {
-        inset: 16px;
-        border: 1px solid color-mix(in srgb, var(--card-ink) 18%, transparent);
-        border-radius: 8px;
-        z-index: 2;
-      }
-
-      .ref-card::after {
-        right: -40px;
-        bottom: -50px;
-        width: 190px;
-        aspect-ratio: 1;
-        border-radius: 50%;
-        background: color-mix(in srgb, var(--card-ink) 8%, transparent);
-        z-index: 1;
+        transform: translateY(-3px);
+        box-shadow: 0 28px 64px rgba(0, 0, 0, 0.38);
+        border-color: rgba(255, 255, 255, 0.16);
       }
 
       .ref-card:nth-child(3n) {
-        min-height: 620px;
-      }
-
-      .ref-card:nth-child(5n) {
-        grid-column: span 1;
+        min-height: 580px;
       }
 
       .ref-photo {
@@ -812,25 +784,26 @@
         content: "";
         position: absolute;
         inset: 0;
-        background: linear-gradient(180deg, transparent 25%, color-mix(in srgb, var(--card-a) 78%, transparent));
+        background: linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.52) 100%);
       }
 
-      .ref-sample-tag {
+      .ref-group-tag {
         position: absolute;
-        left: 22px;
-        top: 22px;
+        left: 18px;
+        top: 18px;
         z-index: 2;
         display: inline-flex;
-        min-height: 30px;
+        min-height: 26px;
         align-items: center;
         padding: 0 10px;
-        border: 1px solid rgba(255, 255, 255, 0.34);
-        border-radius: 999px;
-        color: rgba(255, 255, 255, 0.92);
-        background: rgba(31, 42, 36, 0.28);
-        backdrop-filter: blur(10px);
-        font-size: 12px;
-        font-weight: 950;
+        border-radius: 4px;
+        color: rgba(255, 255, 255, 0.95);
+        background: rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(8px);
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
       }
 
       .ref-body {
@@ -848,77 +821,75 @@
 
       .ref-top {
         display: flex;
-        justify-content: space-between;
-        gap: 18px;
-        color: color-mix(in srgb, var(--card-ink) 62%, transparent);
-        font-size: 12px;
-        font-weight: 950;
-      }
-
-      .ref-icon {
-        margin-top: 24px;
-        font-size: 22px;
-        font-weight: 950;
-      }
-
-      .en-label {
-        display: block;
-        margin-top: 8px;
-        color: color-mix(in srgb, var(--card-ink) 58%, transparent);
-        font-size: 12px;
-        font-weight: 950;
+        align-items: center;
+        gap: 10px;
+        color: color-mix(in srgb, var(--card-ink) 52%, transparent);
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 0.06em;
         text-transform: uppercase;
+      }
+
+      .ref-top b {
+        padding: 3px 8px;
+        border-radius: 3px;
+        background: color-mix(in srgb, var(--card-ink) 10%, transparent);
+        color: color-mix(in srgb, var(--card-ink) 68%, transparent);
+        font-size: 10px;
       }
 
       .ref-card h3 {
         position: relative;
-        margin-top: 16px;
+        margin: 18px 0 0;
         max-width: 420px;
-        font-size: clamp(22px, 2vw, 30px);
-        line-height: 1.18;
+        font-size: clamp(20px, 1.8vw, 26px);
+        line-height: 1.22;
+        letter-spacing: -0.01em;
       }
 
       .ref-card p {
         position: relative;
-        margin-top: 14px;
+        margin-top: 12px;
         max-width: 460px;
-        color: color-mix(in srgb, var(--card-ink) 74%, transparent);
-        font-size: 14px;
-        line-height: 1.68;
+        color: color-mix(in srgb, var(--card-ink) 68%, transparent);
+        font-size: 13.5px;
+        line-height: 1.65;
       }
 
       .ref-bottom {
         align-self: end;
-        margin-top: 26px;
+        margin-top: 24px;
         font-size: 14px;
-        font-weight: 950;
+        font-weight: 900;
+        color: var(--card-ink);
+        display: flex;
+        align-items: center;
+        gap: 6px;
       }
 
-      .ref-notice {
-        display: block;
-        margin-top: 8px;
-        color: color-mix(in srgb, var(--card-ink) 58%, transparent);
-        font-size: 12px;
-        font-weight: 900;
+      .ref-bottom::after {
+        content: "→";
+        opacity: 0.6;
+        font-size: 13px;
       }
 
       .ref-specs {
         display: flex;
         flex-wrap: wrap;
         gap: 6px;
-        margin-top: 18px;
+        margin-top: 16px;
       }
 
       .ref-specs span {
         display: inline-flex;
-        min-height: 28px;
+        min-height: 26px;
         align-items: center;
         padding: 0 9px;
-        border: 1px solid color-mix(in srgb, var(--card-ink) 16%, transparent);
-        border-radius: 999px;
-        color: color-mix(in srgb, var(--card-ink) 68%, transparent);
+        border: 1px solid color-mix(in srgb, var(--card-ink) 14%, transparent);
+        border-radius: 4px;
+        color: color-mix(in srgb, var(--card-ink) 62%, transparent);
         font-size: 11px;
-        font-weight: 950;
+        font-weight: 900;
       }
 
       .case {
@@ -2588,10 +2559,20 @@
       }
 
       function cardStyle(item) {
-        const [a, b, ink] = palette(item.index);
-        const x = 18 + ((item.index * 17) % 70);
-        const y = 16 + ((item.index * 23) % 66);
-        return `--card-a:${a};--card-b:${b};--card-ink:${ink};--glow:rgba(255,255,255,.34);--spot-x:${x}%;--spot-y:${y}%`;
+        const darkPalettes = {
+          "관공서":     ["#0f1e3a", "#162d57", "#ccd5ed"],
+          "병원":       ["#0d2a2e", "#154550", "#cce8ec"],
+          "보험사":     ["#0e2a1a", "#163d28", "#d4ede0"],
+          "금융/보험":  ["#0e2a1a", "#163d28", "#d4ede0"],
+          "관광":       ["#121808", "#1e2e0c", "#d4e8c8"],
+          "소상공인":   ["#231408", "#3a2010", "#edddcc"],
+          "문화재단":   ["#2a1020", "#451830", "#edccd8"],
+          "공공 캠페인":["#10181f", "#1a2d3e", "#ccd8e8"],
+          "기업/공공":  ["#181818", "#2a2a2a", "#e0e0e0"],
+          "미디어아트": ["#0d1030", "#161840", "#cccde8"],
+        };
+        const [a, b, ink] = darkPalettes[item.group] || ["#1a2a1e", "#263d28", "#d4e8d8"];
+        return `--card-a:${a};--card-b:${b};--card-ink:${ink}`;
       }
 
       function sampleType(item) {
@@ -2613,16 +2594,15 @@
             (item) => `
               <a class="ref-card" href="./landing-references.html?case=${item.id}" data-group="${item.group}" style="${cardStyle(item)}">
                 <div class="ref-photo">
-                  <span class="ref-sample-tag">제작 예시 · ${sampleType(item)}</span>
+                  <span class="ref-group-tag">${item.group}</span>
                   <img src="${imagePool[item.index]}" alt="${englishTitles[item.index]}" loading="lazy" />
                 </div>
                 <div class="ref-body">
-                  <div class="ref-top"><span>${String(item.index + 1).padStart(2, "0")} · ${item.group}</span><b>${item.template}</b></div>
-                  <div class="ref-icon">${item.badge}<span class="en-label">${englishTitles[item.index]}</span></div>
+                  <div class="ref-top"><span>${String(item.index + 1).padStart(2, "0")}</span><b>${sampleType(item)}</b></div>
                   <h3>${item.title}</h3>
                   <p>${item.summary}</p>
                   <div class="ref-specs">${blueprintFor(item).trust.slice(0, 3).map((text) => `<span>${text}</span>`).join("")}</div>
-                  <div class="ref-bottom">${item.cta}<span class="ref-notice">실제 납품 사례가 아닌 제안용 샘플</span></div>
+                  <div class="ref-bottom">${item.cta}</div>
                 </div>
               </a>
             `,
