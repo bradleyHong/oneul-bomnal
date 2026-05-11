@@ -397,13 +397,18 @@ h1 {
 
 .intro {
   display: grid;
-  grid-template-columns: minmax(0, 0.92fr) minmax(300px, 0.72fr);
+  grid-template-columns: minmax(0, 0.86fr) minmax(360px, 0.74fr);
   gap: clamp(32px, 7vw, 96px);
-  align-items: end;
+  align-items: center;
   color: var(--ink);
   background:
     radial-gradient(circle at 18% 18%, rgba(255, 186, 200, 0.7), transparent 26%),
     linear-gradient(135deg, #fff2d8, #dff2ea 58%, #f7dce6);
+}
+
+.intro-copy {
+  display: grid;
+  gap: 28px;
 }
 
 .section h2 {
@@ -430,6 +435,98 @@ h1 {
 .install .section-kicker,
 .contact .section-kicker {
   color: rgba(38, 53, 45, 0.62);
+}
+
+.intro-media-card {
+  position: relative;
+  min-height: 440px;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid rgba(38, 53, 45, 0.14);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255, 233, 139, 0.62), transparent 22%),
+    radial-gradient(circle at 78% 62%, rgba(143, 208, 182, 0.56), transparent 26%),
+    linear-gradient(145deg, #fffdf6, #e2f3ea 54%, #fff0f4);
+  box-shadow: 0 26px 70px rgba(38, 53, 45, 0.16);
+}
+
+.intro-media-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.38;
+  background:
+    linear-gradient(90deg, rgba(38, 53, 45, 0.08) 1px, transparent 1px) 0 0 / 28px 100%,
+    radial-gradient(circle at 52% 42%, rgba(255, 255, 255, 0.68), transparent 24%);
+}
+
+.intro-media-card img {
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  width: min(76%, 460px);
+  transform: translate(-50%, -50%);
+  mix-blend-mode: multiply;
+  opacity: 0.16;
+}
+
+.intro-media-card figcaption {
+  position: absolute;
+  left: clamp(22px, 4vw, 38px);
+  right: clamp(22px, 4vw, 38px);
+  bottom: 128px;
+  display: grid;
+  gap: 10px;
+}
+
+.intro-media-card figcaption span {
+  color: rgba(38, 53, 45, 0.54);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.intro-media-card figcaption strong {
+  max-width: 440px;
+  color: rgba(38, 53, 45, 0.86);
+  font-size: clamp(22px, 2.6vw, 34px);
+  line-height: 1.14;
+}
+
+.intro-media-card dl {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  margin: 0;
+  background: rgba(38, 53, 45, 0.16);
+}
+
+.intro-media-card dl div {
+  min-height: 88px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.intro-media-card dt,
+.intro-media-card dd {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.intro-media-card dt {
+  color: rgba(38, 53, 45, 0.52);
+  font-weight: 900;
+}
+
+.intro-media-card dd {
+  margin-top: 8px;
+  color: rgba(38, 53, 45, 0.82);
+  font-weight: 850;
 }
 
 .catalog,
@@ -857,6 +954,92 @@ h1 {
     linear-gradient(145deg, rgba(255, 255, 255, 0.76), rgba(234, 246, 239, 0.7));
 }
 
+.region-art-grid article {
+  position: relative;
+}
+
+.region-media-card {
+  display: grid;
+  align-content: start;
+  min-height: 560px !important;
+  padding-top: 0 !important;
+}
+
+.region-media-card::before {
+  content: "";
+  display: block;
+  height: clamp(210px, 22vw, 310px);
+  margin: 0 calc(clamp(24px, 4vw, 42px) * -1) clamp(26px, 4vw, 38px);
+  border-bottom: 1px solid rgba(38, 53, 45, 0.14);
+  background:
+    linear-gradient(180deg, transparent 58%, rgba(23, 35, 30, 0.72) 100%),
+    radial-gradient(circle at 24% 28%, rgba(255, 233, 139, 0.62), transparent 18%),
+    linear-gradient(145deg, #c8ded8, #9dbca3 58%, #6d8772);
+}
+
+.region-media-card::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: clamp(160px, 18vw, 248px);
+  height: 86px;
+  pointer-events: none;
+  opacity: 0.9;
+  background: linear-gradient(180deg, transparent, rgba(23, 35, 30, 0.78));
+}
+
+.region-card-star::before {
+  background:
+    linear-gradient(180deg, transparent 58%, rgba(23, 35, 30, 0.78) 100%),
+    radial-gradient(circle at 20% 22%, rgba(255, 232, 121, 0.72), transparent 18%),
+    radial-gradient(circle at 72% 62%, rgba(255, 255, 255, 0.36), transparent 16%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.16) 0 1px, transparent 1px 34px),
+    linear-gradient(145deg, #7d91b0, #b8c69c);
+}
+
+.region-card-water::before {
+  background:
+    linear-gradient(180deg, transparent 58%, rgba(23, 35, 30, 0.78) 100%),
+    repeating-radial-gradient(circle at 46% 48%, rgba(255,255,255,.48) 0 2px, transparent 2px 34px),
+    radial-gradient(circle at 76% 24%, rgba(255, 233, 139, 0.56), transparent 20%),
+    linear-gradient(145deg, #8fc4cf, #d8e8c8 56%, #6f9cb0);
+}
+
+.region-card-festival::before {
+  background:
+    linear-gradient(180deg, transparent 58%, rgba(23, 35, 30, 0.8) 100%),
+    radial-gradient(circle at 18% 28%, rgba(255, 186, 200, 0.72), transparent 14%),
+    radial-gradient(circle at 48% 62%, rgba(255, 233, 139, 0.72), transparent 18%),
+    radial-gradient(circle at 82% 26%, rgba(126, 105, 192, 0.54), transparent 15%),
+    linear-gradient(145deg, #e8c8bd, #d9e5ba);
+}
+
+.region-card-wind::before {
+  background:
+    linear-gradient(180deg, transparent 58%, rgba(23, 35, 30, 0.78) 100%),
+    repeating-linear-gradient(125deg, transparent 0 20px, rgba(255,255,255,.28) 20px 28px),
+    radial-gradient(circle at 72% 54%, rgba(255,255,255,.42), transparent 20%),
+    linear-gradient(145deg, #7eb19f, #dbe7c8 54%, #8a9d7a);
+}
+
+.region-card-river::before {
+  background:
+    linear-gradient(180deg, transparent 58%, rgba(23, 35, 30, 0.78) 100%),
+    repeating-radial-gradient(circle at 32% 68%, rgba(255,255,255,.38) 0 2px, transparent 2px 30px),
+    radial-gradient(circle at 76% 26%, rgba(255, 233, 139, 0.62), transparent 18%),
+    linear-gradient(145deg, #7eaac0, #d7e7d5);
+}
+
+.region-card-mask::before {
+  background:
+    linear-gradient(180deg, transparent 58%, rgba(23, 35, 30, 0.78) 100%),
+    radial-gradient(circle at 24% 36%, rgba(238, 143, 130, 0.62), transparent 15%),
+    radial-gradient(circle at 68% 26%, rgba(255, 232, 121, 0.64), transparent 16%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.18) 0 1px, transparent 1px 36px),
+    linear-gradient(145deg, #9db0b9, #d6dfb5);
+}
+
 .region-art-grid span,
 .local-art-strip span {
   color: rgba(38, 53, 45, 0.54);
@@ -904,6 +1087,62 @@ h1 {
 .region-art-grid dt {
   color: rgba(38, 53, 45, 0.52);
   font-weight: 900;
+}
+
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid rgba(38, 53, 45, 0.14);
+  border-radius: 8px;
+  background: rgba(38, 53, 45, 0.14);
+}
+
+.video-grid article {
+  display: grid;
+  gap: 18px;
+  padding: clamp(18px, 3vw, 28px);
+  background:
+    radial-gradient(circle at 88% 14%, rgba(255, 233, 139, 0.34), transparent 20%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.78), rgba(232, 245, 236, 0.72));
+}
+
+.video-frame {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px solid rgba(38, 53, 45, 0.12);
+  border-radius: 8px;
+  background: #17231e;
+}
+
+.video-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.video-grid span {
+  color: rgba(38, 53, 45, 0.54);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.video-grid h3 {
+  margin: 0;
+  font-size: clamp(22px, 2.4vw, 30px);
+  line-height: 1.16;
+}
+
+.video-grid p {
+  margin: 0;
+  color: rgba(38, 53, 45, 0.72);
+  font-size: 14px;
+  line-height: 1.7;
 }
 
 .local-art-strip {
@@ -1848,6 +2087,7 @@ h1 {
   .simple-cards,
   .region-art-grid,
   .local-art-strip,
+  .video-grid,
   .reference-strip,
   .profile-layout,
   .profile-grid,
@@ -1874,6 +2114,22 @@ h1 {
 
   .form-row {
     grid-template-columns: 1fr;
+  }
+
+  .intro-media-card {
+    min-height: 520px;
+  }
+
+  .intro-media-card dl {
+    grid-template-columns: 1fr;
+  }
+
+  .intro-media-card figcaption {
+    bottom: 260px;
+  }
+
+  .region-media-card {
+    min-height: auto !important;
   }
 
   .product-card span,
