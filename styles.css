@@ -1444,6 +1444,56 @@ h1 {
   color: rgba(38, 53, 45, 0.62);
 }
 
+.site-footer {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(320px, 0.8fr);
+  gap: clamp(24px, 5vw, 72px);
+  align-items: center;
+  padding: clamp(34px, 5vw, 58px) clamp(22px, 6vw, 88px);
+  color: #f8fbf4;
+  background: #17231e;
+}
+
+.site-footer strong {
+  display: block;
+  font-size: clamp(26px, 3.4vw, 42px);
+  line-height: 1.08;
+}
+
+.site-footer p {
+  max-width: 760px;
+  margin: 14px 0 0;
+  color: rgba(248, 251, 244, 0.72);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.site-footer nav {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid rgba(248, 251, 244, 0.16);
+  border-radius: 8px;
+  background: rgba(248, 251, 244, 0.16);
+}
+
+.site-footer a {
+  display: grid;
+  align-items: center;
+  min-height: 76px;
+  padding: 16px;
+  color: #f8fbf4;
+  background: rgba(255, 255, 255, 0.07);
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.site-footer a:first-child {
+  color: #17231e;
+  background: #ffe879;
+}
+
 .subpage-main {
   padding-top: 72px;
   background: #fffdf6;
@@ -1655,7 +1705,9 @@ h1 {
   .contact,
   .inquiry-section,
   .credential-layout,
-  .credential-grid {
+  .credential-grid,
+  .site-footer,
+  .site-footer nav {
     grid-template-columns: 1fr;
   }
 
