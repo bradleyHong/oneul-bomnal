@@ -564,67 +564,188 @@
 
       .spotlight-grid {
         display: grid;
-        grid-template-columns: 1.2fr 0.8fr 0.8fr;
-        gap: 14px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
       }
 
       .spotlight-card {
         position: relative;
-        min-height: 480px;
+        display: grid;
+        grid-template-rows: minmax(260px, 1fr) auto;
+        min-height: 560px;
         overflow: hidden;
-        border-radius: 8px;
-        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        color: #f8fbf4;
+        background: #203229;
+        box-shadow: 0 28px 90px rgba(0, 0, 0, 0.24);
       }
 
       .spotlight-card:nth-child(n + 2) {
-        min-height: 350px;
-      }
-
-      .spotlight-card img {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      .spotlight-card .korean-visual {
-        position: absolute;
-        inset: 0;
-        min-height: 100%;
+        min-height: 560px;
       }
 
       .spotlight-card::after {
+        content: none;
+      }
+
+      .spotlight-preview {
+        position: relative;
+        min-height: 300px;
+        padding: 22px;
+        overflow: hidden;
+        background: var(--spot-bg);
+      }
+
+      .spotlight-preview::before {
         content: "";
         position: absolute;
         inset: 0;
-        background: linear-gradient(180deg, transparent 12%, rgba(0, 0, 0, 0.72));
+        background:
+          radial-gradient(circle at 18% 18%, rgba(255, 232, 121, 0.36), transparent 18%),
+          radial-gradient(circle at 76% 74%, rgba(255, 255, 255, 0.22), transparent 22%),
+          repeating-linear-gradient(90deg, rgba(32, 50, 41, 0.08) 0 1px, transparent 1px 34px);
+        pointer-events: none;
       }
 
-      .spotlight-card > div:not(.korean-visual) {
-        position: absolute;
-        left: 24px;
-        right: 24px;
-        bottom: 24px;
+      .spotlight-preview > * {
+        position: relative;
         z-index: 1;
       }
 
-      .spotlight-card span {
-        color: #ffe879;
+      .spotlight-browser {
+        display: grid;
+        gap: 12px;
+        min-height: 232px;
+        padding: 16px;
+        border: 1px solid rgba(32, 50, 41, 0.12);
+        border-radius: 12px;
+        color: #203229;
+        background: rgba(255, 253, 246, 0.78);
+        box-shadow: 0 24px 70px rgba(32, 50, 41, 0.18);
+        backdrop-filter: blur(16px);
+      }
+
+      .spotlight-topline {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
         font-size: 13px;
         font-weight: 950;
       }
 
-      .spotlight-card h3 {
-        margin-top: 12px;
-        font-size: clamp(24px, 3vw, 42px);
+      .spotlight-topline b,
+      .spotlight-kpi strong,
+      .spotlight-submit {
+        color: #203229;
+        background: #ffe879;
+      }
+
+      .spotlight-topline small {
+        color: rgba(32, 50, 41, 0.58);
+        font-size: 11px;
+        font-weight: 900;
+      }
+
+      .spotlight-screen-title {
+        max-width: 440px;
+        font-size: clamp(26px, 3.6vw, 46px);
         line-height: 1.12;
       }
 
-      .spotlight-card p {
+      .spotlight-form {
+        display: grid;
+        gap: 8px;
+      }
+
+      .spotlight-form span,
+      .spotlight-kpi,
+      .spotlight-submit {
+        min-height: 38px;
+        border-radius: 999px;
+      }
+
+      .spotlight-form span {
+        display: block;
+        background: rgba(32, 50, 41, 0.08);
+      }
+
+      .spotlight-kpis {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .spotlight-kpi {
+        display: grid;
+        align-content: center;
+        padding: 10px 12px;
+        background: rgba(32, 50, 41, 0.07);
+        font-size: 11px;
+        font-weight: 900;
+      }
+
+      .spotlight-kpi strong {
+        display: inline-flex;
+        width: fit-content;
+        margin-top: 4px;
+        padding: 3px 7px;
+        border-radius: 999px;
+      }
+
+      .spotlight-submit {
+        display: inline-flex;
+        width: fit-content;
+        align-items: center;
+        padding: 0 16px;
+        font-size: 12px;
+        font-weight: 950;
+      }
+
+      .spotlight-content {
+        display: grid;
+        align-content: end;
+        min-height: 230px;
+        padding: 28px;
+        background:
+          linear-gradient(180deg, rgba(9, 46, 30, 0.7), rgba(9, 46, 30, 0.96)),
+          var(--spot-photo);
+        background-size: cover;
+        background-position: center;
+      }
+
+      .spotlight-content span {
+        color: #ffe879;
+        font-size: 12px;
+        font-weight: 950;
+      }
+
+      .spotlight-content h3 {
+        margin-top: 12px;
+        font-size: clamp(25px, 2.5vw, 34px);
+        line-height: 1.18;
+      }
+
+      .spotlight-content p {
         margin-top: 16px;
         color: rgba(248, 251, 244, 0.76);
         line-height: 1.6;
+      }
+
+      .spotlight-medical {
+        --spot-bg: linear-gradient(135deg, #dcefeb, #fff4d2 58%, #9fc5c2);
+        --spot-photo: url("https://images.unsplash.com/photo-1609347176983-e6a4684e2508?auto=format&fit=crop&w=1200&q=80");
+      }
+
+      .spotlight-public {
+        --spot-bg: linear-gradient(135deg, #efe4c8, #f7edd0 48%, #b7c7a7);
+        --spot-photo: url("https://images.unsplash.com/photo-1667016644990-f4700cfc6542?auto=format&fit=crop&w=1200&q=80");
+      }
+
+      .spotlight-contest {
+        --spot-bg: linear-gradient(135deg, #e2e7f1, #fff7dd 50%, #aab8c9);
+        --spot-photo: url("https://images.unsplash.com/photo-1693666319593-56fccba50d7e?auto=format&fit=crop&w=1200&q=80");
       }
 
       .section {
@@ -753,7 +874,7 @@
         position: relative;
         display: flex;
         flex-direction: column;
-        min-height: 540px;
+        min-height: 520px;
         overflow: hidden;
         padding: 0;
         border: 1px solid rgba(255, 255, 255, 0.08);
@@ -770,7 +891,7 @@
       }
 
       .ref-card:nth-child(3n) {
-        min-height: 580px;
+        min-height: 540px;
       }
 
       .ref-photo {
@@ -889,20 +1010,29 @@
       .ref-specs {
         display: flex;
         flex-wrap: wrap;
-        gap: 6px;
+        gap: 7px 10px;
         margin-top: 16px;
       }
 
       .ref-specs span {
         display: inline-flex;
-        min-height: 26px;
+        min-height: 20px;
         align-items: center;
-        padding: 0 9px;
-        border: 1px solid color-mix(in srgb, var(--card-ink) 14%, transparent);
-        border-radius: 4px;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
         color: color-mix(in srgb, var(--card-ink) 62%, transparent);
         font-size: 11px;
         font-weight: 900;
+      }
+
+      .ref-specs span::before {
+        content: "";
+        width: 4px;
+        height: 4px;
+        margin-right: 7px;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--card-ink) 38%, transparent);
       }
 
       .case {
@@ -1484,25 +1614,82 @@
       }
 
       .doctor-card {
+        position: relative;
         overflow: hidden;
         min-height: 640px;
         border: 1px solid rgba(255, 255, 255, 0.22);
-        border-radius: 8px;
+        border-radius: 18px;
         background: rgba(255, 255, 255, 0.12);
+        box-shadow: 0 28px 90px rgba(0, 0, 0, 0.22);
       }
 
       .doctor-card img {
         width: 100%;
-        height: 420px;
+        height: 640px;
         object-fit: cover;
+        filter: saturate(0.92) contrast(0.94) brightness(0.78);
       }
 
-      .doctor-card .korean-visual {
-        min-height: 420px;
+      .doctor-card::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, transparent 18%, rgba(32, 50, 41, 0.92));
       }
 
-      .doctor-card div {
-        padding: 26px;
+      .doctor-card figcaption {
+        position: absolute;
+        z-index: 1;
+        left: 24px;
+        right: 24px;
+        bottom: 24px;
+        display: grid;
+        gap: 16px;
+      }
+
+      .doctor-card figcaption > span {
+        display: inline-flex;
+        width: fit-content;
+        min-height: 32px;
+        align-items: center;
+        padding: 0 12px;
+        border-radius: 999px;
+        color: #203229;
+        background: #ffe879;
+        font-size: 12px;
+        font-weight: 950;
+      }
+
+      .doctor-card h2 {
+        font-size: clamp(28px, 3vw, 42px);
+        line-height: 1.12;
+      }
+
+      .doctor-card dl {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1px;
+        overflow: hidden;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.16);
+      }
+
+      .doctor-card dl div {
+        padding: 14px;
+        background: rgba(255, 255, 255, 0.11);
+      }
+
+      .doctor-card dt {
+        color: rgba(248, 251, 244, 0.62);
+        font-size: 11px;
+        font-weight: 900;
+      }
+
+      .doctor-card dd {
+        margin-top: 7px;
+        color: #fffdf6;
+        font-size: 14px;
+        font-weight: 950;
       }
 
       .medical-slots {
@@ -1513,11 +1700,10 @@
       }
 
       .medical-slots span {
-        min-height: 116px;
-        padding: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        border-radius: 8px;
-        background: rgba(255, 255, 255, 0.1);
+        min-height: 88px;
+        padding: 0 0 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+        background: transparent;
       }
 
       .public-stage {
@@ -2479,17 +2665,53 @@
           <p>클릭하면 각 주제에 맞춘 상세 랜딩페이지로 들어갑니다. 첫 화면부터 폼, 예약, 참여 흐름까지 다르게 설계했습니다.</p>
         </div>
         <div class="spotlight-grid">
-          <a class="spotlight-card" href="./landing-references.html?case=hospital-checkup">
-            <div class="korean-visual visual-medical"><span>한국형 병원 예약</span><b>검진 예약 보드</b></div>
-            <div><span>Hospital / Clinic</span><h3>ㅇㅇ병원 건강검진 예약</h3><p>예약 가능 일정과 상담 흐름이 먼저 보이는 병원형 랜딩.</p></div>
+          <a class="spotlight-card spotlight-medical" href="./landing-references.html?case=hospital-checkup">
+            <div class="spotlight-preview" aria-hidden="true">
+              <div class="spotlight-browser">
+                <div class="spotlight-topline"><b>대구 건강검진 예약</b><small>모바일 상담폼</small></div>
+                <strong class="spotlight-screen-title">오늘 가능한 검진 일정부터 바로 확인</strong>
+                <div class="spotlight-kpis">
+                  <span class="spotlight-kpi">오늘 상담<strong>12건</strong></span>
+                  <span class="spotlight-kpi">검진 패키지<strong>4종</strong></span>
+                  <span class="spotlight-kpi">콜백 예약<strong>가능</strong></span>
+                </div>
+                <div class="spotlight-form"><span></span><span></span></div>
+                <span class="spotlight-submit">검진 예약 문의</span>
+              </div>
+            </div>
+            <div class="spotlight-content"><span>Hospital / Clinic</span><h3>ㅇㅇ병원 건강검진 예약</h3><p>예약 가능 일정과 상담 흐름이 먼저 보이는 병원형 랜딩.</p></div>
           </a>
-          <a class="spotlight-card" href="./landing-references.html?case=city-program-recruit">
-            <div class="korean-visual visual-public"><span>지자체 모집 안내</span><b>청년 프로그램</b></div>
-            <div><span>Public Sector</span><h3>청년 프로그램 모집</h3><p>모집 현황과 신청접수를 강조하는 관공서형 페이지.</p></div>
+          <a class="spotlight-card spotlight-public" href="./landing-references.html?case=city-program-recruit">
+            <div class="spotlight-preview" aria-hidden="true">
+              <div class="spotlight-browser">
+                <div class="spotlight-topline"><b>대구·경북 청년 모집</b><small>회차별 정원 관리</small></div>
+                <strong class="spotlight-screen-title">모집 대상, 일정, 신청 현황을 한 화면에</strong>
+                <div class="spotlight-kpis">
+                  <span class="spotlight-kpi">1기 모집<strong>34/40</strong></span>
+                  <span class="spotlight-kpi">대기자<strong>8명</strong></span>
+                  <span class="spotlight-kpi">문자 안내<strong>연동</strong></span>
+                </div>
+                <div class="spotlight-form"><span></span><span></span></div>
+                <span class="spotlight-submit">참여 신청하기</span>
+              </div>
+            </div>
+            <div class="spotlight-content"><span>Public Sector</span><h3>청년 프로그램 모집</h3><p>모집 현황과 신청접수를 강조하는 관공서형 페이지.</p></div>
           </a>
-          <a class="spotlight-card" href="./landing-references.html?case=idea-contest">
-            <div class="korean-visual visual-contest"><span>공모 접수 시스템</span><b>제안서 업로드</b></div>
-            <div><span>Contest / Submit</span><h3>시민 아이디어 공모전</h3><p>파일 제출과 심사 자료 정리에 맞춘 공모전형 페이지.</p></div>
+          <a class="spotlight-card spotlight-contest" href="./landing-references.html?case=idea-contest">
+            <div class="spotlight-preview" aria-hidden="true">
+              <div class="spotlight-browser">
+                <div class="spotlight-topline"><b>시민 아이디어 공모전</b><small>제안서 접수</small></div>
+                <strong class="spotlight-screen-title">첨부파일과 심사 자료가 바로 정리되는 접수</strong>
+                <div class="spotlight-kpis">
+                  <span class="spotlight-kpi">접수<strong>128건</strong></span>
+                  <span class="spotlight-kpi">첨부율<strong>92%</strong></span>
+                  <span class="spotlight-kpi">심사표<strong>생성</strong></span>
+                </div>
+                <div class="spotlight-form"><span></span><span></span></div>
+                <span class="spotlight-submit">아이디어 제출</span>
+              </div>
+            </div>
+            <div class="spotlight-content"><span>Contest / Submit</span><h3>시민 아이디어 공모전</h3><p>파일 제출과 심사 자료 정리에 맞춘 공모전형 페이지.</p></div>
           </a>
         </div>
       </section>
@@ -3041,8 +3263,16 @@
           return `
             <section class="case-hero medical-stage ${variant}">
               <figure class="doctor-card">
-                ${visualTile(item, "한국형 병원 예약")}
-                <div><span class="case-eyebrow">Hospital Booking System</span><h2>${english}</h2></div>
+                <img src="${image}" alt="${item.title} 제안 이미지" />
+                <figcaption>
+                  <span>대구 병원 예약 랜딩</span>
+                  <h2>${english}</h2>
+                  <dl>
+                    <div><dt>예약</dt><dd>${bp.stats[0] || "검진 문의"}</dd></div>
+                    <div><dt>입력</dt><dd>${bp.fields[0]}</dd></div>
+                    <div><dt>전환</dt><dd>${bp.trust[1] || "콜백 연결"}</dd></div>
+                  </dl>
+                </figcaption>
               </figure>
               <div>
                 ${caseCopy(item, english, bp)}

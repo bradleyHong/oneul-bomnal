@@ -38,6 +38,45 @@ proposalButtons.forEach((button) => {
 });
 
 const contactForm = document.querySelector("#contactForm");
+const formSuccess = document.querySelector(".form-success");
+if (formSuccess && new URLSearchParams(window.location.search).get("sent") === "1") {
+  formSuccess.hidden = false;
+  formSuccess.scrollIntoView({ block: "center" });
+}
+
+const sitePreviewModal = document.querySelector("#sitePreviewModal");
+const sitePreviewFrame = document.querySelector("#sitePreviewFrame");
+const sitePreviewTitle = document.querySelector("#sitePreviewTitle");
+const sitePreviewLink = document.querySelector("#sitePreviewLink");
+
+function closeSitePreview() {
+  if (!sitePreviewModal) return;
+  sitePreviewModal.hidden = true;
+  document.body.style.overflow = "";
+  if (sitePreviewFrame) sitePreviewFrame.src = "about:blank";
+}
+
+document.querySelectorAll("[data-site-url]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const url = button.dataset.siteUrl;
+    const title = button.dataset.siteTitle || button.textContent.trim();
+    if (!sitePreviewModal || !sitePreviewFrame || !sitePreviewTitle || !sitePreviewLink || !url) return;
+    sitePreviewTitle.textContent = title;
+    sitePreviewFrame.src = url;
+    sitePreviewLink.href = url;
+    sitePreviewModal.hidden = false;
+    document.body.style.overflow = "hidden";
+  });
+});
+
+document.querySelectorAll("[data-modal-close]").forEach((button) => {
+  button.addEventListener("click", closeSitePreview);
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeSitePreview();
+});
+
 if (contactForm && !contactForm.action.includes("formsubmit.co")) {
   contactForm.addEventListener("submit", (event) => {
     event.preventDefault();

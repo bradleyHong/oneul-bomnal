@@ -22,7 +22,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="alternate" type="application/rss+xml" title="오늘은 봄날 RSS" href="https://publicbloom.art/rss.xml" />
     <link rel="preconnect" href="https://api.open-meteo.com" />
-    <link rel="stylesheet" href="./styles.css?v=20260511-contact" />
+    <link rel="stylesheet" href="./styles.css?v=20260511-production" />
     <link rel="icon" href="./assets/favicon.png" type="image/png" />
     <link rel="apple-touch-icon" href="./assets/favicon.png" />
     <script type="application/ld+json">
@@ -252,6 +252,9 @@
         </div>
         <div class="local-art-strip" aria-label="경북 지역형 미디어아트 제안">
           <a class="region-link region-gyeongju" href="./data-media-art.html#gyeongju-media-art">
+            <div class="local-media-preview local-preview-gyeongju" aria-hidden="true">
+              <span></span><span></span><span></span><span></span>
+            </div>
             <span>경북 경주</span>
             <small>Gyeongju data art</small>
             <h3>첨성대 별빛 날씨 시계 · 보문호 물결 미디어월</h3>
@@ -259,6 +262,9 @@
             <b>경주 제안 보기</b>
           </a>
           <a class="region-link region-andong" href="./data-media-art.html#andong-media-art">
+            <div class="local-media-preview local-preview-andong" aria-hidden="true">
+              <span></span><span></span><span></span><span></span>
+            </div>
             <span>경북 안동</span>
             <small>Andong data art</small>
             <h3>하회마을 바람결 지도 · 낙동강 달빛 정원</h3>
@@ -454,6 +460,38 @@
         </div>
       </section>
 
+      <section class="section website-refs" id="website-refs">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Website References</p>
+            <h2>오늘은 봄날이 제작한 웹사이트 레퍼런스</h2>
+          </div>
+          <p>클릭하면 현재 페이지 안에서 미리보기로 먼저 확인할 수 있습니다. 새 창 이동 전에 제작 분위기와 화면 구성을 빠르게 검토할 수 있게 했습니다.</p>
+        </div>
+        <div class="website-ref-grid" aria-label="오늘은 봄날 제작 웹사이트">
+          <button type="button" class="website-ref-card" data-site-title="3H 안동" data-site-url="https://3h안동.com">
+            <span>Local Program</span>
+            <strong>3H 안동</strong>
+            <small>안동 지역형 프로그램 웹사이트</small>
+          </button>
+          <button type="button" class="website-ref-card" data-site-title="Eastern Astrologer" data-site-url="https://www.easternastrologer.com">
+            <span>Brand Website</span>
+            <strong>Eastern Astrologer</strong>
+            <small>브랜드 소개형 글로벌 웹사이트</small>
+          </button>
+          <button type="button" class="website-ref-card" data-site-title="말놀이카드" data-site-url="https://www.말놀이카드.com">
+            <span>Product Website</span>
+            <strong>말놀이카드</strong>
+            <small>교육 상품 소개·구매 연결 웹사이트</small>
+          </button>
+          <button type="button" class="website-ref-card" data-site-title="비전펜슬" data-site-url="https://www.visionpencil.co.kr">
+            <span>Portfolio</span>
+            <strong>비전펜슬</strong>
+            <small>신랑 홈페이지 제작 레퍼런스</small>
+          </button>
+        </div>
+      </section>
+
       <section class="section contact" id="contact">
         <div>
           <p class="section-kicker">Contact</p>
@@ -526,6 +564,8 @@
             <textarea name="message" rows="4" placeholder="설치 장소, 행사 일정, 필요한 기능을 간단히 적어주세요."></textarea>
           </label>
           <button class="primary-link" type="submit">문의 보내기</button>
+          <p class="form-assurance">문의가 접수되면 내용을 확인한 뒤 24시간 이내에 연락드립니다.</p>
+          <p class="form-success" hidden>문의가 접수되었습니다. 24시간 이내에 연락드리겠습니다.</p>
         </form>
       </section>
 
@@ -593,6 +633,25 @@
         </div>
       </section>
     </main>
+
+    <div class="site-preview-modal" id="sitePreviewModal" hidden>
+      <div class="site-preview-backdrop" data-modal-close></div>
+      <section class="site-preview-dialog" role="dialog" aria-modal="true" aria-labelledby="sitePreviewTitle">
+        <header>
+          <div>
+            <span>오늘은 봄날 제작 웹사이트</span>
+            <h3 id="sitePreviewTitle">레퍼런스 미리보기</h3>
+          </div>
+          <button type="button" aria-label="미리보기 닫기" data-modal-close>닫기</button>
+        </header>
+        <iframe id="sitePreviewFrame" title="오늘은 봄날 제작 웹사이트 미리보기" loading="lazy"></iframe>
+        <footer>
+          <p>일부 사이트는 보안 설정 때문에 미리보기가 제한될 수 있습니다.</p>
+          <a id="sitePreviewLink" class="primary-link" href="#" target="_blank" rel="noopener">새 탭에서 보기</a>
+        </footer>
+      </section>
+    </div>
+
     <footer class="site-footer" aria-label="오늘은 봄날 연락처">
       <div>
         <strong>오늘은 봄날</strong>
@@ -654,6 +713,39 @@
           window.location.href = `mailto:visionpencil@gmail.com?subject=${subject}&body=${encodeURIComponent(body)}`;
         });
       }
+
+      const sitePreviewModal = document.querySelector("#sitePreviewModal");
+      const sitePreviewFrame = document.querySelector("#sitePreviewFrame");
+      const sitePreviewTitle = document.querySelector("#sitePreviewTitle");
+      const sitePreviewLink = document.querySelector("#sitePreviewLink");
+
+      function closeSitePreview() {
+        if (!sitePreviewModal) return;
+        sitePreviewModal.hidden = true;
+        document.body.style.overflow = "";
+        if (sitePreviewFrame) sitePreviewFrame.src = "about:blank";
+      }
+
+      document.querySelectorAll("[data-site-url]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const url = button.dataset.siteUrl;
+          const title = button.dataset.siteTitle || button.textContent.trim();
+          if (!sitePreviewModal || !sitePreviewFrame || !sitePreviewTitle || !sitePreviewLink || !url) return;
+          sitePreviewTitle.textContent = title;
+          sitePreviewFrame.src = url;
+          sitePreviewLink.href = url;
+          sitePreviewModal.hidden = false;
+          document.body.style.overflow = "hidden";
+        });
+      });
+
+      document.querySelectorAll("[data-modal-close]").forEach((button) => {
+        button.addEventListener("click", closeSitePreview);
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeSitePreview();
+      });
     </script>
     <script src="./spring.js?v=20260511-canvas-fix"></script>
     <script>
