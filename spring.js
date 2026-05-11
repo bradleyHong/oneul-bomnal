@@ -554,6 +554,7 @@ function preparePreview(canvasElement, context) {
   if (!canvasElement || !context) return null;
 
   const rect = canvasElement.getBoundingClientRect();
+  if (rect.width < 2 || rect.height < 2) return null;
   const previewDpr = Math.min(window.devicePixelRatio || 1, 2);
   const previewWidth = Math.max(1, Math.floor(rect.width));
   const previewHeight = Math.max(1, Math.floor(rect.height));
@@ -702,7 +703,8 @@ function currentDateRows() {
 }
 
 function roundRect(context, x, y, width, height, radius) {
-  const r = Math.min(radius, width / 2, height / 2);
+  if (width <= 0 || height <= 0) return;
+  const r = Math.max(0, Math.min(radius, width / 2, height / 2));
   context.beginPath();
   context.moveTo(x + r, y);
   context.arcTo(x + width, y, x + width, y + height, r);
@@ -726,9 +728,10 @@ function fitText(context, text, x, y, maxWidth) {
 }
 
 function drawPropDataLabel(c, w, h, rows, accentHsl) {
+  if (w < 96 || h < 72) return;
   const lineH = 19;
   const pad = 10;
-  const overlayW = Math.min(w - 20, 190);
+  const overlayW = Math.max(76, Math.min(w - 20, 190));
   const overlayH = 10 + rows.length * lineH + 8;
   const ox = w - overlayW - pad;
   const oy = h - overlayH - pad;
