@@ -2,52 +2,57 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://publicbloom.art/</loc>
-    <lastmod>2026-05-07</lastmod>
+    <lastmod>2026-05-11</lastmod>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://publicbloom.art/company.html</loc>
-    <lastmod>2026-05-07</lastmod>
+    <lastmod>2026-05-11</lastmod>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://publicbloom.art/data-media-art.html</loc>
-    <lastmod>2026-05-07</lastmod>
+    <lastmod>2026-05-11</lastmod>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://publicbloom.art/landing.html</loc>
-    <lastmod>2026-05-07</lastmod>
+    <lastmod>2026-05-11</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://publicbloom.art/quote.html</loc>
-    <lastmod>2026-05-07</lastmod>
+    <lastmod>2026-05-11</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://publicbloom.art/landing-references.html</loc>
-    <lastmod>2026-05-07</lastmod>
+    <lastmod>2026-05-11</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://publicbloom.art/rss.xml</loc>
+    <lastmod>2026-05-11</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://publicbloom.art/llms.txt</loc>
-    <lastmod>2026-05-07</lastmod>
+    <lastmod>2026-05-11</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://publicbloom.art/공기질을%20통한%20인터렉션.html</loc>
-    <lastmod>2026-05-07</lastmod>
+    <lastmod>2026-05-11</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://publicbloom.art/대구컬쳐.html</loc>
-    <lastmod>2026-05-07</lastmod>
+    <lastmod>2026-05-11</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://publicbloom.art/영화%20(永花).html</loc>
-    <lastmod>2026-05-07</lastmod>
+    <lastmod>2026-05-11</lastmod>
     <priority>0.7</priority>
   </url>
 </urlset>
