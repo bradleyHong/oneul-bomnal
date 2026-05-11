@@ -45,7 +45,7 @@ if (formSuccess && new URLSearchParams(window.location.search).get("sent") === "
 }
 
 const sitePreviewModal = document.querySelector("#sitePreviewModal");
-const sitePreviewFrame = document.querySelector("#sitePreviewFrame");
+const sitePreviewImage = document.querySelector("#sitePreviewImage");
 const sitePreviewTitle = document.querySelector("#sitePreviewTitle");
 const sitePreviewLink = document.querySelector("#sitePreviewLink");
 
@@ -53,19 +53,28 @@ function closeSitePreview() {
   if (!sitePreviewModal) return;
   sitePreviewModal.hidden = true;
   document.body.style.overflow = "";
-  if (sitePreviewFrame) sitePreviewFrame.src = "about:blank";
+  if (sitePreviewImage) sitePreviewImage.removeAttribute("src");
 }
 
-document.querySelectorAll("[data-site-url]").forEach((button) => {
-  button.addEventListener("click", () => {
-    const url = button.dataset.siteUrl;
-    const title = button.dataset.siteTitle || button.textContent.trim();
-    if (!sitePreviewModal || !sitePreviewFrame || !sitePreviewTitle || !sitePreviewLink || !url) return;
+document.querySelectorAll("[data-site-url]").forEach((card) => {
+  const openPreview = () => {
+    const url = card.dataset.siteUrl;
+    const image = card.dataset.siteImage;
+    const title = card.dataset.siteTitle || card.textContent.trim();
+    if (!sitePreviewModal || !sitePreviewImage || !sitePreviewTitle || !sitePreviewLink || !url || !image) return;
     sitePreviewTitle.textContent = title;
-    sitePreviewFrame.src = url;
+    sitePreviewImage.src = image;
+    sitePreviewImage.alt = `${title} 메인 화면 미리보기`;
     sitePreviewLink.href = url;
     sitePreviewModal.hidden = false;
     document.body.style.overflow = "hidden";
+  };
+  card.addEventListener("click", openPreview);
+  card.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openPreview();
+    }
   });
 });
 
