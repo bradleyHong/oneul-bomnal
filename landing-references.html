@@ -181,10 +181,11 @@
         padding: clamp(68px, 8vw, 112px) clamp(22px, 6vw, 92px);
         color: #f8fbf4;
         background:
-          linear-gradient(90deg, rgba(18, 34, 30, 0.96), rgba(18, 34, 30, 0.78) 46%, rgba(61, 82, 70, 0.46)),
-          url("https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1900&q=82");
-        background-position: center right;
-        background-size: cover;
+          radial-gradient(circle at 82% 16%, rgba(221, 175, 91, 0.22), transparent 25%),
+          radial-gradient(circle at 74% 72%, rgba(122, 152, 125, 0.22), transparent 26%),
+          linear-gradient(90deg, rgba(18, 34, 30, 0.98), rgba(18, 34, 30, 0.86) 48%, rgba(61, 82, 70, 0.58)),
+          repeating-linear-gradient(90deg, rgba(255,255,255,0.035) 0 1px, transparent 1px 22px),
+          linear-gradient(135deg, #24342e, #6b6a52);
       }
 
       .gallery-hero::after {
@@ -585,6 +586,12 @@
         object-fit: cover;
       }
 
+      .spotlight-card .korean-visual {
+        position: absolute;
+        inset: 0;
+        min-height: 100%;
+      }
+
       .spotlight-card::after {
         content: "";
         position: absolute;
@@ -592,7 +599,7 @@
         background: linear-gradient(180deg, transparent 12%, rgba(0, 0, 0, 0.72));
       }
 
-      .spotlight-card div {
+      .spotlight-card > div:not(.korean-visual) {
         position: absolute;
         left: 24px;
         right: 24px;
@@ -778,6 +785,10 @@
         object-fit: cover;
         filter: saturate(0.9) contrast(0.96);
         transform: scale(1.03);
+      }
+
+      .ref-photo .korean-visual {
+        min-height: 300px;
       }
 
       .ref-photo::after {
@@ -1484,6 +1495,10 @@
         object-fit: cover;
       }
 
+      .doctor-card .korean-visual {
+        min-height: 420px;
+      }
+
       .doctor-card div {
         padding: 26px;
       }
@@ -1552,6 +1567,11 @@
         width: 100%;
         height: 330px;
         object-fit: cover;
+        border-radius: 8px;
+      }
+
+      .stamp-pass .korean-visual {
+        min-height: 330px;
         border-radius: 8px;
       }
 
@@ -1785,6 +1805,204 @@
         border-top: 1px solid rgba(31, 42, 36, 0.12);
         color: rgba(31, 42, 36, 0.78);
         font-size: 14px;
+      }
+
+      .korean-visual {
+        position: relative;
+        overflow: hidden;
+        min-height: 260px;
+        background:
+          radial-gradient(circle at 20% 22%, rgba(255, 232, 121, 0.48), transparent 18%),
+          radial-gradient(circle at 72% 68%, rgba(143, 176, 153, 0.42), transparent 24%),
+          linear-gradient(135deg, var(--visual-a, #efe4c8), var(--visual-b, #9fb7a5));
+      }
+
+      .korean-visual::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          repeating-linear-gradient(90deg, rgba(31, 42, 36, 0.08) 0 1px, transparent 1px 32px),
+          repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.14) 0 1px, transparent 1px 26px);
+        mix-blend-mode: multiply;
+      }
+
+      .korean-visual::after {
+        content: "";
+        position: absolute;
+        left: 12%;
+        right: 12%;
+        bottom: 16%;
+        height: 34%;
+        border: 1px solid rgba(31, 42, 36, 0.18);
+        border-radius: 8px;
+        background:
+          linear-gradient(90deg, rgba(255,255,255,0.54), rgba(255,255,255,0.2)),
+          repeating-linear-gradient(90deg, rgba(31, 42, 36, 0.2) 0 2px, transparent 2px 20px);
+        box-shadow: 0 22px 54px rgba(31, 42, 36, 0.2);
+      }
+
+      .korean-visual span {
+        position: absolute;
+        z-index: 2;
+        left: 20px;
+        top: 20px;
+        display: inline-flex;
+        min-height: 30px;
+        align-items: center;
+        padding: 0 10px;
+        border-radius: 999px;
+        color: #203229;
+        background: rgba(255, 255, 255, 0.74);
+        font-size: 11px;
+        font-weight: 950;
+      }
+
+      .korean-visual b {
+        position: absolute;
+        z-index: 2;
+        left: 22px;
+        bottom: 22px;
+        max-width: 72%;
+        color: #203229;
+        font-size: clamp(24px, 3vw, 42px);
+        line-height: 1.02;
+      }
+
+      .visual-medical { --visual-a: #dcefeb; --visual-b: #9fc5c2; }
+      .visual-public { --visual-a: #e7dfc6; --visual-b: #a8b18b; }
+      .visual-event { --visual-a: #ffe6c5; --visual-b: #cc8b5d; }
+      .visual-contest { --visual-a: #e2e7f1; --visual-b: #899ab2; }
+      .visual-report { --visual-a: #d9ead0; --visual-b: #8ba775; }
+      .visual-promo { --visual-a: #ffe1d3; --visual-b: #d99a7a; }
+      .visual-media { --visual-a: #dceee7; --visual-b: #9bc8b6; }
+
+      .visual-medical::after {
+        left: 15%;
+        right: 15%;
+        bottom: 14%;
+        height: 48%;
+        background:
+          linear-gradient(180deg, rgba(255,255,255,0.82), rgba(255,255,255,0.44)),
+          repeating-linear-gradient(0deg, transparent 0 42px, rgba(25, 74, 78, 0.2) 42px 43px);
+      }
+
+      .visual-event::after {
+        width: 48%;
+        height: auto;
+        aspect-ratio: 1;
+        left: auto;
+        right: 16%;
+        bottom: 13%;
+        border-radius: 50%;
+        background:
+          radial-gradient(circle, rgba(255,255,255,0.82) 0 28%, transparent 29%),
+          conic-gradient(#d65f5f, #f0c66a, #6f9d75, #5d86a6, #d65f5f);
+      }
+
+      .visual-contest::after {
+        height: 48%;
+        border-style: dashed;
+        background: linear-gradient(180deg, rgba(255,255,255,0.62), rgba(255,255,255,0.22));
+      }
+
+      .visual-media::after {
+        height: 58%;
+        background:
+          radial-gradient(circle at 30% 50%, rgba(255, 232, 121, 0.64), transparent 18%),
+          radial-gradient(circle at 70% 38%, rgba(244, 160, 146, 0.58), transparent 19%),
+          linear-gradient(135deg, rgba(255,255,255,0.7), rgba(255,255,255,0.18));
+      }
+
+      .form-mock {
+        display: grid;
+        gap: 12px;
+        margin-top: 24px;
+        padding: 16px;
+        border: 1px solid rgba(31, 42, 36, 0.12);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.48);
+      }
+
+      .form-mock header {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        color: rgba(31, 42, 36, 0.54);
+        font-size: 11px;
+        font-weight: 950;
+        text-transform: uppercase;
+      }
+
+      .form-line,
+      .form-chip-row,
+      .form-calendar,
+      .form-upload,
+      .form-rating,
+      .form-led-row {
+        display: grid;
+        gap: 8px;
+      }
+
+      .form-line span,
+      .form-calendar span,
+      .form-upload span,
+      .form-rating span,
+      .form-led-row span {
+        color: rgba(31, 42, 36, 0.52);
+        font-size: 11px;
+        font-weight: 900;
+      }
+
+      .form-line b {
+        display: block;
+        min-height: 38px;
+        padding: 10px 12px;
+        border: 1px solid rgba(31, 42, 36, 0.12);
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.62);
+        color: rgba(31, 42, 36, 0.78);
+        font-size: 13px;
+      }
+
+      .form-chip-row,
+      .form-led-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .form-chip-row b,
+      .form-calendar b,
+      .form-led-row b {
+        min-height: 42px;
+        padding: 11px 12px;
+        border-radius: 999px;
+        color: #203229;
+        background: #ffe879;
+        font-size: 12px;
+      }
+
+      .form-calendar {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .form-upload {
+        min-height: 112px;
+        place-items: center;
+        border: 1px dashed rgba(31, 42, 36, 0.24);
+        border-radius: 8px;
+        text-align: center;
+      }
+
+      .form-rating {
+        grid-template-columns: repeat(5, 1fr);
+      }
+
+      .form-rating b {
+        display: grid;
+        place-items: center;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: rgba(31, 42, 36, 0.08);
       }
 
       @media (max-width: 1060px) {
@@ -2197,15 +2415,15 @@
         </div>
         <div class="spotlight-grid">
           <a class="spotlight-card" href="./landing-references.html?case=hospital-checkup">
-            <img src="https://images.unsplash.com/photo-1550831107-1553da8c8464?auto=format&fit=crop&w=1400&q=82" alt="Hospital landing page sample" />
+            <div class="korean-visual visual-medical"><span>한국형 병원 예약</span><b>검진 예약 보드</b></div>
             <div><span>Hospital / Clinic</span><h3>ㅇㅇ병원 건강검진 예약</h3><p>예약 가능 일정과 상담 흐름이 먼저 보이는 병원형 랜딩.</p></div>
           </a>
           <a class="spotlight-card" href="./landing-references.html?case=city-program-recruit">
-            <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1000&q=82" alt="Public recruitment landing page sample" />
+            <div class="korean-visual visual-public"><span>지자체 모집 안내</span><b>청년 프로그램</b></div>
             <div><span>Public Sector</span><h3>청년 프로그램 모집</h3><p>모집 현황과 신청접수를 강조하는 관공서형 페이지.</p></div>
           </a>
           <a class="spotlight-card" href="./landing-references.html?case=idea-contest">
-            <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1000&q=82" alt="Idea contest landing page sample" />
+            <div class="korean-visual visual-contest"><span>공모 접수 시스템</span><b>제안서 업로드</b></div>
             <div><span>Contest / Submit</span><h3>시민 아이디어 공모전</h3><p>파일 제출과 심사 자료 정리에 맞춘 공모전형 페이지.</p></div>
           </a>
         </div>
@@ -2588,6 +2806,89 @@
         return labels[item.template] || "랜딩 제작 예시";
       }
 
+      function visualClass(item) {
+        if (item.template === "medical") return "visual-medical";
+        if (item.template === "public") return "visual-public";
+        if (item.template === "event") return "visual-event";
+        if (item.template === "contest") return "visual-contest";
+        if (item.template === "report") return "visual-report";
+        if (item.template === "media") return "visual-media";
+        return "visual-promo";
+      }
+
+      function visualTile(item, label = sampleType(item)) {
+        return `<div class="korean-visual ${visualClass(item)}"><span>${label}</span><b>${item.badge}</b></div>`;
+      }
+
+      function renderFormMock(item, bp) {
+        const fields = bp.fields;
+        if (item.template === "medical") {
+          return `
+            <div class="form-mock form-medical">
+              <header><span>예약 폼</span><span>희망 일정 우선</span></header>
+              <div class="form-calendar"><b>오늘 가능</b><b>이번 주</b><b>상담 요청</b></div>
+              <div class="form-line"><span>${fields[0]}</span><b>검진 패키지 선택</b></div>
+              <div class="form-line"><span>${fields[1]}</span><b>희망 날짜와 시간대</b></div>
+            </div>
+          `;
+        }
+        if (item.template === "public") {
+          return `
+            <div class="form-mock form-public">
+              <header><span>모집 폼</span><span>대상 조건 확인</span></header>
+              <div class="form-chip-row"><b>대상 확인</b><b>회차 선택</b></div>
+              <div class="form-line"><span>${fields[0]}</span><b>이름 / 소속 / 거주지</b></div>
+              <div class="form-line"><span>${fields[2] || fields[1]}</span><b>참여 목적 간단 입력</b></div>
+            </div>
+          `;
+        }
+        if (item.template === "event") {
+          return `
+            <div class="form-mock form-event">
+              <header><span>현장 참여 폼</span><span>QR 인증</span></header>
+              <div class="form-chip-row"><b>방문 인증</b><b>사은품 수령</b></div>
+              <div class="form-upload"><span>${fields[1] || "인증 사진"}</span><b>사진 또는 스탬프 인증 영역</b></div>
+            </div>
+          `;
+        }
+        if (item.template === "contest") {
+          return `
+            <div class="form-mock form-contest">
+              <header><span>공모 접수 폼</span><span>파일 제출</span></header>
+              <div class="form-line"><span>${fields[0]}</span><b>제안 제목</b></div>
+              <div class="form-upload"><span>${fields[2] || "첨부 파일"}</span><b>PDF / 이미지 / 문서 업로드</b></div>
+            </div>
+          `;
+        }
+        if (item.template === "report") {
+          return `
+            <div class="form-mock form-report">
+              <header><span>진단·리포트 폼</span><span>결과 요약</span></header>
+              <div class="form-rating"><b>1</b><b>2</b><b>3</b><b>4</b><b>5</b></div>
+              <div class="form-line"><span>${fields[0]}</span><b>상태 체크 후 결과 리포트 생성</b></div>
+            </div>
+          `;
+        }
+        if (item.template === "media") {
+          return `
+            <div class="form-mock form-media">
+              <header><span>미디어아트 연동</span><span>데이터 송출</span></header>
+              <div class="form-led-row"><b>공공 API</b><b>LED 화면</b></div>
+              <div class="form-line"><span>${fields[0]}</span><b>실시간 데이터 조건 연결</b></div>
+              <div class="form-line"><span>${fields[3]}</span><b>미니 PC / 미디어월 송출</b></div>
+            </div>
+          `;
+        }
+        return `
+          <div class="form-mock form-promo">
+            <header><span>이벤트 설문 폼</span><span>참여 전환</span></header>
+            <div class="form-chip-row"><b>간단 설문</b><b>경품 동의</b></div>
+            <div class="form-line"><span>${fields[0]}</span><b>선택형 질문</b></div>
+            <div class="form-line"><span>${fields[1]}</span><b>연락처 / 동의 항목</b></div>
+          </div>
+        `;
+      }
+
       function renderGallery() {
         document.querySelector("#cards").innerHTML = references
           .map(
@@ -2595,7 +2896,7 @@
               <a class="ref-card" href="./landing-references.html?case=${item.id}" data-group="${item.group}" style="${cardStyle(item)}">
                 <div class="ref-photo">
                   <span class="ref-group-tag">${item.group}</span>
-                  <img src="${imagePool[item.index]}" alt="${englishTitles[item.index]}" loading="lazy" />
+                  ${visualTile(item)}
                 </div>
                 <div class="ref-body">
                   <div class="ref-top"><span>${String(item.index + 1).padStart(2, "0")}</span><b>${sampleType(item)}</b></div>
@@ -2655,7 +2956,7 @@
           return `
             <section class="case-hero medical-stage ${variant}">
               <figure class="doctor-card">
-                <img src="${image}" alt="${english}" />
+                ${visualTile(item, "한국형 병원 예약")}
                 <div><span class="case-eyebrow">Hospital Booking System</span><h2>${english}</h2></div>
               </figure>
               <div>
@@ -2684,7 +2985,7 @@
             <section class="case-hero event-stage ${variant}">
               <div>${caseCopy(item, english, bp)}</div>
               <aside class="stamp-pass">
-                <img src="${image}" alt="${english}" />
+                ${visualTile(item, "현장 QR 참여")}
                 <div class="stamp-row">${bp.stats.slice(0, 3).map((stat) => `<span>${stat}</span>`).join("")}</div>
               </aside>
             </section>
@@ -2759,7 +3060,7 @@
         caseEl.className = `case active template-${item.template}`;
         caseEl.style.setProperty("--case-ink", item.template === "media" ? "#203229" : "#f8fbf4");
         caseEl.style.setProperty("--case-paper", paper);
-        caseEl.style.setProperty("--case-bg", item.template === "media" ? "linear-gradient(135deg, #fffdf6, #e8f4ed 56%, #f7efe8)" : `linear-gradient(135deg, color-mix(in srgb, ${dark} 88%, transparent), color-mix(in srgb, ${mid} 78%, transparent)), linear-gradient(90deg, rgba(0,0,0,.36), rgba(0,0,0,.14)), url("${image}")`);
+        caseEl.style.setProperty("--case-bg", item.template === "media" ? "linear-gradient(135deg, #fffdf6, #e8f4ed 56%, #f7efe8)" : `radial-gradient(circle at 80% 18%, color-mix(in srgb, ${paper} 34%, transparent), transparent 24%), linear-gradient(135deg, color-mix(in srgb, ${dark} 92%, transparent), color-mix(in srgb, ${mid} 78%, transparent)), repeating-linear-gradient(90deg, rgba(255,255,255,.06) 0 1px, transparent 1px 28px)`);
         caseEl.innerHTML = `
           ${renderCaseHero(item, english, image)}
           <section class="detail-section" id="details">
@@ -2773,7 +3074,7 @@
                 <span>02 Data Form</span>
                 <h3>${blueprintFor(item).fields.slice(0, 2).join(" · ")}</h3>
                 <p>${blueprintFor(item).fields.slice(2).join(", ")} 항목까지 프로젝트에 맞게 받습니다.</p>
-                <div class="detail-checks">${blueprintFor(item).fields.map((field) => `<b>${field}</b>`).join("")}</div>
+                ${renderFormMock(item, blueprintFor(item))}
               </article>
               <article>
                 <span>03 Admin Output</span>
