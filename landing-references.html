@@ -1811,52 +1811,63 @@
 
       .reference-footer {
         display: grid;
-        grid-template-columns: minmax(0, 0.9fr) minmax(320px, 0.8fr);
-        gap: clamp(24px, 5vw, 72px);
-        align-items: center;
-        padding: clamp(34px, 5vw, 58px) clamp(22px, 6vw, 88px);
+        grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+        gap: clamp(28px, 6vw, 96px);
+        align-items: start;
+        padding: clamp(38px, 5vw, 64px) clamp(22px, 6vw, 88px);
         color: #f8fbf4;
         background: #17231e;
       }
 
       .reference-footer strong {
         display: block;
-        font-size: clamp(26px, 3.4vw, 42px);
+        font-size: clamp(22px, 3vw, 34px);
         line-height: 1.08;
       }
 
       .reference-footer p {
-        max-width: 760px;
+        max-width: 520px;
         margin: 14px 0 0;
         color: rgba(248, 251, 244, 0.72);
-        font-size: 16px;
+        font-size: 14px;
         line-height: 1.7;
       }
 
-      .reference-footer nav {
+      .reference-footer .footer-info {
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 1px;
-        overflow: hidden;
-        border: 1px solid rgba(248, 251, 244, 0.16);
-        border-radius: 8px;
-        background: rgba(248, 251, 244, 0.16);
+        gap: 10px;
+        margin: 0;
       }
 
-      .reference-footer a {
+      .reference-footer .footer-info div {
         display: grid;
-        align-items: center;
-        min-height: 76px;
-        padding: 16px;
-        color: #f8fbf4;
-        background: rgba(255, 255, 255, 0.07);
-        font-size: 15px;
+        grid-template-columns: 120px 1fr;
+        gap: 16px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(248, 251, 244, 0.14);
+        color: rgba(248, 251, 244, 0.76);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      .reference-footer .footer-info dt,
+      .reference-footer .footer-info dd {
+        margin: 0;
+      }
+
+      .reference-footer .footer-info dt {
+        color: rgba(248, 251, 244, 0.52);
         font-weight: 900;
       }
 
-      .reference-footer a:first-child {
-        color: #17231e;
-        background: #ffe879;
+      .reference-footer .footer-info dd {
+        color: rgba(248, 251, 244, 0.82);
+      }
+
+      .reference-footer .footer-info a {
+        color: inherit;
+        text-decoration: underline;
+        text-underline-offset: 3px;
       }
 
       .korean-visual {
@@ -2143,7 +2154,7 @@
         .template-report .case-hero,
         .detail-grid,
         .reference-footer,
-        .reference-footer nav {
+        .reference-footer .footer-info div {
           grid-template-columns: 1fr;
         }
 
@@ -2534,14 +2545,18 @@
 
     <footer class="reference-footer" aria-label="오늘은 봄날 연락처">
       <div>
-        <strong>무료견적문의</strong>
-        <p>랜딩페이지, 설문조사, 데이터 기반 미디어아트 제작 상담을 무료로 검토해드립니다.</p>
+        <strong>오늘은 봄날</strong>
+        <p>대구 여성기업 · 공공예술 콘텐츠 · 랜딩페이지 제작 · 데이터 기반 미디어아트</p>
       </div>
-      <nav aria-label="연락 방법">
-        <a href="tel:01034467797">전화 010-3446-7797</a>
-        <a href="mailto:visionpencil@gmail.com?subject=%5B%EC%98%A4%EB%8A%98%EC%9D%80%20%EB%B4%84%EB%82%A0%5D%20%EB%AC%B4%EB%A3%8C%EA%B2%AC%EC%A0%81%EB%AC%B8%EC%9D%98">visionpencil@gmail.com</a>
-        <a href="./quote.html">무료견적문의 작성</a>
-      </nav>
+      <dl class="footer-info">
+        <div><dt>사업자정보</dt><dd>대표 박성실 · 사업자등록번호 575-19-00976</dd></div>
+        <div><dt>여성기업</dt><dd>여성기업 확인서 제0113-2025-35456호</dd></div>
+        <div><dt>비디오업신고증</dt><dd>비디오물제작업 신고증 제2025-000019호</dd></div>
+        <div><dt>방송영상독립제작사</dt><dd>방송영상독립제작사 신고증 제12235호</dd></div>
+        <div><dt>대표연락처</dt><dd><a href="tel:01034467797">010-3446-7797</a></dd></div>
+        <div><dt>이메일</dt><dd><a href="mailto:visionpencil@gmail.com">visionpencil@gmail.com</a></dd></div>
+        <div><dt>주소</dt><dd>대구광역시 수성구 동대구로 250, 102동 101호</dd></div>
+      </dl>
     </footer>
 
     <script>
@@ -2634,47 +2649,12 @@
       ];
 
       const imagePool = [
-        "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1542810634-71277d95dcbb?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1550831107-1553da8c8464?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1497436072909-f5e4be1713d1?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1462275646964-a0e3386b89fa?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1777198829685-258c8249aff9?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1714782379430-236487eef50f?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1605926911459-7429fe6fe0a1?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1692103675608-6e635afa077b?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1624176194977-b0996f930188?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1576226866107-d33ec4dca335?auto=format&fit=crop&w=1200&q=80",
       ];
 
       const caseBlueprints = {
@@ -2962,7 +2942,7 @@
               <a class="ref-card" href="./landing-references.html?case=${item.id}" data-group="${item.group}" style="${cardStyle(item)}">
                 <div class="ref-photo">
                   <span class="ref-group-tag">${item.group}</span>
-                  ${visualTile(item)}
+                  <img src="${imagePool[item.index % imagePool.length]}" alt="${item.title} 제안 이미지" loading="lazy" />
                 </div>
                 <div class="ref-body">
                   <div class="ref-top"><span>${String(item.index + 1).padStart(2, "0")}</span><b>${sampleType(item)}</b></div>
@@ -3119,7 +3099,7 @@
 
       function renderCase(item) {
         const [, , dark, mid, paper] = palette(item.index);
-        const image = imagePool[item.index];
+        const image = imagePool[item.index % imagePool.length];
         const english = englishTitles[item.index];
         const caseEl = document.querySelector("#case");
         document.querySelector("#gallery").style.display = "none";

@@ -38,7 +38,7 @@ proposalButtons.forEach((button) => {
 });
 
 const contactForm = document.querySelector("#contactForm");
-if (contactForm) {
+if (contactForm && !contactForm.action.includes("formsubmit.co")) {
   contactForm.addEventListener("submit", (event) => {
     event.preventDefault();
     const form = new FormData(contactForm);

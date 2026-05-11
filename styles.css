@@ -848,7 +848,8 @@ h1 {
 }
 
 .region-art-grid article,
-.local-art-strip article {
+.local-art-strip article,
+.local-art-strip a {
   min-height: 260px;
   padding: clamp(24px, 4vw, 42px);
   background:
@@ -911,6 +912,66 @@ h1 {
 
 .local-art-strip article {
   min-height: 220px;
+}
+
+.local-art-strip a {
+  position: relative;
+  display: grid;
+  align-content: start;
+  min-height: 260px;
+  color: var(--ink);
+  text-decoration: none;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.local-art-strip a::before {
+  content: "";
+  position: absolute;
+  inset: 18px 18px auto auto;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  opacity: 0.42;
+  background: radial-gradient(circle, currentColor 0 3px, transparent 4px 12px);
+}
+
+.local-art-strip a:hover {
+  z-index: 2;
+  transform: translateY(-3px);
+  box-shadow: 0 24px 54px rgba(38, 53, 45, 0.16);
+}
+
+.local-art-strip small {
+  margin-top: 8px;
+  color: rgba(38, 53, 45, 0.48);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.local-art-strip b {
+  align-self: end;
+  margin-top: 28px;
+  color: rgba(38, 53, 45, 0.82);
+  font-size: 14px;
+}
+
+.local-art-strip b::after {
+  content: " ->";
+  opacity: 0.58;
+}
+
+.region-gyeongju {
+  background:
+    radial-gradient(circle at 88% 14%, rgba(255, 216, 94, 0.62), transparent 23%),
+    radial-gradient(circle at 18% 82%, rgba(126, 48, 24, 0.2), transparent 26%),
+    linear-gradient(145deg, #fff7d2, #e8d3a1 52%, #f7efe2) !important;
+}
+
+.region-andong {
+  background:
+    radial-gradient(circle at 86% 16%, rgba(116, 153, 98, 0.45), transparent 24%),
+    radial-gradient(circle at 18% 82%, rgba(88, 122, 153, 0.22), transparent 28%),
+    linear-gradient(145deg, #eef5e9, #d8e6cf 52%, #edf2ee) !important;
 }
 
 .product-grid {
@@ -1523,52 +1584,63 @@ h1 {
 
 .site-footer {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(320px, 0.8fr);
-  gap: clamp(24px, 5vw, 72px);
-  align-items: center;
-  padding: clamp(34px, 5vw, 58px) clamp(22px, 6vw, 88px);
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(28px, 6vw, 96px);
+  align-items: start;
+  padding: clamp(38px, 5vw, 64px) clamp(22px, 6vw, 88px);
   color: #f8fbf4;
   background: #17231e;
 }
 
 .site-footer strong {
   display: block;
-  font-size: clamp(26px, 3.4vw, 42px);
+  font-size: clamp(22px, 3vw, 34px);
   line-height: 1.08;
 }
 
 .site-footer p {
-  max-width: 760px;
+  max-width: 520px;
   margin: 14px 0 0;
   color: rgba(248, 251, 244, 0.72);
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1.7;
 }
 
-.site-footer nav {
+.footer-info {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1px;
-  overflow: hidden;
-  border: 1px solid rgba(248, 251, 244, 0.16);
-  border-radius: 8px;
-  background: rgba(248, 251, 244, 0.16);
+  gap: 10px;
+  margin: 0;
 }
 
-.site-footer a {
+.footer-info div {
   display: grid;
-  align-items: center;
-  min-height: 76px;
-  padding: 16px;
-  color: #f8fbf4;
-  background: rgba(255, 255, 255, 0.07);
-  font-size: 15px;
+  grid-template-columns: 120px 1fr;
+  gap: 16px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(248, 251, 244, 0.14);
+  color: rgba(248, 251, 244, 0.76);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.footer-info dt,
+.footer-info dd {
+  margin: 0;
+}
+
+.footer-info dt {
+  color: rgba(248, 251, 244, 0.52);
   font-weight: 900;
 }
 
-.site-footer a:first-child {
-  color: #17231e;
-  background: #ffe879;
+.footer-info dd {
+  color: rgba(248, 251, 244, 0.82);
+}
+
+.footer-info a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .subpage-main {
@@ -1786,7 +1858,7 @@ h1 {
   .credential-layout,
   .credential-grid,
   .site-footer,
-  .site-footer nav {
+  .footer-info div {
     grid-template-columns: 1fr;
   }
 

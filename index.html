@@ -237,16 +237,20 @@
           </article>
         </div>
         <div class="local-art-strip" aria-label="경북 지역형 미디어아트 제안">
-          <article>
+          <a class="region-link region-gyeongju" href="./data-media-art.html#gyeongju-media-art">
             <span>경북 경주</span>
+            <small>Gyeongju data art</small>
             <h3>첨성대 별빛 날씨 시계 · 보문호 물결 미디어월</h3>
             <p>경주 날씨, 일몰 시간, 강수확률, 야간관광 동선, QR 축제 참여 데이터를 별빛과 금빛 문양의 움직임으로 바꿉니다.</p>
-          </article>
-          <article>
+            <b>경주 제안 보기</b>
+          </a>
+          <a class="region-link region-andong" href="./data-media-art.html#andong-media-art">
             <span>경북 안동</span>
+            <small>Andong data art</small>
             <h3>하회마을 바람결 지도 · 낙동강 달빛 정원</h3>
             <p>안동 풍속, 습도, 낙동강 수위, 공연 일정, 현장 설문 데이터를 한지 결, 물결, 탈춤 문양의 변화로 표현합니다.</p>
-          </article>
+            <b>안동 제안 보기</b>
+          </a>
         </div>
         <div class="data-table-wrap" aria-label="작품별 데이터 활용 표">
           <table class="data-table">
@@ -466,7 +470,11 @@
           <h2>프로젝트 문의</h2>
           <p>기관명, 사업영역, 예산 범위만 남겨주시면 검토 후 연락드립니다.</p>
         </div>
-        <form class="contact-form" id="contactForm">
+        <form class="contact-form" id="contactForm" action="https://formsubmit.co/visionpencil@gmail.com" method="POST">
+          <input type="hidden" name="_subject" value="[오늘은 봄날] 공공 프로젝트 문의" />
+          <input type="hidden" name="_template" value="table" />
+          <input type="hidden" name="_captcha" value="false" />
+          <input type="hidden" name="_next" value="https://publicbloom.art/quote.html?sent=1" />
           <h3>프로젝트 문의폼</h3>
           <label>
             <span>기관이름</span>
@@ -503,7 +511,7 @@
             <span>문의 내용</span>
             <textarea name="message" rows="4" placeholder="설치 장소, 행사 일정, 필요한 기능을 간단히 적어주세요."></textarea>
           </label>
-          <button class="primary-link" type="submit">문의 내용 메일로 보내기</button>
+          <button class="primary-link" type="submit">문의 보내기</button>
         </form>
       </section>
 
@@ -573,14 +581,18 @@
     </main>
     <footer class="site-footer" aria-label="오늘은 봄날 연락처">
       <div>
-        <strong>무료견적문의</strong>
-        <p>랜딩페이지, 설문조사, 데이터 기반 미디어아트 제작 상담을 무료로 검토해드립니다.</p>
+        <strong>오늘은 봄날</strong>
+        <p>대구 여성기업 · 공공예술 콘텐츠 · 랜딩페이지 제작 · 데이터 기반 미디어아트</p>
       </div>
-      <nav aria-label="연락 방법">
-        <a href="tel:01034467797">전화 010-3446-7797</a>
-        <a href="mailto:visionpencil@gmail.com?subject=%5B%EC%98%A4%EB%8A%98%EC%9D%80%20%EB%B4%84%EB%82%A0%5D%20%EB%AC%B4%EB%A3%8C%EA%B2%AC%EC%A0%81%EB%AC%B8%EC%9D%98">visionpencil@gmail.com</a>
-        <a href="./quote.html">무료견적문의 작성</a>
-      </nav>
+      <dl class="footer-info">
+        <div><dt>사업자정보</dt><dd>대표 박성실 · 사업자등록번호 575-19-00976</dd></div>
+        <div><dt>여성기업</dt><dd>여성기업 확인서 제0113-2025-35456호</dd></div>
+        <div><dt>비디오업신고증</dt><dd>비디오물제작업 신고증 제2025-000019호</dd></div>
+        <div><dt>방송영상독립제작사</dt><dd>방송영상독립제작사 신고증 제12235호</dd></div>
+        <div><dt>대표연락처</dt><dd><a href="tel:01034467797">010-3446-7797</a></dd></div>
+        <div><dt>이메일</dt><dd><a href="mailto:visionpencil@gmail.com">visionpencil@gmail.com</a></dd></div>
+        <div><dt>주소</dt><dd>대구광역시 수성구 동대구로 250, 102동 101호</dd></div>
+      </dl>
     </footer>
     <script>
       function scrollToCurrentHash() {
@@ -608,7 +620,7 @@
       });
 
       const contactForm = document.querySelector("#contactForm");
-      if (contactForm) {
+      if (contactForm && !contactForm.action.includes("formsubmit.co")) {
         contactForm.addEventListener("submit", (event) => {
           event.preventDefault();
           const form = new FormData(contactForm);
