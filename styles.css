@@ -965,7 +965,7 @@ h1 {
 
 .region-art-grid article,
 .local-art-strip article,
-.local-art-strip a {
+.local-art-strip .region-link {
   min-height: 260px;
   padding: clamp(24px, 4vw, 42px);
   background:
@@ -1149,10 +1149,6 @@ h1 {
 }
 
 .local-art-strip article {
-  min-height: 220px;
-}
-
-.local-art-strip a {
   position: relative;
   display: grid;
   align-content: start;
@@ -1163,7 +1159,7 @@ h1 {
   transition: transform 180ms ease, box-shadow 180ms ease;
 }
 
-.local-art-strip a::before {
+.local-art-strip .region-link::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -1189,16 +1185,18 @@ h1 {
   transform: scale(1.01);
 }
 
-.local-art-strip a > span,
-.local-art-strip a > small,
-.local-art-strip a > h3,
-.local-art-strip a > p,
-.local-art-strip a > b {
+.local-art-strip .region-link > span,
+.local-art-strip .region-link > small,
+.local-art-strip .region-link > h3,
+.local-art-strip .region-link > p,
+.local-art-strip .region-link > b,
+.local-art-strip .region-link > .region-quick-links,
+.local-art-strip .region-link > .live-readout {
   position: relative;
   z-index: 2;
 }
 
-.local-art-strip a:hover {
+.local-art-strip .region-link:hover {
   z-index: 2;
   transform: translateY(-3px);
   box-shadow: 0 24px 54px rgba(38, 53, 45, 0.16);
@@ -1221,6 +1219,76 @@ h1 {
 .local-art-strip b::after {
   content: " ->";
   opacity: 0.58;
+}
+
+.region-quick-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.region-quick-links a,
+.live-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 13px;
+  border: 1px solid rgba(38, 53, 45, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.66);
+  color: rgba(38, 53, 45, 0.86);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 950;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 160ms ease, transform 160ms ease, border-color 160ms ease;
+}
+
+.region-quick-links a::after {
+  content: " ->";
+  opacity: 0.55;
+}
+
+.region-quick-links a:hover,
+.live-action:hover {
+  transform: translateY(-1px);
+  border-color: rgba(38, 53, 45, 0.42);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.live-readout {
+  display: grid;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 14px 16px;
+  border: 1px solid rgba(38, 53, 45, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 253, 246, 0.7);
+  color: rgba(38, 53, 45, 0.78);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.live-readout strong {
+  color: rgba(38, 53, 45, 0.92);
+  font-size: 12px;
+}
+
+.live-readout span {
+  color: inherit;
+  font-size: inherit;
+  font-weight: 800;
+}
+
+.live-readout-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
 }
 
 .region-gyeongju {

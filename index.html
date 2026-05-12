@@ -250,8 +250,8 @@
             </div>
           </article>
         </div>
-        <div class="local-art-strip" aria-label="경북 지역형 미디어아트 제안">
-          <a class="region-link region-gyeongju" href="./data-media-art.html#gyeongju-media-art">
+        <div class="local-art-strip" id="regional-media-art" aria-label="경북 지역형 미디어아트 제안">
+          <article class="region-link region-gyeongju">
             <div class="local-media-preview local-preview-gyeongju" aria-hidden="true">
               <img src="./assets/gyeongju-cheomseongdae-art.png" alt="" loading="lazy" />
             </div>
@@ -259,9 +259,14 @@
             <small>Gyeongju data art</small>
             <h3>첨성대 별빛 날씨 시계 · 보문호 물결 미디어월</h3>
             <p>경주 날씨, 일몰 시간, 강수확률, 야간관광 동선, QR 축제 참여 데이터를 별빛과 금빛 문양의 움직임으로 바꿉니다.</p>
-            <b>경주 제안 보기</b>
-          </a>
-          <a class="region-link region-andong" href="./data-media-art.html#andong-media-art">
+            <div class="live-readout"><strong>경주 라이브 데이터</strong><span data-live="gyeongjuWeather">경주 현재 데이터를 불러오는 중입니다.</span></div>
+            <div class="region-quick-links" aria-label="경주 세부 작품 바로가기">
+              <a href="./data-media-art.html#gyeongju-media-art">첨성대</a>
+              <a href="./data-media-art.html#gyeongju-bomun-media-art">보문호</a>
+              <a href="./data-media-art.html#gyeongju-hwarang-festival-art">신라축제</a>
+            </div>
+          </article>
+          <article class="region-link region-andong">
             <div class="local-media-preview local-preview-andong" aria-hidden="true">
               <img src="./assets/andong-hahoe-mask-art.png" alt="" loading="lazy" />
             </div>
@@ -269,8 +274,13 @@
             <small>Andong data art</small>
             <h3>하회마을 바람결 지도 · 낙동강 달빛 정원</h3>
             <p>안동 풍속, 습도, 낙동강 수위, 공연 일정, 현장 설문 데이터를 한지 결, 물결, 탈춤 문양의 변화로 표현합니다.</p>
-            <b>안동 제안 보기</b>
-          </a>
+            <div class="live-readout"><strong>안동 라이브 데이터</strong><span data-live="andongWeather">안동 현재 데이터를 불러오는 중입니다.</span></div>
+            <div class="region-quick-links" aria-label="안동 세부 작품 바로가기">
+              <a href="./data-media-art.html#andong-media-art">하회마을</a>
+              <a href="./data-media-art.html#andong-wolyeonggyo-moonboat-art">월영교</a>
+              <a href="./data-media-art.html#andong-mask-dance-festival-art">탈춤축제</a>
+            </div>
+          </article>
         </div>
         <div class="data-table-wrap" aria-label="작품별 데이터 활용 표">
           <table class="data-table">
@@ -771,6 +781,7 @@
       });
     </script>
     <script src="./spring.js?v=20260511-canvas-fix"></script>
+    <script src="./regional-live-data.js?v=20260512-live-regions"></script>
     <script>
       // 스크롤 시 헤더 반투명 배경
       const siteNav = document.querySelector('.site-nav');

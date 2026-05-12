@@ -128,9 +128,10 @@
               <div><dt>연결 데이터</dt><dd>경주 날씨, 일몰 시간, 강수확률, 관광지 운영 시간</dd></div>
               <div><dt>적용 공간</dt><dd>첨성대 권역, 관광안내소, 야간경관 LED</dd></div>
             </dl>
+            <div class="live-readout"><strong>실시간 반영</strong><span data-live="gyeongjuWeather">경주 현재 데이터를 불러오는 중입니다.</span></div>
           </article>
-          <article class="region-media-card region-card-water">
-            <div class="region-preview region-preview-water" aria-hidden="true"><img src="./assets/gyeongju-cheomseongdae-art.png" alt="" loading="lazy" /></div>
+          <article id="gyeongju-bomun-media-art" class="region-media-card region-card-water">
+            <div class="region-preview region-preview-water" aria-hidden="true"><img src="./assets/gyeongju-bomun-lake-art.png" alt="" loading="lazy" /></div>
             <span>Gyeongju 02</span>
             <h3>보문호 물결 미디어월</h3>
             <p>보문호 산책 흐름, 기온, 바람, 수변 체감 정보를 물결의 높이와 속도로 표현해 휴식형 공공 미디어월로 제안합니다.</p>
@@ -138,16 +139,22 @@
               <div><dt>연결 데이터</dt><dd>기온, 풍속, 강수 예보, 수변 혼잡도 또는 방문 흐름</dd></div>
               <div><dt>적용 공간</dt><dd>보문관광단지, 호수 산책로, 리조트 공용부</dd></div>
             </dl>
+            <div class="live-readout"><strong>실시간 반영</strong><span data-live="gyeongjuBomun">보문호 물결 데이터를 계산하는 중입니다.</span></div>
           </article>
-          <article class="region-media-card region-card-festival">
-            <div class="region-preview region-preview-festival" aria-hidden="true"><img src="./assets/gyeongju-cheomseongdae-art.png" alt="" loading="lazy" /></div>
+          <article id="gyeongju-hwarang-festival-art" class="region-media-card region-card-festival">
+            <div class="region-preview region-preview-festival" aria-hidden="true"><img src="./assets/gyeongju-hwarang-festival-art.png" alt="" loading="lazy" /></div>
             <span>Gyeongju 03</span>
-            <h3>신라 축제 참여 파사드</h3>
-            <p>현장 QR 참여, 스탬프 투어, 설문 응답 수가 쌓일수록 금빛 문양과 꽃이 피어나는 축제형 미디어파사드입니다.</p>
+            <h3>신라 화랑 축제 참여 파사드</h3>
+            <p>출토 유물과 고분 벽화의 선, 신라 행렬 이미지를 모티브로 삼아 현장 QR 참여와 관객 밀도에 따라 금빛 행렬과 문양이 살아나는 축제형 미디어파사드입니다.</p>
             <dl>
               <div><dt>연결 데이터</dt><dd>QR 접속 수, 스탬프 인증, 설문 응답, 시간대별 방문량</dd></div>
-              <div><dt>적용 공간</dt><dd>축제장 LED, 문화재단 행사, 야외 무대 배경</dd></div>
+              <div><dt>적용 공간</dt><dd>신라문화제, 축제장 LED, 문화재단 행사, 야외 무대 배경</dd></div>
             </dl>
+            <div class="live-readout">
+              <strong>참여 반응 데모</strong>
+              <span data-live="gyeongjuFestival">축제 참여값을 준비하는 중입니다.</span>
+              <div class="live-readout-actions"><button class="live-action" type="button" data-live-action="gyeongjuFestival">QR 참여 1건 보내기</button></div>
+            </div>
           </article>
           <article id="andong-media-art" class="region-media-card region-card-wind">
             <div class="region-preview region-preview-wind" aria-hidden="true"><img src="./assets/andong-hahoe-mask-art.png" alt="" loading="lazy" /></div>
@@ -158,26 +165,33 @@
               <div><dt>연결 데이터</dt><dd>안동 날씨, 풍속, 습도, 관광 안내 데이터, 체류 시간</dd></div>
               <div><dt>적용 공간</dt><dd>하회마을 안내관, 전통문화 전시, 관광안내소</dd></div>
             </dl>
+            <div class="live-readout"><strong>실시간 반영</strong><span data-live="andongWeather">안동 현재 데이터를 불러오는 중입니다.</span></div>
           </article>
-          <article class="region-media-card region-card-river">
-            <div class="region-preview region-preview-river" aria-hidden="true"><img src="./assets/andong-hahoe-mask-art.png" alt="" loading="lazy" /></div>
+          <article id="andong-wolyeonggyo-moonboat-art" class="region-media-card region-card-river">
+            <div class="region-preview region-preview-river" aria-hidden="true"><img src="./assets/andong-wolyeonggyo-moonboat-art.png" alt="" loading="lazy" /></div>
             <span>Andong 02</span>
-            <h3>낙동강 수위와 달빛 정원</h3>
-            <p>낙동강 수위, 강수량, 재난안전 알림을 달빛과 물결의 밝기로 표현해 안전 안내와 감성 경관을 함께 제공합니다.</p>
+            <h3>월영교 달빛배 수위 미디어월</h3>
+            <p>월영교와 달빛배를 모티브로 낙동강 수위, 강수량, 재난안전 알림을 달빛과 물결의 밝기로 표현해 안전 안내와 감성 경관을 함께 제공합니다.</p>
             <dl>
-              <div><dt>연결 데이터</dt><dd>하천 수위, 강수량, 기상 특보, 재난안전 알림</dd></div>
-              <div><dt>적용 공간</dt><dd>강변 산책로, 수변 광장, 공공 안전 사이니지</dd></div>
+              <div><dt>연결 데이터</dt><dd>하천 수위, 강수량, 기상 특보, 재난안전 알림, 달빛배 위치</dd></div>
+              <div><dt>적용 공간</dt><dd>월영교, 낙동강 산책로, 수변 광장, 공공 안전 사이니지</dd></div>
             </dl>
+            <div class="live-readout"><strong>실시간 반영</strong><span data-live="andongRiver">낙동강 수위 지표를 계산하는 중입니다.</span></div>
           </article>
-          <article class="region-media-card region-card-mask">
-            <div class="region-preview region-preview-mask" aria-hidden="true"><img src="./assets/andong-hahoe-mask-art.png" alt="" loading="lazy" /></div>
+          <article id="andong-mask-dance-festival-art" class="region-media-card region-card-mask">
+            <div class="region-preview region-preview-mask" aria-hidden="true"><img src="./assets/andong-mask-dance-art.png" alt="" loading="lazy" /></div>
             <span>Andong 03</span>
             <h3>탈춤 축제 반응형 무대</h3>
-            <p>공연 시간표, 관람객 참여, 현장 설문, SNS 해시태그 반응을 탈 문양의 표정과 색 변화로 보여주는 축제형 LED 콘텐츠입니다.</p>
+            <p>하회마을 탈춤을 모티브로 공연 시간표, 관람객 참여, 현장 설문, SNS 반응이 늘어날수록 춤사위 주변 빛의 밀도와 색 이펙트가 바뀌는 축제형 LED 콘텐츠입니다.</p>
             <dl>
-              <div><dt>연결 데이터</dt><dd>공연 일정, QR 참여, 설문 응답, 현장 이벤트 인증</dd></div>
+              <div><dt>연결 데이터</dt><dd>공연 일정, QR 참여, 관람객 수, 설문 응답, 현장 이벤트 인증</dd></div>
               <div><dt>적용 공간</dt><dd>탈춤축제장, 문화예술회관, 야외 LED 무대</dd></div>
             </dl>
+            <div class="live-readout">
+              <strong>관객 반응 데모</strong>
+              <span data-live="andongDance">관객 반응값을 준비하는 중입니다.</span>
+              <div class="live-readout-actions"><button class="live-action" type="button" data-live-action="andongDance">관객 반응 1건 보내기</button></div>
+            </div>
           </article>
         </div>
       </section>
@@ -296,5 +310,6 @@
     </footer>
     <script src="./site-pages.js"></script>
     <script src="./spring.js?v=20260511-canvas-fix"></script>
+    <script src="./regional-live-data.js?v=20260512-live-regions"></script>
   </body>
 </html>
