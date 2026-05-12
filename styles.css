@@ -629,12 +629,31 @@ h1 {
 
 .inline-work-link {
   display: inline-flex;
+  align-items: center;
+  gap: 8px;
   width: fit-content;
-  margin-top: 4px;
-  color: var(--leaf);
+  min-height: 34px;
+  margin-top: 8px;
+  padding: 0 12px;
+  border: 1px solid rgba(36, 48, 41, 0.22);
+  border-radius: 999px;
+  color: #213027;
+  background: rgba(255, 255, 255, 0.56);
   font-size: 13px;
   font-weight: 950;
-  border-bottom: 1px solid rgba(72, 106, 85, 0.28);
+  text-decoration: none;
+}
+
+.inline-work-link::after {
+  content: "->";
+  color: rgba(33, 48, 39, 0.62);
+  font-size: 12px;
+}
+
+.inline-work-link:hover {
+  color: #111a15;
+  background: #ffe879;
+  border-color: rgba(36, 48, 41, 0.28);
 }
 
 .mini-data-table {
@@ -965,79 +984,28 @@ h1 {
   padding-top: 0 !important;
 }
 
-.region-media-card::before {
-  content: "";
-  display: block;
+.region-preview {
+  position: relative;
   height: clamp(210px, 22vw, 310px);
   margin: 0 calc(clamp(24px, 4vw, 42px) * -1) clamp(26px, 4vw, 38px);
+  overflow: hidden;
   border-bottom: 1px solid rgba(38, 53, 45, 0.14);
-  background:
-    linear-gradient(180deg, transparent 58%, rgba(23, 35, 30, 0.72) 100%),
-    radial-gradient(circle at 24% 28%, rgba(255, 233, 139, 0.62), transparent 18%),
-    linear-gradient(145deg, #c8ded8, #9dbca3 58%, #6d8772);
 }
 
-.region-media-card::after {
+.region-preview::after {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
-  top: clamp(160px, 18vw, 248px);
-  height: 86px;
+  inset: 0;
   pointer-events: none;
-  opacity: 0.9;
-  background: linear-gradient(180deg, transparent, rgba(23, 35, 30, 0.78));
+  background: linear-gradient(180deg, transparent 48%, rgba(23, 35, 30, 0.74) 100%);
 }
 
-.region-card-star::before {
-  background:
-    linear-gradient(180deg, transparent 58%, rgba(23, 35, 30, 0.78) 100%),
-    radial-gradient(circle at 20% 22%, rgba(255, 232, 121, 0.72), transparent 18%),
-    radial-gradient(circle at 72% 62%, rgba(255, 255, 255, 0.36), transparent 16%),
-    repeating-linear-gradient(90deg, rgba(255,255,255,.16) 0 1px, transparent 1px 34px),
-    linear-gradient(145deg, #7d91b0, #b8c69c);
-}
-
-.region-card-water::before {
-  background:
-    linear-gradient(180deg, transparent 58%, rgba(23, 35, 30, 0.78) 100%),
-    repeating-radial-gradient(circle at 46% 48%, rgba(255,255,255,.48) 0 2px, transparent 2px 34px),
-    radial-gradient(circle at 76% 24%, rgba(255, 233, 139, 0.56), transparent 20%),
-    linear-gradient(145deg, #8fc4cf, #d8e8c8 56%, #6f9cb0);
-}
-
-.region-card-festival::before {
-  background:
-    linear-gradient(180deg, transparent 58%, rgba(23, 35, 30, 0.8) 100%),
-    radial-gradient(circle at 18% 28%, rgba(255, 186, 200, 0.72), transparent 14%),
-    radial-gradient(circle at 48% 62%, rgba(255, 233, 139, 0.72), transparent 18%),
-    radial-gradient(circle at 82% 26%, rgba(126, 105, 192, 0.54), transparent 15%),
-    linear-gradient(145deg, #e8c8bd, #d9e5ba);
-}
-
-.region-card-wind::before {
-  background:
-    linear-gradient(180deg, transparent 58%, rgba(23, 35, 30, 0.78) 100%),
-    repeating-linear-gradient(125deg, transparent 0 20px, rgba(255,255,255,.28) 20px 28px),
-    radial-gradient(circle at 72% 54%, rgba(255,255,255,.42), transparent 20%),
-    linear-gradient(145deg, #7eb19f, #dbe7c8 54%, #8a9d7a);
-}
-
-.region-card-river::before {
-  background:
-    linear-gradient(180deg, transparent 58%, rgba(23, 35, 30, 0.78) 100%),
-    repeating-radial-gradient(circle at 32% 68%, rgba(255,255,255,.38) 0 2px, transparent 2px 30px),
-    radial-gradient(circle at 76% 26%, rgba(255, 233, 139, 0.62), transparent 18%),
-    linear-gradient(145deg, #7eaac0, #d7e7d5);
-}
-
-.region-card-mask::before {
-  background:
-    linear-gradient(180deg, transparent 58%, rgba(23, 35, 30, 0.78) 100%),
-    radial-gradient(circle at 24% 36%, rgba(238, 143, 130, 0.62), transparent 15%),
-    radial-gradient(circle at 68% 26%, rgba(255, 232, 121, 0.64), transparent 16%),
-    repeating-linear-gradient(90deg, rgba(255,255,255,.18) 0 1px, transparent 1px 36px),
-    linear-gradient(145deg, #9db0b9, #d6dfb5);
+.region-preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .region-art-grid span,
@@ -1064,16 +1032,19 @@ h1 {
 
 .region-art-grid dl {
   display: grid;
-  gap: 10px;
+  gap: 1px;
   margin: 24px 0 0;
+  overflow: hidden;
+  border: 1px solid rgba(38, 53, 45, 0.14);
+  border-radius: 8px;
+  background: rgba(38, 53, 45, 0.14);
 }
 
 .region-art-grid dl div {
   display: grid;
-  grid-template-columns: 94px 1fr;
-  gap: 12px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(38, 53, 45, 0.12);
+  grid-template-columns: 110px 1fr;
+  gap: 0;
+  background: rgba(255, 255, 255, 0.58);
 }
 
 .region-art-grid dt,
@@ -1082,11 +1053,13 @@ h1 {
   color: rgba(38, 53, 45, 0.7);
   font-size: 13px;
   line-height: 1.55;
+  padding: 12px 14px;
 }
 
 .region-art-grid dt {
   color: rgba(38, 53, 45, 0.52);
   font-weight: 900;
+  background: rgba(255, 255, 255, 0.42);
 }
 
 .video-grid {
@@ -1183,7 +1156,8 @@ h1 {
   position: relative;
   display: grid;
   align-content: start;
-  min-height: 260px;
+  min-height: 430px;
+  padding-top: 0;
   color: var(--ink);
   text-decoration: none;
   transition: transform 180ms ease, box-shadow 180ms ease;
@@ -1192,12 +1166,36 @@ h1 {
 .local-art-strip a::before {
   content: "";
   position: absolute;
-  inset: 18px 18px auto auto;
-  width: 92px;
-  height: 92px;
-  border-radius: 50%;
-  opacity: 0.42;
-  background: radial-gradient(circle, currentColor 0 3px, transparent 4px 12px);
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 34%, rgba(255, 253, 246, 0.92) 68%);
+  z-index: 1;
+}
+
+.local-media-preview {
+  position: relative;
+  height: clamp(210px, 24vw, 320px);
+  margin: 0 calc(clamp(24px, 4vw, 42px) * -1) clamp(22px, 3.6vw, 32px);
+  overflow: hidden;
+  border-bottom: 1px solid rgba(38, 53, 45, 0.12);
+}
+
+.local-media-preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.01);
+}
+
+.local-art-strip a > span,
+.local-art-strip a > small,
+.local-art-strip a > h3,
+.local-art-strip a > p,
+.local-art-strip a > b {
+  position: relative;
+  z-index: 2;
 }
 
 .local-art-strip a:hover {
