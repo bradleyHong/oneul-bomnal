@@ -30,6 +30,8 @@
     gyeongjuFestival: Number(localStorage.getItem("bomnalGyeongjuFestival") || 18),
     andongDance: Number(localStorage.getItem("bomnalAndongDance") || 24),
   };
+  const panelState = new Map();
+  let animationStarted = false;
 
   const formatTime = (value) => {
     const date = value ? new Date(value) : new Date();
@@ -52,6 +54,8 @@
   const ensurePanelOverlays = () => {
     document.querySelectorAll("[data-live-panel]").forEach((panel) => {
       if (panel.querySelector(".media-live-overlay")) return;
+      const canvas = document.createElement("canvas");
+      canvas.className = "media-flow-canvas";
       const points = document.createElement("div");
       points.className = "media-live-points";
       const overlay = document.createElement("div");
@@ -65,13 +69,23 @@
           <div class="media-signal"><small>반응</small><div class="media-meter"><i style="--meter: 40"></i></div></div>
         </div>
       `;
-      panel.append(points, overlay);
+      panel.append(canvas, points, overlay);
     });
   };
 
   const setPanel = (key, { title, summary, metrics, vars }) => {
+    const metricValues = metrics || [];
+    const liveVars = vars || {};
+    panelState.set(key, {
+      pulse: Number(liveVars["--live-pulse"] || 0.45),
+      wind: Number(liveVars["--live-wind"] || 0.25),
+      rain: Number(liveVars["--live-rain"] || 0.08),
+      water: Number(liveVars["--live-water"] || 0.25),
+      density: Number(liveVars["--live-density"] || 0.4),
+      metrics: metricValues.map((metric) => clamp(metric.value / 100, 0, 1)),
+    });
     document.querySelectorAll(`[data-live-panel="${key}"]`).forEach((panel) => {
-      Object.entries(vars || {}).forEach(([name, value]) => {
+      Object.entries(liveVars).forEach(([name, value]) => {
         panel.style.setProperty(name, value);
       });
       const titleNode = panel.querySelector(".media-live-overlay strong");
@@ -79,8 +93,8 @@
       const signalGrid = panel.querySelector(".media-signal-grid");
       if (titleNode) titleNode.textContent = title;
       if (summaryNode) summaryNode.textContent = summary;
-      if (signalGrid && metrics) {
-        signalGrid.innerHTML = metrics
+      if (signalGrid && metricValues) {
+        signalGrid.innerHTML = metricValues
           .map(
             (metric) => `
               <div class="media-signal">
@@ -92,6 +106,166 @@
           .join("");
       }
     });
+  };
+
+  const seedPanels = () => {
+    const now = formatTime();
+    setLive("gyeongjuWeather", `경주 ${now} · 기본 실시간 패널 · 데이터 수신 대기 중`);
+    setLive("gyeongjuBomun", `보문호 ${now} · 물결 기본값 42% · 데이터 수신 대기 중`);
+    setLive("andongWeather", `안동 ${now} · 기본 실시간 패널 · 데이터 수신 대기 중`);
+    setLive("andongRiver", `월영교 ${now} · 수위지표 기본값 36% · 데이터 수신 대기 중`);
+    setPanel("gyeongjuWeather", {
+      title: "GYEONGJU DATA FLOW",
+      summary: `${now} · API 수신 전 기본값으로 별빛 데이터 스트림 가동`,
+      metrics: [
+        { label: "온도", value: 48 },
+        { label: "바람", value: 42 },
+        { label: "강수", value: 18 },
+      ],
+      vars: {
+        "--live-pulse": "0.55",
+        "--live-wind": "0.48",
+        "--live-rain": "0.18",
+        "--live-water": "0.38",
+        "--live-density": "0.72",
+      },
+    });
+    setPanel("gyeongjuBomun", {
+      title: "BOMUN WAVE DATA FLOW",
+      summary: `${now} · 보문호 물결 패킷 흐름 · API 수신 대기`,
+      metrics: [
+        { label: "물결", value: 58 },
+        { label: "습도", value: 66 },
+        { label: "바람", value: 38 },
+      ],
+      vars: {
+        "--live-pulse": "0.58",
+        "--live-wind": "0.42",
+        "--live-rain": "0.2",
+        "--live-water": "0.7",
+        "--live-density": "0.68",
+      },
+    });
+    setPanel("andongWeather", {
+      title: "ANDONG WIND DATA FLOW",
+      summary: `${now} · 하회마을 바람결 데이터 스트림 가동`,
+      metrics: [
+        { label: "온도", value: 46 },
+        { label: "바람", value: 45 },
+        { label: "습도", value: 62 },
+      ],
+      vars: {
+        "--live-pulse": "0.48",
+        "--live-wind": "0.62",
+        "--live-rain": "0.12",
+        "--live-water": "0.52",
+        "--live-density": "0.7",
+      },
+    });
+    setPanel("andongRiver", {
+      title: "WOLYEONGGYO WATER FLOW",
+      summary: `${now} · 월영교 수위 패킷 흐름 · API 수신 대기`,
+      metrics: [
+        { label: "수위", value: 36 },
+        { label: "달빛", value: 64 },
+        { label: "바람", value: 42 },
+      ],
+      vars: {
+        "--live-pulse": "0.52",
+        "--live-wind": "0.38",
+        "--live-rain": "0.28",
+        "--live-water": "0.72",
+        "--live-density": "0.76",
+      },
+    });
+  };
+
+  const resizeCanvas = (canvas) => {
+    const rect = canvas.getBoundingClientRect();
+    const ratio = Math.min(window.devicePixelRatio || 1, 2);
+    const width = Math.max(1, Math.round(rect.width * ratio));
+    const height = Math.max(1, Math.round(rect.height * ratio));
+    if (canvas.width !== width || canvas.height !== height) {
+      canvas.width = width;
+      canvas.height = height;
+    }
+    return { width, height, ratio };
+  };
+
+  const drawFlow = (time) => {
+    document.querySelectorAll("[data-live-panel]").forEach((panel, index) => {
+      const key = panel.dataset.livePanel;
+      const canvas = panel.querySelector(".media-flow-canvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      const { width, height, ratio } = resizeCanvas(canvas);
+      const stateForPanel = panelState.get(key) || {
+        pulse: 0.55,
+        wind: 0.45,
+        rain: 0.18,
+        water: 0.45,
+        density: 0.6,
+        metrics: [0.48, 0.38, 0.58],
+      };
+      const t = time * 0.001;
+      ctx.clearRect(0, 0, width, height);
+      ctx.save();
+      ctx.scale(ratio, ratio);
+      const w = width / ratio;
+      const h = height / ratio;
+      const speed = 18 + stateForPanel.wind * 76 + stateForPanel.pulse * 24;
+      const lineCount = Math.round(6 + stateForPanel.density * 12);
+      ctx.globalCompositeOperation = "lighter";
+
+      for (let i = 0; i < lineCount; i += 1) {
+        const baseY = h * (0.18 + (i / Math.max(1, lineCount - 1)) * 0.66);
+        const amp = 10 + stateForPanel.water * 24 + (i % 3) * 3;
+        const offset = ((t * speed + i * 52 + index * 37) % (w + 180)) - 90;
+        ctx.beginPath();
+        for (let x = -80; x <= w + 80; x += 18) {
+          const y = baseY + Math.sin((x * 0.018) + t * (1.1 + stateForPanel.wind) + i) * amp;
+          if (x === -80) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = i % 3 === 0 ? "rgba(255,232,141,0.34)" : i % 3 === 1 ? "rgba(141,235,211,0.3)" : "rgba(255,178,199,0.24)";
+        ctx.lineWidth = 1 + stateForPanel.pulse * 1.4;
+        ctx.setLineDash([28, 12, 4, 10]);
+        ctx.lineDashOffset = -offset;
+        ctx.stroke();
+      }
+
+      const packetCount = Math.round(18 + stateForPanel.density * 28);
+      for (let i = 0; i < packetCount; i += 1) {
+        const metric = stateForPanel.metrics[i % stateForPanel.metrics.length] || 0.5;
+        const x = ((t * speed * (0.85 + metric) + i * 43 + index * 91) % (w + 80)) - 40;
+        const y = h * (0.18 + ((i * 37) % 70) / 100) + Math.sin(t * 2 + i) * 8;
+        const radius = 1.6 + metric * 4.2;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = i % 4 === 0 ? "rgba(255,232,141,0.94)" : i % 4 === 1 ? "rgba(141,235,211,0.86)" : "rgba(255,178,199,0.78)";
+        ctx.shadowColor = ctx.fillStyle;
+        ctx.shadowBlur = 12 + metric * 12;
+        ctx.fill();
+      }
+
+      ctx.shadowBlur = 0;
+      ctx.font = "700 10px ui-monospace, SFMono-Regular, Menlo, monospace";
+      ctx.fillStyle = "rgba(255,248,222,0.72)";
+      const labels = key.includes("River") ? ["WL", "RAIN", "MOON"] : key.includes("Dance") ? ["AUD", "MOVE", "FX"] : key.includes("Festival") ? ["QR", "STAMP", "FLOW"] : ["TEMP", "WIND", "PM"];
+      labels.forEach((label, i) => {
+        const x = ((t * (speed * 0.5) + i * 154 + index * 49) % (w + 120)) - 60;
+        const y = 24 + i * 22 + Math.sin(t + i) * 5;
+        ctx.fillText(`${label}:${Math.round((stateForPanel.metrics[i] || stateForPanel.pulse) * 100)}`, x, y);
+      });
+      ctx.restore();
+    });
+    requestAnimationFrame(drawFlow);
+  };
+
+  const startFlowAnimation = () => {
+    if (animationStarted) return;
+    animationStarted = true;
+    requestAnimationFrame(drawFlow);
   };
 
   const safeNumber = (value, fallback = 0) => {
@@ -165,7 +339,10 @@
   };
 
   const fetchJson = async (url) => {
-    const response = await fetch(url, { signal: AbortSignal.timeout(10000) });
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 10000);
+    const response = await fetch(url, { signal: controller.signal });
+    clearTimeout(timer);
     if (!response.ok) throw new Error(`${response.status} ${url}`);
     return response.json();
   };
@@ -266,10 +443,7 @@
       await Promise.all([loadPlace("gyeongju"), loadPlace("andong")]);
     } catch (error) {
       console.warn("regional live data unavailable", error);
-      setLive("gyeongjuWeather", "실시간 API 연결이 지연되어 기본 제안값으로 표시 중입니다.");
-      setLive("gyeongjuBomun", "실시간 API 연결이 지연되어 보문호 물결 기본값으로 표시 중입니다.");
-      setLive("andongWeather", "실시간 API 연결이 지연되어 기본 제안값으로 표시 중입니다.");
-      setLive("andongRiver", "실시간 API 연결이 지연되어 월영교 수위 기본값으로 표시 중입니다.");
+      seedPanels();
     }
   };
 
@@ -284,6 +458,9 @@
   });
 
   ensurePanelOverlays();
+  seedPanels();
+  renderParticipation();
+  startFlowAnimation();
   loadAll();
   setInterval(loadAll, 20 * 60 * 1000);
 })();
