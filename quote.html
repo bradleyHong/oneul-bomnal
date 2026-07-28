@@ -18,7 +18,7 @@
     <meta name="twitter:description" content="봄날 미디어박스 + AI 콘텐츠 SaaS 통합 패키지 견적 문의." />
     <link rel="alternate" type="application/rss+xml" title="오늘은 봄날 RSS" href="https://publicbloom.art/rss.xml" />
     <meta name="twitter:image" content="https://publicbloom.art/assets/og-image.jpg" />
-    <link rel="stylesheet" href="./styles.css?v=20260728-stage2" />
+    <link rel="stylesheet" href="./styles.css?v=20260728-inquiry" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="./assets/favicon-180.png" />
     <script type="application/ld+json">
@@ -203,6 +203,11 @@
           <input type="hidden" name="_template" value="table" />
           <input type="hidden" name="_captcha" value="false" />
           <input type="hidden" name="_next" value="https://publicbloom.art/quote?sent=1" />
+          <input type="hidden" name="_replyto" value="" />
+          <!-- 사람에게는 보이지 않는 칸. 값이 차 있으면 봇이므로 서버가 버린다. -->
+          <div class="form-honey" aria-hidden="true">
+            <label>이 칸은 비워두세요<input type="text" name="_honey" tabindex="-1" autocomplete="off" /></label>
+          </div>
           <h3>프로젝트 문의폼</h3>
           <label><span>기관이름</span><input name="organization" type="text" placeholder="예: ㅇㅇ구청, ㅇㅇ문화재단" required /></label>
           <div class="form-row">
@@ -229,6 +234,7 @@
           <button class="primary-link" type="submit">문의 보내기</button>
           <p class="form-assurance">문의가 접수되면 내용을 확인한 뒤 24시간 이내에 연락드립니다.</p>
           <p class="form-success" hidden>문의가 접수되었습니다. 24시간 이내에 연락드리겠습니다.</p>
+          <p class="form-error" hidden role="alert"></p>
         </form>
       </section>
 
@@ -300,6 +306,7 @@
       </dl>
     </footer>
     <script src="./site-pages.js"></script>
+    <script src="./inquiry.js?v=20260728-inquiry"></script>
       <script src="./auth.js?v=20260728-auth"></script>
   </body>
 </html>

@@ -3666,3 +3666,29 @@ h1 {
 .art-piece .led-stage {
   align-self: start;
 }
+
+/* ── 문의폼 전송 상태 ──────────────────────────────────────
+   허니팟은 사람 눈과 스크린리더 양쪽에서 감춘다.
+   display:none이면 일부 봇이 무시하므로 화면 밖으로 밀어낸다. */
+.form-honey {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.form-error {
+  margin: 12px 0 0;
+  padding: 13px 16px;
+  border-radius: 8px;
+  background: rgba(199, 105, 79, 0.1);
+  border: 1px solid rgba(199, 105, 79, 0.32);
+  color: #8c3a22;
+  font-size: 14.5px;
+  line-height: 1.65;
+  word-break: keep-all;
+}
+.contact-form button[type="submit"][disabled] {
+  opacity: 0.6;
+  cursor: progress;
+}
