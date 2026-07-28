@@ -26,7 +26,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="alternate" type="application/rss+xml" title="오늘은 봄날 RSS" href="https://publicbloom.art/rss.xml" />
     <link rel="preconnect" href="https://api.open-meteo.com" />
-    <link rel="stylesheet" href="./styles.css?v=20260728-faq" />
+    <link rel="stylesheet" href="./styles.css?v=20260728-price" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="./assets/favicon-180.png" />
     <script type="application/ld+json">
@@ -188,19 +188,7 @@
                 "@type": "AdministrativeArea",
                 "name": "울산광역시"
               }
-            ],
-            "offers": {
-              "@type": "Offer",
-              "@id": "https://publicbloom.art/#package-offer",
-              "name": "봄날 미디어박스 연 단위 통합 패키지",
-              "price": "7000000",
-              "priceCurrency": "KRW",
-              "description": "화면 1대당 연 700만원(VAT 포함). 미디어아트 하드웨어 대당 50만원, AI 자동 콘텐츠 생성·송출 SaaS 월 58만원 × 12개월, 관제 서버 접근권·원격 배포·운영 리포트를 포함합니다.",
-              "eligibleCustomerType": "http://purl.org/goodrelations/v1#PublicInstitution",
-              "seller": {
-                "@id": "https://publicbloom.art/#organization"
-              }
-            }
+            ]
           },
           {
             "@type": "Service",
@@ -358,7 +346,7 @@
           <p class="line hero-tagline">관공서 LED 화면에 <strong>미디어아트</strong>를 공급합니다.<br />하드웨어부터 콘텐츠, 원격 관리까지 한 곳에서.</p>
           <div class="hero-actions">
             <a class="primary-link" href="#gallery">작품 보기</a>
-            <a class="secondary-link" href="#package">연 700만원</a>
+            <a class="secondary-link" href="#package">연간 패키지</a>
           </div>
         </section>
 
@@ -510,14 +498,16 @@
         <div class="package-card">
           <div class="package-headline">
             <div class="package-badge">기본 1년 계약 패키지</div>
-            <div class="package-price"><strong>연 700만원</strong><span>대당 · VAT 포함 · 반올림 표기</span></div>
+            <div class="package-price"><strong>실측 후 견적 산정</strong><span>대당 단가 · VAT 포함 기준</span></div>
           </div>
-          <ul class="package-breakdown">
-            <li><span>미디어아트 하드웨어 (맥미니 M4 · 라즈베리파이 기반)</span><strong>대당 500,000원</strong></li>
-            <li><span>AI 자동 콘텐츠 생성·송출 SaaS + 자율 유지·보수</span><strong>월 580,000원 × 12개월 (696만원)</strong></li>
-            <li><span>관제 서버 접근권 · 원격 배포 · 운영 리포트</span><strong>패키지 포함</strong></li>
+          <p class="package-includes-label">한 계약에 모두 포함됩니다</p>
+          <ul class="package-breakdown package-includes">
+            <li><span>미디어아트 하드웨어 (맥미니 M4 · 라즈베리파이 기반)</span></li>
+            <li><span>AI 자동 콘텐츠 생성·송출 SaaS + 자율 유지·보수</span></li>
+            <li><span>관제 서버 접근권 · 원격 배포 · 운영 리포트</span></li>
           </ul>
-          <p class="package-note">다수 대수 계약 시 단가 별도 협의 · 회계연도 기준 견적서·직접생산확인증명서 발행 가능</p>
+          <p class="package-note">벽면 크기·화면 대수·기존 패널 유무에 따라 단가가 달라집니다. 기관명과 사이니지 대수를 남겨주시면 회계연도 기준 견적서와 직접생산확인증명서를 함께 보내드립니다.</p>
+          <div class="package-actions"><a class="primary-link" href="./quote">견적 문의하기</a></div>
         </div>
       </section>
 
@@ -867,15 +857,15 @@
             <legend>관심 항목</legend>
             <label><input name="service" type="checkbox" value="봄날 미디어박스 하드웨어" /> 봄날 미디어박스 하드웨어 (맥미니 · 라즈베리파이 기반)</label>
             <label><input name="service" type="checkbox" value="AI 콘텐츠 SaaS" /> AI 자동 콘텐츠 생성·송출 SaaS</label>
-            <label><input name="service" type="checkbox" value="연 700만원 통합 패키지" /> 연 700만원 통합 패키지 (하드웨어 + SaaS + 관제)</label>
+            <label><input name="service" type="checkbox" value="연 단위 통합 패키지" /> 연 단위 통합 패키지 (하드웨어 + SaaS + 관제)</label>
             <label><input name="service" type="checkbox" value="관제 서버 · 다수 대수 관리" /> 관제 서버 · 다수 대수 원격 관리</label>
             <label><input name="service" type="checkbox" value="데이터 기반 미디어아트 커스텀" /> 데이터 기반 미디어아트 커스텀 제작</label>
           </fieldset>
           <fieldset>
             <legend>희망 대수 · 예산 규모</legend>
-            <label><input name="budget" type="radio" value="시범 1~2대 (700~1,400만원)" required /> 시범 1~2대 (700~1,400만원)</label>
-            <label><input name="budget" type="radio" value="파일럿 3~5대 (2,100~3,500만원)" /> 파일럿 3~5대 (2,100~3,500만원)</label>
-            <label><input name="budget" type="radio" value="확산 10대 이상 (7,000만원~)" /> 확산 10대 이상 (7,000만원~)</label>
+            <label><input name="budget" type="radio" value="시범 1~2대" required /> 시범 1~2대</label>
+            <label><input name="budget" type="radio" value="파일럿 3~5대" /> 파일럿 3~5대</label>
+            <label><input name="budget" type="radio" value="확산 10대 이상" /> 확산 10대 이상</label>
             <label><input name="budget" type="radio" value="협의 필요" /> 협의 필요</label>
           </fieldset>
           <label>
