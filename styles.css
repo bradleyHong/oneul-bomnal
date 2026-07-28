@@ -3396,3 +3396,100 @@ h1 {
 @media (max-width: 900px) {
   .gallery-grid { grid-template-columns: 1fr; gap: 18px; }
 }
+
+/* ── 견적문의 FAQ ──────────────────────────────────────────
+   AI 검색·구글 리치리절트에 인용되는 자기완결형 문답 블록. */
+.faq-section {
+  background: #fffdf6;
+}
+.faq-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: clamp(28px, 4vw, 44px);
+  border: 1px solid rgba(199, 105, 79, 0.16);
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(199, 105, 79, 0.16);
+}
+.faq-item {
+  padding: clamp(24px, 3vw, 34px);
+  background: #fffaf1;
+}
+.faq-item h3 {
+  margin: 0 0 12px;
+  font-size: clamp(17px, 1.6vw, 20px);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: #2b1e18;
+}
+.faq-item p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.78;
+  color: #5a4a41;
+  word-break: keep-all;
+}
+.faq-more {
+  margin: clamp(22px, 3vw, 32px) 0 0;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: #7a675d;
+  word-break: keep-all;
+}
+.faq-more a {
+  color: #c7694f;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 860px) {
+  .faq-list { grid-template-columns: 1fr; }
+}
+
+/* ── 단독 작품 링크 (전체 화면 송출 화면 열기) ────────────── */
+.standalone-works {
+  margin-top: clamp(28px, 4vw, 44px);
+  padding: clamp(24px, 3vw, 34px);
+  border: 1px solid rgba(199, 105, 79, 0.16);
+  border-radius: 10px;
+  background: #fffaf1;
+}
+.standalone-works-lead {
+  margin: 0 0 18px;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: #7a675d;
+  word-break: keep-all;
+}
+.standalone-works ul {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.standalone-works li {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+}
+.standalone-works a {
+  font-size: 16px;
+  font-weight: 700;
+  color: #c7694f;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.standalone-works span {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: #5a4a41;
+  word-break: keep-all;
+}
+
+@media (max-width: 860px) {
+  .standalone-works ul { grid-template-columns: 1fr; }
+}

@@ -1,11 +1,63 @@
 User-agent: *
 Allow: /
+Allow: /llms.txt
 
-# 내부 운영용 관제 프로그램은 검색에 노출하지 않습니다.
+# 내부 운영 문서와 로그인 뒤 화면은 검색에 노출하지 않습니다.
+# vercel.json의 cleanUrls 때문에 확장자가 있는 주소와 없는 주소가 모두 열리므로 둘 다 막습니다.
+Disallow: /admin
 Disallow: /admin.html
+Disallow: /client
+Disallow: /client.html
+Disallow: /login
+Disallow: /login.html
+Disallow: /api/
+Disallow: /landing-references
+Disallow: /landing-references.html
+Disallow: /전화응대_핸드북
+Disallow: /전화응대_핸드북.html
+Disallow: /%EC%A0%84%ED%99%94%EC%9D%91%EB%8C%80_%ED%95%B8%EB%93%9C%EB%B6%81.html
+
+# 국내 검색엔진
+User-agent: Yeti
+Allow: /
+
+User-agent: Daumoa
+Allow: /
+
+# AI 검색·답변 엔진.
+# 회사 정보가 AI 답변에 인용되도록 명시적으로 허용합니다.
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
 
 Sitemap: https://publicbloom.art/sitemap.xml
 Sitemap: https://publicbloom.art/rss.xml
-
-# AI search and answer engines can use this concise company profile.
-Allow: /llms.txt

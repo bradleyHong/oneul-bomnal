@@ -4,7 +4,43 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
     <meta name="naver-site-verification" content="065ca67de7d3753f1b02bdd17a7036c69ac372f7" />
-    <title>오늘은 봄날 공공예술 예시 · 대구 공기 정원</title>
+    <title>대구 공기 정원 | 공기질 반응형 인터랙티브 미디어아트</title>
+    <meta name="description" content="대구 미세먼지 실측값을 하늘의 밝기와 빛 입자의 움직임으로 번역하는 인터랙티브 미디어아트." />
+    <link rel="canonical" href="https://publicbloom.art/%EA%B3%B5%EA%B8%B0%EC%A7%88%EC%9D%84%20%ED%86%B5%ED%95%9C%20%EC%9D%B8%ED%84%B0%EB%A0%89%EC%85%98" />
+    <meta property="og:type" content="article" />
+    <meta property="og:locale" content="ko_KR" />
+    <meta property="og:site_name" content="오늘은 봄날" />
+    <meta property="og:title" content="대구 공기 정원 | 공기질 반응형 인터랙티브 미디어아트" />
+    <meta property="og:description" content="대구 미세먼지 실측값을 하늘의 밝기와 빛 입자의 움직임으로 번역하는 인터랙티브 미디어아트." />
+    <meta property="og:url" content="https://publicbloom.art/%EA%B3%B5%EA%B8%B0%EC%A7%88%EC%9D%84%20%ED%86%B5%ED%95%9C%20%EC%9D%B8%ED%84%B0%EB%A0%89%EC%85%98" />
+    <meta property="og:image" content="https://publicbloom.art/assets/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://publicbloom.art/assets/og-image.jpg" />
+    <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="./assets/favicon-180.png" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "VisualArtwork",
+        "@id": "https://publicbloom.art/%EA%B3%B5%EA%B8%B0%EC%A7%88%EC%9D%84%20%ED%86%B5%ED%95%9C%20%EC%9D%B8%ED%84%B0%EB%A0%89%EC%85%98#artwork",
+        "name": "대구 공기 정원",
+        "url": "https://publicbloom.art/%EA%B3%B5%EA%B8%B0%EC%A7%88%EC%9D%84%20%ED%86%B5%ED%95%9C%20%EC%9D%B8%ED%84%B0%EB%A0%89%EC%85%98",
+        "description": "대구 공기 정원은 대구광역시의 미세먼지(PM10)·초미세먼지(PM2.5) 실측값을 하늘의 밝기, 색면의 넓이, 빛 입자의 속도로 번역하는 공공기관 로비용 인터랙티브 미디어아트입니다. 공기가 맑으면 선명한 하늘과 느린 빛 입자로, 탁하면 흐린 하늘과 빠르고 조밀한 입자로 바뀌어 수치를 읽지 않아도 오늘의 공기를 알 수 있습니다.",
+        "artMedium": "HTML5 Canvas 실시간 렌더링 · 공공 대기질 API 연동",
+        "artform": "인터랙티브 미디어아트",
+        "creator": {
+          "@id": "https://publicbloom.art/#organization"
+        },
+        "copyrightHolder": {
+          "@id": "https://publicbloom.art/#organization"
+        },
+        "inLanguage": "ko-KR",
+        "dateModified": "2026-07-28",
+        "isPartOf": {
+          "@id": "https://publicbloom.art/#website"
+        }
+      }
+    </script>
     <style>
       * {
         box-sizing: border-box;
@@ -451,9 +487,30 @@
           margin-bottom: 0;
         }
       }
+      /* 캔버스만 있는 화면이라 스크린리더가 읽을 제목이 없다.
+         화면에는 보이지 않지만 보조기기와 크롤러는 읽는 설명을 둔다. */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        clip-path: inset(50%);
+        white-space: nowrap;
+        border: 0;
+      }
+
     </style>
   </head>
   <body>
+<div class="sr-only">
+  <h1>대구 공기 정원</h1>
+  <p>대구 공기 정원은 대구광역시의 미세먼지(PM10)·초미세먼지(PM2.5) 실측값을 하늘의 밝기, 색면의 넓이, 빛 입자의 속도로 번역하는 공공기관 로비용 인터랙티브 미디어아트입니다. 공기가 맑으면 선명한 하늘과 느린 빛 입자로, 탁하면 흐린 하늘과 빠르고 조밀한 입자로 바뀌어 수치를 읽지 않아도 오늘의 공기를 알 수 있습니다.</p>
+  <p>제작·공급: 오늘은 봄날 (대구 여성기업). <a href="https://publicbloom.art/">오늘은 봄날 홈</a> · <a href="https://publicbloom.art/quote">도입 견적문의</a></p>
+</div>
+
     <div id="grass-stage" aria-hidden="true"></div>
     <div id="veil"></div>
     <div id="title">

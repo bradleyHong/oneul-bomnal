@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="naver-site-verification" content="065ca67de7d3753f1b02bdd17a7036c69ac372f7" />
     <title>랜딩페이지 레퍼런스 | 오늘은 봄날</title>
-    <link rel="canonical" href="https://publicbloom.art/landing-references.html" />
+    <link rel="canonical" href="https://publicbloom.art/landing-references" />
     <link rel="alternate" type="application/rss+xml" title="오늘은 봄날 RSS" href="https://publicbloom.art/rss.xml" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="./assets/favicon-180.png" />
@@ -2553,12 +2553,12 @@
   </head>
   <body>
     <header class="topbar">
-      <a href="./index.html" aria-label="오늘은 봄날 홈" class="topbar-brand"><strong>오늘은 봄날</strong></a>
+      <a href="./" aria-label="오늘은 봄날 홈" class="topbar-brand"><strong>오늘은 봄날</strong></a>
       <nav id="ref-nav">
-        <a href="./company.html">회사소개</a>
-        <a href="./data-media-art.html">미디어아트</a>
-        <a href="./landing.html">랜딩페이지</a>
-        <a href="./quote.html">견적문의</a>
+        <a href="./company">회사소개</a>
+        <a href="./data-media-art">미디어아트</a>
+        <a href="./landing">랜딩페이지</a>
+        <a href="./quote">견적문의</a>
       </nav>
       <button class="topbar-toggle" aria-label="메뉴 열기" aria-expanded="false" aria-controls="ref-nav">
         <span></span><span></span><span></span>
@@ -2588,7 +2588,7 @@
           </div>
           <div class="actions">
             <a class="button primary" href="#spotlight">대표 데모 보기</a>
-            <a class="button" href="./landing.html">랜딩페이지 소개</a>
+            <a class="button" href="./landing">랜딩페이지 소개</a>
           </div>
         </div>
         <aside class="procurement-panel" aria-label="제작 범위 요약">
@@ -2665,7 +2665,7 @@
           <p>클릭하면 각 주제에 맞춘 상세 랜딩페이지로 들어갑니다. 첫 화면부터 폼, 예약, 참여 흐름까지 다르게 설계했습니다.</p>
         </div>
         <div class="spotlight-grid">
-          <a class="spotlight-card spotlight-medical" href="./landing-references.html?case=hospital-checkup">
+          <a class="spotlight-card spotlight-medical" href="./landing-references?case=hospital-checkup">
             <div class="spotlight-preview" aria-hidden="true">
               <div class="spotlight-browser">
                 <div class="spotlight-topline"><b>대구 건강검진 예약</b><small>모바일 상담폼</small></div>
@@ -2681,7 +2681,7 @@
             </div>
             <div class="spotlight-content"><span>Hospital / Clinic</span><h3>ㅇㅇ병원 건강검진 예약</h3><p>예약 가능 일정과 상담 흐름이 먼저 보이는 병원형 랜딩.</p></div>
           </a>
-          <a class="spotlight-card spotlight-public" href="./landing-references.html?case=city-program-recruit">
+          <a class="spotlight-card spotlight-public" href="./landing-references?case=city-program-recruit">
             <div class="spotlight-preview" aria-hidden="true">
               <div class="spotlight-browser">
                 <div class="spotlight-topline"><b>대구·경북 청년 모집</b><small>회차별 정원 관리</small></div>
@@ -2697,7 +2697,7 @@
             </div>
             <div class="spotlight-content"><span>Public Sector</span><h3>청년 프로그램 모집</h3><p>모집 현황과 신청접수를 강조하는 관공서형 페이지.</p></div>
           </a>
-          <a class="spotlight-card spotlight-contest" href="./landing-references.html?case=idea-contest">
+          <a class="spotlight-card spotlight-contest" href="./landing-references?case=idea-contest">
             <div class="spotlight-preview" aria-hidden="true">
               <div class="spotlight-browser">
                 <div class="spotlight-topline"><b>시민 아이디어 공모전</b><small>제안서 접수</small></div>
@@ -3233,7 +3233,7 @@
         document.querySelector("#cards").innerHTML = references
           .map(
             (item) => `
-              <a class="ref-card" href="./landing-references.html?case=${item.id}" data-group="${item.group}" style="${cardStyle(item)}">
+              <a class="ref-card" href="./landing-references?case=${item.id}" data-group="${item.group}" style="${cardStyle(item)}">
                 <div class="ref-photo">
                   <span class="ref-group-tag">${item.group}</span>
                   <img src="${imageFor(item)}" alt="${item.title} 제안 이미지" loading="lazy" />
@@ -3266,7 +3266,7 @@
           </div>
           <div class="actions">
             <a class="button primary" href="#details">${item.cta}</a>
-            <a class="button" href="./landing-references.html">다른 레퍼런스 보기</a>
+            <a class="button" href="./landing-references">다른 레퍼런스 보기</a>
           </div>
         `;
       }

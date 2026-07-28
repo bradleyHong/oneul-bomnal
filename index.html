@@ -26,42 +26,306 @@
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="alternate" type="application/rss+xml" title="오늘은 봄날 RSS" href="https://publicbloom.art/rss.xml" />
     <link rel="preconnect" href="https://api.open-meteo.com" />
-    <link rel="stylesheet" href="./styles.css?v=20260728-gallery" />
+    <link rel="stylesheet" href="./styles.css?v=20260728-faq" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="./assets/favicon-180.png" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "ProfessionalService",
-        "name": "오늘은 봄날",
-        "url": "https://publicbloom.art/",
-        "logo": "https://publicbloom.art/assets/logo-bomnal.png",
-        "image": "https://publicbloom.art/assets/logo-bomnal.png",
-        "areaServed": ["대구광역시", "경상북도", "경상남도", "부산광역시", "울산광역시", "대한민국"],
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "대구광역시",
-          "addressRegion": "대구·경북·경남·부산·울산",
-          "addressCountry": "KR"
-        },
-        "description": "맥미니·라즈베리파이를 활용한 미디어아트 하드웨어(봄날 미디어박스)와 AI 자동 콘텐츠 생성·송출 SaaS, 원격 관제 서버를 연 단위 통합 패키지로 공급하는 대구 여성기업입니다. 공공기관이 원하는 디자인과 보유 DB를 반영한 미디어아트를 LED 패널에 송출합니다.",
-        "knowsAbout": [
-          "맥미니 미디어아트 하드웨어",
-          "라즈베리파이 미디어아트 플레이어",
-          "공공기관 DB 연동 미디어아트",
-          "공기질 반응형 미디어아트",
-          "LED 사이니지 콘텐츠 자동 송출",
-          "AI 자동 미디어아트 생성 SaaS",
-          "공공데이터 미디어아트",
-          "관공서 LED 미디어월",
-          "문화재단 미디어파사드",
-          "미디어아트 관제 서버",
-          "5단계 멀티에이전트 AI 파이프라인",
-          "spring.js HTML5 Canvas 미디어아트 엔진",
-          "대구 북구청 사이니지 납품",
-          "여성기업 공공사업",
-          "관공서 사이니지 하드웨어 공급",
-          "문화재단 미디어아트 SaaS"
+        "@graph": [
+          {
+            "@type": [
+              "ProfessionalService",
+              "Organization"
+            ],
+            "@id": "https://publicbloom.art/#organization",
+            "name": "오늘은 봄날",
+            "alternateName": "publicbloom.art",
+            "url": "https://publicbloom.art/",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://publicbloom.art/assets/logo-bomnal.png",
+              "caption": "오늘은 봄날 로고"
+            },
+            "image": "https://publicbloom.art/assets/og-image.jpg",
+            "email": "visionpencil@gmail.com",
+            "telephone": "+82-10-3446-7797",
+            "founder": {
+              "@type": "Person",
+              "name": "박성실"
+            },
+            "taxID": "575-19-00976",
+            "areaServed": [
+              {
+                "@type": "AdministrativeArea",
+                "name": "대구광역시"
+              },
+              {
+                "@type": "AdministrativeArea",
+                "name": "경상북도"
+              },
+              {
+                "@type": "AdministrativeArea",
+                "name": "경상남도"
+              },
+              {
+                "@type": "AdministrativeArea",
+                "name": "부산광역시"
+              },
+              {
+                "@type": "AdministrativeArea",
+                "name": "울산광역시"
+              }
+            ],
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "동대구로 250, 102동 101호",
+              "addressLocality": "수성구",
+              "addressRegion": "대구광역시",
+              "addressCountry": "KR"
+            },
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "telephone": "+82-10-3446-7797",
+              "email": "visionpencil@gmail.com",
+              "contactType": "sales",
+              "areaServed": "KR",
+              "availableLanguage": [
+                "ko"
+              ]
+            },
+            "description": "맥미니·라즈베리파이를 활용한 미디어아트 하드웨어(봄날 미디어박스)와 AI 자동 콘텐츠 생성·송출 SaaS, 원격 관제 서버를 연 단위 통합 패키지로 공급하는 대구 여성기업입니다. 공공기관이 원하는 디자인과 보유 DB를 반영한 미디어아트를 LED 패널에 송출합니다.",
+            "hasCredential": [
+              {
+                "@type": "EducationalOccupationalCredential",
+                "credentialCategory": "여성기업 확인서",
+                "identifier": "제0113-2025-35456호"
+              },
+              {
+                "@type": "EducationalOccupationalCredential",
+                "credentialCategory": "비디오물제작업 신고증",
+                "identifier": "제2025-000019호"
+              },
+              {
+                "@type": "EducationalOccupationalCredential",
+                "credentialCategory": "방송영상독립제작사 신고증",
+                "identifier": "제12235호"
+              },
+              {
+                "@type": "EducationalOccupationalCredential",
+                "credentialCategory": "직접생산확인증명서 (동영상제작서비스)",
+                "identifier": "제2025-0495-02141호"
+              }
+            ],
+            "knowsAbout": [
+              "맥미니 미디어아트 하드웨어",
+              "라즈베리파이 미디어아트 플레이어",
+              "공공기관 DB 연동 미디어아트",
+              "공기질 반응형 미디어아트",
+              "LED 사이니지 콘텐츠 자동 송출",
+              "AI 자동 미디어아트 생성 SaaS",
+              "공공데이터 미디어아트",
+              "관공서 LED 미디어월",
+              "문화재단 미디어파사드",
+              "미디어아트 관제 서버",
+              "5단계 멀티에이전트 AI 파이프라인",
+              "spring.js HTML5 Canvas 미디어아트 엔진",
+              "대구 북구청 사이니지 납품",
+              "여성기업 공공사업"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://publicbloom.art/#website",
+            "name": "오늘은 봄날",
+            "url": "https://publicbloom.art/",
+            "inLanguage": "ko-KR",
+            "publisher": {
+              "@id": "https://publicbloom.art/#organization"
+            }
+          },
+          {
+            "@type": "WebPage",
+            "@id": "https://publicbloom.art/#webpage",
+            "url": "https://publicbloom.art/",
+            "name": "오늘은 봄날 | 맥미니·라즈베리파이 미디어아트 하드웨어 공급",
+            "description": "관공서 LED 화면에 미디어아트를 공급합니다. 하드웨어부터 콘텐츠, 원격 관리까지 한 곳에서.",
+            "isPartOf": {
+              "@id": "https://publicbloom.art/#website"
+            },
+            "about": {
+              "@id": "https://publicbloom.art/#organization"
+            },
+            "inLanguage": "ko-KR",
+            "dateModified": "2026-07-28"
+          },
+          {
+            "@type": "Service",
+            "@id": "https://publicbloom.art/#service-mediabox",
+            "name": "봄날 미디어박스 하드웨어 공급",
+            "serviceType": "미디어아트 하드웨어 공급",
+            "description": "맥미니 M4(Standard)·라즈베리파이 5(Edge)·맥미니 M4 Pro(Pro) 기반 사이니지 전용 플레이어를 사전 세팅 상태로 납품합니다. 4K 60Hz 송출, 24시간 자동 리부트·헬스체크를 지원합니다.",
+            "provider": {
+              "@id": "https://publicbloom.art/#organization"
+            },
+            "areaServed": [
+              {
+                "@type": "AdministrativeArea",
+                "name": "대구광역시"
+              },
+              {
+                "@type": "AdministrativeArea",
+                "name": "경상북도"
+              },
+              {
+                "@type": "AdministrativeArea",
+                "name": "경상남도"
+              },
+              {
+                "@type": "AdministrativeArea",
+                "name": "부산광역시"
+              },
+              {
+                "@type": "AdministrativeArea",
+                "name": "울산광역시"
+              }
+            ],
+            "offers": {
+              "@type": "Offer",
+              "@id": "https://publicbloom.art/#package-offer",
+              "name": "봄날 미디어박스 연 단위 통합 패키지",
+              "price": "7000000",
+              "priceCurrency": "KRW",
+              "description": "화면 1대당 연 700만원(VAT 포함). 미디어아트 하드웨어 대당 50만원, AI 자동 콘텐츠 생성·송출 SaaS 월 58만원 × 12개월, 관제 서버 접근권·원격 배포·운영 리포트를 포함합니다.",
+              "eligibleCustomerType": "http://purl.org/goodrelations/v1#PublicInstitution",
+              "seller": {
+                "@id": "https://publicbloom.art/#organization"
+              }
+            }
+          },
+          {
+            "@type": "Service",
+            "@id": "https://publicbloom.art/#service-ai-saas",
+            "name": "AI 자동 콘텐츠 생성·송출 SaaS",
+            "serviceType": "사이니지 콘텐츠 SaaS",
+            "description": "5단계 멀티에이전트 파이프라인이 기관 CI·컬러·서체·금기 표현을 반영한 사이니지 콘텐츠를 자동 생성·검수·송출합니다. 시안 3종을 1일 이내에 제시합니다.",
+            "provider": {
+              "@id": "https://publicbloom.art/#organization"
+            },
+            "areaServed": [
+              {
+                "@type": "AdministrativeArea",
+                "name": "대구광역시"
+              },
+              {
+                "@type": "AdministrativeArea",
+                "name": "경상북도"
+              },
+              {
+                "@type": "AdministrativeArea",
+                "name": "경상남도"
+              },
+              {
+                "@type": "AdministrativeArea",
+                "name": "부산광역시"
+              },
+              {
+                "@type": "AdministrativeArea",
+                "name": "울산광역시"
+              }
+            ]
+          },
+          {
+            "@type": "Service",
+            "@id": "https://publicbloom.art/#service-fleet",
+            "name": "미디어아트 관제 서버 · 원격 운영",
+            "serviceType": "사이니지 원격 관제",
+            "description": "여러 대의 미디어박스 상태 확인, 콘텐츠 원격 배포, 이상 자동 감지·복구, 월간 운영 리포트 발행을 하나의 관제 화면에서 처리합니다.",
+            "provider": {
+              "@id": "https://publicbloom.art/#organization"
+            },
+            "areaServed": [
+              {
+                "@type": "AdministrativeArea",
+                "name": "대구광역시"
+              },
+              {
+                "@type": "AdministrativeArea",
+                "name": "경상북도"
+              },
+              {
+                "@type": "AdministrativeArea",
+                "name": "경상남도"
+              },
+              {
+                "@type": "AdministrativeArea",
+                "name": "부산광역시"
+              },
+              {
+                "@type": "AdministrativeArea",
+                "name": "울산광역시"
+              }
+            ]
+          },
+          {
+            "@type": "ItemList",
+            "@id": "https://publicbloom.art/#works",
+            "name": "미디어아트 작품소개",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "item": {
+                  "@type": "VisualArtwork",
+                  "name": "오늘은 봄날",
+                  "description": "대구의 오늘 날씨와 현재 시각에 따라 시침, 초침, 꽃잎, 빛의 궤도가 달라지는 실시간 미디어아트.",
+                  "artMedium": "HTML5 Canvas 실시간 렌더링",
+                  "creator": {
+                    "@id": "https://publicbloom.art/#organization"
+                  }
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "item": {
+                  "@type": "VisualArtwork",
+                  "name": "빛의 산책로",
+                  "description": "대구 미세먼지 API를 연결해 아이들이 야외활동을 해도 되는지 빛의 색으로 보여주는 미디어아트.",
+                  "artMedium": "HTML5 Canvas 실시간 렌더링",
+                  "creator": {
+                    "@id": "https://publicbloom.art/#organization"
+                  }
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "item": {
+                  "@type": "VisualArtwork",
+                  "name": "숨 쉬는 정원",
+                  "description": "오늘 온도를 꽃의 크기, 색온도, 정원의 호흡 리듬으로 시각화하는 자연형 미디어월 작품.",
+                  "artMedium": "HTML5 Canvas 실시간 렌더링",
+                  "creator": {
+                    "@id": "https://publicbloom.art/#organization"
+                  }
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": 4,
+                "item": {
+                  "@type": "VisualArtwork",
+                  "name": "도시의 꽃비",
+                  "description": "강수확률과 강수량을 꽃비의 밀도와 하늘의 밝기로 표현하는 미디어파사드 작품.",
+                  "artMedium": "HTML5 Canvas 실시간 렌더링",
+                  "creator": {
+                    "@id": "https://publicbloom.art/#organization"
+                  }
+                }
+              }
+            ]
+          }
         ]
       }
     </script>
@@ -77,9 +341,9 @@
         <a href="#service">시공·AS</a>
         <a href="#ai-pipeline">AI 파이프라인</a>
         <a href="#package">연간 패키지</a>
-        <a href="./data-media-art.html">데이터 미디어아트</a>
-        <a href="./company.html">회사소개</a>
-        <a href="./quote.html">견적문의</a>
+        <a href="./data-media-art">데이터 미디어아트</a>
+        <a href="./company">회사소개</a>
+        <a href="./quote">견적문의</a>
       </nav>
       <button class="nav-toggle" aria-label="메뉴 열기" aria-expanded="false" aria-controls="main-nav">
         <span></span><span></span><span></span>
@@ -201,7 +465,7 @@
             <span>관제</span>
             <h3>Fleet Control</h3>
             <p>여러 대를 한 화면에서 상태 확인·배포·리포트.</p>
-            <a class="inline-work-link" href="./admin.html">관제 프로그램 열기</a>
+            <a class="inline-work-link" href="./admin">관제 프로그램 열기</a>
           </article>
         </div>
 
@@ -315,7 +579,7 @@
               <span>Weather Interactive</span>
               <h3>오늘은 봄날</h3>
               <p>대구의 오늘 날씨와 현재 시각에 따라 시침, 초침, 꽃잎, 빛의 궤도가 달라지는 실시간 미디어아트입니다.</p>
-              <a class="inline-work-link" href="./data-media-art.html">작품 레퍼런스 보기</a>
+              <a class="inline-work-link" href="./data-media-art">작품 레퍼런스 보기</a>
             </div>
           </article>
           <article class="work-card">
@@ -326,7 +590,7 @@
               <span>Public Plaza</span>
               <h3>빛의 산책로</h3>
               <p>대구 미세먼지 API를 연결해 아이들이 공원에서 야외활동을 해도 되는지 빛의 색으로 보여줍니다.</p>
-              <a class="inline-work-link" href="./data-media-art.html">작품 레퍼런스 보기</a>
+              <a class="inline-work-link" href="./data-media-art">작품 레퍼런스 보기</a>
             </div>
           </article>
           <article class="work-card">
@@ -337,7 +601,7 @@
               <span>Healing Media Wall</span>
               <h3>숨 쉬는 정원</h3>
               <p>오늘 온도를 꽃의 크기, 색온도, 정원의 호흡 리듬으로 시각화하는 자연형 미디어월 작품입니다.</p>
-              <a class="inline-work-link" href="./data-media-art.html">작품 레퍼런스 보기</a>
+              <a class="inline-work-link" href="./data-media-art">작품 레퍼런스 보기</a>
             </div>
           </article>
           <article class="work-card">
@@ -348,7 +612,7 @@
               <span>Festival Facade</span>
               <h3>도시의 꽃비</h3>
               <p>기상 정보를 활용해 오늘 비가 올지 안 올지 꽃비의 밀도와 하늘의 밝기로 보여주는 작품입니다.</p>
-              <a class="inline-work-link" href="./data-media-art.html">작품 레퍼런스 보기</a>
+              <a class="inline-work-link" href="./data-media-art">작품 레퍼런스 보기</a>
             </div>
           </article>
         </div>
@@ -363,9 +627,9 @@
             <p>경주 날씨, 일몰 시간, 강수확률, 야간관광 동선, QR 축제 참여 데이터를 별빛과 금빛 문양의 움직임으로 바꿉니다.</p>
             <div class="live-readout"><strong>경주 라이브 데이터</strong><span data-live="gyeongjuWeather">경주 현재 데이터를 불러오는 중입니다.</span></div>
             <div class="region-quick-links" aria-label="경주 세부 작품 바로가기">
-              <a href="./data-media-art.html#gyeongju-media-art">첨성대</a>
-              <a href="./data-media-art.html#gyeongju-bomun-media-art">보문호</a>
-              <a href="./data-media-art.html#gyeongju-hwarang-festival-art">신라축제</a>
+              <a href="./data-media-art#gyeongju-media-art">첨성대</a>
+              <a href="./data-media-art#gyeongju-bomun-media-art">보문호</a>
+              <a href="./data-media-art#gyeongju-hwarang-festival-art">신라축제</a>
             </div>
           </article>
           <article class="region-link region-andong">
@@ -378,11 +642,28 @@
             <p>안동 풍속, 습도, 낙동강 수위, 공연 일정, 현장 설문 데이터를 한지 결, 물결, 탈춤 문양의 변화로 표현합니다.</p>
             <div class="live-readout"><strong>안동 라이브 데이터</strong><span data-live="andongWeather">안동 현재 데이터를 불러오는 중입니다.</span></div>
             <div class="region-quick-links" aria-label="안동 세부 작품 바로가기">
-              <a href="./data-media-art.html#andong-media-art">하회마을</a>
-              <a href="./data-media-art.html#andong-wolyeonggyo-moonboat-art">월영교</a>
-              <a href="./data-media-art.html#andong-mask-dance-festival-art">탈춤축제</a>
+              <a href="./data-media-art#andong-media-art">하회마을</a>
+              <a href="./data-media-art#andong-wolyeonggyo-moonboat-art">월영교</a>
+              <a href="./data-media-art#andong-mask-dance-festival-art">탈춤축제</a>
             </div>
           </article>
+        </div>
+        <div class="standalone-works" aria-label="전체 화면 단독 작품">
+          <p class="standalone-works-lead">아래 작품은 실제 사이니지에 송출되는 화면 그대로 전체 화면으로 열립니다. 브라우저에서 바로 확인하실 수 있습니다.</p>
+          <ul>
+            <li>
+              <a href="./공기질을 통한 인터렉션">대구 공기 정원</a>
+              <span>대구 미세먼지 실측값을 하늘의 밝기와 빛 입자의 속도로 번역합니다.</span>
+            </li>
+            <li>
+              <a href="./대구컬쳐">대구의 문화 맥박</a>
+              <span>대구 문화행사 공공데이터를 도시의 맥박처럼 뛰는 빛으로 시각화합니다.</span>
+            </li>
+            <li>
+              <a href="./영화 (永花)">영화 永花</a>
+              <span>바람·습도·온도에 따라 꽃의 움직임과 공간의 깊이가 달라집니다.</span>
+            </li>
+          </ul>
         </div>
         <div class="data-table-wrap" aria-label="작품별 데이터 활용 표">
           <table class="data-table">
@@ -581,7 +862,7 @@
           </p>
           <div class="contact-actions">
             <a class="primary-link" href="#inquiry-form">문의폼 작성하기</a>
-            <a class="secondary-link" href="#media-box">미디어박스 다시 보기</a>
+            <a class="secondary-link" href="./quote#faq">자주 묻는 질문</a>
           </div>
         </div>
         <div class="contact-summary">

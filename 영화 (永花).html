@@ -4,7 +4,43 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <meta name="naver-site-verification" content="065ca67de7d3753f1b02bdd17a7036c69ac372f7" />
-<title>영화 (永花)</title>
+<title>영화 永花 | 날씨 반응형 몰입형 미디어아트</title>
+    <meta name="description" content="바람·습도·온도에 반응해 꽃의 움직임과 공간의 깊이가 달라지는 몰입형 미디어아트." />
+    <link rel="canonical" href="https://publicbloom.art/%EC%98%81%ED%99%94%20(%E6%B0%B8%E8%8A%B1)" />
+    <meta property="og:type" content="article" />
+    <meta property="og:locale" content="ko_KR" />
+    <meta property="og:site_name" content="오늘은 봄날" />
+    <meta property="og:title" content="영화 永花 | 날씨 반응형 몰입형 미디어아트" />
+    <meta property="og:description" content="바람·습도·온도에 반응해 꽃의 움직임과 공간의 깊이가 달라지는 몰입형 미디어아트." />
+    <meta property="og:url" content="https://publicbloom.art/%EC%98%81%ED%99%94%20(%E6%B0%B8%E8%8A%B1)" />
+    <meta property="og:image" content="https://publicbloom.art/assets/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://publicbloom.art/assets/og-image.jpg" />
+    <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="./assets/favicon-180.png" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "VisualArtwork",
+        "@id": "https://publicbloom.art/%EC%98%81%ED%99%94%20(%E6%B0%B8%E8%8A%B1)#artwork",
+        "name": "영화 永花",
+        "url": "https://publicbloom.art/%EC%98%81%ED%99%94%20(%E6%B0%B8%E8%8A%B1)",
+        "description": "영화(永花)는 바람, 습도, 온도 변화에 반응해 꽃의 움직임과 공간의 깊이가 달라지는 몰입형 미디어아트입니다. 오늘의 기상 수치가 꽃잎의 흔들림과 화면의 원근으로 바뀌어, 미디어파사드와 대형 LED 미디어월에서 같은 화면이 매일 다르게 보입니다.",
+        "artMedium": "HTML5 Canvas 실시간 렌더링 · 기상 공공 API 연동",
+        "artform": "인터랙티브 미디어아트",
+        "creator": {
+          "@id": "https://publicbloom.art/#organization"
+        },
+        "copyrightHolder": {
+          "@id": "https://publicbloom.art/#organization"
+        },
+        "inLanguage": "ko-KR",
+        "dateModified": "2026-07-28",
+        "isPartOf": {
+          "@id": "https://publicbloom.art/#website"
+        }
+      }
+    </script>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{width:100%;height:100%;overflow:hidden;background:#06162e;touch-action:none}
@@ -125,9 +161,30 @@
     #footerClock{font-size:34px}
   }
   #overlay{display:none}
+      /* 캔버스만 있는 화면이라 스크린리더가 읽을 제목이 없다.
+         화면에는 보이지 않지만 보조기기와 크롤러는 읽는 설명을 둔다. */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        clip-path: inset(50%);
+        white-space: nowrap;
+        border: 0;
+      }
+
 </style>
 </head>
 <body>
+<div class="sr-only">
+  <h1>영화 永花</h1>
+  <p>영화(永花)는 바람, 습도, 온도 변화에 반응해 꽃의 움직임과 공간의 깊이가 달라지는 몰입형 미디어아트입니다. 오늘의 기상 수치가 꽃잎의 흔들림과 화면의 원근으로 바뀌어, 미디어파사드와 대형 LED 미디어월에서 같은 화면이 매일 다르게 보입니다.</p>
+  <p>제작·공급: 오늘은 봄날 (대구 여성기업). <a href="https://publicbloom.art/">오늘은 봄날 홈</a> · <a href="https://publicbloom.art/quote">도입 견적문의</a></p>
+</div>
+
 <canvas id="c"></canvas>
 <div id="treeLayer"></div>
 <div id="footerShade"></div>
