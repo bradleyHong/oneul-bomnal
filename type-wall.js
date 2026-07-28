@@ -87,20 +87,23 @@
 
   const CFG = {
     fps: 30,
-    dur: 46,
+    // 흐름을 늦추면 한 주기의 이동 거리가 짧아져 타일이 화면보다 짧아진다.
+    // 그러면 한 줄 안에서 같은 낱말이 반복돼 보이므로 주기를 함께 늘린다.
+    dur: 92,
     seed: 3147025,
     angle: -11,
-    speed: 0.75,
+    // 로비를 지나가며 읽는 화면이라 흐름이 빠르면 글자를 놓친다
+    speed: 0.36,
     // 기증자벽처럼 줄과 낱말을 바짝 붙여 화면을 글자로 가득 채운다
-    lead: 1.04,
-    gap: 0.34,
+    lead: 0.99,
+    gap: 0.24,
     trail: 0.26,
     sizevar: 0.42,
     dimvar: 0.25,
-    vstart: 14,   // 흐름 유지 시간
-    vdur: 9,      // 한 글자씩 사라지는 시간
-    vblank: 1.6,  // 암전
-    vreveal: 12,  // 한 글자씩 복귀
+    vstart: 30,   // 흐름 유지 시간
+    vdur: 14,     // 한 글자씩 사라지는 시간
+    vblank: 2,    // 암전
+    vreveal: 18,  // 한 글자씩 복귀
     beat: 0.22,   // 리듬 격자
     vpop: 0.3,
     vdrift: 0.4,
@@ -142,8 +145,10 @@
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
 
-    // 패널 폭에 맞춰 글자 크기를 정한다 (원본의 56px @ 3840 기준 비율)
-    const size = Math.max(W * 0.0138, 10);
+    // 패널 폭에 맞춰 글자 크기를 정한다.
+    // 최소값이 크면 사이트의 작은 프리뷰에서 열 몇 줄밖에 앉지 않아
+    // 기증자벽 같은 밀도가 나오지 않는다. 바닥을 낮춰 줄 수를 확보한다.
+    const size = Math.max(W * 0.0115, 6);
     const rand = mulberry32(CFG.seed | 0);
     RAD = (CFG.angle * Math.PI) / 180;
     const c = Math.abs(Math.cos(RAD)), s = Math.abs(Math.sin(RAD));
@@ -159,6 +164,13 @@
     if (TL < LW * 0.9 && L > 1) {
       L = Math.max(1, Math.floor(travel / (LW * 0.9)));
       TL = travel / L;
+    }
+    // 타일이 화면 길이보다 짧으면 같은 낱말이 한 화면 안에 두 번 보인다.
+    // 큰 패널에서는 느린 속도로 이 상황이 생기므로 타일을 화면보다 길게 잡는다.
+    // (속도는 조금 올라가지만 반복이 보이는 쪽이 더 눈에 띈다)
+    if (TL < LW * 1.02) {
+      L = 1;
+      TL = LW * 1.06;
     }
 
     ROWS = [];
@@ -394,6 +406,15 @@
       if (Number.isFinite(code)) live.code = code;
       if (Number.isFinite(pm25)) live.pm25 = pm25;
       if (Number.isFinite(pm10)) live.pm10 = pm10;
+      // 같은 값을 화면 위 실시간 박스의 기온 칸에도 넣는다
+      const tEl = document.querySelector("[data-live-temp]");
+      if (tEl && live.temp != null) tEl.textContent = Math.round(live.temp);
+      // 히어로 맨 윗줄의 기온·하늘 상태도 여기서 읽은 값을 그대로 쓴다.
+      const shared = (window.bomnalLive = window.bomnalLive || {});
+      if (live.temp != null) shared.temp = live.temp;
+      if (live.code != null) shared.sky = SKY[skyKey(live.code)].ko;
+      window.bomnalLiveUpdate?.();
+
       TEXTS = buildTexts();
       if (rect.width >= 2 && rect.height >= 2) {
         build();

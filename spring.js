@@ -1595,7 +1595,7 @@ function drawRefEnergyArt(c, w, h, mood, now) {
 }
 
 function drawRefSpringClock(c, w, h, mood, now) {
-  // Identical to drawMiniWork — full-quality spring/weather canvas with data panel
+  // Identical to drawMiniWork: full-quality spring/weather canvas with data panel
   const gradient = c.createLinearGradient(0, 0, w, h);
   gradient.addColorStop(0, `hsl(${184 - mood.cloud * 20}, 48%, 78%)`);
   gradient.addColorStop(0.55, `hsl(${52 + mood.tempWarmth * 16}, 82%, 84%)`);
@@ -1655,7 +1655,7 @@ function drawRefSpringClock(c, w, h, mood, now) {
 }
 
 function drawRefDustWalkArt(c, w, h, mood, now) {
-  // Identical to drawDustWalk — full-quality dust/air canvas with data panel
+  // Identical to drawDustWalk: full-quality dust/air canvas with data panel
   const pm10 = airQuality.pm10 ?? 42;
   const pm25 = airQuality.pm25 ?? 18;
   const cleanScore = Math.max(0, Math.min(1, 1 - Math.max(pm10 / 100, pm25 / 45)));
@@ -1722,7 +1722,7 @@ function drawRefDustWalkArt(c, w, h, mood, now) {
 }
 
 function drawRefTemperatureArt(c, w, h, mood, now) {
-  // Identical to drawTemperatureGarden — full-quality temperature garden with data panel
+  // Identical to drawTemperatureGarden: full-quality temperature garden with data panel
   const warmth = Math.max(0, Math.min(1, (weather.temp + 4) / 36));
   const pulse = 0.5 + Math.sin(now * (0.0025 + warmth * 0.002)) * 0.5;
   const gradient = c.createLinearGradient(0, 0, w, h);
@@ -1773,7 +1773,7 @@ function drawRefTemperatureArt(c, w, h, mood, now) {
 }
 
 function drawRefRainFlowerArt(c, w, h, mood, now) {
-  // Identical to drawRainFlowerCity — full-quality rain flower canvas with data panel
+  // Identical to drawRainFlowerCity: full-quality rain flower canvas with data panel
   const rainy = weather.rain > 0.1 || [51, 53, 55, 61, 63, 65, 80, 81, 82, 95].includes(weather.code);
   const rainPower = rainy ? Math.max(0.38, Math.min(1, weather.rain / 4 + mood.cloud * 0.45)) : Math.max(0.06, mood.cloud * 0.16);
   const gradient = c.createLinearGradient(0, 0, w, h);
@@ -1926,11 +1926,15 @@ async function loadWeather(isRetry = false) {
     const data = await res.json();
     const current = data.current;
 
-    weather.temp = current.temperature_2m;
-    weather.wind = current.wind_speed_10m / 3.6;
-    weather.code = current.weather_code;
-    weather.cloud = current.cloud_cover;
-    weather.rain = current.precipitation;
+    // 응답에 일부 항목이 빠져 오는 경우가 있다. 그대로 넣으면 undefined가
+    // 기본값을 덮어쓰고, 뒤에서 toFixed를 부르는 순간 예외가 나면서
+    // 공기질 로드까지 통째로 중단된다. 숫자로 온 값만 반영한다.
+    const num = (v, keep) => (Number.isFinite(Number(v)) ? Number(v) : keep);
+    weather.temp = num(current.temperature_2m, weather.temp);
+    weather.wind = num(current.wind_speed_10m, weather.wind * 3.6) / 3.6;
+    weather.code = num(current.weather_code, weather.code);
+    weather.cloud = num(current.cloud_cover, weather.cloud);
+    weather.rain = num(current.precipitation, weather.rain);
     weather.label = skyNames.get(weather.code) || "변화하는 하늘";
 
     if (placeLabel) {
@@ -1975,8 +1979,11 @@ async function loadAirQuality(place) {
   const res = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?${params}`, { signal: AbortSignal.timeout(10000) });
   if (!res.ok) throw new Error(`air-quality ${res.status}`);
   const data = await res.json();
-  airQuality.pm10 = data.current.pm10;
-  airQuality.pm25 = data.current.pm2_5;
+  // 아래 표시 코드는 null만 '연결 중'으로 걸러낸다. 값이 빠져 undefined가
+  // 들어오면 그 검사를 통과한 뒤 toFixed에서 터지므로 null로 맞춰 둔다.
+  const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : null);
+  airQuality.pm10 = num(data.current?.pm10);
+  airQuality.pm25 = num(data.current?.pm2_5);
   updatePublicDataTable();
 }
 

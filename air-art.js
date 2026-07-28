@@ -445,6 +445,18 @@
     if (detail) {
       detail.textContent = `초미세먼지(PM2.5) ${pm25.toFixed(0)} ㎍/㎥ · 미세먼지(PM10) ${pm10.toFixed(0)} ㎍/㎥ · ${state.grade.message}`;
     }
+    // 화면 위 실시간 박스 · 같은 값을 숫자와 글자로도 보여준다
+    const n25 = document.querySelector("[data-live-pm25]");
+    if (n25) n25.textContent = pm25.toFixed(0);
+    const n10 = document.querySelector("[data-live-pm10]");
+    if (n10) n10.textContent = pm10.toFixed(0);
+    // 히어로 맨 윗줄도 같은 값을 쓴다. 여기가 공기질을 읽는 유일한 곳이라
+    // 값이 들어올 때마다 공용 저장소에 넣고 그 줄을 다시 그리게 한다.
+    const shared = (window.bomnalLive = window.bomnalLive || {});
+    shared.pm25 = pm25;
+    shared.pm10 = pm10;
+    shared.grade = state.grade.label;
+    window.bomnalLiveUpdate?.();
     // 정지 모드에서는 루프가 돌지 않으므로 값이 바뀔 때 직접 다시 그린다.
     if (reduceMotion.matches) settleAndRender();
   }
