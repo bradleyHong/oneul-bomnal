@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>회원사 페이지 | 오늘은 봄날</title>
+    <link rel="stylesheet" href="./styles.css?v=20260728-auth" />
+    <link rel="stylesheet" href="./fleet.css?v=20260728-auth" />
+    <link rel="icon" href="./assets/favicon.png" type="image/png" />
+  </head>
+  <body class="fleet-page">
+    <header class="fleet-nav">
+      <div class="fleet-brand">
+        <strong>회원사 페이지</strong>
+        <span id="clientOrg">기관 정보를 불러오는 중…</span>
+      </div>
+      <div class="fleet-nav-tools">
+        <a href="./index.html">홈페이지</a>
+        <a href="#" data-logout>로그아웃</a>
+      </div>
+    </header>
+
+    <main class="fleet-main">
+      <p class="fleet-notice">
+        <strong id="clientWelcome">환영합니다.</strong>
+        우리 기관에 설치된 봄날 미디어박스의 운영 현황입니다. 콘텐츠 변경이나 긴급 점검이 필요하면 아래 요청 창구로 알려주세요.
+      </p>
+
+      <section class="fleet-summary" aria-label="우리 기관 운영 요약">
+        <article><span>설치 화면</span><strong id="cSites">-</strong></article>
+        <article><span>정상 운영</span><strong id="cOk">-</strong></article>
+        <article><span>이번 달 콘텐츠 갱신</span><strong id="cUpdates">-</strong></article>
+        <article><span>계약 상태</span><strong id="cContract">-</strong></article>
+      </section>
+
+      <div class="fleet-grid">
+        <section class="fleet-card" aria-labelledby="liveTitle">
+          <h2 id="liveTitle">지금 송출 중인 화면</h2>
+          <p class="fleet-card-desc">
+            우리 기관 화면에 현재 나가고 있는 미디어아트입니다. 대구 실시간 공공데이터가 그대로 반영됩니다.
+          </p>
+          <div class="client-live">
+            <canvas id="lobbyArtCanvas"></canvas>
+          </div>
+          <p class="fleet-tip" data-lobby-readout>대구 실시간 데이터를 불러오는 중입니다.</p>
+        </section>
+
+        <section class="fleet-card" aria-labelledby="reqTitle">
+          <h2 id="reqTitle">요청 창구</h2>
+          <p class="fleet-card-desc">콘텐츠 변경, 문구 수정, 긴급 점검을 요청하실 수 있습니다.</p>
+          <form
+            class="contact-form client-form"
+            action="https://formsubmit.co/visionpencil@gmail.com"
+            method="POST"
+          >
+            <input type="hidden" name="_subject" value="[오늘은 봄날] 회원사 요청" />
+            <input type="hidden" name="_template" value="table" />
+            <input type="hidden" name="_captcha" value="false" />
+            <input type="hidden" name="기관" id="reqOrg" value="" />
+            <label>
+              <span>요청 종류</span>
+              <select name="요청종류">
+                <option>콘텐츠 변경 (문구·이미지)</option>
+                <option>연동 데이터 변경</option>
+                <option>화면 이상 · 긴급 점검</option>
+                <option>계약·정산 문의</option>
+                <option>기타</option>
+              </select>
+            </label>
+            <label>
+              <span>담당자 연락처</span>
+              <input name="연락처" type="text" placeholder="010-0000-0000" required />
+            </label>
+            <label>
+              <span>요청 내용</span>
+              <textarea name="내용" rows="5" placeholder="예: 다음 주 축제 기간 동안 행사 안내 문구를 넣어주세요." required></textarea>
+            </label>
+            <button class="fleet-btn primary" type="submit">요청 보내기</button>
+            <p class="fleet-tip">접수되면 확인 후 24시간 이내에 연락드립니다. 긴급 장애는 010-3446-7797로 바로 연락 주세요.</p>
+          </form>
+        </section>
+      </div>
+
+      <section class="fleet-card wide" aria-labelledby="statusTitle">
+        <h2 id="statusTitle">설치 화면 현황</h2>
+        <p class="fleet-card-desc">
+          현재 운영 현황은 오늘은 봄날 관제 서버에서 관리되며, 월간 운영 리포트로 정리해 발송해 드립니다.
+        </p>
+        <div id="clientSites" class="client-sites">
+          <p class="client-empty">
+            운영 현황 데이터가 아직 연결되지 않았습니다. 설치가 완료되면 이 영역에 화면별 상태·최근 점검일이 표시됩니다.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="fleet-footer">
+      <span>오늘은 봄날 · 대표 박성실</span>
+      <span>010-3446-7797 · visionpencil@gmail.com</span>
+    </footer>
+
+    <script src="./auth.js?v=20260728-auth"></script>
+    <script src="./lobby-art.js?v=20260728-lobby2"></script>
+    <script>
+      (async () => {
+        try {
+          const res = await fetch("/api/session", { cache: "no-store" });
+          const s = await res.json();
+          if (!s.loggedIn) {
+            location.href = "/login.html?next=/client.html&expired=1";
+            return;
+          }
+          document.getElementById("clientOrg").textContent = s.org || s.id;
+          document.getElementById("clientWelcome").textContent = `${s.org || s.id} 담당자님, 환영합니다.`;
+          const reqOrg = document.getElementById("reqOrg");
+          if (reqOrg) reqOrg.value = s.org || s.id;
+          document.getElementById("cContract").textContent = "정상";
+        } catch {
+          /* 세션 조회 실패 시 화면은 그대로 두고, 보호는 미들웨어가 담당합니다. */
+        }
+      })();
+    </script>
+  </body>
+</html>

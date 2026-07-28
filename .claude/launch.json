@@ -2,10 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "bomnal",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": ["serve", "-l", "3456", "."],
-      "port": 3456
+      "name": "bomnal-site",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "4737"],
+      "port": 4737
     }
   ]
 }

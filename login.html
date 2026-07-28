@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>로그인 | 오늘은 봄날</title>
+    <link rel="stylesheet" href="./styles.css?v=20260728-auth" />
+    <link rel="stylesheet" href="./fleet.css?v=20260728-auth" />
+    <link rel="icon" href="./assets/favicon.png" type="image/png" />
+  </head>
+  <body class="fleet-page login-page">
+    <header class="fleet-nav">
+      <div class="fleet-brand">
+        <strong>오늘은 봄날</strong>
+        <span>관리자 · 회원사 로그인</span>
+      </div>
+      <div class="fleet-nav-tools"><a href="./index.html">홈페이지</a></div>
+    </header>
+
+    <main class="login-main">
+      <section class="login-card">
+        <h1>로그인</h1>
+        <p class="login-desc">
+          <strong>관리자</strong>는 관제 프로그램으로, <strong>회원사</strong>는 우리 기관 운영 현황 페이지로 이동합니다.
+          계정은 오늘은 봄날에서 발급합니다.
+        </p>
+
+        <div id="loginAlert" class="login-alert" hidden></div>
+
+        <form id="loginForm" autocomplete="on">
+          <label>
+            <span>아이디</span>
+            <input id="loginId" name="username" type="text" autocomplete="username" required />
+          </label>
+          <label>
+            <span>비밀번호</span>
+            <input id="loginPw" name="password" type="password" autocomplete="current-password" required />
+          </label>
+          <button id="loginBtn" type="submit" class="fleet-btn primary">로그인</button>
+        </form>
+
+        <p class="fleet-tip">
+          계정 발급·비밀번호 재설정은 대표 연락처(010-3446-7797) 또는 visionpencil@gmail.com으로 요청해주세요.
+        </p>
+      </section>
+
+      <aside class="login-side">
+        <h2>회원사 로그인으로 볼 수 있는 것</h2>
+        <ul>
+          <li>우리 기관에 설치된 미디어박스 현황과 진행 단계</li>
+          <li>현재 송출 중인 콘텐츠와 연동 데이터</li>
+          <li>월간 운영 리포트 및 점검·AS 이력</li>
+          <li>콘텐츠 변경·긴급 점검 요청 창구</li>
+        </ul>
+      </aside>
+    </main>
+
+    <footer class="fleet-footer">
+      <span>오늘은 봄날 · 대표 박성실</span>
+      <span>010-3446-7797 · visionpencil@gmail.com</span>
+    </footer>
+
+    <script src="./auth.js?v=20260728-auth"></script>
+    <script>
+      (() => {
+        const params = new URLSearchParams(location.search);
+        const alertBox = document.getElementById("loginAlert");
+
+        const showAlert = (msg, kind = "error") => {
+          alertBox.textContent = msg;
+          alertBox.className = `login-alert ${kind}`;
+          alertBox.hidden = false;
+        };
+
+        if (params.get("denied")) showAlert("관리자 권한이 필요한 페이지입니다.", "warn");
+        if (params.get("expired")) showAlert("로그인이 만료되었습니다. 다시 로그인해주세요.", "warn");
+
+        const form = document.getElementById("loginForm");
+        const btn = document.getElementById("loginBtn");
+
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          btn.disabled = true;
+          btn.textContent = "확인 중…";
+          alertBox.hidden = true;
+          try {
+            const res = await fetch("/api/login", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({
+                id: document.getElementById("loginId").value,
+                pw: document.getElementById("loginPw").value,
+              }),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || !data.ok) {
+              showAlert(data.error || "로그인에 실패했습니다.");
+              return;
+            }
+            const next = params.get("next");
+            const dest = next && next.startsWith("/") ? next : data.redirect || "/index.html";
+            location.href = dest;
+          } catch {
+            showAlert("네트워크 오류로 로그인하지 못했습니다. 잠시 후 다시 시도해주세요.");
+          } finally {
+            btn.disabled = false;
+            btn.textContent = "로그인";
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

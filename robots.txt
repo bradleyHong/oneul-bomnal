@@ -1,6 +1,9 @@
 User-agent: *
 Allow: /
 
+# 내부 운영용 관제 프로그램은 검색에 노출하지 않습니다.
+Disallow: /admin.html
+
 Sitemap: https://publicbloom.art/sitemap.xml
 Sitemap: https://publicbloom.art/rss.xml
 

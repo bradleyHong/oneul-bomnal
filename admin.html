@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>봄날 관제 프로그램 | Fleet Control</title>
+    <link rel="stylesheet" href="./styles.css?v=20260728-fleet" />
+    <link rel="stylesheet" href="./fleet.css?v=20260728-fleet" />
+    <link rel="icon" href="./assets/favicon.png" type="image/png" />
+  </head>
+  <body class="fleet-page">
+    <header class="fleet-nav">
+      <div class="fleet-brand">
+        <strong>봄날 관제 프로그램</strong>
+        <span>Fleet Control · 실측 · 설치 · 콘텐츠 · 원격 AS</span>
+      </div>
+      <div class="fleet-nav-tools">
+        <span id="storeMeta">저장된 내용 없음</span>
+        <a href="./index.html">홈페이지</a>
+      </div>
+    </header>
+
+    <main class="fleet-main">
+      <p class="fleet-notice">
+        이 화면은 오늘은 봄날 내부 운영용 도구입니다. 입력한 내용은 <strong>이 브라우저에만 저장</strong>되며 외부로 전송되지 않습니다.
+        다른 기기에서 이어서 쓰거나 백업할 때는 아래 <strong>JSON 내보내기</strong>를 사용하세요.
+      </p>
+
+      <section class="fleet-summary" aria-label="운영 요약">
+        <article><span>전체 현장</span><strong id="sumTotal">0</strong></article>
+        <article><span>운영 중</span><strong id="sumOperating">0</strong></article>
+        <article><span>조치 필요</span><strong id="sumIssues">0</strong></article>
+        <article><span>연 계약 매출</span><strong id="sumRevenue">0원</strong></article>
+      </section>
+
+      <div class="fleet-grid">
+        <!-- 실측 계산기 -->
+        <section class="fleet-card" aria-labelledby="calcTitle">
+          <h2 id="calcTitle">① 현장 실측 계산기</h2>
+          <p class="fleet-card-desc">
+            로비 벽면 크기와 주 시야 거리를 입력하면 권장 픽셀 피치·해상도·소비전력·전기 용량과 적합한 미디어박스를 산정합니다.
+            현장에서 바로 견적 근거로 쓸 수 있습니다.
+          </p>
+          <div class="fleet-form-row">
+            <label><span>벽면 가로 (m)</span><input id="calcW" type="number" step="0.1" min="0.5" value="4" /></label>
+            <label><span>벽면 세로 (m)</span><input id="calcH" type="number" step="0.1" min="0.5" value="2.5" /></label>
+          </div>
+          <div class="fleet-form-row">
+            <label><span>주 시야 거리 (m)</span><input id="calcDist" type="number" step="0.5" min="0.5" value="3" /></label>
+            <label><span>목표 휘도 (nit)</span><input id="calcLux" type="number" step="100" min="200" value="800" /></label>
+          </div>
+          <div id="calcResult" class="calc-result"></div>
+          <button id="applySpec" type="button" class="fleet-btn primary" disabled>이 사양으로 현장 등록하기 ▸</button>
+          <p class="fleet-tip">
+            픽셀 피치는 "최소 시야 거리(m) ≈ 피치(mm)" 경험식으로 산정합니다. 실내 사이니지 평균 250W/㎡·피크 600W/㎡, 전기 용량은 여유율 30%를 적용했습니다.
+          </p>
+        </section>
+
+        <!-- 현장 등록 -->
+        <section class="fleet-card" aria-labelledby="formTitle">
+          <h2 id="formTitle">② 현장 등록</h2>
+          <p class="fleet-card-desc">실측을 마친 현장을 등록하고 진행 단계를 관리합니다.</p>
+          <p id="specNote" class="fleet-spec-note" hidden></p>
+          <form id="siteForm">
+            <label><span>기관명 *</span><input id="fOrg" type="text" placeholder="예: 대구 북구청" required /></label>
+            <label><span>설치 위치</span><input id="fPlace" type="text" placeholder="예: 본관 1층 민원실 로비" /></label>
+            <label><span>담당자 연락처</span><input id="fContact" type="text" placeholder="예: 담당 김OO 053-000-0000" /></label>
+            <div class="fleet-form-row">
+              <label>
+                <span>현재 단계</span>
+                <select id="fStage">
+                  <option value="survey">실측</option>
+                  <option value="led">LED 설치</option>
+                  <option value="hardware">하드웨어 설치</option>
+                  <option value="content">콘텐츠 제작</option>
+                  <option value="operating">운영·AS</option>
+                </select>
+              </label>
+              <label>
+                <span>미디어박스</span>
+                <select id="fBox">
+                  <option value="맥미니 M4 (Standard)">맥미니 M4 (Standard)</option>
+                  <option value="라즈베리파이 5 (Edge)">라즈베리파이 5 (Edge)</option>
+                  <option value="맥미니 M4 Pro (Pro)">맥미니 M4 Pro (Pro)</option>
+                </select>
+              </label>
+            </div>
+            <label><span>연동 데이터 (기관 DB·공공 API)</span><input id="fData" type="text" placeholder="예: 에어코리아 공기질 · 민원 처리 현황" /></label>
+            <button type="submit" class="fleet-btn primary">현장 등록</button>
+          </form>
+        </section>
+      </div>
+
+      <!-- 현장 목록 -->
+      <section class="fleet-card wide" aria-labelledby="listTitle">
+        <div class="fleet-card-head">
+          <div>
+            <h2 id="listTitle">③ 설치 현장 관리 · 원격 AS</h2>
+            <p class="fleet-card-desc">단계 진행, 헬스체크 기록, AS 조치를 관리합니다. 4일 이상 점검 기록이 없는 현장은 확인이 필요합니다.</p>
+          </div>
+          <div class="fleet-filters">
+            <input id="siteSearch" type="search" placeholder="기관명·위치 검색" />
+            <select id="stageFilter">
+              <option value="all">전체 단계</option>
+              <option value="issue">조치 필요만</option>
+              <option value="survey">실측</option>
+              <option value="led">LED 설치</option>
+              <option value="hardware">하드웨어 설치</option>
+              <option value="content">콘텐츠 제작</option>
+              <option value="operating">운영·AS</option>
+            </select>
+          </div>
+        </div>
+        <div class="fleet-table-wrap">
+          <table class="fleet-table">
+            <thead>
+              <tr>
+                <th scope="col">현장</th>
+                <th scope="col">진행 단계</th>
+                <th scope="col">패널 사양</th>
+                <th scope="col">미디어박스</th>
+                <th scope="col">상태</th>
+                <th scope="col">연동 데이터</th>
+                <th scope="col">조치</th>
+              </tr>
+            </thead>
+            <tbody id="siteRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="fleet-grid">
+        <!-- 이력 -->
+        <section class="fleet-card" aria-labelledby="logTitle">
+          <h2 id="logTitle">④ 운영 이력</h2>
+          <p class="fleet-card-desc">단계 진행·헬스체크·AS 조치가 시간순으로 기록됩니다. 최근 40건을 표시합니다.</p>
+          <ul id="logList" class="fleet-log"></ul>
+        </section>
+
+        <!-- 데이터 도구 -->
+        <section class="fleet-card" aria-labelledby="dataTitle">
+          <h2 id="dataTitle">⑤ 데이터 · 리포트</h2>
+          <p class="fleet-card-desc">
+            백업·인수인계는 JSON으로, 발주처 제출용 월간 운영 리포트는 CSV로 내보냅니다. CSV는 엑셀에서 바로 열립니다.
+          </p>
+          <div class="fleet-actions">
+            <button id="exportReport" type="button" class="fleet-btn primary">운영 리포트 CSV 내보내기</button>
+            <button id="exportJson" type="button" class="fleet-btn">JSON 내보내기 (백업)</button>
+            <label class="fleet-btn as-label">
+              JSON 불러오기
+              <input id="importJson" type="file" accept="application/json" hidden />
+            </label>
+            <button id="loadSample" type="button" class="fleet-btn">예시 데이터 넣기</button>
+            <button id="clearAll" type="button" class="fleet-btn danger">전체 삭제</button>
+          </div>
+          <p class="fleet-tip">
+            브라우저 저장소를 사용하므로 시크릿 모드나 브라우저 데이터 삭제 시 내용이 지워집니다. 중요한 시점마다 JSON 내보내기로 백업해두세요.
+          </p>
+        </section>
+      </div>
+    </main>
+
+    <footer class="fleet-footer">
+      <span>오늘은 봄날 · 봄날 관제 프로그램 (Fleet Control)</span>
+      <span>대표 박성실 · 010-3446-7797 · visionpencil@gmail.com</span>
+    </footer>
+
+    <script src="./fleet.js?v=20260728-fleet"></script>
+      <script src="./auth.js?v=20260728-auth"></script>
+  </body>
+</html>

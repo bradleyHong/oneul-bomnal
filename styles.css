@@ -2737,3 +2737,609 @@ h1 {
     flex-direction: column;
   }
 }
+
+/* === 봄날 미디어박스 · 파이프라인 · 패키지 (2026 리포지셔닝) === */
+.media-box-section .mediabox-scene {
+  margin: 0 0 40px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #fff4ec, #f6ece0);
+  box-shadow: 0 24px 60px rgba(199, 105, 79, 0.14);
+  display: grid;
+  gap: 0;
+}
+.media-box-section .mediabox-scene img {
+  width: 100%;
+  height: auto;
+  display: block;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+.media-box-section .mediabox-scene figcaption {
+  padding: 20px 26px 22px;
+  display: grid;
+  gap: 6px;
+  background: #fffaf3;
+  border-top: 1px solid rgba(199, 105, 79, 0.12);
+}
+.media-box-section .mediabox-scene figcaption strong {
+  color: #b3543b;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+}
+.media-box-section .mediabox-scene figcaption span {
+  color: #6b5a52;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.mediabox-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: 32px;
+  align-items: center;
+  margin-bottom: 40px;
+}
+.mediabox-hero-image {
+  width: 100%;
+  height: auto;
+  border-radius: 20px;
+  box-shadow: 0 22px 55px rgba(199, 105, 79, 0.18);
+  object-fit: cover;
+  aspect-ratio: 4 / 3;
+  background: #fffaf3;
+}
+.mediabox-hero-copy span {
+  display: inline-block;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #b3543b;
+  background: rgba(233, 156, 128, 0.16);
+  padding: 6px 12px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+.mediabox-hero-copy h3 {
+  font-size: 26px;
+  line-height: 1.3;
+  margin: 0 0 12px;
+  color: #2b1e18;
+  letter-spacing: -0.01em;
+}
+.mediabox-hero-copy p {
+  color: #5a4a41;
+  line-height: 1.75;
+  margin: 0 0 16px;
+}
+.mediabox-spec {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+.mediabox-spec li {
+  position: relative;
+  padding-left: 22px;
+  color: #4a3d36;
+  line-height: 1.6;
+  font-size: 15px;
+}
+.mediabox-spec li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #e99c80;
+  box-shadow: 0 0 0 4px rgba(233, 156, 128, 0.22);
+}
+
+.mediabox-lineup.simple-cards { margin-top: 8px; }
+
+/* 5-stage AI pipeline */
+.pipeline-section .pipeline-steps {
+  list-style: none;
+  counter-reset: none;
+  padding: 0;
+  margin: 0 0 24px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+  position: relative;
+}
+.pipeline-section .pipeline-steps li {
+  background: #fffaf3;
+  border: 1px solid rgba(199, 105, 79, 0.14);
+  border-radius: 18px;
+  padding: 22px 20px 24px;
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.pipeline-section .pipeline-steps li:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px rgba(199, 105, 79, 0.12);
+}
+.pipeline-section .pipeline-steps li span {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: #b3543b;
+}
+.pipeline-section .pipeline-steps li h4 {
+  font-size: 17px;
+  color: #2b1e18;
+  margin: 4px 0 6px;
+  line-height: 1.35;
+}
+.pipeline-section .pipeline-steps li .pipeline-tool {
+  font-size: 12px;
+  color: #b3543b;
+  background: rgba(233, 156, 128, 0.14);
+  padding: 5px 9px;
+  border-radius: 8px;
+  display: inline-block;
+  width: fit-content;
+  line-height: 1.3;
+  margin: 0 0 6px;
+}
+.pipeline-section .pipeline-steps li p {
+  color: #5a4a41;
+  font-size: 14px;
+  line-height: 1.65;
+  margin: 0;
+}
+.pipeline-section .pipeline-caveat {
+  color: #6b5a52;
+  font-size: 14px;
+  line-height: 1.7;
+  padding: 16px 20px;
+  background: rgba(199, 105, 79, 0.06);
+  border-radius: 12px;
+  border-left: 3px solid #e99c80;
+}
+
+/* Annual package */
+.package-section .package-card {
+  background: linear-gradient(140deg, #fff5ec 0%, #ffe9d8 100%);
+  border-radius: 22px;
+  padding: 32px 34px 30px;
+  box-shadow: 0 24px 60px rgba(199, 105, 79, 0.16);
+  margin-bottom: 28px;
+}
+.package-section .package-headline {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px dashed rgba(199, 105, 79, 0.28);
+}
+.package-section .package-badge {
+  background: #b3543b;
+  color: #fff5ec;
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+.package-section .package-price {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.package-section .package-price strong {
+  font-size: 34px;
+  color: #7c2e1f;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.package-section .package-price span {
+  font-size: 14px;
+  color: #7c5a4d;
+}
+.package-section .package-breakdown {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+  display: grid;
+  gap: 12px;
+}
+.package-section .package-breakdown li {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  color: #4a3d36;
+  line-height: 1.55;
+  align-items: baseline;
+}
+.package-section .package-breakdown li span { flex: 1; min-width: 0; font-size: 15px; }
+.package-section .package-breakdown li strong {
+  color: #7c2e1f;
+  font-size: 15px;
+  white-space: nowrap;
+  font-weight: 600;
+}
+.package-section .package-note {
+  font-size: 13px;
+  color: #6b5a52;
+  line-height: 1.65;
+  margin: 8px 0 0;
+}
+.package-section .package-roadmap {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.package-section .package-roadmap article {
+  background: #fffaf3;
+  border: 1px solid rgba(199, 105, 79, 0.14);
+  border-radius: 16px;
+  padding: 22px 20px;
+  display: grid;
+  gap: 6px;
+}
+.package-section .package-roadmap article span {
+  font-size: 12px;
+  color: #b3543b;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+.package-section .package-roadmap article h4 {
+  font-size: 17px;
+  margin: 2px 0 2px;
+  color: #2b1e18;
+}
+.package-section .package-roadmap article p {
+  font-size: 14px;
+  color: #5a4a41;
+  line-height: 1.6;
+  margin: 0;
+}
+.package-section .package-roadmap article strong {
+  color: #7c2e1f;
+  font-size: 20px;
+  margin-top: 6px;
+  letter-spacing: -0.01em;
+}
+
+@media (max-width: 900px) {
+  .mediabox-hero { grid-template-columns: 1fr; gap: 22px; }
+  .pipeline-section .pipeline-steps { grid-template-columns: repeat(2, 1fr); }
+  .package-section .package-roadmap { grid-template-columns: 1fr; }
+  .package-section .package-card { padding: 24px 22px; }
+  .package-section .package-price strong { font-size: 28px; }
+}
+@media (max-width: 560px) {
+  .pipeline-section .pipeline-steps { grid-template-columns: 1fr; }
+  .package-section .package-breakdown li { flex-direction: column; gap: 4px; }
+  .package-section .package-breakdown li strong { align-self: flex-start; }
+}
+.hero-tagline { font-weight: 500; color: #2b1e18; }
+.hero-tagline strong { color: #7c2e1f; }
+.is-night .hero-tagline { color: #f7ecd8; }
+.is-night .hero-tagline strong { color: #ffd7b3; }
+.hero-weather-line { opacity: 0.85; font-size: 15px; margin-top: 6px; }
+
+/* === 가상 LED 패널 + 대구 공기질 반응 미디어아트 === */
+.led-stage {
+  position: relative;
+  margin: 0 0 24px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #0d0d0d;
+  box-shadow: 0 26px 64px rgba(43, 30, 24, 0.22);
+  line-height: 0;
+}
+.led-stage-photo {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+/* 패널 사진의 화면 영역에 맞춘 좌표 (2752x1536 원본 기준) */
+.led-stage-screen {
+  position: absolute;
+  left: 22.86%;
+  top: 17.19%;
+  width: 54.54%;
+  height: 60.16%;
+  overflow: hidden;
+  background: #111;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.55);
+}
+.led-stage-screen canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* LED 픽셀 격자 질감 */
+.led-stage-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.16) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.16) 0 1px, transparent 1px 3px);
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+
+.air-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 22px;
+  background: #fffaf3;
+  border: 1px solid rgba(199, 105, 79, 0.14);
+  border-radius: 16px;
+  margin-bottom: 24px;
+}
+.air-status { display: grid; gap: 4px; }
+.air-status-label {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #b3543b;
+  font-weight: 700;
+}
+.air-status strong {
+  font-size: 26px;
+  line-height: 1.1;
+  color: #7c2e1f;
+  letter-spacing: -0.01em;
+}
+.air-status small {
+  font-size: 13px;
+  color: #6b5a52;
+  line-height: 1.6;
+}
+.air-demo-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.air-demo-buttons > span {
+  font-size: 12px;
+  color: #8a7268;
+  margin-right: 4px;
+}
+.air-demo-buttons button {
+  border: 1px solid rgba(199, 105, 79, 0.28);
+  background: #fff;
+  color: #7c5a4d;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.air-demo-buttons button:hover { border-color: #b3543b; color: #b3543b; }
+.air-demo-buttons button.active {
+  background: #b3543b;
+  border-color: #b3543b;
+  color: #fff5ec;
+}
+
+@media (max-width: 700px) {
+  .air-controls { flex-direction: column; align-items: flex-start; }
+  .air-status strong { font-size: 22px; }
+}
+
+/* === 기관 디자인·DB 반영 브리프 === */
+.custom-brief {
+  margin-top: 32px;
+  padding: 30px 32px;
+  background: linear-gradient(140deg, #fff5ec 0%, #f7ece0 100%);
+  border-radius: 20px;
+  display: grid;
+  gap: 24px;
+}
+.custom-brief-copy span {
+  display: inline-block;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #b3543b;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.custom-brief-copy h3 {
+  font-size: 22px;
+  line-height: 1.4;
+  color: #2b1e18;
+  margin: 0 0 10px;
+  letter-spacing: -0.01em;
+}
+.custom-brief-copy p {
+  color: #5a4a41;
+  line-height: 1.75;
+  margin: 0;
+}
+.custom-brief-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+.custom-brief-steps li {
+  background: #fffaf3;
+  border: 1px solid rgba(199, 105, 79, 0.14);
+  border-radius: 14px;
+  padding: 18px 16px;
+  display: grid;
+  gap: 6px;
+  align-content: start;
+}
+.custom-brief-steps li span {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: #b3543b;
+}
+.custom-brief-steps li h4 {
+  font-size: 15px;
+  margin: 2px 0 0;
+  color: #2b1e18;
+  line-height: 1.35;
+}
+.custom-brief-steps li p {
+  font-size: 13px;
+  color: #5a4a41;
+  line-height: 1.6;
+  margin: 0;
+}
+@media (max-width: 900px) {
+  .custom-brief-steps { grid-template-columns: repeat(2, 1fr); }
+  .custom-brief { padding: 24px 22px; }
+}
+@media (max-width: 560px) {
+  .custom-brief-steps { grid-template-columns: 1fr; }
+}
+
+/* === 관공서 로비 미디어월 라이브 송출 화면 === */
+.lobby-stage {
+  position: relative;
+  line-height: 0;
+  background: #0d0d0d;
+}
+.lobby-stage-photo {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+/* lobby-blank.png(2752x1536)의 검은 화면 영역 실측값 */
+.lobby-stage-screen {
+  position: absolute;
+  left: 30.27%;
+  top: 29.36%;
+  width: 39.46%;
+  height: 36.72%;
+  overflow: hidden;
+  background: #111;
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
+}
+.lobby-stage-screen canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.lobby-stage-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.14) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.14) 0 1px, transparent 1px 3px);
+  mix-blend-mode: multiply;
+  opacity: 0.45;
+}
+
+/* === 턴키 서비스 5단계 (실측 → 설치 → 콘텐츠 → AS) === */
+.service-flow {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 22px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+  counter-reset: none;
+}
+.service-flow li {
+  background: #fffaf3;
+  border: 1px solid rgba(199, 105, 79, 0.16);
+  border-radius: 18px;
+  padding: 22px 18px 20px;
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  position: relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.service-flow li:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px rgba(199, 105, 79, 0.13);
+}
+.service-flow li > span {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: #b3543b;
+}
+.service-flow li h3 {
+  font-size: 18px;
+  margin: 2px 0 4px;
+  color: #2b1e18;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+.service-flow li > p {
+  font-size: 14px;
+  color: #5a4a41;
+  line-height: 1.68;
+  margin: 0 0 6px;
+}
+.service-flow li ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 6px;
+  border-top: 1px dashed rgba(199, 105, 79, 0.24);
+  padding-top: 10px;
+}
+.service-flow li ul li {
+  all: unset;
+  display: block;
+  position: relative;
+  padding-left: 14px;
+  font-size: 13px;
+  color: #6b5a52;
+  line-height: 1.55;
+}
+.service-flow li ul li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #e99c80;
+}
+.service-flow-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+  padding: 16px 20px;
+  background: rgba(199, 105, 79, 0.07);
+  border-left: 3px solid #e99c80;
+  border-radius: 12px;
+}
+.service-flow-note strong { color: #7c2e1f; font-size: 15px; }
+.service-flow-note span { color: #6b5a52; font-size: 14px; line-height: 1.65; }
+
+@media (max-width: 1100px) {
+  .service-flow { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 760px) {
+  .service-flow { grid-template-columns: 1fr; }
+}
