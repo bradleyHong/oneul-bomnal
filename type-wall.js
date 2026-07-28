@@ -1,8 +1,12 @@
 /**
- * 봄날 타이포 월 · 로비 LED 패널용 다국어 타이포 미디어아트
+ * 봄날 타이포 월 · 로비 LED 패널용 다국어 실시간 타이포 미디어아트
  *
- * 원본 DAEGU TYPE WALL(제어 패널판)에서 송출에 필요한 부분만 남긴 판입니다.
- * 결정론적 렌더(Math.random·Date.now 미사용)라 언제 재생해도 같은 화면이 나옵니다.
+ * 기관명·날짜·날씨·미세먼지를 6개 언어로 촘촘히 흘려보냅니다.
+ * 로비를 지나는 외국인 방문객도 자기 언어를 만나게 되고, 한국어만 읽는
+ * 사람에게는 여섯 언어가 겹쳐 흐르는 장면 자체가 작품이 됩니다.
+ *
+ * 표시값은 대구 실측 데이터이고, 렌더 자체는 결정론적(Math.random·Date.now 미사용)이라
+ * 같은 데이터라면 언제 재생해도 같은 화면이 나옵니다.
  * 기관명만 바꾸면 도시·기관 단위로 통째 교체할 수 있습니다.
  */
 (() => {
@@ -10,24 +14,88 @@
   if (!canvas) return;
   const ctx = canvas.getContext("2d", { alpha: false });
 
-  const TEXTS = [
-    "대구광역시", "대구시청",
-    "DAEGU METROPOLITAN CITY", "DAEGU CITY HALL",
-    "大邱広域市", "大邱市役所",
-    "大邱广域市", "大邱市政府",
-    "นครแทกู", "ศาลาว่าการนครแทกู",
-    "Thành phố Daegu", "Tòa thị chính Daegu",
-  ];
+  // 대구 중심 좌표
+  const LAT = 35.8714;
+  const LON = 128.6014;
+
+  const LOCALES = ["ko", "en", "ja", "zh", "th", "vi"];
+
+  const CITY = {
+    ko: "대구광역시", en: "DAEGU METROPOLITAN CITY", ja: "大邱広域市",
+    zh: "大邱广域市", th: "นครแทกู", vi: "Thành phố Daegu",
+  };
+  const HALL = {
+    ko: "대구시청", en: "DAEGU CITY HALL", ja: "大邱市役所",
+    zh: "大邱市政府", th: "ศาลาว่าการนครแทกู", vi: "Tòa thị chính Daegu",
+  };
+  // WMO 기상 코드를 여섯 갈래로 묶는다
+  const SKY = {
+    clear: { ko: "맑음", en: "CLEAR", ja: "晴れ", zh: "晴", th: "ท้องฟ้าแจ่มใส", vi: "Trời quang" },
+    cloud: { ko: "구름", en: "CLOUDY", ja: "くもり", zh: "多云", th: "มีเมฆ", vi: "Nhiều mây" },
+    overcast: { ko: "흐림", en: "OVERCAST", ja: "曇天", zh: "阴", th: "ฟ้าครึ้ม", vi: "Trời âm u" },
+    fog: { ko: "안개", en: "FOG", ja: "霧", zh: "雾", th: "หมอก", vi: "Sương mù" },
+    rain: { ko: "비", en: "RAIN", ja: "雨", zh: "雨", th: "ฝนตก", vi: "Mưa" },
+    snow: { ko: "눈", en: "SNOW", ja: "雪", zh: "雪", th: "หิมะ", vi: "Tuyết" },
+  };
+  const PM25 = {
+    ko: "초미세먼지", en: "PM2.5", ja: "微小粒子状物質", zh: "细颗粒物", th: "ฝุ่น PM2.5", vi: "Bụi mịn PM2.5",
+  };
+  const PM10 = {
+    ko: "미세먼지", en: "PM10", ja: "浮遊粒子状物質", zh: "可吸入颗粒物", th: "ฝุ่น PM10", vi: "Bụi PM10",
+  };
+  const AIR = {
+    good: { ko: "공기 좋음", en: "AIR GOOD", ja: "空気良好", zh: "空气良好", th: "อากาศดี", vi: "Không khí tốt" },
+    fair: { ko: "공기 보통", en: "AIR MODERATE", ja: "空気普通", zh: "空气一般", th: "อากาศปานกลาง", vi: "Không khí trung bình" },
+    poor: { ko: "공기 나쁨", en: "AIR POOR", ja: "空気悪い", zh: "空气较差", th: "อากาศไม่ดี", vi: "Không khí kém" },
+    bad: { ko: "공기 매우 나쁨", en: "AIR VERY POOR", ja: "空気非常に悪い", zh: "空气很差", th: "อากาศแย่มาก", vi: "Không khí rất kém" },
+  };
+  const LOCALE_TAG = { ko: "ko-KR", en: "en-GB", ja: "ja-JP", zh: "zh-CN", th: "th-TH", vi: "vi-VN" };
+
+  const skyKey = (code) => {
+    if (code == null) return "clear";
+    if (code === 0 || code === 1) return "clear";
+    if (code === 2) return "cloud";
+    if (code === 3) return "overcast";
+    if (code >= 45 && code <= 48) return "fog";
+    if (code >= 71 && code <= 77) return "snow";
+    if (code >= 85 && code <= 86) return "snow";
+    if (code >= 51) return "rain";
+    return "cloud";
+  };
+  const airKey = (pm25) => (pm25 <= 15 ? "good" : pm25 <= 35 ? "fair" : pm25 <= 75 ? "poor" : "bad");
+
+  const live = { temp: null, code: null, pm25: null, pm10: null };
+
+  /** 지금 대구의 상태를 여섯 언어 문장으로 펼친다. 데이터가 없으면 도시명만 흐른다. */
+  function buildTexts() {
+    const out = [];
+    const now = new Date();
+    for (const L of LOCALES) {
+      out.push(CITY[L], HALL[L]);
+      out.push(now.toLocaleDateString(LOCALE_TAG[L], { year: "numeric", month: "long", day: "numeric" }));
+      if (live.temp != null) out.push(`${SKY[skyKey(live.code)][L]} ${Math.round(live.temp)}°C`);
+      if (live.pm25 != null) {
+        out.push(`${PM25[L]} ${Math.round(live.pm25)}`);
+        out.push(AIR[airKey(live.pm25)][L]);
+      }
+      if (live.pm10 != null) out.push(`${PM10[L]} ${Math.round(live.pm10)}`);
+    }
+    return out;
+  }
+
+  let TEXTS = buildTexts();
 
   const CFG = {
     fps: 30,
     dur: 46,
     seed: 3147025,
-    angle: -14,
+    angle: -11,
     speed: 0.75,
-    lead: 1.24,
+    // 기증자벽처럼 줄과 낱말을 바짝 붙여 화면을 글자로 가득 채운다
+    lead: 1.04,
+    gap: 0.34,
     trail: 0.26,
-    sizevar: 0.35,
+    sizevar: 0.42,
     dimvar: 0.25,
     vstart: 14,   // 흐름 유지 시간
     vdur: 9,      // 한 글자씩 사라지는 시간
@@ -75,7 +143,7 @@
     canvas.height = Math.round(H * dpr);
 
     // 패널 폭에 맞춰 글자 크기를 정한다 (원본의 56px @ 3840 기준 비율)
-    const size = Math.max(W * 0.0155, 11);
+    const size = Math.max(W * 0.0138, 10);
     const rand = mulberry32(CFG.seed | 0);
     RAD = (CFG.angle * Math.PI) / 180;
     const c = Math.abs(Math.cos(RAD)), s = Math.abs(Math.sin(RAD));
@@ -104,7 +172,7 @@
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.font = font;
 
-      const gap0 = fs * 0.62;
+      const gap0 = fs * CFG.gap;
       const pool = [];
       let acc = 0;
       while (acc < TL + gap0 * 2) {
@@ -122,13 +190,13 @@
       let used = pool.slice(0, best);
       let sumW = used.reduce((a, o) => a + o.w, 0);
       let gap = (TL - sumW) / best;
-      if (gap < fs * 0.3 && best > 1) {
+      if (gap < fs * CFG.gap * 0.72 && best > 1) {
         best -= 1;
         used = pool.slice(0, best);
         sumW = used.reduce((a, o) => a + o.w, 0);
         gap = (TL - sumW) / best;
       }
-      gap = Math.max(fs * 0.3, gap);
+      gap = Math.max(fs * CFG.gap * 0.72, gap);
 
       const toks = [];
       let x = 0;
@@ -236,19 +304,46 @@
   }
 
   // 백그라운드 전환 시에도 화면이 멈추지 않도록 저프레임 타이머로 대체한다.
+  // 숨겨진 탭에서 대기하던 rAF 콜백을 취소하지 않으면
+  // 화면 전환을 반복할수록 루프가 중복돼 애니메이션이 빨라지고 CPU가 오른다.
   let frame = 0;
   let fallbackTimer = null;
+  let rafId = 0;
   const step = () => { renderFrame(frame % TOTAL); frame += 1; };
-  function loop() { step(); if (!document.hidden) requestAnimationFrame(loop); }
+
+  // 스크롤 밖에 있는 동안은 프레임을 진행시키지 않는다.
+  let onScreen = true;
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(
+      (entries) => { onScreen = entries[entries.length - 1].isIntersecting; },
+      { rootMargin: "160px 0px" }
+    ).observe(canvas);
+  }
+
+  const reduceMotion = window.matchMedia
+    ? window.matchMedia("(prefers-reduced-motion: reduce)")
+    : { matches: false };
+
+  function loop() { rafId = 0; if (onScreen) step(); if (!document.hidden) rafId = requestAnimationFrame(loop); }
   function startLoop() {
+    // '움직임 줄이기' 설정에서는 글자가 자리를 잡은 한 장면에서 멈춘다.
+    if (reduceMotion.matches) {
+      if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+      if (fallbackTimer) { window.clearInterval(fallbackTimer); fallbackTimer = null; }
+      renderFrame(Math.floor(TOTAL * 0.5));
+      return;
+    }
     if (document.hidden) {
+      if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
       if (!fallbackTimer) fallbackTimer = window.setInterval(step, 1000 / 12);
       return;
     }
     if (fallbackTimer) { window.clearInterval(fallbackTimer); fallbackTimer = null; }
-    requestAnimationFrame(loop);
+    if (rafId) return;
+    rafId = requestAnimationFrame(loop);
   }
   document.addEventListener("visibilitychange", startLoop);
+  reduceMotion.addEventListener?.("change", startLoop);
 
   let resizeTimer = null;
   const rebuild = () => {
@@ -278,10 +373,60 @@
     try { new ResizeObserver(ensureSize).observe(canvas); } catch { /* 미지원 환경은 위 타이머로 대응 */ }
   }
 
+  // ── 실시간 데이터 ────────────────────────────────────────────
+  // 값이 바뀌면 문구 목록을 다시 만들고 벽을 재구성한다.
+  // 흐름이 끊겨 보이지 않도록 프레임 위치는 그대로 이어간다.
+  const sleep = (ms) => new Promise((r) => window.setTimeout(r, ms));
+
+  async function loadLive() {
+    const rect = canvas.getBoundingClientRect();
+    try {
+      const [w, a] = await Promise.all([
+        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,weather_code&timezone=Asia%2FSeoul`).then((r) => r.json()),
+        fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&current=pm10,pm2_5&timezone=Asia%2FSeoul`).then((r) => r.json()),
+      ]);
+      const temp = Number(w?.current?.temperature_2m);
+      const code = Number(w?.current?.weather_code);
+      const pm25 = Number(a?.current?.pm2_5);
+      const pm10 = Number(a?.current?.pm10);
+      if (!Number.isFinite(temp) && !Number.isFinite(pm25)) return false;
+      if (Number.isFinite(temp)) live.temp = temp;
+      if (Number.isFinite(code)) live.code = code;
+      if (Number.isFinite(pm25)) live.pm25 = pm25;
+      if (Number.isFinite(pm10)) live.pm10 = pm10;
+      TEXTS = buildTexts();
+      if (rect.width >= 2 && rect.height >= 2) {
+        build();
+        step();
+      }
+      return true;
+    } catch {
+      // 실패해도 도시명만으로 계속 재생된다. 재시도에 맡긴다.
+      return false;
+    }
+  }
+
+  async function loadLiveWithRetry() {
+    const delays = [0, 1500, 4000, 10000];
+    for (let i = 0; i < delays.length; i += 1) {
+      if (delays[i]) await sleep(delays[i]);
+      if (await loadLive()) return true;
+    }
+    return false;
+  }
+
   (async () => {
     if (document.fonts?.ready) { try { await document.fonts.ready; } catch { /* 폰트 대기 실패해도 진행 */ } }
     build();
     step();
     startLoop();
+    loadLiveWithRetry();
+    window.setInterval(loadLiveWithRetry, 10 * 60 * 1000);
+    // 자정을 넘기면 날짜 문구가 어제로 남는다. 정시마다 다시 만든다.
+    window.setInterval(() => {
+      TEXTS = buildTexts();
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width >= 2 && rect.height >= 2) { build(); step(); }
+    }, 60 * 60 * 1000);
   })();
 })();

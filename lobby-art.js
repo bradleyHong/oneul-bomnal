@@ -191,13 +191,38 @@
     drawDataStrip();
   }
 
+  // 숨겨진 탭에서 대기 중이던 rAF 콜백이 복귀할 때 살아나므로,
+  // 취소하지 않으면 화면 전환마다 루프가 중복돼 CPU가 누적 상승한다.
   let fallbackTimer = null;
+  let rafId = 0;
   function loop(t) {
+    rafId = 0;
     render(t);
-    if (!document.hidden) requestAnimationFrame(loop);
+    if (!document.hidden) rafId = requestAnimationFrame(loop);
   }
+  const reduceMotion = window.matchMedia
+    ? window.matchMedia("(prefers-reduced-motion: reduce)")
+    : { matches: false };
+
   function startLoop() {
+    // '움직임 줄이기' 설정에서는 흐름을 멈추고 현재 상태를 한 장으로 보여준다.
+    if (reduceMotion.matches) {
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+      if (fallbackTimer) {
+        window.clearInterval(fallbackTimer);
+        fallbackTimer = null;
+      }
+      render(performance.now());
+      return;
+    }
     if (document.hidden) {
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
       if (!fallbackTimer) {
         fallbackTimer = window.setInterval(() => render(performance.now()), 1000 / 12);
       }
@@ -207,9 +232,11 @@
       window.clearInterval(fallbackTimer);
       fallbackTimer = null;
     }
-    requestAnimationFrame(loop);
+    if (rafId) return;
+    rafId = requestAnimationFrame(loop);
   }
   document.addEventListener("visibilitychange", startLoop);
+  reduceMotion.addEventListener?.("change", startLoop);
 
   function paintCaption() {
     const el = document.querySelector("[data-lobby-readout]");

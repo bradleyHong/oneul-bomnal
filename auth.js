@@ -36,7 +36,7 @@
         } catch {
           /* 실패해도 로그인 화면으로 보냅니다. */
         }
-        location.href = "/index.html";
+        location.href = "/";
       });
     });
   }
@@ -56,7 +56,7 @@
     nav.querySelectorAll("[data-auth-link]").forEach((el) => el.remove());
 
     if (!session.loggedIn) {
-      const login = makeLink("./login.html", "로그인", "nav-auth-login");
+      const login = makeLink("./login", "로그인", "nav-auth-login");
       login.dataset.authLink = "guest";
       nav.appendChild(login);
       bindLogout();
@@ -64,11 +64,11 @@
     }
 
     if (session.role === "admin") {
-      const admin = makeLink("./admin.html", "관제 프로그램", "nav-auth-admin");
+      const admin = makeLink("./admin", "관제 프로그램", "nav-auth-admin");
       admin.dataset.authLink = "admin";
       nav.appendChild(admin);
     } else {
-      const client = makeLink("./client.html", "회원사 페이지", "nav-auth-member");
+      const client = makeLink("./client", "회원사 페이지", "nav-auth-member");
       client.dataset.authLink = "member";
       nav.appendChild(client);
     }
