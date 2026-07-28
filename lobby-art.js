@@ -200,7 +200,24 @@
     render(t);
     if (!document.hidden) rafId = requestAnimationFrame(loop);
   }
+  const reduceMotion = window.matchMedia
+    ? window.matchMedia("(prefers-reduced-motion: reduce)")
+    : { matches: false };
+
   function startLoop() {
+    // '움직임 줄이기' 설정에서는 흐름을 멈추고 현재 상태를 한 장으로 보여준다.
+    if (reduceMotion.matches) {
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+      if (fallbackTimer) {
+        window.clearInterval(fallbackTimer);
+        fallbackTimer = null;
+      }
+      render(performance.now());
+      return;
+    }
     if (document.hidden) {
       if (rafId) {
         cancelAnimationFrame(rafId);
@@ -219,6 +236,7 @@
     rafId = requestAnimationFrame(loop);
   }
   document.addEventListener("visibilitychange", startLoop);
+  reduceMotion.addEventListener?.("change", startLoop);
 
   function paintCaption() {
     const el = document.querySelector("[data-lobby-readout]");

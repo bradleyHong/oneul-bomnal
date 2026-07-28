@@ -522,12 +522,24 @@ function drawClockArt(mood) {
   ctx.restore();
 }
 
+/* 운영체제의 '움직임 줄이기' 설정을 따른다.
+   공공기관 이용자를 상대하는 사이트라 웹 접근성 기준을 지켜야 한다.
+   끄면 흐름을 멈추고, 시계가 어긋나지 않게 1분에 한 장씩만 다시 그린다. */
+const reduceMotion = window.matchMedia
+  ? window.matchMedia("(prefers-reduced-motion: reduce)")
+  : { matches: false };
+let _sceneRafId = 0;
+let _stillTimer = null;
+
 function animate(now) {
+  _sceneRafId = 0;
   time = now;
   pointer.force *= 0.94;
   const mood = weatherMood();
   document.documentElement.classList.toggle("is-night", mood.nightFactor > 0.38);
-  if (ctx) {
+  // 히어로 화면이 스크롤 밖으로 나가면 가장 무거운 장면을 그릴 이유가 없다.
+  // 캔버스는 마지막 프레임을 그대로 들고 있으므로 되돌아와도 비어 있지 않다.
+  if (ctx && isCanvasOnScreen(canvas)) {
     drawBackground(mood);
     drawBreath(mood);
     drawNightSky(mood);
@@ -547,11 +559,56 @@ function animate(now) {
   drawPropMobility(mood, now);
   drawPropEnergy(mood, now);
   drawPropFestival(mood, now);
-  requestAnimationFrame(animate);
+  if (!reduceMotion.matches) _sceneRafId = requestAnimationFrame(animate);
+}
+
+function startScene() {
+  if (reduceMotion.matches) {
+    if (_sceneRafId) {
+      cancelAnimationFrame(_sceneRafId);
+      _sceneRafId = 0;
+    }
+    if (!_stillTimer) _stillTimer = window.setInterval(() => animate(performance.now()), 60 * 1000);
+    animate(performance.now());
+    return;
+  }
+  if (_stillTimer) {
+    window.clearInterval(_stillTimer);
+    _stillTimer = null;
+  }
+  if (_sceneRafId) return;
+  _sceneRafId = requestAnimationFrame(animate);
+}
+
+/* ── 화면에 보이는 캔버스만 그린다 ──────────────────────────────
+   메인 페이지에는 캔버스가 13개 있고 전부 매 프레임 다시 그려지고 있었다.
+   스크롤 밖에 있는 작품까지 계속 렌더하면 휴대폰에서 발열·배터리 소모가 크다.
+   IntersectionObserver로 뷰포트 근처에 있는 것만 그린다. */
+const _canvasVisible = new WeakMap();
+let _visibilityObserver = null;
+
+function isCanvasOnScreen(element) {
+  if (!("IntersectionObserver" in window)) return true;
+  if (!_visibilityObserver) {
+    _visibilityObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) _canvasVisible.set(entry.target, entry.isIntersecting);
+      },
+      // 스크롤이 닿기 전에 미리 그려 두어야 빈 화면이 보이지 않는다.
+      { rootMargin: "160px 0px" }
+    );
+  }
+  if (!_canvasVisible.has(element)) {
+    // 관찰이 처음 보고될 때까지는 그린다. 첫 화면이 비어 보이지 않도록.
+    _canvasVisible.set(element, true);
+    _visibilityObserver.observe(element);
+  }
+  return _canvasVisible.get(element);
 }
 
 function preparePreview(canvasElement, context) {
   if (!canvasElement || !context) return null;
+  if (!isCanvasOnScreen(canvasElement)) return null;
 
   const rect = canvasElement.getBoundingClientRect();
   if (rect.width < 2 || rect.height < 2) return null;
@@ -1966,7 +2023,8 @@ resize();
 describeWeather();
 loadWeather();
 window.addEventListener("load", initMiniCanvases);
-requestAnimationFrame(animate);
+startScene();
+reduceMotion.addEventListener?.("change", startScene);
 
 // 모바일에서 탭이 정지되면 20분 자동 새로고침 타이머까지 멈춘다.
 // 복귀 시 마지막 성공 시각을 보고 오래됐으면 다시 읽는다.

@@ -3493,3 +3493,17 @@ h1 {
 @media (max-width: 860px) {
   .standalone-works ul { grid-template-columns: 1fr; }
 }
+
+/* ── 움직임 줄이기 설정 대응 (웹 접근성) ──────────────────────
+   캔버스 작품은 각 스크립트가 정지 화면으로 전환하고,
+   여기서는 CSS 애니메이션과 스크롤 동작을 함께 멈춘다. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

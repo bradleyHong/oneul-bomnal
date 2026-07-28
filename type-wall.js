@@ -242,8 +242,29 @@
   let fallbackTimer = null;
   let rafId = 0;
   const step = () => { renderFrame(frame % TOTAL); frame += 1; };
-  function loop() { rafId = 0; step(); if (!document.hidden) rafId = requestAnimationFrame(loop); }
+
+  // 스크롤 밖에 있는 동안은 프레임을 진행시키지 않는다.
+  let onScreen = true;
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(
+      (entries) => { onScreen = entries[entries.length - 1].isIntersecting; },
+      { rootMargin: "160px 0px" }
+    ).observe(canvas);
+  }
+
+  const reduceMotion = window.matchMedia
+    ? window.matchMedia("(prefers-reduced-motion: reduce)")
+    : { matches: false };
+
+  function loop() { rafId = 0; if (onScreen) step(); if (!document.hidden) rafId = requestAnimationFrame(loop); }
   function startLoop() {
+    // '움직임 줄이기' 설정에서는 글자가 자리를 잡은 한 장면에서 멈춘다.
+    if (reduceMotion.matches) {
+      if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+      if (fallbackTimer) { window.clearInterval(fallbackTimer); fallbackTimer = null; }
+      renderFrame(Math.floor(TOTAL * 0.5));
+      return;
+    }
     if (document.hidden) {
       if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
       if (!fallbackTimer) fallbackTimer = window.setInterval(step, 1000 / 12);
@@ -254,6 +275,7 @@
     rafId = requestAnimationFrame(loop);
   }
   document.addEventListener("visibilitychange", startLoop);
+  reduceMotion.addEventListener?.("change", startLoop);
 
   let resizeTimer = null;
   const rebuild = () => {

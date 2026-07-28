@@ -100,6 +100,10 @@
       .app {
         min-height: 100svh;
         padding: clamp(18px, 3.5vw, 42px);
+        /* 좁은 화면에서는 .pulse-stage의 overflow가 visible이라
+           지도(inset -15%)가 화면 밖으로 나가 가로 스크롤이 생겼다.
+           clip은 hidden과 달리 스크롤 컨테이너를 만들지 않아 sticky를 깨지 않는다. */
+        overflow-x: clip;
       }
 
       .topbar {

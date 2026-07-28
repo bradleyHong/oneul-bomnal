@@ -74,6 +74,14 @@
   let dpr = 1;
   const particles = [];
 
+  // 손끝으로 공기를 저을 수 있게 한다. 관공서 담당자가 "인터랙티브"라는 말을
+  // 설명으로 듣는 대신 화면에서 직접 확인하게 하는 것이 이 작품의 역할이다.
+  const touch = { x: 0, y: 0, force: 0, active: false };
+
+  const reduceMotion = window.matchMedia
+    ? window.matchMedia("(prefers-reduced-motion: reduce)")
+    : { matches: false, addEventListener: () => {} };
+
   function resize() {
     const rect = canvas.getBoundingClientRect();
     dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -147,10 +155,24 @@
 
   function drawParticles(t) {
     const { drift, rise } = state.mix;
+    const pull = touch.active ? touch.force : 0;
     for (const p of particles) {
       p.phase += 0.01;
       p.x += Math.sin(p.phase) * p.swing * drift;
       p.y += rise * p.vy;
+
+      // 손끝 주변의 입자를 밀어낸다. 공기를 손으로 젓는 감각.
+      if (pull > 0.01) {
+        const dx = p.x - touch.x;
+        const dy = p.y - touch.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist < 130 && dist > 0.001) {
+          const push = (1 - dist / 130) * pull * 3.4;
+          p.x += (dx / dist) * push;
+          p.y += (dy / dist) * push;
+        }
+      }
+
       if (p.y < -20) p.y = H + 10;
       if (p.y > H + 20) p.y = -10;
       if (p.x < -20) p.x = W + 10;
@@ -203,6 +225,7 @@
   }
 
   function render(t) {
+    touch.force *= 0.95;
     const target = state.grade;
     const ease = 0.02;
     state.mix.density += (target.density - state.mix.density) * ease;
@@ -223,14 +246,53 @@
   // 탭이 숨겨져도 예약된 rAF 콜백은 취소되지 않고 대기만 한다.
   // 명시적으로 취소하고 rafId로 중복 실행을 막지 않으면
   // 화면 전환을 반복할 때마다 루프가 하나씩 늘어 CPU가 계속 올라간다.
+  //
+  // 스크롤 밖으로 나간 작품은 그리지 않는다. 사이니지에서는 항상 전체 화면이지만
+  // 사이트에서는 긴 페이지의 일부라, 안 보이는 동안 계산할 이유가 없다.
+  let onScreen = true;
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(
+      (entries) => {
+        onScreen = entries[entries.length - 1].isIntersecting;
+      },
+      { rootMargin: "160px 0px" }
+    ).observe(canvas);
+  }
+
   let fallbackTimer = null;
   let rafId = 0;
   function loop(t) {
     rafId = 0;
-    render(t);
+    if (onScreen) render(t);
     if (!document.hidden) rafId = requestAnimationFrame(loop);
   }
+  /** 보간을 건너뛰고 지금 등급의 완성된 화면을 한 장 그린다. */
+  function settleAndRender() {
+    const g = state.grade;
+    state.mix.density = g.density;
+    state.mix.drift = g.drift;
+    state.mix.haze = g.haze;
+    state.mix.rise = g.rise;
+    syncParticleCount(state.mix.density);
+    render(performance.now());
+  }
+
   function startLoop() {
+    // 운영체제에서 '움직임 줄이기'를 켠 이용자에게는 흐름을 멈추고
+    // 지금 공기 상태를 한 장의 정지 화면으로 보여준다.
+    // 공공기관 사이트라 웹 접근성 기준을 따른다.
+    if (reduceMotion.matches) {
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+      if (fallbackTimer) {
+        window.clearInterval(fallbackTimer);
+        fallbackTimer = null;
+      }
+      settleAndRender();
+      return;
+    }
     if (document.hidden) {
       if (rafId) {
         cancelAnimationFrame(rafId);
@@ -249,6 +311,7 @@
     rafId = requestAnimationFrame(loop);
   }
   document.addEventListener("visibilitychange", startLoop);
+  reduceMotion.addEventListener?.("change", startLoop);
 
   function applyReadings(pm25, pm10) {
     state.pm25 = pm25;
@@ -264,6 +327,8 @@
     if (detail) {
       detail.textContent = `초미세먼지(PM2.5) ${pm25.toFixed(0)} ㎍/㎥ · 미세먼지(PM10) ${pm10.toFixed(0)} ㎍/㎥ · ${state.grade.message}`;
     }
+    // 정지 모드에서는 루프가 돌지 않으므로 값이 바뀔 때 직접 다시 그린다.
+    if (reduceMotion.matches) settleAndRender();
   }
 
   const sleep = (ms) => new Promise((r) => window.setTimeout(r, ms));
@@ -315,6 +380,21 @@
 
   resize();
   window.addEventListener("resize", resize, { passive: true });
+
+  // 포인터·터치로 공기를 젓는다.
+  function setTouch(event) {
+    const rect = canvas.getBoundingClientRect();
+    const point = event.touches?.[0] ?? event;
+    touch.x = point.clientX - rect.left;
+    touch.y = point.clientY - rect.top;
+    touch.active = true;
+    touch.force = Math.min(1, touch.force + 0.22);
+  }
+  canvas.addEventListener("pointermove", setTouch, { passive: true });
+  canvas.addEventListener("pointerdown", setTouch, { passive: true });
+  canvas.addEventListener("touchmove", setTouch, { passive: true });
+  canvas.addEventListener("pointerleave", () => { touch.active = false; }, { passive: true });
+  canvas.addEventListener("touchend", () => { touch.active = false; }, { passive: true });
 
   // 패널 사진이 늦게 로드되면 캔버스가 0px 상태에서 크기를 잡아 화면이 단색으로 늘어난다.
   // 레이아웃 크기가 바뀌면 다시 재고 즉시 한 프레임 그린다.
