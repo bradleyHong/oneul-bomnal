@@ -409,6 +409,11 @@
       // 같은 값을 화면 위 실시간 박스의 기온 칸에도 넣는다
       const tEl = document.querySelector("[data-live-temp]");
       if (tEl && live.temp != null) tEl.textContent = Math.round(live.temp);
+      // 히어로 맨 윗줄의 기온·하늘 상태도 여기서 읽은 값을 그대로 쓴다.
+      const shared = (window.bomnalLive = window.bomnalLive || {});
+      if (live.temp != null) shared.temp = live.temp;
+      if (live.code != null) shared.sky = SKY[skyKey(live.code)].ko;
+      window.bomnalLiveUpdate?.();
 
       TEXTS = buildTexts();
       if (rect.width >= 2 && rect.height >= 2) {

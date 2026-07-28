@@ -139,6 +139,42 @@
     hour12: false,
   });
 
+
+  // 공기질은 air-art.js가, 기온·하늘은 type-wall.js가 이미 읽어온다.
+  // 같은 값을 또 부르지 않도록 한 곳에 모아 두고, 값이 들어올 때마다 줄을 다시 쓴다.
+  const live = (window.bomnalLive = window.bomnalLive || {});
+
+  const DATE_FMT = new Intl.DateTimeFormat("ko-KR", {
+    timeZone: "Asia/Seoul",
+    month: "long",
+    day: "numeric",
+    weekday: "short",
+  });
+
+  /** 히어로 맨 윗줄: 날짜, 시각, 대구 날씨, 미세먼지와 등급. */
+  function paintStatus() {
+    const el = document.querySelector("[data-live-status]");
+    if (!el) return;
+    const now = new Date();
+    const parts = [`${DATE_FMT.format(now)} ${fmt.format(now)}`];
+
+    if (live.sky || live.temp != null) {
+      const t = live.temp != null ? `${Math.round(live.temp)}°C` : "";
+      parts.push(["대구", live.sky, t].filter(Boolean).join(" "));
+    } else {
+      parts.push("대구");
+    }
+
+    if (live.pm25 != null) {
+      parts.push(`초미세먼지 ${Math.round(live.pm25)} ${live.grade || ""}`.trim());
+    }
+    el.textContent = parts.join(" · ");
+    if (live.grade) el.dataset.grade = live.grade;
+  }
+
+  // 값이 들어오는 쪽에서 부른다.
+  window.bomnalLiveUpdate = paintStatus;
+
   function paint() {
     const now = new Date();
     const sun = sunPosition(now);
@@ -169,8 +205,9 @@
     body.style.setProperty("--term-w", `${(Math.abs(1 - 2 * phase) * 100).toFixed(1)}%`);
     body.classList.toggle("is-gibbous", phase > 0.5);
     body.classList.toggle("is-waning", isDay ? false : target.waxing === false);
-    // 지평선 아래에 있으면 굳이 그리지 않는다
-    body.style.opacity = target.altitude < -3 ? "0" : "1";
+    // 지평선 아래에 있으면 굳이 그리지 않는다.
+    // 스크롤에 따른 흐림과 곱해져야 하므로 opacity를 직접 쓰지 않는다.
+    body.style.setProperty("--body-vis", target.altitude < -3 ? "0" : "1");
 
     const time = fmt.format(now);
     const what = isDay ? "해" : "달";
@@ -187,7 +224,32 @@
     }
   }
 
+  // 하늘은 화면에 고정돼 있어서, 손대지 않으면 해와 달이 독자를 따라
+  // 페이지 끝까지 내려온다. 밝은 원이 본문 뒤에 겹치면 글자가 읽히지 않는다.
+  // 히어로를 지나면 서서히 물러나게 해 천체를 첫 화면에 붙들어 둔다.
+  let depthQueued = false;
+  function paintDepth() {
+    depthQueued = false;
+    const hero = document.querySelector(".stage-hero");
+    const span = Math.max(1, (hero ? hero.offsetHeight : window.innerHeight) * 0.75);
+    const t = clamp(1 - window.scrollY / span, 0, 1);
+    // 완전히 지우지 않는다. 옅게 남아야 하늘이 이어져 보인다.
+    root.style.setProperty("--sky-depth", (0.08 + t * 0.92).toFixed(3));
+  }
+  window.addEventListener(
+    "scroll",
+    () => {
+      if (depthQueued) return;
+      depthQueued = true;
+      window.requestAnimationFrame(paintDepth);
+    },
+    { passive: true }
+  );
+
   paint();
+  paintDepth();
+  paintStatus();
+  window.setInterval(paintStatus, 30 * 1000);
   // 해는 4분에 1도씩 움직인다. 1분마다 다시 그리면 충분하다.
   window.setInterval(paint, 60 * 1000);
   document.addEventListener("visibilitychange", () => {

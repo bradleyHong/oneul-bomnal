@@ -26,5 +26,5 @@ export default async function middleware(request) {
     return Response.redirect(login, 307);
   }
 
-  return undefined; // 인증 통과 — 원래 요청을 그대로 진행합니다.
+  return undefined; // 인증 통과. 원래 요청을 그대로 진행합니다.
 }

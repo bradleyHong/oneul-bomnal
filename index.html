@@ -26,7 +26,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="alternate" type="application/rss+xml" title="오늘은 봄날 RSS" href="https://publicbloom.art/rss.xml" />
     <link rel="preconnect" href="https://api.open-meteo.com" />
-    <link rel="stylesheet" href="./styles.css?v=20260728-moon" />
+    <link rel="stylesheet" href="./styles.css?v=20260728-live" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="./assets/favicon-180.png" />
     <script type="application/ld+json">
@@ -342,7 +342,7 @@
     <main id="top">
       <section class="section stage-hero" id="gallery">
         <div class="stage-masthead">
-          <p class="section-kicker" id="placeLabel">대구의 하늘을 읽는 중</p>
+          <p class="section-kicker live-status" data-live-status>대구 실시간 정보를 불러오는 중</p>
           <h1>오늘은 봄날</h1>
           <p class="stage-tagline">관공서 LED 화면에 <strong>미디어아트</strong>를 공급합니다.<br />하드웨어부터 콘텐츠, 원격 관리까지 한 곳에서.</p>
           <div class="hero-actions">
@@ -374,7 +374,7 @@
             <figcaption>
               <strong>대구 공기질 · 실시간 연동</strong>
               <span data-air-detail>대구 공기질 공공 API를 불러오는 중입니다.</span>
-              <small class="art-note">예시 이미지. 화면 속 아트는 지금 실제 대구 데이터로 재생 중입니다. 화면 위를 손가락이나 마우스로 쓸어보세요 — 공기가 밀려납니다.</small>
+              <small class="art-note">예시 이미지. 화면 속 아트는 지금 실제 대구 데이터로 재생 중입니다. 화면 위를 손가락이나 마우스로 쓸어보세요. 공기가 밀려납니다.</small>
             </figcaption>
             <div class="air-demo-buttons" role="group" aria-label="대기질 단계별 화면 미리보기">
               <span>공기질 단계별 미리보기</span>
@@ -414,6 +414,7 @@
           <canvas id="springCanvas"></canvas>
 
           <div class="copy" aria-live="polite">
+            <p class="kicker" id="placeLabel">대구의 하늘을 읽는 중</p>
             <p class="line" id="weatherLine">대구의 오늘 날씨와 현재 시각이 시침, 초침, 꽃잎의 궤도를 바꿉니다.</p>
           </div>
 
@@ -1024,9 +1025,9 @@
       });
 
     </script>
-    <script src="./sky.js?v=20260728-moon"></script>
-    <script src="./air-art.js?v=20260728-hud"></script>
-    <script src="./type-wall.js?v=20260728-hud"></script>
+    <script src="./sky.js?v=20260728-live"></script>
+    <script src="./air-art.js?v=20260728-live"></script>
+    <script src="./type-wall.js?v=20260728-live"></script>
     <script src="./spring.js?v=20260728-framed"></script>
     <script src="./regional-live-data.js?v=20260512-live-regions"></script>
     <script>

@@ -3752,7 +3752,7 @@ h1 {
 .sky-glow {
   position: absolute;
   inset: 0;
-  opacity: var(--golden);
+  opacity: calc(var(--golden) * var(--sky-depth, 1));
   background: radial-gradient(
     circle at var(--sun-x) var(--sun-y),
     rgba(255, 168, 92, 0.5),
@@ -3765,6 +3765,9 @@ h1 {
 /* 해 · 달 */
 .sky-body {
   position: absolute;
+  /* 지평선 아래 여부(--body-vis)와 스크롤 깊이(--sky-depth)를 곱한다.
+     둘 중 하나라도 0이면 사라진다. */
+  opacity: calc(var(--body-vis, 1) * var(--sky-depth, 1));
   left: var(--sun-x);
   top: var(--sun-y);
   width: clamp(56px, 7vw, 104px);
@@ -3821,6 +3824,7 @@ h1 {
 }
 
 .sky-stars {
+  opacity: calc(0.35 + var(--sky-depth, 1) * 0.65);
   position: absolute;
   inset: 0;
   opacity: calc(1 - var(--daylight));
@@ -3973,31 +3977,187 @@ main,
 
 /* ── 밤에는 히어로 글자를 밝게 ──────────────────────────────
    하늘이 어두워지면 짙은 네이비 글자가 배경에 묻힌다.
-   --daylight에 맞춰 글자색도 함께 넘어가게 한다. */
+
+   배경과 글자를 같은 비율(1 - daylight)로 함께 흐리면 노을 무렵
+   둘 다 중간 회색이 되어 글자가 사라진다. 실제로 해질녘 리드 문단이
+   대비 1.3:1까지 떨어졌다.
+
+   그래서 글자는 섞지 않고 한 번에 넘긴다. --night-mix는 daylight 0.47을
+   경계로 0 아니면 1이고, 중간값을 가지지 않는다. 눈에는 아래 규칙마다
+   걸어둔 2.4초 transition이 그 전환을 부드럽게 이어준다. */
+:root {
+  --night-mix: clamp(0, calc((0.47 - var(--daylight)) * 400), 1);
+}
 .stage-masthead h1 {
-  color: color-mix(in srgb, #f4f7ff calc((1 - var(--daylight)) * 100%), #101b33);
+  color: color-mix(in srgb, #f4f7ff calc(var(--night-mix) * 100%), #101b33);
   transition: color 2.4s linear;
 }
 .stage-masthead .section-kicker {
-  color: color-mix(in srgb, rgba(226, 234, 252, 0.86) calc((1 - var(--daylight)) * 100%), rgba(16, 27, 51, 0.72));
+  color: color-mix(in srgb, rgba(226, 234, 252, 0.92) calc(var(--night-mix) * 100%), rgba(16, 27, 51, 0.78));
   transition: color 2.4s linear;
 }
 /* .section p { color: currentColor } 가 특이도(0,1,1)로 이 문단들을 덮고 있었다.
    히어로를 앞에 붙여 특이도를 올린다. */
 .stage-hero .stage-tagline,
 .stage-hero .stage-lead {
-  color: color-mix(in srgb, #dbe4f8 calc((1 - var(--daylight)) * 100%), #46536e);
+  color: color-mix(in srgb, #e8eefc calc(var(--night-mix) * 100%), #3d4964);
   transition: color 2.4s linear;
 }
 .stage-tagline strong,
 .stage-lead strong {
-  color: color-mix(in srgb, #9db4e4 calc((1 - var(--daylight)) * 100%), #10367d);
+  color: color-mix(in srgb, #b8cbf2 calc(var(--night-mix) * 100%), #10367d);
   transition: color 2.4s linear;
 }
+/* 하늘 배경 위에 글자가 얹히는 자리다. 낮에는 해와 빛무리가,
+   밤에는 별이 글자 뒤로 지나가므로 밝기에 맞춰 도는 후광을 깔아
+   어느 시간대에도 글자 획이 배경과 붙지 않게 한다. */
+.stage-hero {
+  --hero-halo: color-mix(
+    in srgb,
+    rgba(5, 11, 26, 0.62) calc(var(--night-mix) * 100%),
+    rgba(255, 255, 255, 0.78)
+  );
+}
+.stage-masthead h1,
+.stage-hero .stage-tagline,
+.stage-hero .stage-lead,
+.stage-masthead .section-kicker {
+  text-shadow: 0 0 2px var(--hero-halo), 0 1px 12px var(--hero-halo);
+}
+
+/* 실시간 정보 줄: 날짜·시각·대구 날씨·초미세먼지와 등급 */
+.stage-hero .live-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 18px;
+  padding: 8px 15px;
+  border-radius: 999px;
+  font-size: clamp(12.5px, 1.5vw, 14.5px);
+  font-weight: 760;
+  letter-spacing: 0.005em;
+  font-variant-numeric: tabular-nums;
+  word-break: keep-all;
+  text-shadow: none;
+  color: color-mix(in srgb, #f2f6ff calc(var(--night-mix) * 100%), #101b33);
+  background: color-mix(in srgb, rgba(12, 22, 46, 0.72) calc(var(--night-mix) * 100%), rgba(255, 255, 255, 0.78));
+  border: 1px solid color-mix(in srgb, rgba(184, 202, 240, 0.34) calc(var(--night-mix) * 100%), rgba(16, 54, 125, 0.2));
+  backdrop-filter: blur(7px);
+  transition: color 2.4s linear, background 2.4s linear, border-color 2.4s linear;
+}
+/* 등급을 색으로도 한 번 더 알린다. 색만으로 뜻을 전하지는 않고
+   글자에 '좋음·보통·나쁨'이 그대로 적히므로 색은 보조 신호다. */
+.stage-hero .live-status::before {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #38b26a;
+  box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 16%, transparent);
+}
+.stage-hero .live-status[data-grade="보통"]::before { background: #d9a021; }
+.stage-hero .live-status[data-grade="나쁨"]::before { background: #e2622c; }
+.stage-hero .live-status[data-grade="매우 나쁨"]::before { background: #c8323c; }
+
+@media (max-width: 640px) {
+  .stage-hero .live-status {
+    display: flex;
+    padding: 9px 14px;
+    line-height: 1.5;
+  }
+}
+
 /* 밤에는 테두리만 있는 보조 버튼도 하늘 위에서 읽혀야 한다 */
 .stage-hero .secondary-link {
-  background: color-mix(in srgb, rgba(255, 255, 255, 0.1) calc((1 - var(--daylight)) * 100%), #ffffff);
-  color: color-mix(in srgb, #e8eeff calc((1 - var(--daylight)) * 100%), #10367d);
-  border-color: color-mix(in srgb, rgba(226, 234, 252, 0.5) calc((1 - var(--daylight)) * 100%), rgba(16, 54, 125, 0.32));
+  background: color-mix(in srgb, rgba(255, 255, 255, 0.1) calc(var(--night-mix) * 100%), #ffffff);
+  color: color-mix(in srgb, #e8eeff calc(var(--night-mix) * 100%), #10367d);
+  border-color: color-mix(in srgb, rgba(226, 234, 252, 0.5) calc(var(--night-mix) * 100%), rgba(16, 54, 125, 0.32));
   transition: background 2.4s linear, color 2.4s linear, border-color 2.4s linear;
+}
+
+/* ── 하늘이 비치는 섹션의 글자 ─────────────────────────────
+   .sky-layer는 화면 전체에 고정돼 있고 today-art·media-box·service·
+   package·contact·credentials 여섯 섹션은 자기 배경이 없다. 그래서
+   밤이 되면 이 섹션들의 짙은 네이비 글자가 남색 하늘에 그대로 묻힌다.
+   흰 카드 안쪽 글자는 카드가 자기 바탕을 가지고 있으므로 건드리지 않고,
+   하늘 위에 맨살로 놓인 글자만 밝기를 따라가게 한다.
+
+   하늘 그라데이션은 화면에 고정돼 있어서 스크롤하면 어느 섹션이든
+   가장 어두운 윗단 위로 올라올 수 있다. 그 최악의 순간에도 읽히도록
+   글자색은 양 끝값을 쓰고, 배경이 중간 밝기를 지나는 짧은 구간은
+   글자 뒤에 까는 후광으로 버틴다. 지도 라벨이나 자막이 쓰는 방식이다. */
+:root {
+  --sky-ink: color-mix(in srgb, #ffffff calc(var(--night-mix) * 100%), #101b33);
+  --sky-ink-soft: color-mix(in srgb, #f4f8ff calc(var(--night-mix) * 100%), #172341);
+  --sky-ink-accent: color-mix(in srgb, #e2ebff calc(var(--night-mix) * 100%), #10367d);
+  --sky-halo: color-mix(in srgb, rgba(5, 11, 26, 0.72) calc(var(--night-mix) * 100%), rgba(255, 255, 255, 0.82));
+  --sky-ink-fade: 2.4s linear;
+}
+
+/* 실제로 하늘이 바로 뒤에 있는 글자만 고른다. 밤에 각 글자 뒤 바탕의
+   밝기를 재보니 today-art·media-box·service·package 네 섹션의 머리글과
+   본문만 어두운 하늘(밝기 0.01) 위였고, 꽃잎 캔버스 위 문구, 맞춤 제작
+   설명, 패키지 카드 안, 문의, 인증 섹션은 밤에도 밝은 판(0.64~0.96)
+   위였다. 그쪽까지 흰 글자로 바꾸면 흰 판에 흰 글자가 된다. */
+main #today-art > .section-head h2,
+main #media-box > .section-head h2,
+main #media-box .mediabox-hero-copy h3,
+main #service > .section-head h2,
+main #package > .section-head h2 {
+  color: var(--sky-ink);
+  text-shadow: 0 0 2px var(--sky-halo), 0 1px 10px var(--sky-halo);
+  transition: color var(--sky-ink-fade), text-shadow var(--sky-ink-fade);
+}
+
+main #today-art > .section-head .section-kicker,
+main #media-box > .section-head .section-kicker,
+main #media-box .mediabox-hero-copy span,
+main #service > .section-head .section-kicker,
+main #service .service-flow-note strong,
+main #package > .section-head .section-kicker {
+  color: var(--sky-ink-accent);
+  text-shadow: 0 0 2px var(--sky-halo), 0 1px 10px var(--sky-halo);
+  transition: color var(--sky-ink-fade), text-shadow var(--sky-ink-fade);
+}
+
+main #today-art > .section-head p:not(.section-kicker),
+main #media-box > .section-head p:not(.section-kicker),
+main #media-box .mediabox-hero-copy p,
+main #media-box .mediabox-spec li,
+main #service > .section-head p:not(.section-kicker),
+main #service .service-flow-note span,
+main #package > .section-head p:not(.section-kicker) {
+  color: var(--sky-ink-soft);
+  text-shadow: 0 0 2px var(--sky-halo), 0 1px 10px var(--sky-halo);
+  transition: color var(--sky-ink-fade), text-shadow var(--sky-ink-fade);
+}
+
+/* 점 목록의 말머리와 얇은 구분선도 어두운 하늘에서 사라지지 않게 */
+main .mediabox-spec li::before {
+  background: var(--sky-ink-accent);
+  transition: background var(--sky-ink-fade);
+}
+
+/* 짙은 네이비 버튼은 밤하늘과 같은 색이라 윤곽이 사라진다.
+   테두리 한 겹으로 버튼이라는 것만 남긴다. */
+main #package .package-actions .primary-link {
+  border: 1px solid color-mix(in srgb, rgba(226, 234, 252, 0.42) calc(var(--night-mix) * 100%), transparent);
+  transition: border-color var(--sky-ink-fade);
+}
+
+/* ── 액자 안 꽃잎 캔버스 위의 문구 ─────────────────────────
+   이 캔버스는 날씨에 따라 그림 전체 색이 바뀐다. 맑은 낮에는 바탕이
+   밝아져 짙은 글자가 1.5:1까지 묻혔다. 배경이 무슨 색이든 읽히도록
+   어두운 판을 깔고 흰 글자를 얹는다. 하늘 밝기와는 무관하게 고정이다. */
+.spring-stage--framed .copy {
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: rgba(8, 15, 32, 0.55);
+  backdrop-filter: blur(6px);
+}
+.spring-stage--framed .copy .kicker,
+.spring-stage--framed .copy .line {
+  color: #ffffff;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
 }
