@@ -220,13 +220,22 @@
 
   // 브라우저가 백그라운드로 내려가면 requestAnimationFrame이 멈춘다.
   // 상시 운영 사이니지에서 화면이 정지한 채 남지 않도록 저프레임 타이머로 대체한다.
+  // 탭이 숨겨져도 예약된 rAF 콜백은 취소되지 않고 대기만 한다.
+  // 명시적으로 취소하고 rafId로 중복 실행을 막지 않으면
+  // 화면 전환을 반복할 때마다 루프가 하나씩 늘어 CPU가 계속 올라간다.
   let fallbackTimer = null;
+  let rafId = 0;
   function loop(t) {
+    rafId = 0;
     render(t);
-    if (!document.hidden) requestAnimationFrame(loop);
+    if (!document.hidden) rafId = requestAnimationFrame(loop);
   }
   function startLoop() {
     if (document.hidden) {
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
       if (!fallbackTimer) {
         fallbackTimer = window.setInterval(() => render(performance.now()), 1000 / 12);
       }
@@ -236,7 +245,8 @@
       window.clearInterval(fallbackTimer);
       fallbackTimer = null;
     }
-    requestAnimationFrame(loop);
+    if (rafId) return;
+    rafId = requestAnimationFrame(loop);
   }
   document.addEventListener("visibilitychange", startLoop);
 

@@ -1841,6 +1841,7 @@ async function getPosition() {
 
 let _weatherRetryTimer = null;
 let _weatherRefreshTimer = null;
+let _lastWeatherLoad = 0;
 
 async function loadWeather(isRetry = false) {
   if (!isRetry) {
@@ -1886,6 +1887,7 @@ async function loadWeather(isRetry = false) {
     }
 
     // 20분마다 자동 새로고침
+    _lastWeatherLoad = Date.now();
     clearTimeout(_weatherRefreshTimer);
     _weatherRefreshTimer = setTimeout(() => loadWeather(), 20 * 60 * 1000);
 
@@ -1966,12 +1968,10 @@ loadWeather();
 window.addEventListener("load", initMiniCanvases);
 requestAnimationFrame(animate);
 
-// 탭이 다시 활성화될 때 30분 이상 지났으면 날씨 재로드
-let _lastWeatherLoad = Date.now();
-const _origLoadWeather = loadWeather;
+// 모바일에서 탭이 정지되면 20분 자동 새로고침 타이머까지 멈춘다.
+// 복귀 시 마지막 성공 시각을 보고 오래됐으면 다시 읽는다.
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden && Date.now() - _lastWeatherLoad > 30 * 60 * 1000) {
-    _lastWeatherLoad = Date.now();
     loadWeather();
   }
 });

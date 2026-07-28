@@ -236,17 +236,22 @@
   }
 
   // 백그라운드 전환 시에도 화면이 멈추지 않도록 저프레임 타이머로 대체한다.
+  // 숨겨진 탭에서 대기하던 rAF 콜백을 취소하지 않으면
+  // 화면 전환을 반복할수록 루프가 중복돼 애니메이션이 빨라지고 CPU가 오른다.
   let frame = 0;
   let fallbackTimer = null;
+  let rafId = 0;
   const step = () => { renderFrame(frame % TOTAL); frame += 1; };
-  function loop() { step(); if (!document.hidden) requestAnimationFrame(loop); }
+  function loop() { rafId = 0; step(); if (!document.hidden) rafId = requestAnimationFrame(loop); }
   function startLoop() {
     if (document.hidden) {
+      if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
       if (!fallbackTimer) fallbackTimer = window.setInterval(step, 1000 / 12);
       return;
     }
     if (fallbackTimer) { window.clearInterval(fallbackTimer); fallbackTimer = null; }
-    requestAnimationFrame(loop);
+    if (rafId) return;
+    rafId = requestAnimationFrame(loop);
   }
   document.addEventListener("visibilitychange", startLoop);
 
