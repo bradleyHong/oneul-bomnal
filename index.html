@@ -128,7 +128,6 @@
               "관공서 LED 미디어월",
               "문화재단 미디어파사드",
               "미디어아트 관제 서버",
-              "5단계 멀티에이전트 AI 파이프라인",
               "spring.js HTML5 Canvas 미디어아트 엔진",
               "대구 북구청 사이니지 납품",
               "여성기업 공공사업"
@@ -208,7 +207,7 @@
             "@id": "https://publicbloom.art/#service-ai-saas",
             "name": "AI 자동 콘텐츠 생성·송출 SaaS",
             "serviceType": "사이니지 콘텐츠 SaaS",
-            "description": "5단계 멀티에이전트 파이프라인이 기관 CI·컬러·서체·금기 표현을 반영한 사이니지 콘텐츠를 자동 생성·검수·송출합니다. 시안 3종을 1일 이내에 제시합니다.",
+            "description": "기관 CI·컬러·서체·금기 표현을 반영한 사이니지 콘텐츠를 생성·검수·송출합니다. 시안 3종을 1일 이내에 제시합니다.",
             "provider": {
               "@id": "https://publicbloom.art/#organization"
             },
@@ -339,7 +338,6 @@
       <nav id="main-nav" aria-label="주요 메뉴">
         <a href="#media-box">미디어박스</a>
         <a href="#service">시공·AS</a>
-        <a href="#ai-pipeline">AI 파이프라인</a>
         <a href="#package">연간 패키지</a>
         <a href="./data-media-art">데이터 미디어아트</a>
         <a href="./company">회사소개</a>
@@ -391,7 +389,7 @@
         <div class="gallery-grid">
           <figure class="art-piece">
             <div class="art-badge">① 데이터 연동 아트</div>
-            <div class="led-stage">
+            <div class="led-stage" id="led-stage">
               <img class="led-stage-photo" src="./assets/led-panel-plaza.webp" alt="광장 대형 LED 패널에 송출된 대구 공기질 미디어아트" width="1600" height="893" loading="lazy" decoding="async" />
               <div class="led-stage-screen"><canvas id="airArtCanvas"></canvas></div>
             </div>
@@ -501,47 +499,6 @@
           <strong>현장 방문 실측은 대구·경북 무료</strong>
           <span>경남·부산·울산은 협의 후 방문, 그 외 지역은 도면·사진 기반 사전 검토 후 방문 일정을 조정합니다.</span>
         </div>
-      </section>
-
-      <section class="section pipeline-section" id="ai-pipeline">
-        <div class="section-head">
-          <p class="section-kicker">5-Stage Multi-Agent AI Pipeline</p>
-          <h2>AI가 기관 톤에 맞춰 콘텐츠를 자동 생성합니다.</h2>
-          <p>제작 리드타임 <strong>영상 외주 5일 → 1일 이내</strong>. 기관별 톤·금기어는 RAG에 임베딩되어 매번 자동 반영됩니다.</p>
-        </div>
-        <ol class="pipeline-steps">
-          <li>
-            <span>01</span>
-            <h4>기획 · 기반DB</h4>
-            <p class="pipeline-tool">Claude Sonnet + RAG 벡터DB</p>
-            <p>발주처 키워드·일정·규정을 읽고 콘텐츠 컨셉과 구조도를 출력합니다.</p>
-          </li>
-          <li>
-            <span>02</span>
-            <h4>카피 · 문구</h4>
-            <p class="pipeline-tool">Claude / GPT-4o + 프롬프트 라이브러리</p>
-            <p>기획안 + 톤·금기어 규정을 반영해 본문·CTA·자막 카피를 생성합니다.</p>
-          </li>
-          <li>
-            <span>03</span>
-            <h4>시각 시안</h4>
-            <p class="pipeline-tool">GPT Image + Midjourney + 스타일 프리셋</p>
-            <p>카피와 컬러 가이드를 입력해 사이니지용 키비주얼 3종을 출력합니다.</p>
-          </li>
-          <li>
-            <span>04</span>
-            <h4>콘텐츠 코드</h4>
-            <p class="pipeline-tool">Claude Opus + 자체 엔진 spring.js</p>
-            <p>시안·송출 규격을 HTML5 Canvas 코드로 변환해 미디어박스에 배포합니다.</p>
-          </li>
-          <li>
-            <span>05</span>
-            <h4>검수 · 송출 · 보고</h4>
-            <p class="pipeline-tool">Claude + 자동 운영 리포트</p>
-            <p>관제 서버로 자동 배포하고 노출 시간·데이터 변화·접속 통계 리포트를 자동 생성합니다.</p>
-          </li>
-        </ol>
-        <p class="pipeline-caveat">Anthropic API 이용료 · OpenAI/Midjourney API 이용료 · RAG 벡터DB 구축·연계 이용료를 봄날이 통합 정산하므로, 발주처는 별도의 AI 계정·라이선스 관리 없이 결과물만 받아봅니다.</p>
       </section>
 
       <section class="section package-section" id="package">

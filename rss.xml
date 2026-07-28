@@ -19,15 +19,14 @@
       <category>사이니지 관제 서버</category>
     </item>
     <item>
-      <title>AI 자동 콘텐츠 SaaS · 5단계 멀티에이전트 파이프라인</title>
-      <link>https://publicbloom.art/#ai-pipeline</link>
-      <guid>https://publicbloom.art/#ai-pipeline</guid>
+      <title>AI 자동 콘텐츠 SaaS · 연 단위 통합 패키지</title>
+      <link>https://publicbloom.art/#package</link>
+      <guid>https://publicbloom.art/#package</guid>
       <pubDate>Tue, 28 Jul 2026 18:00:00 +0900</pubDate>
-      <description>Claude·GPT-4o·Midjourney와 자체 엔진 spring.js를 묶은 5단계 파이프라인이 발주처 톤·규정에 맞춰 사이니지 콘텐츠를 자동 생성·검수·송출합니다. 제작 리드타임 영상 외주 5일 → AI 코드 콘텐츠 1일 이내.</description>
+      <description>기관의 디자인 가이드와 보유 데이터를 반영한 사이니지 콘텐츠를 자동 생성·검수하고 관제 서버로 원격 배포합니다. 제작 리드타임 영상 외주 5일 → 시안 3종 1일 이내. 하드웨어·SaaS·관제 서버를 묶어 화면 1대당 연 700만원으로 공급합니다.</description>
       <category>AI 자동 콘텐츠 생성</category>
       <category>사이니지 SaaS</category>
-      <category>멀티에이전트 파이프라인</category>
-      <category>RAG 벡터DB</category>
+      <category>사이니지 통합 패키지</category>
     </item>
     <item>
       <title>공공데이터 기반 미디어아트와 미디어파사드</title>
