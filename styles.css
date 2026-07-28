@@ -3562,3 +3562,107 @@ h1 {
 @media (max-width: 720px) {
   .package-section .package-price strong { font-size: 21px; }
 }
+
+/* ── 최상단 무대 히어로 ────────────────────────────────────
+   담당자가 사이트를 열었을 때 첫 화면이 '우리 로비에 저게 걸린 모습'이
+   되도록, 브랜드 문구 바로 아래에 LED 무대 두 장면을 붙였다. */
+.stage-hero {
+  padding-top: clamp(96px, 12vw, 148px);
+  background:
+    radial-gradient(circle at 14% 8%, rgba(255, 220, 230, 0.5), transparent 26%),
+    radial-gradient(circle at 86% 4%, rgba(255, 233, 139, 0.42), transparent 24%),
+    linear-gradient(180deg, #fff6e6 0%, #fffdf6 46%);
+}
+.stage-masthead {
+  display: grid;
+  gap: 14px;
+  max-width: 44ch;
+  margin-bottom: clamp(30px, 4vw, 48px);
+}
+.stage-masthead h1 {
+  margin: 0;
+  font-size: clamp(42px, 7.4vw, 84px);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+}
+.stage-masthead .section-kicker {
+  margin: 0;
+}
+.stage-tagline {
+  margin: 0;
+  font-size: clamp(16px, 1.9vw, 20px);
+  line-height: 1.6;
+  color: #5a4a41;
+  word-break: keep-all;
+}
+.stage-tagline strong {
+  color: #c7694f;
+}
+.stage-hero .hero-actions {
+  margin-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.stage-lead {
+  margin: clamp(20px, 3vw, 28px) 0 0;
+  max-width: 78ch;
+  font-size: 15px;
+  line-height: 1.75;
+  color: #5a4a41;
+  word-break: keep-all;
+}
+.stage-lead strong {
+  color: #2b1e18;
+}
+
+/* ── 꽃잎 시계 작품: 히어로에서 소개 섹션으로 내려온 판 ───── */
+.spring-stage--framed {
+  height: min(80svh, 680px);
+  min-height: 420px;
+  margin-top: clamp(24px, 3vw, 36px);
+  border-radius: 18px;
+  border: 1px solid rgba(199, 105, 79, 0.14);
+  box-shadow: 0 20px 48px rgba(199, 105, 79, 0.12);
+}
+.spring-stage--framed .copy {
+  top: auto;
+  bottom: clamp(96px, 16vw, 132px);
+  left: clamp(18px, 3vw, 34px);
+  right: auto;
+  width: min(46ch, calc(100% - 2 * clamp(18px, 3vw, 34px)));
+  max-width: none;
+}
+.spring-stage--framed .copy .line {
+  font-size: clamp(15px, 1.7vw, 19px);
+}
+
+@media (max-width: 900px) {
+  .stage-hero { padding-top: clamp(82px, 20vw, 110px); }
+  .spring-stage--framed { height: min(72svh, 540px); }
+}
+@media (max-width: 700px) {
+  /* 좁은 화면에서는 데이터 패널이 버튼까지 세로로 쌓여 아래를 다 차지한다.
+     문장은 비어 있는 위쪽 하늘로 올린다.
+     기본 .copy는 폭을 100vw 기준으로 잡아 액자 안에서는 오른쪽이 잘린다.
+     좌우를 직접 물려 액자 폭에 맞춘다. */
+  .spring-stage--framed .copy {
+    top: clamp(18px, 5vw, 28px);
+    bottom: auto;
+    left: clamp(18px, 5vw, 28px);
+    right: clamp(18px, 5vw, 28px);
+    width: auto;
+    max-width: none;
+  }
+}
+
+/* 두 카드는 같은 높이로 늘어나는데, 남는 높이가 무대 칸에 붙어
+   사진 아래에 검은 띠가 생겼다. 무대는 사진 높이에 맞추고
+   남는 공간은 설명 칸이 가져가게 한다. */
+.art-piece {
+  grid-template-rows: auto 1fr;
+}
+.art-piece .lobby-stage,
+.art-piece .led-stage {
+  align-self: start;
+}

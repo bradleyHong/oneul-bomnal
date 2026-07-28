@@ -26,7 +26,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="alternate" type="application/rss+xml" title="오늘은 봄날 RSS" href="https://publicbloom.art/rss.xml" />
     <link rel="preconnect" href="https://api.open-meteo.com" />
-    <link rel="stylesheet" href="./styles.css?v=20260728-price" />
+    <link rel="stylesheet" href="./styles.css?v=20260728-stage2" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="./assets/favicon-180.png" />
     <script type="application/ld+json">
@@ -337,41 +337,15 @@
     </header>
 
     <main id="top">
-      <section class="spring-stage site-hero" aria-label="대구 오늘 하루의 날씨와 시간에 반응하는 시계 미디어아트">
-        <canvas id="springCanvas"></canvas>
-
-        <section class="copy" aria-live="polite">
-          <p class="kicker" id="placeLabel">대구의 하늘을 읽는 중</p>
+      <section class="section stage-hero" id="gallery">
+        <div class="stage-masthead">
+          <p class="section-kicker" id="placeLabel">대구의 하늘을 읽는 중</p>
           <h1>오늘은 봄날</h1>
-          <p class="line hero-tagline">관공서 LED 화면에 <strong>미디어아트</strong>를 공급합니다.<br />하드웨어부터 콘텐츠, 원격 관리까지 한 곳에서.</p>
+          <p class="stage-tagline">관공서 LED 화면에 <strong>미디어아트</strong>를 공급합니다.<br />하드웨어부터 콘텐츠, 원격 관리까지 한 곳에서.</p>
           <div class="hero-actions">
-            <a class="primary-link" href="#gallery">작품 보기</a>
-            <a class="secondary-link" href="#package">연간 패키지</a>
+            <a class="primary-link" href="#media-box">미디어박스 보기</a>
+            <a class="secondary-link" href="./quote">견적 문의</a>
           </div>
-        </section>
-
-        <aside class="panel" aria-label="날씨와 작품 상태">
-          <div>
-            <span>기온</span>
-            <strong id="tempValue">--</strong>
-          </div>
-          <div>
-            <span>하늘</span>
-            <strong id="skyValue">--</strong>
-          </div>
-          <div>
-            <span>바람</span>
-            <strong id="windValue">--</strong>
-          </div>
-          <button id="refreshButton" type="button">대구 하늘 다시 읽기</button>
-        </aside>
-      </section>
-
-      <section class="section gallery-section" id="gallery">
-        <div class="section-head">
-          <p class="section-kicker">Two Types of Content</p>
-          <h2>두 가지 미디어아트를 공급합니다.</h2>
-          <p><strong>데이터 연동 아트</strong>는 기관이 가진 DB·공공 API를 화면으로 바꾸고, <strong>미디어아트</strong>는 기관의 정체성을 감각적으로 연출합니다.</p>
         </div>
 
         <div class="gallery-grid">
@@ -396,8 +370,8 @@
             </div>
             <figcaption>
               <strong>다국어 타이포 월 · 대구광역시</strong>
-              <span>한국어·영어·일본어·중국어·태국어·베트남어 6개 언어가 흐르고 사라졌다 되돌아옵니다.</span>
-              <small class="art-note">예시 이미지. 기관명만 바꾸면 그대로 교체됩니다.</small>
+              <span data-typewall-detail>오늘 날짜와 대구의 날씨·미세먼지를 한국어·영어·일본어·중국어·태국어·베트남어 6개 언어로 동시에 흘려보냅니다.</span>
+              <small class="art-note">예시 이미지. 화면 속 값은 지금 실제 대구 데이터입니다. 기관명만 바꾸면 도시·기관 단위로 그대로 교체됩니다.</small>
             </figcaption>
           </figure>
         </div>
@@ -409,6 +383,39 @@
           <button type="button" data-air-demo="normal">보통</button>
           <button type="button" data-air-demo="bad">나쁨</button>
           <button type="button" data-air-demo="worst">매우 나쁨</button>
+        </div>
+
+        <p class="stage-lead"><strong>① 데이터 연동 아트</strong>는 기관이 가진 DB·공공 API를 화면으로 바꾸고, <strong>② 미디어아트</strong>는 기관의 정체성을 감각적으로 연출합니다. 두 화면 모두 지금 실제 대구 데이터로 재생 중입니다.</p>
+      </section>
+
+      <section class="section spring-showcase" id="today-art">
+        <div class="section-head">
+          <p class="section-kicker">Weather Interactive</p>
+          <h2>오늘 대구의 하늘이 화면을 바꿉니다</h2>
+          <p>기온·바람·구름·강수를 읽어 시침과 초침, 꽃잎의 궤도를 다시 그립니다. 같은 화면이 어제와 오늘 다르게 보입니다.</p>
+        </div>
+        <div class="spring-stage spring-stage--framed" aria-label="대구 오늘 하루의 날씨와 시간에 반응하는 시계 미디어아트">
+          <canvas id="springCanvas"></canvas>
+
+          <div class="copy" aria-live="polite">
+            <p class="line" id="weatherLine">대구의 오늘 날씨와 현재 시각이 시침, 초침, 꽃잎의 궤도를 바꿉니다.</p>
+          </div>
+
+          <aside class="panel" aria-label="날씨와 작품 상태">
+            <div>
+              <span>기온</span>
+              <strong id="tempValue">--</strong>
+            </div>
+            <div>
+              <span>하늘</span>
+              <strong id="skyValue">--</strong>
+            </div>
+            <div>
+              <span>바람</span>
+              <strong id="windValue">--</strong>
+            </div>
+            <button id="refreshButton" type="button">대구 하늘 다시 읽기</button>
+          </aside>
         </div>
       </section>
 
@@ -1017,9 +1024,9 @@
       }
 
     </script>
-    <script src="./air-art.js?v=20260728-air4"></script>
-    <script src="./type-wall.js?v=20260728-typewall3"></script>
-    <script src="./spring.js?v=20260511-canvas-fix"></script>
+    <script src="./air-art.js?v=20260728-mplus"></script>
+    <script src="./type-wall.js?v=20260728-live"></script>
+    <script src="./spring.js?v=20260728-framed"></script>
     <script src="./regional-live-data.js?v=20260512-live-regions"></script>
     <script>
       // 스크롤 시 헤더 반투명 배경

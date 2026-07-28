@@ -1,7 +1,18 @@
+/**
+ * 대구 공기질 반응형 미디어아트 · 광장 대형 LED 패널용
+ *
+ * 원색 색면과 큰 기하 도형을 세로 슬랫으로 갈라 어긋내는 구성입니다.
+ * 화면 전체를 한 번 그린 뒤 세로 띠 단위로 잘라 위아래로 밀어내기 때문에,
+ * 멀리서 보면 색면이 접힌 것처럼 읽히고 가까이서는 어긋난 이음매가 보입니다.
+ *
+ * 대구 초미세먼지(PM2.5)·미세먼지(PM10) 실측값이 색 팔레트, 띠 개수,
+ * 도형 밀도, 흐름 속도를 결정합니다. 수치를 읽지 않아도 화면이 차가운지
+ * 뜨거운지, 조용한지 어지러운지로 오늘 공기를 알 수 있습니다.
+ */
 (() => {
   const canvas = document.getElementById("airArtCanvas");
   if (!canvas) return;
-  const ctx = canvas.getContext("2d");
+  const ctx = canvas.getContext("2d", { alpha: false });
 
   // 대구 중심 좌표
   const LAT = 35.8714;
@@ -13,49 +24,55 @@
       max: 15,
       label: "좋음",
       message: "공기가 맑습니다. 마음껏 산책하세요.",
-      sky: ["#eaf7ff", "#d8f0e4", "#f6fbf3"],
-      particle: "rgba(120, 200, 170, ALPHA)",
-      accent: "#3d8f6f",
-      density: 26,
-      drift: 0.18,
-      haze: 0.0,
-      rise: -1,
+      accent: "#0b7a4f",
+      ground: "#f2f6f4",
+      // 맑을수록 차갑고 선명한 원색
+      palette: ["#1a3ff0", "#00a86b", "#19c2ff", "#f4f1e8", "#ffd400"],
+      bands: 9,
+      shapes: 5,
+      drift: 0.22,
+      skew: 0.34,
+      grain: 0.05,
     },
     {
       max: 35,
       label: "보통",
       message: "무난한 하루입니다. 평소처럼 활동하세요.",
-      sky: ["#fdf6e6", "#f3ead2", "#fbf7ee"],
-      particle: "rgba(214, 176, 108, ALPHA)",
-      accent: "#b07d2c",
-      density: 90,
-      drift: 0.36,
-      haze: 0.12,
-      rise: -0.4,
+      accent: "#a8730f",
+      ground: "#f6f0e2",
+      palette: ["#1a3ff0", "#ffd400", "#00a86b", "#ff8a1f", "#f4f1e8"],
+      bands: 12,
+      shapes: 6,
+      drift: 0.42,
+      skew: 0.52,
+      grain: 0.09,
     },
     {
       max: 75,
       label: "나쁨",
       message: "민감한 분은 야외활동을 줄여주세요.",
-      sky: ["#f6e0cf", "#e5c1a6", "#efd4c0"],
-      particle: "rgba(196, 112, 74, ALPHA)",
-      accent: "#a8482a",
-      density: 260,
-      drift: 0.62,
-      haze: 0.3,
-      rise: 0.15,
+      accent: "#b8321c",
+      ground: "#efdcd2",
+      // 나빠지면 붉은 계열이 화면을 장악한다
+      palette: ["#ff2d1a", "#ff3d94", "#ffd400", "#1a3ff0", "#7a1020"],
+      bands: 17,
+      shapes: 8,
+      drift: 0.72,
+      skew: 0.78,
+      grain: 0.16,
     },
     {
       max: Infinity,
       label: "매우 나쁨",
       message: "외출을 자제하고 창문을 닫아주세요.",
-      sky: ["#6d5a52", "#4a3a36", "#5c4842"],
-      particle: "rgba(232, 150, 120, ALPHA)",
-      accent: "#ff9d7a",
-      density: 520,
-      drift: 0.95,
-      haze: 0.52,
-      rise: 0.5,
+      accent: "#ff8f6a",
+      ground: "#2a1a16",
+      palette: ["#ff2d1a", "#7a1020", "#ff5a2b", "#2a1a16", "#ff3d94"],
+      bands: 24,
+      shapes: 10,
+      drift: 1.05,
+      skew: 1.0,
+      grain: 0.24,
     },
   ];
 
@@ -65,16 +82,21 @@
     pm25: 12,
     pm10: 20,
     grade: GRADES[0],
-    // 등급 전환을 부드럽게 하기 위한 보간값
-    mix: { density: 26, drift: 0.18, haze: 0, rise: -1 },
+    // 등급이 바뀔 때 화면이 튀지 않도록 보간한다
+    mix: { bands: 9, shapes: 5, drift: 0.22, skew: 0.34, grain: 0.05 },
+    palette: GRADES[0].palette.slice(),
+    ground: GRADES[0].ground,
   };
 
   let W = 0;
   let H = 0;
   let dpr = 1;
-  const particles = [];
 
-  // 손끝으로 공기를 저을 수 있게 한다. 관공서 담당자가 "인터랙티브"라는 말을
+  // 구성은 오프스크린에 한 번 그리고, 본 화면에는 세로 띠로 잘라 옮긴다.
+  const scene = document.createElement("canvas");
+  const sctx = scene.getContext("2d", { alpha: false });
+
+  // 손끝으로 색면을 밀 수 있게 한다. 관공서 담당자가 "인터랙티브"라는 말을
   // 설명으로 듣는 대신 화면에서 직접 확인하게 하는 것이 이 작품의 역할이다.
   const touch = { x: 0, y: 0, force: 0, active: false };
 
@@ -82,170 +104,258 @@
     ? window.matchMedia("(prefers-reduced-motion: reduce)")
     : { matches: false, addEventListener: () => {} };
 
+  /** 결정론적 난수 · 같은 씨앗이면 항상 같은 배치가 나온다. */
+  const rand = (a, b) => {
+    let x = (Math.imul(a | 0, 374761393) + Math.imul(b | 0, 668265263)) | 0;
+    x = Math.imul(x ^ (x >>> 13), 1274126177) | 0;
+    return ((x ^ (x >>> 16)) >>> 0) / 4294967296;
+  };
+
   function resize() {
     const rect = canvas.getBoundingClientRect();
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     W = Math.max(rect.width, 1);
     H = Math.max(rect.height, 1);
-    canvas.width = W * dpr;
-    canvas.height = H * dpr;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    scene.width = canvas.width;
+    scene.height = canvas.height;
+    sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
-  function spawn(seedTop) {
-    return {
-      x: Math.random() * W,
-      y: seedTop ? Math.random() * H : H + Math.random() * 40,
-      r: 0.6 + Math.random() * 2.6,
-      vy: 0.1 + Math.random() * 0.5,
-      phase: Math.random() * Math.PI * 2,
-      swing: 0.4 + Math.random() * 1.6,
-      alpha: 0.25 + Math.random() * 0.5,
+  const lerpHex = (a, b, k) => {
+    const pa = parseInt(a.slice(1), 16);
+    const pb = parseInt(b.slice(1), 16);
+    const ch = (sh) => {
+      const va = (pa >> sh) & 255;
+      const vb = (pb >> sh) & 255;
+      return Math.round(va + (vb - va) * k);
     };
+    return `rgb(${ch(16)},${ch(8)},${ch(0)})`;
+  };
+
+  /** 큰 원 안쪽의 동심 격자 · 가까이서 보면 무아레가 생긴다. */
+  function drawMoire(x, y, r, t, hue, seed) {
+    sctx.save();
+    sctx.beginPath();
+    sctx.arc(x, y, r, 0, Math.PI * 2);
+    sctx.clip();
+    sctx.strokeStyle = hue;
+    sctx.globalAlpha = 0.5;
+    const step = Math.max(3, r * 0.055);
+    const shift = (t * 0.012 * (0.4 + rand(seed, 7))) % step;
+    for (let rr = step * 0.5 + shift; rr < r * 1.45; rr += step) {
+      sctx.lineWidth = 1.1;
+      sctx.beginPath();
+      sctx.arc(x, y, rr, 0, Math.PI * 2);
+      sctx.stroke();
+    }
+    sctx.restore();
   }
 
-  function syncParticleCount(target) {
-    const want = Math.round(target);
-    while (particles.length < want) particles.push(spawn(true));
-    if (particles.length > want) particles.length = want;
+  /** 세로로 긴 실린더 형태 · 좌우 명암으로 원통처럼 읽히게 한다. */
+  function drawCylinder(x, y, w, h, color, angle) {
+    sctx.save();
+    sctx.translate(x, y);
+    sctx.rotate(angle);
+    const g = sctx.createLinearGradient(-w / 2, 0, w / 2, 0);
+    g.addColorStop(0, "rgba(0,0,0,0.28)");
+    g.addColorStop(0.42, "rgba(255,255,255,0.16)");
+    g.addColorStop(1, "rgba(0,0,0,0.24)");
+    sctx.fillStyle = color;
+    sctx.beginPath();
+    if (sctx.roundRect) sctx.roundRect(-w / 2, -h / 2, w, h, w / 2);
+    else sctx.rect(-w / 2, -h / 2, w, h);
+    sctx.fill();
+    sctx.fillStyle = g;
+    sctx.fill();
+    sctx.restore();
   }
 
-  function drawSky(t) {
-    const [a, b, c] = state.grade.sky;
-    const g = ctx.createLinearGradient(0, 0, 0, H);
-    g.addColorStop(0, a);
-    g.addColorStop(0.55, b);
-    g.addColorStop(1, c);
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, W, H);
+  /** 색면과 도형이 놓인 원본 구성을 그린다. 띠로 자르기 전 단계. */
+  function drawScene(t) {
+    const { shapes, drift, grain } = state.mix;
+    const pal = state.palette;
+    const D = Math.max(W, H);
 
-    // 호흡하는 빛무리 · 공기가 맑을수록 크고 선명
-    const clarity = 1 - state.mix.haze;
-    const breathe = 0.5 + 0.5 * Math.sin(t * 0.0006);
-    const radius = Math.min(W, H) * (0.22 + 0.14 * clarity + 0.03 * breathe);
-    const glow = ctx.createRadialGradient(W * 0.5, H * 0.46, 0, W * 0.5, H * 0.46, radius);
-    glow.addColorStop(0, `rgba(255,255,255,${0.16 + 0.34 * clarity})`);
-    glow.addColorStop(1, "rgba(255,255,255,0)");
-    ctx.fillStyle = glow;
-    ctx.fillRect(0, 0, W, H);
-  }
+    sctx.fillStyle = state.ground;
+    sctx.fillRect(0, 0, W, H);
 
-  function drawFlow(t) {
-    // 공기의 흐름 · 맑으면 넓고 느린 곡선, 나쁘면 짧고 흐트러진 선
-    const clarity = 1 - state.mix.haze;
-    const lines = 5;
-    ctx.lineCap = "round";
-    for (let i = 0; i < lines; i += 1) {
-      const p = i / (lines - 1);
-      const baseY = H * (0.28 + p * 0.44);
-      const amp = H * (0.04 + 0.09 * clarity);
-      ctx.beginPath();
-      for (let x = 0; x <= W; x += 12) {
-        const n = Math.sin(x * 0.006 + t * 0.0004 + i * 1.3) * amp;
-        const jitter = (1 - clarity) * Math.sin(x * 0.05 + t * 0.003 + i) * 6;
-        const y = baseY + n + jitter;
-        if (x === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+    // 바탕을 가르는 큰 사선 색면 두 장
+    for (let i = 0; i < 2; i += 1) {
+      const p = rand(i + 11, 3);
+      const ang = (-0.5 + p) * 0.9 + Math.sin(t * 0.00008 * (1 + i) + i) * 0.12;
+      sctx.save();
+      sctx.translate(W * (0.3 + 0.4 * i), H * 0.5);
+      sctx.rotate(ang);
+      sctx.fillStyle = pal[(i * 2) % pal.length];
+      sctx.globalAlpha = 0.9;
+      sctx.fillRect(-D, -D * (0.5 - i * 0.22), D * 2, D * (0.62 - i * 0.2));
+      sctx.restore();
+    }
+    sctx.globalAlpha = 1;
+
+    // 큰 기하 도형 · 원, 반원, 실린더가 느리게 떠다닌다
+    const count = Math.round(shapes);
+    for (let i = 0; i < count; i += 1) {
+      const s0 = rand(i * 3 + 1, 21);
+      const s1 = rand(i * 3 + 2, 34);
+      const s2 = rand(i * 3 + 3, 57);
+      const speed = 0.00004 + s2 * 0.00009;
+      const px = W * (0.08 + s0 * 0.86) + Math.sin(t * speed + i * 1.7) * W * 0.1 * drift;
+      const py = H * (0.1 + s1 * 0.8) + Math.cos(t * speed * 1.3 + i) * H * 0.12 * drift;
+      const color = pal[i % pal.length];
+      const kind = Math.floor(s2 * 3);
+
+      if (kind === 0) {
+        const r = D * (0.07 + s0 * 0.17);
+        sctx.fillStyle = color;
+        sctx.beginPath();
+        sctx.arc(px, py, r, 0, Math.PI * 2);
+        sctx.fill();
+        if (s1 > 0.45) drawMoire(px, py, r, t, pal[(i + 2) % pal.length], i);
+      } else if (kind === 1) {
+        const r = D * (0.09 + s1 * 0.16);
+        const a0 = t * speed * 6 + i;
+        sctx.fillStyle = color;
+        sctx.beginPath();
+        sctx.moveTo(px, py);
+        sctx.arc(px, py, r, a0, a0 + Math.PI);
+        sctx.closePath();
+        sctx.fill();
+      } else {
+        drawCylinder(
+          px,
+          py,
+          D * (0.05 + s0 * 0.07),
+          D * (0.2 + s1 * 0.3),
+          color,
+          (s2 - 0.5) * 0.7 + Math.sin(t * speed * 3) * 0.15
+        );
       }
-      ctx.strokeStyle = state.grade.particle.replace("ALPHA", (0.1 + 0.16 * clarity).toFixed(3));
-      ctx.lineWidth = 1 + 2.4 * clarity;
-      ctx.stroke();
+    }
+
+    // 입자 · 공기가 나빠질수록 화면 위에 알갱이가 쌓인다
+    if (grain > 0.01) {
+      sctx.fillStyle = "rgba(20,14,12,0.5)";
+      const n = Math.round(grain * 900);
+      for (let i = 0; i < n; i += 1) {
+        const gx = (rand(i, 71) * W + t * 0.02 * drift) % W;
+        const gy = (rand(i, 97) * H + t * 0.013 * drift) % H;
+        const gr = 0.6 + rand(i, 131) * 1.9;
+        sctx.beginPath();
+        sctx.arc(gx, gy, gr, 0, Math.PI * 2);
+        sctx.fill();
+      }
     }
   }
 
-  function drawParticles(t) {
-    const { drift, rise } = state.mix;
+  /** 구성을 세로 띠로 잘라 위아래로 어긋내 옮긴다. 이 단계가 이 작품의 인상을 만든다. */
+  function sliceBands(t) {
+    const { bands, skew, drift } = state.mix;
+    const n = Math.max(3, Math.round(bands));
+    const bw = W / n;
     const pull = touch.active ? touch.force : 0;
-    for (const p of particles) {
-      p.phase += 0.01;
-      p.x += Math.sin(p.phase) * p.swing * drift;
-      p.y += rise * p.vy;
 
-      // 손끝 주변의 입자를 밀어낸다. 공기를 손으로 젓는 감각.
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, W, H);
+
+    for (let i = 0; i < n; i += 1) {
+      const x = i * bw;
+      const phase = rand(i, 13) * Math.PI * 2;
+      let dy = Math.sin(t * 0.00035 * (0.6 + rand(i, 29)) + phase) * H * 0.09 * skew;
+
+      // 손끝 근처의 띠가 더 크게 밀린다
       if (pull > 0.01) {
-        const dx = p.x - touch.x;
-        const dy = p.y - touch.y;
-        const dist = Math.hypot(dx, dy);
-        if (dist < 130 && dist > 0.001) {
-          const push = (1 - dist / 130) * pull * 3.4;
-          p.x += (dx / dist) * push;
-          p.y += (dy / dist) * push;
+        const d = Math.abs(x + bw / 2 - touch.x);
+        if (d < W * 0.34) {
+          const push = (1 - d / (W * 0.34)) * pull;
+          dy += (touch.y - H / 2) * push * 0.55;
         }
       }
 
-      if (p.y < -20) p.y = H + 10;
-      if (p.y > H + 20) p.y = -10;
-      if (p.x < -20) p.x = W + 10;
-      if (p.x > W + 20) p.x = -10;
+      const sx = Math.round(x * dpr);
+      const sw = Math.max(1, Math.round(bw * dpr) + 1);
+      ctx.drawImage(scene, sx, 0, sw, scene.height, x, dy, bw + 0.6, H);
+      // 띠를 이어 붙인 자리를 위아래로 메운다
+      if (dy > 0) ctx.drawImage(scene, sx, scene.height - Math.ceil(dy * dpr) - 1, sw, Math.ceil(dy * dpr) + 1, x, 0, bw + 0.6, dy + 1);
+      else if (dy < 0) ctx.drawImage(scene, sx, 0, sw, Math.ceil(-dy * dpr) + 1, x, H + dy, bw + 0.6, -dy + 1);
 
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = state.grade.particle.replace("ALPHA", p.alpha.toFixed(3));
-      ctx.fill();
+      // 접힌 면에 빛이 다르게 닿는 느낌
+      const shade = Math.sin(t * 0.0002 + phase) * 0.5 + 0.5;
+      ctx.fillStyle = `rgba(0,0,0,${(0.04 + shade * 0.16 * skew).toFixed(3)})`;
+      ctx.fillRect(x, 0, bw + 0.6, H);
+      ctx.fillStyle = "rgba(0,0,0,0.34)";
+      ctx.fillRect(x - 0.5, 0, 1, H);
     }
-  }
 
-  function drawHaze() {
-    if (state.mix.haze <= 0.01) return;
-    ctx.fillStyle = `rgba(90, 70, 62, ${state.mix.haze * 0.42})`;
+    // 패널 표면 반사
+    const gloss = ctx.createLinearGradient(0, 0, W * 0.7, H);
+    gloss.addColorStop(0, "rgba(255,255,255,0.1)");
+    gloss.addColorStop(0.4, "rgba(255,255,255,0)");
+    ctx.fillStyle = gloss;
     ctx.fillRect(0, 0, W, H);
+    void drift;
   }
 
+  /** 화면 위에 오늘 대구의 실측값을 얹는다. 멀리서도 읽히도록 굵게. */
   function drawReadout() {
-    // 패널이 작게 렌더되는 화면에서는 문구가 잘리므로 캔버스 밖 상태 표시에 맡긴다.
-    if (W < 320 || H < 200) return;
-    const pad = Math.max(W * 0.045, 18);
-    const big = Math.max(Math.min(W * 0.075, 64), 24);
-    const small = Math.max(Math.min(W * 0.022, 18), 11);
-    const dark = state.grade.label === "매우 나쁨";
-    const ink = dark ? "#fff2e8" : "#2b1e18";
+    if (W < 260 || H < 150) return;
+    const pad = Math.max(W * 0.038, 14);
+    const label = Math.max(Math.min(W * 0.024, 17), 10);
+    const big = Math.max(Math.min(W * 0.085, 62), 22);
+    const small = Math.max(Math.min(W * 0.023, 16), 10);
+
+    // 글자가 색면 위에서도 읽히게 어두운 띠를 깐다
+    const boxH = pad * 1.1 + label * 1.2 + big * 1.15 + small * 1.6;
+    const strip = ctx.createLinearGradient(0, 0, 0, boxH);
+    strip.addColorStop(0, "rgba(10,8,7,0.72)");
+    strip.addColorStop(1, "rgba(10,8,7,0)");
+    ctx.fillStyle = strip;
+    ctx.fillRect(0, 0, W, boxH);
 
     ctx.textAlign = "left";
     ctx.textBaseline = "alphabetic";
+    const face = '"Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif';
 
-    ctx.font = `600 ${small}px "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif`;
-    ctx.fillStyle = dark ? "rgba(255,242,232,0.72)" : "rgba(43,30,24,0.6)";
-    ctx.fillText("대구 지금 공기", pad, pad + small);
+    ctx.font = `700 ${label}px ${face}`;
+    ctx.fillStyle = "rgba(255,252,248,0.74)";
+    ctx.fillText("대구 지금 공기 · 실시간", pad, pad + label);
 
-    ctx.font = `700 ${big}px "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif`;
-    ctx.fillStyle = state.grade.accent;
-    ctx.fillText(state.grade.label, pad, pad + small + big * 1.05);
+    ctx.font = `800 ${big}px ${face}`;
+    ctx.fillStyle = "#fffdf9";
+    ctx.fillText(state.grade.label, pad, pad + label + big * 1.02);
 
-    ctx.font = `500 ${small}px "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif`;
-    ctx.fillStyle = ink;
-    ctx.fillText(state.grade.message, pad, pad + small + big * 1.05 + small * 1.9);
-
-    ctx.font = `500 ${small * 0.92}px "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif`;
-    ctx.fillStyle = dark ? "rgba(255,242,232,0.62)" : "rgba(43,30,24,0.52)";
+    ctx.font = `600 ${small}px ${face}`;
+    ctx.fillStyle = "rgba(255,252,248,0.9)";
     ctx.fillText(
       `초미세먼지 ${state.pm25.toFixed(0)} · 미세먼지 ${state.pm10.toFixed(0)} ㎍/㎥`,
       pad,
-      pad + small + big * 1.05 + small * 3.5
+      pad + label + big * 1.02 + small * 1.8
     );
   }
 
   function render(t) {
     touch.force *= 0.95;
-    const target = state.grade;
+    const g = state.grade;
     const ease = 0.02;
-    state.mix.density += (target.density - state.mix.density) * ease;
-    state.mix.drift += (target.drift - state.mix.drift) * ease;
-    state.mix.haze += (target.haze - state.mix.haze) * ease;
-    state.mix.rise += (target.rise - state.mix.rise) * ease;
-    syncParticleCount(state.mix.density);
+    state.mix.bands += (g.bands - state.mix.bands) * ease;
+    state.mix.shapes += (g.shapes - state.mix.shapes) * ease;
+    state.mix.drift += (g.drift - state.mix.drift) * ease;
+    state.mix.skew += (g.skew - state.mix.skew) * ease;
+    state.mix.grain += (g.grain - state.mix.grain) * ease;
+    state.ground = lerpHex(state.ground.startsWith("#") ? state.ground : g.ground, g.ground, ease * 3);
+    for (let i = 0; i < g.palette.length; i += 1) {
+      const cur = state.palette[i];
+      state.palette[i] = cur && cur.startsWith("#") ? lerpHex(cur, g.palette[i], ease * 3) : g.palette[i];
+    }
 
-    drawSky(t);
-    drawFlow(t);
-    drawParticles(t);
-    drawHaze();
+    drawScene(t);
+    sliceBands(t);
     drawReadout();
   }
 
-  // 브라우저가 백그라운드로 내려가면 requestAnimationFrame이 멈춘다.
-  // 상시 운영 사이니지에서 화면이 정지한 채 남지 않도록 저프레임 타이머로 대체한다.
-  // 탭이 숨겨져도 예약된 rAF 콜백은 취소되지 않고 대기만 한다.
-  // 명시적으로 취소하고 rafId로 중복 실행을 막지 않으면
-  // 화면 전환을 반복할 때마다 루프가 하나씩 늘어 CPU가 계속 올라간다.
   //
   // 스크롤 밖으로 나간 작품은 그리지 않는다. 사이니지에서는 항상 전체 화면이지만
   // 사이트에서는 긴 페이지의 일부라, 안 보이는 동안 계산할 이유가 없다.
@@ -259,6 +369,11 @@
     ).observe(canvas);
   }
 
+  // 브라우저가 백그라운드로 내려가면 requestAnimationFrame이 멈춘다.
+  // 상시 운영 사이니지에서 화면이 정지한 채 남지 않도록 저프레임 타이머로 대체한다.
+  // 탭이 숨겨져도 예약된 rAF 콜백은 취소되지 않고 대기만 한다.
+  // 명시적으로 취소하고 rafId로 중복 실행을 막지 않으면
+  // 화면 전환을 반복할 때마다 루프가 하나씩 늘어 CPU가 계속 올라간다.
   let fallbackTimer = null;
   let rafId = 0;
   function loop(t) {
@@ -266,14 +381,17 @@
     if (onScreen) render(t);
     if (!document.hidden) rafId = requestAnimationFrame(loop);
   }
+
   /** 보간을 건너뛰고 지금 등급의 완성된 화면을 한 장 그린다. */
   function settleAndRender() {
     const g = state.grade;
-    state.mix.density = g.density;
+    state.mix.bands = g.bands;
+    state.mix.shapes = g.shapes;
     state.mix.drift = g.drift;
-    state.mix.haze = g.haze;
-    state.mix.rise = g.rise;
-    syncParticleCount(state.mix.density);
+    state.mix.skew = g.skew;
+    state.mix.grain = g.grain;
+    state.palette = g.palette.slice();
+    state.ground = g.ground;
     render(performance.now());
   }
 
@@ -381,7 +499,7 @@
   resize();
   window.addEventListener("resize", resize, { passive: true });
 
-  // 포인터·터치로 공기를 젓는다.
+  // 포인터·터치로 색면을 민다.
   function setTouch(event) {
     const rect = canvas.getBoundingClientRect();
     const point = event.touches?.[0] ?? event;
@@ -415,7 +533,6 @@
   loadAirWithRetry();
   window.setInterval(loadAirWithRetry, 10 * 60 * 1000);
   // 첫 프레임은 즉시 그린다 · 사이니지 전원 인가 직후 검은 화면이 남지 않도록.
-  syncParticleCount(state.mix.density);
-  render(0);
+  settleAndRender();
   startLoop();
 })();

@@ -85,13 +85,17 @@ const skyNames = new Map([
 
 function resize() {
   dpr = Math.min(window.devicePixelRatio || 1, 2);
-  width = Math.floor(window.innerWidth);
-  height = Math.floor(window.innerHeight);
+  // 이 작품은 전체 화면 송출에도 쓰이고 메인에서는 액자 안에 놓이기도 한다.
+  // 창 크기로 잡으면 액자에서 그림이 잘리므로 요소 상자를 기준으로 삼는다.
+  const rect = canvas ? canvas.getBoundingClientRect() : null;
+  width = Math.floor(rect && rect.width > 2 ? rect.width : window.innerWidth);
+  height = Math.floor(rect && rect.height > 2 ? rect.height : window.innerHeight);
   if (canvas && ctx) {
     canvas.width = Math.floor(width * dpr);
     canvas.height = Math.floor(height * dpr);
-    canvas.style.width = `${width}px`;
-    canvas.style.height = `${height}px`;
+    // 인라인 크기를 비워 CSS(inset:0 · 100%)가 상자를 채우게 둔다.
+    canvas.style.width = "";
+    canvas.style.height = "";
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
   buildGarden();
@@ -1978,13 +1982,32 @@ async function loadAirQuality(place) {
 
 function setPointer(event) {
   const touch = event.touches?.[0];
-  pointer.x = touch ? touch.clientX : event.clientX;
-  pointer.y = touch ? touch.clientY : event.clientY;
+  const point = touch || event;
+  // 캔버스가 화면 좌상단에 있지 않을 수 있으므로 요소 좌표로 옮긴다.
+  const rect = canvas ? canvas.getBoundingClientRect() : { left: 0, top: 0 };
+  pointer.x = point.clientX - rect.left;
+  pointer.y = point.clientY - rect.top;
   pointer.active = true;
   pointer.force = Math.min(1, pointer.force + 0.18);
 }
 
 window.addEventListener("resize", resize);
+// 액자 크기는 창 크기와 따로 움직인다(섹션 여백·이미지 지연 로드 등).
+// 상자가 달라지면 다시 잡는다.
+if (canvas && "ResizeObserver" in window) {
+  try {
+    let lastW = 0;
+    let lastH = 0;
+    new ResizeObserver(() => {
+      const r = canvas.getBoundingClientRect();
+      if (r.width < 2 || r.height < 2) return;
+      if (Math.abs(r.width - lastW) < 1 && Math.abs(r.height - lastH) < 1) return;
+      lastW = r.width;
+      lastH = r.height;
+      resize();
+    }).observe(canvas);
+  } catch { /* 미지원 환경은 window resize로 대응 */ }
+}
 window.addEventListener("pointermove", setPointer);
 window.addEventListener("pointerdown", setPointer);
 window.addEventListener("touchmove", setPointer, { passive: true });
