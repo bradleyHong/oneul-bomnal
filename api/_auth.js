@@ -42,18 +42,34 @@ async function hmacKey(secret) {
   ]);
 }
 
-const b64url = (str) => btoa(str).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-const b64urlDecode = (str) => {
+const dec = new TextDecoder();
+
+/** 바이트 배열을 base64url 문자열로 변환합니다. */
+function bytesToB64url(bytes) {
+  let bin = "";
+  for (const b of bytes) bin += String.fromCharCode(b);
+  return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function b64urlToBytes(str) {
   const pad = str.length % 4 ? "=".repeat(4 - (str.length % 4)) : "";
-  return atob(str.replace(/-/g, "+").replace(/_/g, "/") + pad);
-};
+  const bin = atob(str.replace(/-/g, "+").replace(/_/g, "/") + pad);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i += 1) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+
+// 기관명 등 한글이 포함되므로 반드시 UTF-8로 인코딩한 뒤 base64를 적용합니다.
+// (btoa는 Latin-1 범위 밖 문자를 만나면 예외를 던집니다.)
+const b64url = (str) => bytesToB64url(enc.encode(str));
+const b64urlDecode = (str) => dec.decode(b64urlToBytes(str));
 
 /** payload를 서명해 "base64url(payload).base64url(signature)" 형태의 토큰을 만듭니다. */
 export async function signSession(payload, secret) {
   const body = b64url(JSON.stringify(payload));
   const key = await hmacKey(secret);
   const sig = await crypto.subtle.sign("HMAC", key, enc.encode(body));
-  return `${body}.${b64url(String.fromCharCode(...new Uint8Array(sig)))}`;
+  return `${body}.${bytesToB64url(new Uint8Array(sig))}`;
 }
 
 /** 서명과 만료를 검증하고, 유효하면 payload를 반환합니다. */
@@ -64,7 +80,7 @@ export async function verifySession(token, secret) {
   try {
     const key = await hmacKey(secret);
     const expected = await crypto.subtle.sign("HMAC", key, enc.encode(body));
-    const expectedB64 = b64url(String.fromCharCode(...new Uint8Array(expected)));
+    const expectedB64 = bytesToB64url(new Uint8Array(expected));
     if (!safeEqual(sig, expectedB64)) return null;
     const payload = JSON.parse(b64urlDecode(body));
     if (!payload?.exp || Date.now() > payload.exp) return null;
