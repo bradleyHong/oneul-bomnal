@@ -3679,12 +3679,18 @@ h1 {
 /* 두 카드는 같은 높이로 늘어나는데, 남는 높이가 무대 칸에 붙어
    사진 아래에 검은 띠가 생겼다. 무대는 사진 높이에 맞추고
    남는 공간은 설명 칸이 가져가게 한다. */
+/* 카드마다 안에 든 요소 수가 달라(실시간 박스·버튼 유무) 행 지정이 맞지 않는다.
+   세로 흐름으로 두고 설명 칸이 남는 높이를 가져가게 한다. */
 .art-piece {
-  grid-template-rows: auto 1fr;
+  display: flex;
+  flex-direction: column;
+}
+.art-piece figcaption {
+  flex: 1;
 }
 .art-piece .lobby-stage,
 .art-piece .led-stage {
-  align-self: start;
+  flex: none;
 }
 
 /* ── 문의폼 전송 상태 ──────────────────────────────────────
@@ -3711,4 +3717,287 @@ h1 {
 .contact-form button[type="submit"][disabled] {
   opacity: 0.6;
   cursor: progress;
+}
+
+/* ── 대구 하늘 · 실제 태양 고도에 맞춘 배경 ──────────────────
+   sky.js가 --daylight(0~1), --golden, --sun-x/y를 계속 갱신한다.
+   낮에는 밝은 라벤더 하늘, 밤에는 짙은 네이비에 별이 뜬다. */
+:root {
+  --daylight: 1;
+  --golden: 0;
+  --sun-x: 50%;
+  --sun-y: 20%;
+  --photo-brightness: 1;
+  --photo-saturate: 1;
+}
+
+.sky-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  /* 낮에서 밤으로 갈수록 바탕이 가라앉는다 */
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, #0a1633 calc((1 - var(--daylight)) * 100%), #dfe6f5) 0%,
+      color-mix(in srgb, #101b33 calc((1 - var(--daylight)) * 92%), #f7f8fa) 62%,
+      color-mix(in srgb, #101b33 calc((1 - var(--daylight)) * 84%), #ffffff) 100%
+    );
+  transition: background 2.4s linear;
+}
+
+/* 해가 낮게 걸릴 때 번지는 노을 */
+.sky-glow {
+  position: absolute;
+  inset: 0;
+  opacity: var(--golden);
+  background: radial-gradient(
+    circle at var(--sun-x) var(--sun-y),
+    rgba(255, 168, 92, 0.5),
+    rgba(255, 140, 90, 0.16) 26%,
+    transparent 54%
+  );
+  transition: opacity 2.4s linear;
+}
+
+/* 해 · 달 */
+.sky-body {
+  position: absolute;
+  left: var(--sun-x);
+  top: var(--sun-y);
+  width: clamp(56px, 7vw, 104px);
+  aspect-ratio: 1;
+  margin: 0 0 0 0;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 34%, #fff6d8, #ffd166 46%, #ffb03a 74%);
+  box-shadow:
+    0 0 clamp(30px, 5vw, 80px) rgba(255, 196, 96, 0.62),
+    0 0 clamp(80px, 14vw, 220px) rgba(255, 176, 84, 0.28);
+  transition: left 2.4s linear, top 2.4s linear, opacity 2.4s linear, background 2.4s linear;
+}
+
+/* 달 · 밝은 반원 + 명암 경계 타원으로 실제 위상 모양을 만든다.
+   마스크 하나로는 경계가 곡선-곡선이 되어 레몬 모양이 나온다.
+   --term-w는 경계 타원의 폭(반달이면 0, 삭·망이면 지름과 같다). */
+.sky-body.is-moon {
+  --moon-lit: radial-gradient(circle at 40% 34%, #ffffff, #e6ecf7 52%, #b9c6de 100%);
+  --moon-dark: #16223f;
+  background: var(--moon-dark);
+  overflow: hidden;
+  box-shadow:
+    0 0 clamp(22px, 4vw, 60px) rgba(214, 228, 255, 0.5),
+    0 0 clamp(60px, 10vw, 160px) rgba(180, 200, 240, 0.2);
+}
+/* 밝은 반쪽. 차오를 때는 오른쪽, 이지러질 때는 왼쪽이 밝다. */
+.sky-body.is-moon::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--moon-lit);
+  clip-path: inset(0 0 0 50%);
+}
+.sky-body.is-moon.is-waning::before {
+  clip-path: inset(0 50% 0 0);
+}
+/* 명암 경계 타원. 반달을 넘어서면(gibbous) 밝은 쪽을 넓히고,
+   그 전이면 밝은 반원을 깎아 초승달을 만든다. */
+.sky-body.is-moon::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: var(--term-w, 0%);
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: var(--moon-dark);
+}
+.sky-body.is-moon.is-gibbous::after {
+  background: var(--moon-lit);
+}
+
+.sky-stars {
+  position: absolute;
+  inset: 0;
+  opacity: calc(1 - var(--daylight));
+  transition: opacity 2.4s linear;
+}
+.sky-stars i {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  background: #ffffff;
+  animation: skyTwinkle 4s ease-in-out infinite alternate;
+}
+@keyframes skyTwinkle {
+  from { opacity: 0.25; }
+  to { opacity: 1; }
+}
+
+/* 본문은 하늘 위에 놓인다 */
+.site-nav,
+main,
+.site-footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* 하늘이 비쳐 보이도록 최상단 히어로의 자체 배경을 비운다 */
+.stage-hero {
+  background: transparent;
+}
+
+/* 밤에는 카드가 하늘 위에 살짝 떠 보이게 */
+[data-theme] .art-piece,
+.art-piece {
+  backdrop-filter: saturate(1.1);
+}
+
+/* 사진은 밤에 어두워진다. LED 화면은 캔버스라 이 필터를 받지 않으므로
+   어두운 광장에서 패널만 빛나는 장면이 된다. */
+.led-stage-photo,
+.lobby-stage-photo,
+.mediabox-hero-image,
+.region-preview img,
+.local-media-preview img {
+  filter: brightness(var(--photo-brightness)) saturate(var(--photo-saturate));
+  transition: filter 2.4s linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sky-layer,
+  .sky-glow,
+  .sky-body,
+  .sky-stars,
+  .led-stage-photo,
+  .lobby-stage-photo,
+  .mediabox-hero-image { transition: none; }
+  .sky-stars i { animation: none; opacity: 0.7 !important; }
+}
+
+/* ── ① 무대 위 실시간 수치 박스 ────────────────────────────
+   화면 속 아트는 값을 색과 움직임으로 말하고,
+   이 박스는 같은 값을 숫자와 글자로 말한다. */
+.stage-hud {
+  margin: 0;
+  padding: 14px clamp(14px, 2vw, 20px) 15px;
+  background: #101b33;
+  color: #ffffff;
+  display: grid;
+  gap: 11px;
+}
+.stage-hud-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  letter-spacing: -0.01em;
+}
+.stage-hud-head strong {
+  font-weight: 800;
+}
+.stage-hud-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.2);
+  animation: hudPulse 2.4s ease-in-out infinite;
+}
+@keyframes hudPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+.stage-hud-time {
+  margin-left: auto;
+  color: rgba(255, 255, 255, 0.66);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+.stage-hud-grid {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 7px;
+  overflow: hidden;
+}
+.stage-hud-grid > div {
+  background: #101b33;
+  padding: 9px 10px 10px;
+  display: grid;
+  gap: 3px;
+}
+.stage-hud-grid dt {
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+}
+.stage-hud-grid dd {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+}
+.stage-hud-grid dd b {
+  font-size: clamp(17px, 2vw, 21px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.stage-hud-grid dd span {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* 공기질 단계 버튼이 ① 카드 안으로 들어왔다 */
+.art-piece .air-demo-buttons {
+  margin: 0;
+  padding: 0 clamp(14px, 2vw, 20px) clamp(16px, 2vw, 20px);
+  border-top: 1px solid rgba(16, 54, 125, 0.1);
+  padding-top: 15px;
+}
+
+@media (max-width: 560px) {
+  .stage-hud-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage-hud-dot { animation: none; }
+}
+
+/* ── 밤에는 히어로 글자를 밝게 ──────────────────────────────
+   하늘이 어두워지면 짙은 네이비 글자가 배경에 묻힌다.
+   --daylight에 맞춰 글자색도 함께 넘어가게 한다. */
+.stage-masthead h1 {
+  color: color-mix(in srgb, #f4f7ff calc((1 - var(--daylight)) * 100%), #101b33);
+  transition: color 2.4s linear;
+}
+.stage-masthead .section-kicker {
+  color: color-mix(in srgb, rgba(226, 234, 252, 0.86) calc((1 - var(--daylight)) * 100%), rgba(16, 27, 51, 0.72));
+  transition: color 2.4s linear;
+}
+/* .section p { color: currentColor } 가 특이도(0,1,1)로 이 문단들을 덮고 있었다.
+   히어로를 앞에 붙여 특이도를 올린다. */
+.stage-hero .stage-tagline,
+.stage-hero .stage-lead {
+  color: color-mix(in srgb, #dbe4f8 calc((1 - var(--daylight)) * 100%), #46536e);
+  transition: color 2.4s linear;
+}
+.stage-tagline strong,
+.stage-lead strong {
+  color: color-mix(in srgb, #9db4e4 calc((1 - var(--daylight)) * 100%), #10367d);
+  transition: color 2.4s linear;
+}
+/* 밤에는 테두리만 있는 보조 버튼도 하늘 위에서 읽혀야 한다 */
+.stage-hero .secondary-link {
+  background: color-mix(in srgb, rgba(255, 255, 255, 0.1) calc((1 - var(--daylight)) * 100%), #ffffff);
+  color: color-mix(in srgb, #e8eeff calc((1 - var(--daylight)) * 100%), #10367d);
+  border-color: color-mix(in srgb, rgba(226, 234, 252, 0.5) calc((1 - var(--daylight)) * 100%), rgba(16, 54, 125, 0.32));
+  transition: background 2.4s linear, color 2.4s linear, border-color 2.4s linear;
 }

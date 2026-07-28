@@ -406,6 +406,10 @@
       if (Number.isFinite(code)) live.code = code;
       if (Number.isFinite(pm25)) live.pm25 = pm25;
       if (Number.isFinite(pm10)) live.pm10 = pm10;
+      // 같은 값을 화면 위 실시간 박스의 기온 칸에도 넣는다
+      const tEl = document.querySelector("[data-live-temp]");
+      if (tEl && live.temp != null) tEl.textContent = Math.round(live.temp);
+
       TEXTS = buildTexts();
       if (rect.width >= 2 && rect.height >= 2) {
         build();

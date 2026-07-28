@@ -26,7 +26,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="alternate" type="application/rss+xml" title="오늘은 봄날 RSS" href="https://publicbloom.art/rss.xml" />
     <link rel="preconnect" href="https://api.open-meteo.com" />
-    <link rel="stylesheet" href="./styles.css?v=20260728-navy4" />
+    <link rel="stylesheet" href="./styles.css?v=20260728-moon" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="./assets/favicon-180.png" />
     <script type="application/ld+json">
@@ -336,6 +336,9 @@
       </button>
     </header>
 
+    <!-- 지금 대구 하늘. sky.js가 실제 태양 고도에 맞춰 해·달·별을 배치한다. -->
+    <div class="sky-layer" id="skyLayer" role="img" aria-label="대구의 지금 하늘"></div>
+
     <main id="top">
       <section class="section stage-hero" id="gallery">
         <div class="stage-masthead">
@@ -351,6 +354,19 @@
         <div class="gallery-grid">
           <figure class="art-piece">
             <div class="art-badge">① 데이터 연동 아트</div>
+            <div class="stage-hud" aria-live="polite">
+              <div class="stage-hud-head">
+                <span class="stage-hud-dot" aria-hidden="true"></span>
+                <strong>대구 실시간</strong>
+                <span class="stage-hud-time" data-sky-readout>대구 하늘 계산 중</span>
+              </div>
+              <dl class="stage-hud-grid">
+                <div><dt>초미세먼지</dt><dd><b data-live-pm25>--</b><span>㎍/㎥</span></dd></div>
+                <div><dt>미세먼지</dt><dd><b data-live-pm10>--</b><span>㎍/㎥</span></dd></div>
+                <div><dt>기온</dt><dd><b data-live-temp>--</b><span>°C</span></dd></div>
+                <div><dt>단계</dt><dd><b data-air-grade>--</b></dd></div>
+              </dl>
+            </div>
             <div class="led-stage" id="led-stage">
               <img class="led-stage-photo" src="./assets/led-panel-plaza.webp" alt="광장 대형 LED 패널에 송출된 대구 공기질 미디어아트" width="1600" height="893" loading="lazy" decoding="async" />
               <div class="led-stage-screen"><canvas id="airArtCanvas"></canvas></div>
@@ -360,6 +376,14 @@
               <span data-air-detail>대구 공기질 공공 API를 불러오는 중입니다.</span>
               <small class="art-note">예시 이미지. 화면 속 아트는 지금 실제 대구 데이터로 재생 중입니다. 화면 위를 손가락이나 마우스로 쓸어보세요 — 공기가 밀려납니다.</small>
             </figcaption>
+            <div class="air-demo-buttons" role="group" aria-label="대기질 단계별 화면 미리보기">
+              <span>공기질 단계별 미리보기</span>
+              <button type="button" data-air-demo="live" class="active">실시간</button>
+              <button type="button" data-air-demo="good">좋음</button>
+              <button type="button" data-air-demo="normal">보통</button>
+              <button type="button" data-air-demo="bad">나쁨</button>
+              <button type="button" data-air-demo="worst">매우 나쁨</button>
+            </div>
           </figure>
 
           <figure class="art-piece">
@@ -376,14 +400,6 @@
           </figure>
         </div>
 
-        <div class="air-demo-buttons" role="group" aria-label="대기질 단계별 화면 미리보기">
-          <span>공기질 단계별 미리보기</span>
-          <button type="button" data-air-demo="live" class="active">실시간</button>
-          <button type="button" data-air-demo="good">좋음</button>
-          <button type="button" data-air-demo="normal">보통</button>
-          <button type="button" data-air-demo="bad">나쁨</button>
-          <button type="button" data-air-demo="worst">매우 나쁨</button>
-        </div>
 
         <p class="stage-lead"><strong>① 데이터 연동 아트</strong>는 기관이 가진 DB·공공 API를 화면으로 바꾸고, <strong>② 미디어아트</strong>는 기관의 정체성을 감각적으로 연출합니다. 두 화면 모두 지금 실제 대구 데이터로 재생 중입니다.</p>
       </section>
@@ -1008,8 +1024,9 @@
       });
 
     </script>
-    <script src="./air-art.js?v=20260728-mplus"></script>
-    <script src="./type-wall.js?v=20260728-slow"></script>
+    <script src="./sky.js?v=20260728-moon"></script>
+    <script src="./air-art.js?v=20260728-hud"></script>
+    <script src="./type-wall.js?v=20260728-hud"></script>
     <script src="./spring.js?v=20260728-framed"></script>
     <script src="./regional-live-data.js?v=20260512-live-regions"></script>
     <script>

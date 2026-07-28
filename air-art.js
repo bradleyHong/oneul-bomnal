@@ -445,6 +445,11 @@
     if (detail) {
       detail.textContent = `초미세먼지(PM2.5) ${pm25.toFixed(0)} ㎍/㎥ · 미세먼지(PM10) ${pm10.toFixed(0)} ㎍/㎥ · ${state.grade.message}`;
     }
+    // 화면 위 실시간 박스 · 같은 값을 숫자와 글자로도 보여준다
+    const n25 = document.querySelector("[data-live-pm25]");
+    if (n25) n25.textContent = pm25.toFixed(0);
+    const n10 = document.querySelector("[data-live-pm10]");
+    if (n10) n10.textContent = pm10.toFixed(0);
     // 정지 모드에서는 루프가 돌지 않으므로 값이 바뀔 때 직접 다시 그린다.
     if (reduceMotion.matches) settleAndRender();
   }
