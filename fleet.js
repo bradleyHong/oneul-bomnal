@@ -116,7 +116,7 @@
 
   /**
    * 시야 거리와 벽면 크기로 권장 픽셀 피치·해상도·전력을 산정합니다.
-   * 픽셀 피치(mm) ≈ 최소 시야거리(m) — 업계에서 통용되는 1:1 경험식(10배 규칙의 역).
+   * 픽셀 피치(mm) ≈ 최소 시야거리(m) · 업계에서 통용되는 1:1 경험식(10배 규칙의 역).
    */
   function calcSpec({ wallW, wallH, viewDist, brightnessNeeded }) {
     if (!(wallW > 0) || !(wallH > 0) || !(viewDist > 0)) return null;
@@ -506,7 +506,7 @@
         };
         db.sites.push(site);
         addLog(site.id, "create", "현장 등록", `예시 데이터 · ${stageLabel(site.stage)} 단계`);
-        if (sm.health === "warn") addLog(site.id, "alert", "헬스체크", "4일간 응답 없음 — 네트워크 점검 필요");
+        if (sm.health === "warn") addLog(site.id, "alert", "헬스체크", "4일간 응답 없음. 네트워크 점검 필요");
       });
       save();
       renderAll();

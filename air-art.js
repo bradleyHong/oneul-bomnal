@@ -7,7 +7,7 @@
   const LAT = 35.8714;
   const LON = 128.6014;
 
-  // 대기질 단계 — 한국 환경부 PM2.5 기준 (좋음 0-15 / 보통 16-35 / 나쁨 36-75 / 매우나쁨 76+)
+  // 대기질 단계 · 한국 환경부 PM2.5 기준 (좋음 0-15 / 보통 16-35 / 나쁨 36-75 / 매우나쁨 76+)
   const GRADES = [
     {
       max: 15,
@@ -111,7 +111,7 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, W, H);
 
-    // 호흡하는 빛무리 — 공기가 맑을수록 크고 선명
+    // 호흡하는 빛무리 · 공기가 맑을수록 크고 선명
     const clarity = 1 - state.mix.haze;
     const breathe = 0.5 + 0.5 * Math.sin(t * 0.0006);
     const radius = Math.min(W, H) * (0.22 + 0.14 * clarity + 0.03 * breathe);
@@ -123,7 +123,7 @@
   }
 
   function drawFlow(t) {
-    // 공기의 흐름 — 맑으면 넓고 느린 곡선, 나쁘면 짧고 흐트러진 선
+    // 공기의 흐름 · 맑으면 넓고 느린 곡선, 나쁘면 짧고 흐트러진 선
     const clarity = 1 - state.mix.haze;
     const lines = 5;
     ctx.lineCap = "round";
@@ -272,7 +272,7 @@
       }
       return false;
     } catch {
-      // 네트워크 실패 시 초기값 유지 — 화면은 계속 재생되고 재시도에 맡긴다.
+      // 네트워크 실패 시 초기값 유지 · 화면은 계속 재생되고 재시도에 맡긴다.
       return false;
     }
   }
@@ -305,9 +305,26 @@
 
   resize();
   window.addEventListener("resize", resize, { passive: true });
+
+  // 패널 사진이 늦게 로드되면 캔버스가 0px 상태에서 크기를 잡아 화면이 단색으로 늘어난다.
+  // 레이아웃 크기가 바뀌면 다시 재고 즉시 한 프레임 그린다.
+  function ensureSize() {
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width < 2 || rect.height < 2) return;
+    if (Math.abs(rect.width - W) < 1 && Math.abs(rect.height - H) < 1) return;
+    resize();
+    render(performance.now());
+  }
+  // 같은 무대의 배경 사진이 뒤늦게 로드될 때가 실제 원인이므로 load를 직접 듣는다.
+  const stagePhoto = canvas.closest(".led-stage")?.querySelector("img");
+  if (stagePhoto && !stagePhoto.complete) stagePhoto.addEventListener("load", ensureSize, { once: true });
+  window.setInterval(ensureSize, 1000);
+  if ("ResizeObserver" in window) {
+    try { new ResizeObserver(ensureSize).observe(canvas); } catch { /* 미지원 환경은 위 타이머로 대응 */ }
+  }
   loadAirWithRetry();
   window.setInterval(loadAirWithRetry, 10 * 60 * 1000);
-  // 첫 프레임은 즉시 그린다 — 사이니지 전원 인가 직후 검은 화면이 남지 않도록.
+  // 첫 프레임은 즉시 그린다 · 사이니지 전원 인가 직후 검은 화면이 남지 않도록.
   syncParticleCount(state.mix.density);
   render(0);
   startLoop();

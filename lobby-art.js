@@ -119,7 +119,7 @@
     }
   }
 
-  // 하단 실시간 데이터 스트립 — 관공서 담당자가 화면만 보고 수치를 읽을 수 있게.
+  // 하단 실시간 데이터 스트립 · 관공서 담당자가 화면만 보고 수치를 읽을 수 있게.
   function drawDataStrip() {
     if (W < 260) return;
     const stripH = Math.max(H * 0.2, 52);
@@ -218,7 +218,7 @@
       el.textContent = "대구 실시간 데이터를 불러오는 중입니다.";
       return;
     }
-    el.textContent = `대구 현재 ${Math.round(state.temp)}°C · 바람 ${state.wind.toFixed(1)}m/s · 미세먼지 ${Math.round(state.pm10)} · 초미세먼지 ${Math.round(state.pm25)} ㎍/㎥ — 지금 이 수치가 위 화면에 그대로 송출되고 있습니다.`;
+    el.textContent = `대구 현재 ${Math.round(state.temp)}°C · 바람 ${state.wind.toFixed(1)}m/s · 미세먼지 ${Math.round(state.pm10)} · 초미세먼지 ${Math.round(state.pm25)} ㎍/㎥ · 지금 이 수치가 위 화면에 그대로 송출되고 있습니다.`;
   }
 
   const sleep = (ms) => new Promise((r) => window.setTimeout(r, ms));
@@ -268,7 +268,7 @@
       }
       return false;
     } catch {
-      // 실패해도 화면은 계속 재생된다 — 수치만 '--'로 표시하고 재시도에 맡긴다.
+      // 실패해도 화면은 계속 재생된다 · 수치만 '--'로 표시하고 재시도에 맡긴다.
       return false;
     }
   }

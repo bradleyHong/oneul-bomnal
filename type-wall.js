@@ -1,5 +1,5 @@
 /**
- * 봄날 타이포 월 — 로비 LED 패널용 다국어 타이포 미디어아트
+ * 봄날 타이포 월 · 로비 LED 패널용 다국어 타이포 미디어아트
  *
  * 원본 DAEGU TYPE WALL(제어 패널판)에서 송출에 필요한 부분만 남긴 판입니다.
  * 결정론적 렌더(Math.random·Date.now 미사용)라 언제 재생해도 같은 화면이 나옵니다.
@@ -251,14 +251,32 @@
   document.addEventListener("visibilitychange", startLoop);
 
   let resizeTimer = null;
-  window.addEventListener(
-    "resize",
-    () => {
-      window.clearTimeout(resizeTimer);
-      resizeTimer = window.setTimeout(build, 180);
-    },
-    { passive: true }
-  );
+  const rebuild = () => {
+    window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(() => {
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width < 2 || rect.height < 2) return;
+      build();
+      step();
+    }, 180);
+  };
+  window.addEventListener("resize", rebuild, { passive: true });
+
+  // 패널 사진이 늦게 로드되면 캔버스가 0px 상태로 잡혀 화면이 뭉개진다.
+  // 크기가 달라졌을 때만 다시 구성한다.
+  function ensureSize() {
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width < 2 || rect.height < 2) return;
+    if (Math.abs(rect.width - W) < 1 && Math.abs(rect.height - H) < 1) return;
+    build();
+    step();
+  }
+  const stagePhoto = canvas.closest(".lobby-stage")?.querySelector("img");
+  if (stagePhoto && !stagePhoto.complete) stagePhoto.addEventListener("load", ensureSize, { once: true });
+  window.setInterval(ensureSize, 1000);
+  if ("ResizeObserver" in window) {
+    try { new ResizeObserver(ensureSize).observe(canvas); } catch { /* 미지원 환경은 위 타이머로 대응 */ }
+  }
 
   (async () => {
     if (document.fonts?.ready) { try { await document.fonts.ready; } catch { /* 폰트 대기 실패해도 진행 */ } }
