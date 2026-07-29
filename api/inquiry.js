@@ -17,6 +17,7 @@ export const config = { runtime: "edge" };
  */
 
 const DEFAULT_FORWARD = "https://formsubmit.co/ajax/visionpencil@gmail.com";
+const SITE_ORIGIN = "https://publicbloom.art";
 const MAX = 4000;
 
 const json = (data, status = 200) =>
@@ -100,7 +101,15 @@ async function sendViaResend(env, d, text) {
 async function forward(url, d, text) {
   const res = await fetch(url, {
     method: "POST",
-    headers: { "content-type": "application/json", accept: "application/json" },
+    headers: {
+      "content-type": "application/json",
+      accept: "application/json",
+      // formsubmit은 Origin/Referer가 없으면 "HTML 파일로 열었다"고 보고 거부한다.
+      // 그런데 거부하면서도 HTTP 200을 주기 때문에, 헤더가 없으면
+      // 우리는 성공으로 착각하고 문의가 조용히 사라진다.
+      origin: SITE_ORIGIN,
+      referer: `${SITE_ORIGIN}/quote`,
+    },
     body: JSON.stringify({
       _subject: `[오늘은 봄날] ${d.organization || "공공 프로젝트"} 문의`,
       _template: "table",
@@ -117,6 +126,19 @@ async function forward(url, d, text) {
     }),
   });
   if (!res.ok) throw new Error(`forward ${res.status}`);
+
+  // HTTP 200이어도 본문에 실패가 담겨 오는 경우가 있다.
+  // 상태 코드만 믿으면 접수되지 않은 문의를 접수됐다고 답하게 된다.
+  const body = await res.text();
+  let ok = true;
+  try {
+    const parsed = JSON.parse(body);
+    if (parsed && String(parsed.success) === "false") ok = false;
+    if (!ok) throw new Error(`forward rejected: ${parsed.message || body.slice(0, 120)}`);
+  } catch (e) {
+    // JSON이 아니면 상태 코드만으로 판단한다(과거 동작 유지).
+    if (!ok) throw e;
+  }
 }
 
 export default async function handler(request) {
