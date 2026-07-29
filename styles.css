@@ -4170,3 +4170,67 @@ main #package .package-actions .primary-link {
   color: #ffffff;
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
 }
+
+/* === 공공구매 자격 배지 (여성기업 우선) === */
+.trust-badges {
+  list-style: none;
+  margin: 18px 0 24px;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.trust-badges li {
+  display: grid;
+  gap: 2px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(16, 27, 51, 0.12);
+  backdrop-filter: blur(6px);
+}
+.trust-badges b {
+  font-size: 14px;
+  font-weight: 700;
+  color: #101b33;
+  letter-spacing: -0.01em;
+}
+.trust-badges span {
+  font-size: 12px;
+  color: #5b6577;
+  line-height: 1.4;
+}
+/* 여성기업은 공공구매에서 실질적인 우대 사유라 가장 앞에 두고 강조한다. */
+.trust-badges .trust-badge-lead {
+  background: #0b2557;
+  border-color: #0b2557;
+}
+.trust-badges .trust-badge-lead b { color: #fff; }
+.trust-badges .trust-badge-lead span { color: rgba(255, 255, 255, 0.78); }
+
+/* 하드웨어 섹션: 부품 사진 대신 공급 방식으로 설명한다 */
+.mediabox-panel {
+  background: rgba(255, 255, 255, 0.66);
+  border: 1px solid rgba(16, 27, 51, 0.1);
+  border-radius: 18px;
+  padding: 26px 28px;
+  margin-bottom: 22px;
+}
+.mediabox-lead {
+  margin: 0 0 14px;
+  color: #46536e;
+  line-height: 1.75;
+  font-size: 15px;
+}
+
+@media (max-width: 620px) {
+  .trust-badges { gap: 8px; }
+  .trust-badges li { padding: 9px 13px; flex: 1 1 100%; }
+  .mediabox-panel { padding: 20px 18px; }
+}
+
+/* 여성기업 확인서는 공공구매 우대 사유라 인증 목록에서도 눈에 띄게 둔다 */
+.credential-grid .credential-highlight {
+  border-color: rgba(11, 37, 87, 0.42);
+  background: rgba(11, 37, 87, 0.05);
+}
