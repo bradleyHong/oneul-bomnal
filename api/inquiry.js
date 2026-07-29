@@ -16,7 +16,7 @@ export const config = { runtime: "edge" };
  * - INQUIRY_FORWARD_URL : 없으면 아래 기본 formsubmit 주소로 전달
  */
 
-const DEFAULT_FORWARD = "https://formsubmit.co/ajax/visionpencil@gmail.com";
+const DEFAULT_FORWARD = "https://formsubmit.co/ajax/studio@publicbloom.art";
 const SITE_ORIGIN = "https://publicbloom.art";
 const MAX = 4000;
 

@@ -25,7 +25,7 @@ formsubmit.co에 직접 제출되므로 그대로 동작합니다.
 |---|---|
 | `RESEND_API_KEY` | 있으면 [Resend](https://resend.com)로 직접 발송합니다. 아래 둘과 함께 설정해야 동작합니다. |
 | `INQUIRY_FROM` | 발신 주소. Resend에서 인증한 도메인의 주소여야 합니다. 예: `noreply@publicbloom.art` |
-| `INQUIRY_TO` | 수신 주소. 예: `visionpencil@gmail.com` |
+| `INQUIRY_TO` | 수신 주소. 예: `studio@publicbloom.art` |
 | `INQUIRY_FORWARD_URL` | Resend를 쓰지 않을 때 전달할 주소. 기본값은 formsubmit.co의 AJAX 엔드포인트입니다. |
 | `AUTH_SECRET` `ADMIN_ID` `ADMIN_PW_HASH` | 관제 프로그램 로그인용 (`tools/hash-password.mjs`로 해시 생성) |
 
