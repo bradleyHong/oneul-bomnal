@@ -2668,10 +2668,11 @@ h1 {
     align-items: flex-start;
     gap: 0;
     padding: 8px 0 16px;
-    background: rgba(19, 22, 27, 0.94);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    /* 메뉴는 완전히 불투명해야 한다. 반투명이면 뒤 본문 글자가 비쳐
+       메뉴 항목과 겹쳐 읽힌다. backdrop-filter는 지원이 갈리므로 의존하지 않는다. */
+    background: #13161b;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
     font-size: 15px;
   }
 
@@ -2688,8 +2689,9 @@ h1 {
 
   /* 서브페이지 모바일 드롭다운 밝은 테마 */
   body.site-page .site-nav nav {
-    background: rgba(250, 250, 251, 0.98);
+    background: #fafafb;
     border-bottom: 1px solid rgba(16, 27, 51, 0.1);
+    box-shadow: 0 18px 40px rgba(16, 27, 51, 0.16);
   }
   body.site-page .site-nav nav a {
     border-bottom: 1px solid rgba(16, 27, 51, 0.07);
