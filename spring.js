@@ -53,6 +53,24 @@ const airQuality = {
 };
 const TAU = Math.PI * 2;
 
+/**
+ * 시간 제한이 걸린 fetch.
+ *
+ * AbortSignal.timeout은 사파리 16부터 쓸 수 있어, 그보다 낮은 버전에서는
+ * 호출 자체가 예외가 되어 실시간 데이터가 아예 로드되지 않는다.
+ * 관공서 PC에는 구형 브라우저가 흔해 실제로 겪을 수 있는 상황이다.
+ */
+async function fetchWithTimeout(url, ms) {
+  const ac = typeof AbortController === "function" ? new AbortController() : null;
+  const timer = ac ? setTimeout(() => ac.abort(), ms) : null;
+  try {
+    return await fetch(url, ac ? { signal: ac.signal } : undefined);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
+
 let width = 0;
 let height = 0;
 let dpr = 1;
@@ -1921,7 +1939,7 @@ async function loadWeather(isRetry = false) {
       current: "temperature_2m,weather_code,cloud_cover,wind_speed_10m,precipitation",
       timezone: "auto",
     });
-    const res = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`, { signal: AbortSignal.timeout(10000) });
+    const res = await fetchWithTimeout(`https://api.open-meteo.com/v1/forecast?${params}`, 10000);
     if (!res.ok) throw new Error(`weather ${res.status}`);
     const data = await res.json();
     const current = data.current;
@@ -1976,7 +1994,7 @@ async function loadAirQuality(place) {
     current: "pm10,pm2_5",
     timezone: "auto",
   });
-  const res = await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?${params}`, { signal: AbortSignal.timeout(10000) });
+  const res = await fetchWithTimeout(`https://air-quality-api.open-meteo.com/v1/air-quality?${params}`, 10000);
   if (!res.ok) throw new Error(`air-quality ${res.status}`);
   const data = await res.json();
   // 아래 표시 코드는 null만 '연결 중'으로 걸러낸다. 값이 빠져 undefined가

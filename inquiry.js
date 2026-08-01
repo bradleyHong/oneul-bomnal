@@ -114,7 +114,22 @@
       let reachable = true;
       try {
         // no-cors라 응답 내용은 볼 수 없지만, 연결 자체가 막히면 예외가 난다.
-        await fetch(form.action, { method: "HEAD", mode: "no-cors", signal: AbortSignal.timeout(5000) });
+        //
+        // 시간 제한에 AbortSignal.timeout을 쓰면 사파리 16 미만에서 그 자체가
+        // 예외가 되어, 멀쩡한 브라우저를 "연결 불가"로 잘못 판정한다. 실제로
+        // 그 환경에서 formsubmit 단계를 통째로 건너뛰는 것을 확인했다.
+        // 어디서나 쓸 수 있는 AbortController로 직접 시간을 잰다.
+        const ac = typeof AbortController === "function" ? new AbortController() : null;
+        const timer = ac ? window.setTimeout(() => ac.abort(), 5000) : null;
+        try {
+          await fetch(form.action, {
+            method: "HEAD",
+            mode: "no-cors",
+            ...(ac ? { signal: ac.signal } : {}),
+          });
+        } finally {
+          if (timer) window.clearTimeout(timer);
+        }
       } catch {
         reachable = false;
       }
