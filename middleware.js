@@ -20,9 +20,14 @@ export default async function middleware(request) {
   const needsAdmin = ADMIN_ONLY.includes(url.pathname);
 
   if (!session || (needsAdmin && session.role !== "admin")) {
-    const login = new URL("/login.html", url.origin);
+    // cleanUrls가 켜져 있어 /login.html은 다시 /login으로 308을 한 번 더 탄다.
+    // 처음부터 확장자 없는 주소로 보내 왕복을 줄인다.
+    const login = new URL("/login", url.origin);
     login.searchParams.set("next", url.pathname);
     if (session && needsAdmin) login.searchParams.set("denied", "1");
+    // 쿠키는 들고 왔는데 세션이 없다는 것은 만료되었거나 위조된 경우다.
+    // 아무 설명 없이 로그인 화면만 뜨면 방금 로그인한 사람은 영문을 모른다.
+    else if (!session && token) login.searchParams.set("expired", "1");
     return Response.redirect(login, 307);
   }
 

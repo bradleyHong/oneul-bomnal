@@ -21,7 +21,7 @@
     <meta name="twitter:description" content="봄날 미디어박스 + AI 콘텐츠 SaaS 통합 패키지 견적 문의." />
     <link rel="alternate" type="application/rss+xml" title="오늘은 봄날 RSS" href="https://publicbloom.art/rss.xml" />
     <meta name="twitter:image" content="https://publicbloom.art/assets/og-cover.jpg" />
-    <link rel="stylesheet" href="./styles.css?v=20260729-women" />
+    <link rel="stylesheet" href="./styles.css?v=20260801-qa" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="./assets/favicon-180.png" />
     <script type="application/ld+json">
@@ -169,6 +169,7 @@
     </script>
   </head>
   <body class="site-page">
+    <a class="skip-link" href="#main-content">본문 바로가기</a>
     <header class="site-nav">
       <a class="brand" href="./"><strong>오늘은 봄날</strong><span>봄날 미디어박스 · LED 사이니지 AI 콘텐츠</span></a>
       <nav id="main-nav" aria-label="주요 메뉴">
@@ -182,7 +183,7 @@
         <span></span><span></span><span></span>
       </button>
     </header>
-    <main class="subpage-main">
+    <main class="subpage-main" id="main-content" tabindex="-1">
       <section class="subpage-hero">
         <div>
           <p class="section-kicker">Free Quote · Media Box Package</p>
@@ -215,7 +216,9 @@
           <label><span>기관이름</span><input name="organization" type="text" placeholder="예: ㅇㅇ구청, ㅇㅇ문화재단" required /></label>
           <div class="form-row">
             <label><span>담당자 성함</span><input name="name" type="text" placeholder="성함" required /></label>
-            <label><span>연락처</span><input name="phone" type="tel" placeholder="010-0000-0000" required /></label>
+            <label><span>연락처</span><input name="phone" type="tel" placeholder="010-0000-0000" required
+                   inputmode="tel" pattern="[0-9\-+() ]{9,20}"
+                   title="숫자와 하이픈으로 9자 이상 입력해주세요. 예: 010-0000-0000" /></label>
           </div>
           <label><span>이메일</span><input name="email" type="email" placeholder="name@example.com" required /></label>
           <fieldset>
@@ -236,7 +239,7 @@
           <label><span>문의 내용</span><textarea name="message" rows="4" placeholder="사이니지 설치 장소, 화면 대수·해상도, 희망 도입 일정, 연동할 공공 데이터를 적어주세요."></textarea></label>
           <button class="primary-link" type="submit">문의 보내기</button>
           <p class="form-assurance">문의가 접수되면 내용을 확인한 뒤 24시간 이내에 연락드립니다.</p>
-          <p class="form-success" hidden>문의가 접수되었습니다. 24시간 이내에 연락드리겠습니다.</p>
+          <p class="form-success" role="status" aria-live="polite" hidden>문의가 접수되었습니다. 24시간 이내에 연락드리겠습니다.</p>
           <p class="form-error" hidden role="alert"></p>
         </form>
       </section>
@@ -309,7 +312,7 @@
       </dl>
     </footer>
     <script src="./site-pages.js"></script>
-    <script src="./inquiry.js?v=20260728-inquiry"></script>
+    <script src="./inquiry.js?v=20260801-qa"></script>
       <script src="./auth.js?v=20260728-auth"></script>
   </body>
 </html>

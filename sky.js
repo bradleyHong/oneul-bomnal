@@ -162,7 +162,8 @@
       const t = live.temp != null ? `${Math.round(live.temp)}°C` : "";
       parts.push(["대구", live.sky, t].filter(Boolean).join(" "));
     } else {
-      parts.push("대구");
+      // 값을 못 받았을 때도 "대구"만 덩그러니 남지 않게 상태를 덧붙인다.
+      parts.push(live.note ? `대구 (${live.note})` : "대구");
     }
 
     if (live.pm25 != null) {
