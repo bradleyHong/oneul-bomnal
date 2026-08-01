@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex, nofollow" />
     <title>로그인 | 오늘은 봄날</title>
-    <link rel="stylesheet" href="./styles.css?v=20260729-women" />
+    <link rel="stylesheet" href="./styles.css?v=20260801-qa" />
     <link rel="stylesheet" href="./fleet.css?v=20260728-auth" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
   </head>
@@ -76,6 +76,20 @@
         if (params.get("denied")) showAlert("관리자 권한이 필요한 페이지입니다.", "warn");
         if (params.get("expired")) showAlert("로그인이 만료되었습니다. 다시 로그인해주세요.", "warn");
 
+        /**
+         * 로그인 후 돌아갈 주소. 반드시 우리 사이트 안이어야 합니다.
+         *
+         * "/로 시작하는지"만 보면 "//evil.com"과 "/\evil.com"이 통과합니다.
+         * 브라우저는 이 둘을 프로토콜 상대 주소로 읽어 외부 사이트로 나갑니다.
+         * 로그인 직후 가짜 사이트로 보내는 피싱에 그대로 쓰일 수 있어,
+         * 첫 글자가 /이고 두 번째 글자가 /도 \도 아닌 경우만 받습니다.
+         */
+        const safeNext = () => {
+          const next = params.get("next");
+          if (!next || !/^\/[^/\\]/.test(next)) return null;
+          return next;
+        };
+
         const form = document.getElementById("loginForm");
         const btn = document.getElementById("loginBtn");
 
@@ -98,9 +112,7 @@
               showAlert(data.error || "로그인에 실패했습니다.");
               return;
             }
-            const next = params.get("next");
-            const dest = next && next.startsWith("/") ? next : data.redirect || "/index.html";
-            location.href = dest;
+            location.href = safeNext() || data.redirect || "/";
           } catch {
             showAlert("네트워크 오류로 로그인하지 못했습니다. 잠시 후 다시 시도해주세요.");
           } finally {

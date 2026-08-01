@@ -433,6 +433,12 @@
       if (delays[i]) await sleep(delays[i]);
       if (await loadLive()) return true;
     }
+    // 기온 칸이 "--"로 남으면 고장처럼 보인다. 상단 줄에서라도 상태를 알린다.
+    const shared = (window.bomnalLive = window.bomnalLive || {});
+    if (shared.temp == null && !shared.note) {
+      shared.note = "실시간 기상 연결 대기";
+      window.bomnalLiveUpdate?.();
+    }
     return false;
   }
 

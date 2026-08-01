@@ -26,7 +26,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="alternate" type="application/rss+xml" title="오늘은 봄날 RSS" href="https://publicbloom.art/rss.xml" />
     <link rel="preconnect" href="https://api.open-meteo.com" />
-    <link rel="stylesheet" href="./styles.css?v=20260729-women" />
+    <link rel="stylesheet" href="./styles.css?v=20260801-qa" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="./assets/favicon-180.png" />
     <script type="application/ld+json">
@@ -318,6 +318,7 @@
     </script>
   </head>
   <body class="site-page">
+    <a class="skip-link" href="#main-content">본문 바로가기</a>
     <header class="site-nav">
       <a class="brand" href="#top" aria-label="오늘은 봄날 홈">
         <strong>오늘은 봄날</strong>
@@ -339,7 +340,8 @@
     <!-- 지금 대구 하늘. sky.js가 실제 태양 고도에 맞춰 해·달·별을 배치한다. -->
     <div class="sky-layer" id="skyLayer" role="img" aria-label="대구의 지금 하늘"></div>
 
-    <main id="top">
+    <main id="main-content" tabindex="-1">
+      <span id="top" aria-hidden="true"></span>
       <section class="section stage-hero" id="gallery">
         <div class="stage-masthead">
           <p class="section-kicker live-status" data-live-status>대구 실시간 정보를 불러오는 중</p>
@@ -883,7 +885,9 @@
             </label>
             <label>
               <span>연락처</span>
-              <input name="phone" type="tel" placeholder="010-0000-0000" required />
+              <input name="phone" type="tel" placeholder="010-0000-0000" required
+                   inputmode="tel" pattern="[0-9\-+() ]{9,20}"
+                   title="숫자와 하이픈으로 9자 이상 입력해주세요. 예: 010-0000-0000" />
             </label>
           </div>
           <label>
@@ -911,7 +915,7 @@
           </label>
           <button class="primary-link" type="submit">문의 보내기</button>
           <p class="form-assurance">문의가 접수되면 내용을 확인한 뒤 24시간 이내에 연락드립니다.</p>
-          <p class="form-success" hidden>문의가 접수되었습니다. 24시간 이내에 연락드리겠습니다.</p>
+          <p class="form-success" role="status" aria-live="polite" hidden>문의가 접수되었습니다. 24시간 이내에 연락드리겠습니다.</p>
           <p class="form-error" hidden role="alert"></p>
         </form>
       </section>
@@ -1033,10 +1037,10 @@
       });
 
     </script>
-    <script src="./sky.js?v=20260728-live"></script>
-    <script src="./air-art.js?v=20260728-live"></script>
-    <script src="./type-wall.js?v=20260728-live"></script>
-    <script src="./spring.js?v=20260728-framed"></script>
+    <script src="./sky.js?v=20260801-qa"></script>
+    <script src="./air-art.js?v=20260801-qa"></script>
+    <script src="./type-wall.js?v=20260801-qa"></script>
+    <script src="./spring.js?v=20260801-qa2"></script>
     <script src="./regional-live-data.js?v=20260512-live-regions"></script>
     <script>
       // 스크롤 시 헤더 반투명 배경
@@ -1069,9 +1073,20 @@
             navToggle.setAttribute('aria-label', '메뉴 열기');
           }
         });
+      
+        // ESC로도 닫히게 한다. 키보드만 쓰는 사용자는 메뉴를 연 뒤
+        // 빠져나갈 방법이 없으면 메뉴 안에 갇힌다.
+        document.addEventListener('keydown', (e) => {
+          if (e.key !== 'Escape') return;
+          if (navToggle.getAttribute('aria-expanded') !== 'true') return;
+          navToggle.setAttribute('aria-expanded', 'false');
+          mainNav.classList.remove('open');
+          navToggle.setAttribute('aria-label', '메뉴 열기');
+          navToggle.focus();
+        });
       }
     </script>
-      <script src="./inquiry.js?v=20260728-inquiry"></script>
+      <script src="./inquiry.js?v=20260801-qa2"></script>
       <script src="./auth.js?v=20260728-auth"></script>
   </body>
 </html>

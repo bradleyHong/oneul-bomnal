@@ -99,14 +99,43 @@
       return;
     }
 
-    // 2단계: 폼을 원래 주소로 그대로 제출한다.
-    // submit()은 이 핸들러를 다시 부르지 않으므로 무한 반복되지 않는다.
+    // 2단계: 폼을 원래 주소(formsubmit.co)로 그대로 제출한다.
+    //
+    // 다만 submit()은 예외를 던지지 않고 그냥 페이지를 떠난다. 그 주소가 막혀 있으면
+    // 브라우저 오류 화면이 뜨고, 담당자가 적어 둔 내용은 통째로 사라진다.
+    // 관공서 망에서 외부 폼 서비스가 차단되는 경우가 있어 실제로 일어날 수 있는 일이다.
+    // 그래서 떠나기 전에 입력값을 저장해 두고, 먼저 닿을 수 있는 주소인지 확인한다.
     if (form.action && !form.action.includes("/api/inquiry")) {
       try {
+        sessionStorage.setItem("bomnal_inquiry_draft", JSON.stringify(payload));
+      } catch {
+        /* 저장 못 해도 진행한다. */
+      }
+      let reachable = true;
+      try {
+        // no-cors라 응답 내용은 볼 수 없지만, 연결 자체가 막히면 예외가 난다.
+        //
+        // 시간 제한에 AbortSignal.timeout을 쓰면 사파리 16 미만에서 그 자체가
+        // 예외가 되어, 멀쩡한 브라우저를 "연결 불가"로 잘못 판정한다. 실제로
+        // 그 환경에서 formsubmit 단계를 통째로 건너뛰는 것을 확인했다.
+        // 어디서나 쓸 수 있는 AbortController로 직접 시간을 잰다.
+        const ac = typeof AbortController === "function" ? new AbortController() : null;
+        const timer = ac ? window.setTimeout(() => ac.abort(), 5000) : null;
+        try {
+          await fetch(form.action, {
+            method: "HEAD",
+            mode: "no-cors",
+            ...(ac ? { signal: ac.signal } : {}),
+          });
+        } finally {
+          if (timer) window.clearTimeout(timer);
+        }
+      } catch {
+        reachable = false;
+      }
+      if (reachable) {
         form.submit();
         return;
-      } catch {
-        // 아래 3단계로
       }
     }
 
@@ -123,5 +152,33 @@
   });
 
   // formsubmit이 _next로 되돌려보낸 경우에도 성공 문구를 보여준다.
-  if (new URLSearchParams(location.search).get("sent") === "1") show(successBox);
+  if (new URLSearchParams(location.search).get("sent") === "1") {
+    show(successBox);
+    try {
+      sessionStorage.removeItem("bomnal_inquiry_draft");
+    } catch {
+      /* 무시 */
+    }
+  } else {
+    // 전송하다 페이지를 떠났다 돌아온 경우, 적어 둔 내용을 되살린다.
+    // 다시 처음부터 타이핑하게 만들면 그대로 이탈한다.
+    try {
+      const draft = JSON.parse(sessionStorage.getItem("bomnal_inquiry_draft") || "null");
+      if (draft && !form.organization.value) {
+        for (const key of ["organization", "name", "phone", "email", "message"]) {
+          if (form[key] && draft[key]) form[key].value = draft[key];
+        }
+        if (draft.budget) {
+          const hit = [...form.querySelectorAll("[name=budget]")].find((r) => r.value === draft.budget);
+          if (hit) hit.checked = true;
+        }
+        for (const v of draft.service || []) {
+          const hit = [...form.querySelectorAll("[name=service]")].find((c) => c.value === v);
+          if (hit) hit.checked = true;
+        }
+      }
+    } catch {
+      /* 복원 실패해도 빈 폼으로 계속 쓸 수 있다. */
+    }
+  }
 })();

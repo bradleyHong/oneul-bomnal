@@ -483,12 +483,30 @@
   }
 
   /** 일시적 실패로 표시가 10분간 멈추지 않도록 짧은 간격으로 재시도한다. */
+  /**
+   * 재시도까지 모두 실패하면 화면에 그 사실을 알린다.
+   *
+   * 예전에는 "불러오는 중입니다" 문구와 "--" 자리가 그대로 남아, 방문자가 보기에
+   * 사이트가 멈춘 것과 구분되지 않았다. 관공서 담당자에게 보여주는 화면이라
+   * 값이 없을 때도 왜 없는지, 그림은 계속 도는지가 분명해야 한다.
+   */
+  function showAirUnavailable() {
+    const detail = document.querySelector("[data-air-detail]");
+    if (detail) {
+      detail.textContent =
+        "공공 API 응답이 지연되고 있습니다. 잠시 후 자동으로 다시 불러옵니다. 화면 속 아트는 계속 재생됩니다.";
+    }
+    const grade = document.querySelector("[data-air-grade]");
+    if (grade && /^-*$/.test(grade.textContent.trim())) grade.textContent = "연결 대기";
+  }
+
   async function loadAirWithRetry() {
     const delays = [0, 1500, 4000, 10000];
     for (let i = 0; i < delays.length; i += 1) {
       if (delays[i]) await sleep(delays[i]);
       if (await loadAir()) return true;
     }
+    showAirUnavailable();
     return false;
   }
 

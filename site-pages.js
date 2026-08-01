@@ -22,6 +22,17 @@ if (navToggle && mainNav) {
       navToggle.setAttribute('aria-label', '메뉴 열기');
     }
   });
+
+// ESC로도 닫히게 한다. 키보드만 쓰는 사용자는 메뉴를 연 뒤
+  // 빠져나갈 방법이 없으면 메뉴 안에 갇힌다.
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (navToggle.getAttribute('aria-expanded') !== 'true') return;
+    navToggle.setAttribute('aria-expanded', 'false');
+    mainNav.classList.remove('open');
+    navToggle.setAttribute('aria-label', '메뉴 열기');
+    navToggle.focus();
+  });
 }
 
 const proposalButtons = document.querySelectorAll("[data-proposal]");
