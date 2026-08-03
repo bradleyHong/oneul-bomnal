@@ -150,9 +150,9 @@
     const pixels = pxW * pxH;
     const box =
       pixels >= 3840 * 2160 || area >= 20
-        ? "고성능 미니PC (Pro)"
+        ? "맥미니 M4 Pro (Pro)"
         : pixels >= 1920 * 1080 || area >= 6
-          ? "미니PC (Standard)"
+          ? "맥미니 M4 (Standard)"
           : "라즈베리파이 5 (Edge)";
 
     return {

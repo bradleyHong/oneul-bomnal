@@ -3,17 +3,17 @@
   <channel>
     <title>오늘은 봄날 | 봄날 미디어박스 · LED 사이니지 AI 콘텐츠</title>
     <link>https://publicbloom.art/</link>
-    <description>관공서·문화재단 LED 사이니지에 미니PC 기반 봄날 미디어박스와 AI 자동 콘텐츠 SaaS를 연 단위 통합 패키지로 공급합니다.</description>
+    <description>관공서·문화재단 LED 사이니지에 맥미니 M4 기반 봄날 미디어박스와 AI 자동 콘텐츠 SaaS를 연 단위 통합 패키지로 공급합니다.</description>
     <language>ko-KR</language>
     <lastBuildDate>Tue, 28 Jul 2026 18:00:00 +0900</lastBuildDate>
     <item>
-      <title>봄날 미디어박스 · 미니PC 기반 사이니지 셋톱박스</title>
+      <title>봄날 미디어박스 · 맥미니 M4 기반 사이니지 셋톱박스</title>
       <link>https://publicbloom.art/#media-box</link>
       <guid>https://publicbloom.art/#media-box</guid>
       <pubDate>Tue, 28 Jul 2026 18:00:00 +0900</pubDate>
-      <description>관공서·문화재단 LED 사이니지·미디어월·정보게시대에 사전 세팅 상태로 납품하는 미니PC 기반 셋톱박스입니다. 4K 60Hz 송출, 공공 API 실시간 연동, 24/7 자동 리부트·헬스체크, 관제 서버 원격 배포를 지원합니다. 라즈베리파이 5(Edge)·고성능 미니PC(대형 현장) 라인업 선택 가능.</description>
+      <description>관공서·문화재단 LED 사이니지·미디어월·정보게시대에 사전 세팅 상태로 납품하는 맥미니 M4 기반 셋톱박스입니다. 4K 60Hz 송출, 공공 API 실시간 연동, 24/7 자동 리부트·헬스체크, 관제 서버 원격 배포를 지원합니다. 라즈베리파이 5(Edge)·맥미니 M4 Pro(대형 현장) 라인업 선택 가능.</description>
       <category>봄날 미디어박스</category>
-      <category>미니PC 사이니지 셋톱박스</category>
+      <category>맥미니 사이니지 셋톱박스</category>
       <category>LED 사이니지 하드웨어 공급</category>
       <category>관공서 미디어월 하드웨어</category>
       <category>사이니지 관제 서버</category>

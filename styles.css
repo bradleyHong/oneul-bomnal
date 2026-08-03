@@ -4329,3 +4329,60 @@ main #package .package-actions .primary-link {
 #main-content:focus {
   outline: none;
 }
+
+/* === 하드웨어 선택 근거 === */
+.hw-reason {
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(16, 27, 51, 0.1);
+  border-radius: 18px;
+  padding: 26px 28px;
+  margin: 22px 0;
+}
+.hw-reason h3 {
+  margin: 0 0 10px;
+  font-size: 19px;
+  letter-spacing: -0.02em;
+  color: #101b33;
+}
+.hw-reason > p {
+  margin: 0 0 18px;
+  color: #46536e;
+  line-height: 1.75;
+  font-size: 15px;
+}
+.hw-reason-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+}
+.hw-reason-grid > div {
+  display: grid;
+  gap: 5px;
+  align-content: start;
+  padding-left: 14px;
+  border-left: 2px solid #0b2557;
+}
+.hw-reason-grid b {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0b2557;
+  letter-spacing: -0.01em;
+}
+.hw-reason-grid span {
+  font-size: 14px;
+  color: #46536e;
+  line-height: 1.68;
+}
+.hw-reason-note {
+  margin: 18px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid rgba(16, 27, 51, 0.1);
+  font-size: 13.5px;
+  color: #6b7587;
+  line-height: 1.7;
+}
+
+@media (max-width: 620px) {
+  .hw-reason { padding: 20px 18px; }
+  .hw-reason-grid { gap: 14px; }
+}
