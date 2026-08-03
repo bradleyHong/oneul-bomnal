@@ -2077,7 +2077,17 @@ reduceMotion.addEventListener?.("change", startScene);
 // 모바일에서 탭이 정지되면 20분 자동 새로고침 타이머까지 멈춘다.
 // 복귀 시 마지막 성공 시각을 보고 오래됐으면 다시 읽는다.
 document.addEventListener("visibilitychange", () => {
-  if (!document.hidden && Date.now() - _lastWeatherLoad > 30 * 60 * 1000) {
+  // 탭을 가리면 장면 루프를 멈춘다. 캔버스별로 화면 밖은 걸러내고 있었지만
+  // 루프 자체는 계속 돌아 배경 탭에서도 매 프레임 깨어나고 있었다.
+  if (document.hidden) {
+    if (_sceneRafId) {
+      cancelAnimationFrame(_sceneRafId);
+      _sceneRafId = 0;
+    }
+    return;
+  }
+  startScene();
+  if (Date.now() - _lastWeatherLoad > 30 * 60 * 1000) {
     loadWeather();
   }
 });

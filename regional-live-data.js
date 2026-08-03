@@ -192,11 +192,39 @@
     return { width, height, ratio };
   };
 
+  /* ── 화면에 보이는 패널만 그린다 ─────────────────────────────
+     이 루프는 조건 없이 매 프레임 모든 패널을 다시 그리고 있었다.
+     휴대폰(CPU 4배 느림)에서 메인 스레드 점유율을 재보니 스크롤을 맨 아래로
+     내려 캔버스가 하나도 안 보이는 상태에서도 99%였다. 화면이 먹통처럼
+     느껴지고 발열·배터리 소모로 이어진다.
+     보이는 패널만 그리고, 하나도 안 보이면 루프 자체를 쉬게 한다. */
+  const panelOnScreen = new WeakMap();
+  let panelObserver = null;
+
+  const isPanelVisible = (panel) => {
+    if (!("IntersectionObserver" in window)) return true;
+    if (!panelObserver) {
+      panelObserver = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) panelOnScreen.set(entry.target, entry.isIntersecting);
+        },
+        // 스크롤이 닿기 직전에 미리 그려 두어 빈 화면이 보이지 않게 한다.
+        { rootMargin: "160px 0px" }
+      );
+    }
+    if (!panelOnScreen.has(panel)) {
+      panelOnScreen.set(panel, true);
+      panelObserver.observe(panel);
+    }
+    return panelOnScreen.get(panel);
+  };
+
   const drawFlow = (time) => {
     document.querySelectorAll("[data-live-panel]").forEach((panel, index) => {
       const key = panel.dataset.livePanel;
       const canvas = panel.querySelector(".media-flow-canvas");
       if (!canvas) return;
+      if (!isPanelVisible(panel)) return;
       const ctx = canvas.getContext("2d");
       const { width, height, ratio } = resizeCanvas(canvas);
       const stateForPanel = panelState.get(key) || {
@@ -259,14 +287,40 @@
       });
       ctx.restore();
     });
-    requestAnimationFrame(drawFlow);
+    rafId = requestAnimationFrame(drawFlow);
   };
 
+  let rafId = 0;
+
+  const anyPanelVisible = () =>
+    [...document.querySelectorAll("[data-live-panel]")].some((panel) => isPanelVisible(panel));
+
   const startFlowAnimation = () => {
-    if (animationStarted) return;
+    if (rafId) return;
+    if (document.hidden) return;
     animationStarted = true;
-    requestAnimationFrame(drawFlow);
+    rafId = requestAnimationFrame(drawFlow);
   };
+
+  const stopFlowAnimation = () => {
+    if (!rafId) return;
+    cancelAnimationFrame(rafId);
+    rafId = 0;
+  };
+
+  // 탭을 가리면 멈추고, 돌아오면 다시 시작한다.
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) stopFlowAnimation();
+    else startFlowAnimation();
+  });
+
+  // 캔버스가 화면에서 완전히 벗어나면 루프를 쉬게 한다. 1초마다만 확인하므로
+  // 이 검사 자체는 거의 비용이 없다.
+  window.setInterval(() => {
+    if (document.hidden) return;
+    if (anyPanelVisible()) startFlowAnimation();
+    else stopFlowAnimation();
+  }, 1000);
 
   const safeNumber = (value, fallback = 0) => {
     const number = Number(value);
