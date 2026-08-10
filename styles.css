@@ -4386,3 +4386,61 @@ main #package .package-actions .primary-link {
   .hw-reason { padding: 20px 18px; }
   .hw-reason-grid { gap: 14px; }
 }
+
+/* ── 견적문의 상시 버튼 ─────────────────────────────────────
+   페이지를 끝까지 읽은 담당자가 상단 메뉴로 되돌아가지 않아도 되게
+   화면 오른쪽 아래에 계속 둡니다. */
+
+.quote-fab {
+  position: fixed;
+  right: clamp(16px, 3vw, 32px);
+  bottom: clamp(16px, 3vw, 32px);
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 52px;
+  padding: 0 22px 0 18px;
+  border-radius: 999px;
+  background: #10367d;
+  border: 1px solid #10367d;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 850;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  box-shadow: 0 10px 28px rgba(16, 54, 125, 0.32);
+  /* 헤더(z-index 20)보다는 아래에 둔다. 모바일에서 메뉴를 열었을 때
+     메뉴가 이 버튼을 덮어야 선택이 헷갈리지 않는다. */
+  z-index: 15;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.16s ease, opacity 0.24s ease;
+}
+
+.quote-fab svg { width: 20px; height: 20px; flex: none; }
+
+.quote-fab:hover,
+.quote-fab:focus-visible {
+  background: #0c2a63;
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px rgba(16, 54, 125, 0.4);
+}
+
+/* 문의 폼이 화면에 들어와 있는 동안에는 비켜준다. */
+.quote-fab.is-hidden {
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+}
+
+@media (max-width: 560px) {
+  .quote-fab {
+    min-height: 48px;
+    padding: 0 18px 0 15px;
+    font-size: 14px;
+  }
+  .quote-fab svg { width: 18px; height: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quote-fab { transition: opacity 0.2s ease; }
+  .quote-fab:hover, .quote-fab:focus-visible { transform: none; }
+}
