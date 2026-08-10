@@ -11,6 +11,15 @@ Disallow: /client.html
 Disallow: /login
 Disallow: /login.html
 Disallow: /api/
+# 현장 송출용 플레이어와 아트 페이지. 고객사 화면이지 홍보 페이지가 아닙니다.
+Disallow: /player
+Disallow: /player.html
+Disallow: /art-spring
+Disallow: /art-spring.html
+Disallow: /art-air
+Disallow: /art-air.html
+Disallow: /art-typewall
+Disallow: /art-typewall.html
 Disallow: /landing-references
 Disallow: /landing-references.html
 Disallow: /전화응대_핸드북

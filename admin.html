@@ -6,7 +6,7 @@
     <meta name="robots" content="noindex, nofollow" />
     <title>봄날 관제 프로그램 | Fleet Control</title>
     <link rel="stylesheet" href="./styles.css?v=20260803-hw" />
-    <link rel="stylesheet" href="./fleet.css?v=20260728-fleet" />
+    <link rel="stylesheet" href="./fleet.css?v=20260803-player" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
   </head>
   <body class="fleet-page">
@@ -130,17 +130,67 @@
         </div>
       </section>
 
+      <!-- 송출 설정 -->
+      <section class="fleet-card" aria-labelledby="playTitle">
+        <h2 id="playTitle">④ 현장 송출 설정 · 플레이어 주소 만들기</h2>
+        <p class="fleet-card-desc">
+          현장별 재생 목록과 운영시간을 정하면 미디어박스에 넣을 주소가 만들어집니다. 그 주소를 현장 맥미니 브라우저에
+          전체화면으로 띄워두면 끝입니다. 설정은 현장별로 저장됩니다.
+        </p>
+
+        <div class="play-setup">
+          <label class="play-site">
+            <span>현장 선택</span>
+            <select id="playSite"><option value="">현장을 먼저 등록하세요</option></select>
+          </label>
+
+          <fieldset class="play-list">
+            <legend>재생할 작품</legend>
+            <label><input type="checkbox" value="spring" checked /> 봄날 시계 <small>대구 날씨·시간에 반응</small></label>
+            <label><input type="checkbox" value="air" checked /> 오늘의 공기 <small>실시간 미세먼지에 반응</small></label>
+            <label><input type="checkbox" value="typewall" checked /> 타이포 월 <small>6개 언어 인사·데이터</small></label>
+          </fieldset>
+
+          <label class="play-extra">
+            <span>기관 자체 콘텐츠 주소 <small>(선택)</small></span>
+            <input id="playCustom" type="text" placeholder="예: https://기관주소/공지.html · 쉼표로 여러 개" />
+          </label>
+          <p class="fleet-tip">
+            외부 주소는 상대 기관 서버가 외부 삽입을 막아둔 경우 빈 화면으로 나올 수 있습니다. 이 경우 플레이어가 대신
+            판단할 방법이 없으니, 등록 전에 <strong>미리보기 열기</strong>로 반드시 눈으로 확인하세요. 기관 콘텐츠는
+            우리 서버에 올려두는 편이 안전합니다.
+          </p>
+
+          <div class="play-nums">
+            <label><span>작품당 재생 (초)</span><input id="playDwell" type="number" min="10" max="600" step="10" value="90" /></label>
+            <label><span>운영 시작 (시)</span><input id="playFrom" type="number" min="0" max="23" step="1" placeholder="예: 8" /></label>
+            <label><span>운영 종료 (시)</span><input id="playTo" type="number" min="0" max="24" step="1" placeholder="예: 20" /></label>
+          </div>
+          <p class="fleet-tip">운영 시간을 비워두면 24시간 재생합니다. 청사 소등 시간에 맞추면 패널 수명이 늘어납니다.</p>
+
+          <div class="play-out">
+            <span>미디어박스에 넣을 주소</span>
+            <code id="playUrl">현장을 선택하세요</code>
+          </div>
+          <div class="fleet-actions">
+            <button id="playCopy" type="button" class="fleet-btn primary" disabled>주소 복사</button>
+            <button id="playOpen" type="button" class="fleet-btn" disabled>미리보기 열기</button>
+            <button id="playSave" type="button" class="fleet-btn" disabled>이 현장 설정 저장</button>
+          </div>
+        </div>
+      </section>
+
       <div class="fleet-grid">
         <!-- 이력 -->
         <section class="fleet-card" aria-labelledby="logTitle">
-          <h2 id="logTitle">④ 운영 이력</h2>
+          <h2 id="logTitle">⑤ 운영 이력</h2>
           <p class="fleet-card-desc">단계 진행·헬스체크·AS 조치가 시간순으로 기록됩니다. 최근 40건을 표시합니다.</p>
           <ul id="logList" class="fleet-log"></ul>
         </section>
 
         <!-- 데이터 도구 -->
         <section class="fleet-card" aria-labelledby="dataTitle">
-          <h2 id="dataTitle">⑤ 데이터 · 리포트</h2>
+          <h2 id="dataTitle">⑥ 데이터 · 리포트</h2>
           <p class="fleet-card-desc">
             백업·인수인계는 JSON으로, 발주처 제출용 월간 운영 리포트는 CSV로 내보냅니다. CSV는 엑셀에서 바로 열립니다.
           </p>
@@ -166,7 +216,7 @@
       <span>대표 박성실 · 010-4292-1999 · studio@publicbloom.art</span>
     </footer>
 
-    <script src="./fleet.js?v=20260728-fleet"></script>
+    <script src="./fleet.js?v=20260803-player"></script>
       <script src="./auth.js?v=20260728-auth"></script>
   </body>
 </html>
