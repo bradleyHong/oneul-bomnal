@@ -560,21 +560,7 @@ h1 {
   background: rgba(16, 27, 51, 0.14);
 }
 
-.work-card {
-  display: grid;
-  grid-template-rows: minmax(240px, 34vh) 1fr;
-  min-height: 520px;
-  background: #ebebeb;
-}
 
-.work-preview {
-  position: relative;
-  min-height: 240px;
-  overflow: hidden;
-  background:
-    radial-gradient(circle at 28% 24%, rgba(152, 181, 231, 0.9), transparent 24%),
-    linear-gradient(135deg, #c0c9d8, #c7d3e7 58%, #b5bfd0);
-}
 
 .work-preview canvas {
   position: absolute;
@@ -4483,7 +4469,7 @@ main #package .package-actions .primary-link {
 
 /* ── ② 작업 레퍼런스 ─────────────────────────────────────── */
 
-.work-grid {
+.ref-grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: clamp(14px, 1.6vw, 22px);
@@ -4491,11 +4477,11 @@ main #package .package-actions .primary-link {
 
 /* 카드 크기를 셋으로만 나눈다. 종류가 많아지면 격자가 지저분해진다.
    기본 2칸, 넓은 것 4칸, 세로 사진 2칸에 두 줄. */
-.work-card { grid-column: span 2; margin: 0; }
-.work-card.is-wide { grid-column: span 4; }
-.work-card.is-tall { grid-column: span 2; }
+.ref-card { grid-column: span 2; margin: 0; }
+.ref-card.is-wide { grid-column: span 4; }
+.ref-card.is-tall { grid-column: span 2; }
 
-.work-card img {
+.ref-card img {
   display: block;
   width: 100%;
   /* height 속성이 HTML에 남아 있으면 브라우저가 그 값을 높이로 쓰고
@@ -4507,26 +4493,26 @@ main #package .package-actions .primary-link {
   background: #0d1017;
   box-shadow: 0 10px 28px rgba(16, 27, 51, 0.14);
 }
-.work-card.is-wide img { aspect-ratio: 16 / 9; }
-.work-card.is-tall img { aspect-ratio: 3 / 4; }
+.ref-card.is-wide img { aspect-ratio: 16 / 9; }
+.ref-card.is-tall img { aspect-ratio: 3 / 4; }
 
-.work-card figcaption {
+.ref-card figcaption {
   display: grid;
   gap: 3px;
   padding: 12px 2px 0;
 }
-.work-card figcaption b {
+.ref-card figcaption b {
   font-size: 15px;
   font-weight: 850;
   letter-spacing: -0.01em;
   color: var(--ink);
 }
-.work-card figcaption span {
+.ref-card figcaption span {
   font-size: 13px;
   font-weight: 700;
   color: #10367d;
 }
-.work-card figcaption small {
+.ref-card figcaption small {
   margin-top: 2px;
   font-size: 13px;
   line-height: 1.6;
@@ -4534,7 +4520,7 @@ main #package .package-actions .primary-link {
 }
 
 /* 실적과 레퍼런스를 구분해 적어둔다. 입찰에서 이 둘은 다르게 쓰인다. */
-.work-note {
+.ref-note {
   margin: clamp(24px, 3vw, 36px) 0 0;
   padding: 16px 18px;
   border-radius: 10px;
@@ -4543,7 +4529,7 @@ main #package .package-actions .primary-link {
   line-height: 1.72;
   color: var(--muted);
 }
-.work-note strong { color: var(--ink); font-weight: 800; }
+.ref-note strong { color: var(--ink); font-weight: 800; }
 
 /* ── ③ 하는 일 ───────────────────────────────────────────── */
 
@@ -4655,15 +4641,15 @@ main #package .package-actions .primary-link {
   .offer-grid { grid-template-columns: 1fr; }
   .live-grid { grid-template-columns: 1fr; }
   /* 격자를 4칸으로 좁혀 넓은 카드는 한 줄, 나머지는 두 개씩 놓는다. */
-  .work-grid { grid-template-columns: repeat(4, 1fr); }
-  .work-card.is-wide { grid-column: span 4; }
+  .ref-grid { grid-template-columns: repeat(4, 1fr); }
+  .ref-card.is-wide { grid-column: span 4; }
 }
 
 @media (max-width: 620px) {
-  .work-grid { grid-template-columns: 1fr; }
-  .work-card,
-  .work-card.is-wide,
-  .work-card.is-tall { grid-column: span 1; }
-  .work-card.is-tall img { aspect-ratio: 4 / 3; }
+  .ref-grid { grid-template-columns: 1fr; }
+  .ref-card,
+  .ref-card.is-wide,
+  .ref-card.is-tall { grid-column: span 1; }
+  .ref-card.is-tall img { aspect-ratio: 4 / 3; }
   .live-hud-grid { grid-template-columns: repeat(2, 1fr); }
 }
