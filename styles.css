@@ -4444,3 +4444,226 @@ main #package .package-actions .primary-link {
   .quote-fab { transition: opacity 0.2s ease; }
   .quote-fab:hover, .quote-fab:focus-visible { transform: none; }
 }
+
+/* ══════════════════════════════════════════════════════════
+   홈 정리 (2026-08) — 섹션을 10개에서 5개로 줄이면서 추가한 것들.
+   첫 화면 / 작업 레퍼런스 / 하는 일 / 실시간 데이터.
+   ══════════════════════════════════════════════════════════ */
+
+/* ── ① 첫 화면 ───────────────────────────────────────────── */
+
+.home-hero {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 18px;
+  padding-top: clamp(72px, 12vh, 140px);
+  padding-bottom: clamp(48px, 8vh, 96px);
+}
+.home-hero h1 {
+  margin: 0;
+  font-size: clamp(48px, 9vw, 104px);
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+}
+.home-tagline {
+  margin: 0;
+  max-width: 34ch;
+  font-size: clamp(17px, 2.1vw, 22px);
+  line-height: 1.62;
+  color: var(--muted);
+}
+.home-tagline strong {
+  color: var(--ink);
+  font-weight: 850;
+  letter-spacing: -0.01em;
+}
+.home-hero .trust-badges { justify-content: center; }
+.home-hero .hero-actions { margin-top: 6px; }
+
+/* ── ② 작업 레퍼런스 ─────────────────────────────────────── */
+
+.work-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: clamp(14px, 1.6vw, 22px);
+}
+
+/* 카드 크기를 셋으로만 나눈다. 종류가 많아지면 격자가 지저분해진다.
+   기본 2칸, 넓은 것 4칸, 세로 사진 2칸에 두 줄. */
+.work-card { grid-column: span 2; margin: 0; }
+.work-card.is-wide { grid-column: span 4; }
+.work-card.is-tall { grid-column: span 2; }
+
+.work-card img {
+  display: block;
+  width: 100%;
+  /* height 속성이 HTML에 남아 있으면 브라우저가 그 값을 높이로 쓰고
+     aspect-ratio를 무시한다. auto로 풀어줘야 비율이 높이를 정한다. */
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 12px;
+  background: #0d1017;
+  box-shadow: 0 10px 28px rgba(16, 27, 51, 0.14);
+}
+.work-card.is-wide img { aspect-ratio: 16 / 9; }
+.work-card.is-tall img { aspect-ratio: 3 / 4; }
+
+.work-card figcaption {
+  display: grid;
+  gap: 3px;
+  padding: 12px 2px 0;
+}
+.work-card figcaption b {
+  font-size: 15px;
+  font-weight: 850;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.work-card figcaption span {
+  font-size: 13px;
+  font-weight: 700;
+  color: #10367d;
+}
+.work-card figcaption small {
+  margin-top: 2px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+/* 실적과 레퍼런스를 구분해 적어둔다. 입찰에서 이 둘은 다르게 쓰인다. */
+.work-note {
+  margin: clamp(24px, 3vw, 36px) 0 0;
+  padding: 16px 18px;
+  border-radius: 10px;
+  background: var(--petal);
+  font-size: 14px;
+  line-height: 1.72;
+  color: var(--muted);
+}
+.work-note strong { color: var(--ink); font-weight: 800; }
+
+/* ── ③ 하는 일 ───────────────────────────────────────────── */
+
+.offer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(16px, 2vw, 26px);
+}
+.offer-card {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: clamp(22px, 2.4vw, 30px);
+  border: 1px solid var(--edge);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.7);
+}
+.offer-num {
+  font-size: 13px;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+  color: #10367d;
+}
+.offer-card h3 {
+  margin: 0;
+  font-size: clamp(19px, 2.2vw, 24px);
+  letter-spacing: -0.02em;
+}
+.offer-card > p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.offer-card ul {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 7px;
+  border-top: 1px solid var(--edge);
+  padding-top: 14px;
+}
+.offer-card li {
+  position: relative;
+  padding-left: 15px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--deep);
+}
+.offer-card li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #b7c9e7;
+}
+.offer-card li a { color: #10367d; font-weight: 750; }
+
+/* ── ④ 실시간 데이터 ─────────────────────────────────────── */
+
+.live-hud {
+  display: grid;
+  gap: 12px;
+  padding: 16px 20px;
+  margin-bottom: clamp(18px, 2.4vw, 28px);
+  border: 1px solid var(--edge);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.72);
+}
+.live-hud-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+}
+.live-hud-head strong { font-weight: 850; }
+.live-hud-head span:last-child { color: var(--muted); font-size: 13px; }
+
+.live-hud-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin: 0;
+}
+.live-hud-grid div { display: grid; gap: 2px; }
+.live-hud-grid dt { font-size: 12px; color: var(--muted); }
+.live-hud-grid dd { margin: 0; display: flex; align-items: baseline; gap: 3px; }
+.live-hud-grid b { font-size: clamp(20px, 2.4vw, 26px); font-weight: 800; font-variant-numeric: tabular-nums; }
+.live-hud-grid span { font-size: 12px; color: var(--muted); }
+
+.live-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(18px, 2.4vw, 30px);
+}
+.live-piece { margin: 0; display: grid; gap: 12px; align-content: start; }
+.live-piece figcaption { display: grid; gap: 4px; }
+.live-piece figcaption b { font-size: 16px; font-weight: 850; letter-spacing: -0.01em; }
+.live-piece figcaption span { font-size: 14px; line-height: 1.65; color: var(--muted); }
+.live-piece figcaption small { font-size: 13px; line-height: 1.6; color: var(--deep); opacity: 0.82; }
+
+/* ── 좁은 화면 ───────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .offer-grid { grid-template-columns: 1fr; }
+  .live-grid { grid-template-columns: 1fr; }
+  /* 격자를 4칸으로 좁혀 넓은 카드는 한 줄, 나머지는 두 개씩 놓는다. */
+  .work-grid { grid-template-columns: repeat(4, 1fr); }
+  .work-card.is-wide { grid-column: span 4; }
+}
+
+@media (max-width: 620px) {
+  .work-grid { grid-template-columns: 1fr; }
+  .work-card,
+  .work-card.is-wide,
+  .work-card.is-tall { grid-column: span 1; }
+  .work-card.is-tall img { aspect-ratio: 4 / 3; }
+  .live-hud-grid { grid-template-columns: repeat(2, 1fr); }
+}
