@@ -1,5 +1,4 @@
-# canon/canon.json에서 생성한다. 직접 고치지 말고 캐논을 고친 뒤
-# node tools/check-canon.mjs로 확인한다.
+# canon/canon.json에서 생성한다. node tools/build-meta.mjs
 #
 # 주의: robots.txt는 User-agent 그룹마다 규칙이 독립이다.
 # 특정 봇 그룹에 Allow만 적어 두면 그 봇에는 위쪽 Disallow가 적용되지 않는다.
