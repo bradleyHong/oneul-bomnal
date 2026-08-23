@@ -131,7 +131,7 @@ function numBadge(s, x, y, label, color) {
   /* 소개서 카드용 축약문. 홈페이지 본문을 그대로 넣으면 상자를 넘친다. */
   const deckCopy = {
     "media-art": "영상 편집이 아니라 코드로 만듭니다. 현장 화면 비율·해상도에 맞춰 다시 출력할 수 있고, 데이터를 연결하면 화면이 매일 달라집니다.",
-    "fast": "시안 3종을 요청 후 1일 이내에 제시합니다. 영상 외주 제작이 통상 5일 걸리는 것과 비교되는 지점입니다.",
+    "fast": "시안 3종을 요청 후 1주일 이내에 제시합니다. 영상 외주 제작이 통상 1개월 이상 걸리는 것과 비교되는 지점입니다.",
     "led": "로비 미디어월, 외벽 전광판, 세로형 사이니지를 사양 산정부터 공급·설치·배선까지 직접 시공합니다.",
     "facade": "건물 외벽과 전시장 벽면에 빔프로젝터를 설치하고 프로젝션 매핑으로 미디어파사드를 만듭니다.",
   };
@@ -163,8 +163,8 @@ function numBadge(s, x, y, label, color) {
   const stats = [
     { big: "여성기업", unit: "", label: "공공기관 우선구매 대상",
       body: "여성기업 확인서와 직접생산확인증명서를 보유해 우선구매와 중소기업자간 경쟁입찰에 바로 참여합니다. 회계연도 기준 견적서를 즉시 발행합니다." },
-    { big: "1", unit: "일", label: "시안 3종 제시까지",
-      body: "영상 외주 제작이 통상 5일 걸리는 데 비해 짧습니다. 미디어아트를 코드로 만들기 때문에 기획·카피·비주얼을 한 번에 생성합니다." },
+    { big: "1", unit: "주", label: "시안 3종 제시까지",
+      body: "영상 외주 제작이 통상 1개월 이상 걸리는 데 비해 짧습니다. 미디어아트를 코드로 만들기 때문에 기획·카피·비주얼을 한 번에 생성합니다. 자세히 알려주실수록 시안 디테일이 올라갑니다." },
     { big: "1", unit: "개 계약", label: "콘텐츠와 시공을 한 업체가",
       body: "대부분의 발주에서 콘텐츠 업체와 시공 업체가 쪼개집니다. 오늘은 봄날에서는 쪼개지지 않아 담당자가 사이에서 조율할 일이 없습니다." },
   ];
@@ -195,7 +195,7 @@ function numBadge(s, x, y, label, color) {
   s.background = { color: WHITE };
   pageTitle(s, "SERVICE 01", "미디어아트를 코드로 만듭니다", { tw: 6.6, fs: 28 });
   s.addImage({ path: art("flowribbons.jpg"), x: 7.15, y: 0.5, w: 5.45, h: 3.07, rounding: false });
-  s.addText("流帶 · 결결 — 로비 LED 미디어월용 자체 제작 작품", {
+  s.addText("流帶 · 결결 · 로비 LED 미디어월용 자체 제작 작품", {
     x: 7.15, y: 3.68, w: 5.45, h: 0.3, margin: 0, fontFace: BODY, fontSize: 9.5, color: "8A93A3",
   });
 
@@ -229,17 +229,17 @@ function numBadge(s, x, y, label, color) {
 {
   const s = pres.addSlide();
   s.background = { color: WHITE };
-  pageTitle(s, "SERVICE 02", "시안 3종이 하루 안에 나옵니다");
+  pageTitle(s, "SERVICE 02", "시안 3종이 일주일 안에 나옵니다");
   s.addText(
     "기관 CI·컬러·서체·금기 표현을 제작 기준으로 미리 등록해 두고, 기획·카피·비주얼·송출 코드를 한 번에 만듭니다.\n" +
-    "확정 후 상시 운영 현장은 원격으로 교체하므로 현장 방문이 필요하지 않습니다.",
+    "원하시는 방향을 자세히 알려주실수록 시안의 디테일이 올라갑니다.",
     { x: 0.7, y: 1.9, w: 11.9, h: 0.8, margin: 0, fontFace: BODY, fontSize: 13, color: GREY, lineSpacing: 22 }
   );
 
   s.addChart(pres.ChartType.bar, [{
     name: "시안 제시까지 걸리는 기간(일)",
     labels: ["일반 영상 외주 제작", "오늘은 봄날"],
-    values: [5, 1],
+    values: [30, 7],
   }], {
     x: 0.7, y: 2.95, w: 6.6, h: 3.2,
     barDir: "bar", barGrouping: "clustered",
@@ -250,15 +250,15 @@ function numBadge(s, x, y, label, color) {
     dataLabelColor: NAVY, dataLabelFontFace: HEAD, dataLabelFontSize: 16, dataLabelFontBold: true,
     catAxisLabelColor: NAVY, catAxisLabelFontFace: BODY, catAxisLabelFontSize: 12,
     valAxisLabelColor: "8A93A3", valAxisLabelFontSize: 10,
-    valAxisMaxVal: 6, valAxisMajorUnit: 1,
+    valAxisMaxVal: 35, valAxisMajorUnit: 7,
     valGridLine: { color: "EDEFF3", size: 1 },
     catGridLine: { style: "none" },
     barGapWidthPct: 60,
   });
 
   const gains = [
-    ["시안 3종", "요청 후 1일 이내 제시"],
-    ["원격 배포", "확정 후 현장 방문 불필요"],
+    ["시안 3종", "요청 후 1주일 이내 제시"],
+    ["재생 PC 세팅", "사이니지 재생 장비까지 준비"],
     ["교체 운영", "계절·행사별 콘텐츠 교체"],
   ];
   let y = 3.1;
@@ -277,7 +277,7 @@ function numBadge(s, x, y, label, color) {
   s.background = { color: WHITE };
   pageTitle(s, "SERVICE 03", "LED 전광판을 직접 설치합니다", { tw: 7.5 });
   s.addImage({ path: img("assets/works/gumico-led-outdoor.jpg"), x: 8.35, y: 1.95, w: 4.25, h: 3.19 });
-  s.addText("구미코 외벽 LED — 대형 LED 패널 콘텐츠", {
+  s.addText("구미코 외벽 LED · 대형 LED 패널 콘텐츠", {
     x: 8.35, y: 5.22, w: 4.25, h: 0.3, margin: 0, fontFace: BODY, fontSize: 9.5, color: "8A93A3",
   });
 
@@ -331,7 +331,7 @@ function numBadge(s, x, y, label, color) {
     x: 6.9, y: 4.6, w: 5.7, h: 1.6, margin: 0,
     fontFace: BODY, fontSize: 12, color: WHITE, paraSpaceAfter: 8,
   });
-  s.addText("안동 문화플랫폼 모디684 — 야외 건물 미디어파사드", {
+  s.addText("안동 문화플랫폼 모디684 · 야외 건물 미디어파사드", {
     x: 0.35, y: 6.95, w: 5.5, h: 0.3, margin: 0, fontFace: BODY, fontSize: 9.5, color: "DDE3EE",
   });
   pageNum(s, 7);
@@ -382,7 +382,7 @@ function numBadge(s, x, y, label, color) {
 
   const steps = [
     ["현장 실측", "벽면 크기와 굴곡, 주변 조도, 관람 동선, 전기 용량, 설치면 하중을 잽니다. 여기서 프로젝터 대수 또는 LED 사양이 정해집니다."],
-    ["설계 · 시안", "매핑 면 또는 화면 규격을 확정하고, 기관 CI를 반영한 시안 3종을 1일 이내에 제시합니다."],
+    ["설계 · 시안", "매핑 면 또는 화면 규격을 확정하고, 기관 CI를 반영한 시안 3종을 1주일 이내에 제시합니다."],
     ["시공 · 제작", "프로젝터 설치와 매핑, 또는 LED 구조 보강·모듈 설치·배선을 진행하고 확정 화면 규격으로 콘텐츠를 출력합니다."],
     ["상영 · 운영", "상영 스케줄을 관리하고 계절·행사별로 콘텐츠를 교체합니다. 이상이 생기면 원격으로 조치합니다."],
   ];
@@ -441,6 +441,33 @@ function numBadge(s, x, y, label, color) {
   pageNum(s, 10);
 }
 
+/* ── 11. 발주처가 자주 확인하는 것 ─────────────────────── */
+{
+  const s = pres.addSlide();
+  s.background = { color: WHITE };
+  pageTitle(s, "WHAT YOU ASKED", "이런 것까지 해드립니다");
+  s.addText("담당자분들이 발주 전에 가장 많이 확인하시는 네 가지입니다.", {
+    x: 0.7, y: 1.88, w: 11.9, h: 0.35, margin: 0, fontFace: BODY, fontSize: 13, color: GREY,
+  });
+
+  const cw = 5.85, gap = 0.35, x0 = 0.7, y0 = 2.45, ch = 2.15;
+  B.capabilities.forEach((c, i) => {
+    const col = i % 2, row = Math.floor(i / 2);
+    const x = x0 + col * (cw + gap), y = y0 + row * (ch + 0.3);
+    card(s, x, y, cw, ch, i === 2 ? "F0F6FC" : WHITE);
+    numBadge(s, x + 0.38, y + 0.32, String(i + 1), i === 2 ? NAVY : BLUE);
+    s.addText(c.title, {
+      x: x + 1.0, y: y + 0.3, w: cw - 1.4, h: 0.5, margin: 0,
+      fontFace: HEAD, fontSize: 14.5, bold: true, color: NAVY, valign: "middle",
+    });
+    s.addText(c.detail, {
+      x: x + 0.38, y: y + 0.88, w: cw - 0.76, h: 1.16, margin: 0,
+      fontFace: BODY, fontSize: 10, color: GREY, lineSpacing: 14.5, valign: "top",
+    });
+  });
+  pageNum(s, 11);
+}
+
 /* ── 11. 현장 레퍼런스 ──────────────────────────────────── */
 {
   const s = pres.addSlide();
@@ -467,7 +494,7 @@ function numBadge(s, x, y, label, color) {
     "위 현장은 상상연필과 함께 수행한 레퍼런스입니다. 오늘은 봄날 명의의 납품 실적은 대구 북구청 사이니지 미디어아트 3편이며, 입찰·수의계약용 실적증명서는 요청 시 발송합니다.",
     { x: 0.7, y: 6.62, w: 10.8, h: 0.5, margin: 0, fontFace: BODY, fontSize: 10, color: "8A93A3", lineSpacing: 14 }
   );
-  pageNum(s, 11);
+  pageNum(s, 12);
 }
 
 /* ── 12. 인증 · 공공구매 ────────────────────────────────── */
@@ -496,7 +523,7 @@ function numBadge(s, x, y, label, color) {
     `시공 지역   ${C.areaServed.join(" · ")}      |      ${C.areaServedNote}`,
     { x: 1.05, y: 6.05, w: 11.3, h: 0.55, margin: 0, fontFace: BODY, fontSize: 11.5, color: NAVY, valign: "middle" }
   );
-  pageNum(s, 12);
+  pageNum(s, 13);
 }
 
 /* ── 13. 연락처 ─────────────────────────────────────────── */
