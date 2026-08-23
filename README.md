@@ -13,7 +13,12 @@
 ```bash
 node tools/check-canon.mjs    # 캐논과 실제 파일이 어긋나는지 검사 (커밋 전 필수)
 node tools/build-works.mjs    # 작품 원본 → 고객 공개본 다시 생성
+node tools/build-deck.js      # 캐논 → 영업용 회사소개서 (docs/오늘은봄날_회사소개서.pptx)
 ```
+
+회사소개서도 같은 캐논에서 나옵니다. 회사 정보나 사업영역이 바뀌면 캐논을 고치고
+`node tools/build-deck.js`로 다시 뽑으면 홈페이지와 소개서가 어긋나지 않습니다.
+(PDF가 필요하면 파워포인트에서 내보내기 하시면 됩니다.)
 
 자세한 사용법은 [`canon/README.md`](canon/README.md)에 있습니다.
 

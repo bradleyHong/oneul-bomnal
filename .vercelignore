@@ -4,5 +4,7 @@
 works/_source/
 canon/
 tools/
+docs/
+node_modules/
 sink.log
 .claude/
