@@ -1,9 +1,13 @@
+# canon/canon.json에서 생성한다. 직접 고치지 말고 캐논을 고친 뒤
+# node tools/check-canon.mjs로 확인한다.
+#
+# 주의: robots.txt는 User-agent 그룹마다 규칙이 독립이다.
+# 특정 봇 그룹에 Allow만 적어 두면 그 봇에는 위쪽 Disallow가 적용되지 않는다.
+# 그래서 차단 목록을 그룹마다 전부 반복해서 적는다.
+
 User-agent: *
 Allow: /
 Allow: /llms.txt
-
-# 내부 운영 문서와 로그인 뒤 화면은 검색에 노출하지 않습니다.
-# vercel.json의 cleanUrls 때문에 확장자가 있는 주소와 없는 주소가 모두 열리므로 둘 다 막습니다.
 Disallow: /admin
 Disallow: /admin.html
 Disallow: /client
@@ -11,11 +15,8 @@ Disallow: /client.html
 Disallow: /login
 Disallow: /login.html
 Disallow: /api/
-# 미디어박스 소개는 당분간 비공개입니다.
 Disallow: /mediabox
 Disallow: /mediabox.html
-
-# 현장 송출용 플레이어와 아트 페이지. 고객사 화면이지 홍보 페이지가 아닙니다.
 Disallow: /player
 Disallow: /player.html
 Disallow: /art-spring
@@ -28,49 +29,376 @@ Disallow: /landing-references
 Disallow: /landing-references.html
 Disallow: /전화응대_핸드북
 Disallow: /전화응대_핸드북.html
+Disallow: /works
+Disallow: /works/
 Disallow: /%EC%A0%84%ED%99%94%EC%9D%91%EB%8C%80_%ED%95%B8%EB%93%9C%EB%B6%81.html
 
-# 국내 검색엔진
 User-agent: Yeti
 Allow: /
+Allow: /llms.txt
+Disallow: /admin
+Disallow: /admin.html
+Disallow: /client
+Disallow: /client.html
+Disallow: /login
+Disallow: /login.html
+Disallow: /api/
+Disallow: /mediabox
+Disallow: /mediabox.html
+Disallow: /player
+Disallow: /player.html
+Disallow: /art-spring
+Disallow: /art-spring.html
+Disallow: /art-air
+Disallow: /art-air.html
+Disallow: /art-typewall
+Disallow: /art-typewall.html
+Disallow: /landing-references
+Disallow: /landing-references.html
+Disallow: /전화응대_핸드북
+Disallow: /전화응대_핸드북.html
+Disallow: /works
+Disallow: /works/
+Disallow: /%EC%A0%84%ED%99%94%EC%9D%91%EB%8C%80_%ED%95%B8%EB%93%9C%EB%B6%81.html
 
 User-agent: Daumoa
 Allow: /
-
-# AI 검색·답변 엔진.
-# 회사 정보가 AI 답변에 인용되도록 명시적으로 허용합니다.
-User-agent: GPTBot
-Allow: /
-
-User-agent: OAI-SearchBot
-Allow: /
-
-User-agent: ChatGPT-User
-Allow: /
-
-User-agent: ClaudeBot
-Allow: /
-
-User-agent: Claude-User
-Allow: /
-
-User-agent: Claude-SearchBot
-Allow: /
-
-User-agent: PerplexityBot
-Allow: /
-
-User-agent: Perplexity-User
-Allow: /
-
-User-agent: Google-Extended
-Allow: /
-
-User-agent: Applebot-Extended
-Allow: /
+Allow: /llms.txt
+Disallow: /admin
+Disallow: /admin.html
+Disallow: /client
+Disallow: /client.html
+Disallow: /login
+Disallow: /login.html
+Disallow: /api/
+Disallow: /mediabox
+Disallow: /mediabox.html
+Disallow: /player
+Disallow: /player.html
+Disallow: /art-spring
+Disallow: /art-spring.html
+Disallow: /art-air
+Disallow: /art-air.html
+Disallow: /art-typewall
+Disallow: /art-typewall.html
+Disallow: /landing-references
+Disallow: /landing-references.html
+Disallow: /전화응대_핸드북
+Disallow: /전화응대_핸드북.html
+Disallow: /works
+Disallow: /works/
+Disallow: /%EC%A0%84%ED%99%94%EC%9D%91%EB%8C%80_%ED%95%B8%EB%93%9C%EB%B6%81.html
 
 User-agent: Bingbot
 Allow: /
+Allow: /llms.txt
+Disallow: /admin
+Disallow: /admin.html
+Disallow: /client
+Disallow: /client.html
+Disallow: /login
+Disallow: /login.html
+Disallow: /api/
+Disallow: /mediabox
+Disallow: /mediabox.html
+Disallow: /player
+Disallow: /player.html
+Disallow: /art-spring
+Disallow: /art-spring.html
+Disallow: /art-air
+Disallow: /art-air.html
+Disallow: /art-typewall
+Disallow: /art-typewall.html
+Disallow: /landing-references
+Disallow: /landing-references.html
+Disallow: /전화응대_핸드북
+Disallow: /전화응대_핸드북.html
+Disallow: /works
+Disallow: /works/
+Disallow: /%EC%A0%84%ED%99%94%EC%9D%91%EB%8C%80_%ED%95%B8%EB%93%9C%EB%B6%81.html
+
+User-agent: GPTBot
+Allow: /
+Allow: /llms.txt
+Disallow: /admin
+Disallow: /admin.html
+Disallow: /client
+Disallow: /client.html
+Disallow: /login
+Disallow: /login.html
+Disallow: /api/
+Disallow: /mediabox
+Disallow: /mediabox.html
+Disallow: /player
+Disallow: /player.html
+Disallow: /art-spring
+Disallow: /art-spring.html
+Disallow: /art-air
+Disallow: /art-air.html
+Disallow: /art-typewall
+Disallow: /art-typewall.html
+Disallow: /landing-references
+Disallow: /landing-references.html
+Disallow: /전화응대_핸드북
+Disallow: /전화응대_핸드북.html
+Disallow: /works
+Disallow: /works/
+Disallow: /%EC%A0%84%ED%99%94%EC%9D%91%EB%8C%80_%ED%95%B8%EB%93%9C%EB%B6%81.html
+
+User-agent: OAI-SearchBot
+Allow: /
+Allow: /llms.txt
+Disallow: /admin
+Disallow: /admin.html
+Disallow: /client
+Disallow: /client.html
+Disallow: /login
+Disallow: /login.html
+Disallow: /api/
+Disallow: /mediabox
+Disallow: /mediabox.html
+Disallow: /player
+Disallow: /player.html
+Disallow: /art-spring
+Disallow: /art-spring.html
+Disallow: /art-air
+Disallow: /art-air.html
+Disallow: /art-typewall
+Disallow: /art-typewall.html
+Disallow: /landing-references
+Disallow: /landing-references.html
+Disallow: /전화응대_핸드북
+Disallow: /전화응대_핸드북.html
+Disallow: /works
+Disallow: /works/
+Disallow: /%EC%A0%84%ED%99%94%EC%9D%91%EB%8C%80_%ED%95%B8%EB%93%9C%EB%B6%81.html
+
+User-agent: ChatGPT-User
+Allow: /
+Allow: /llms.txt
+Disallow: /admin
+Disallow: /admin.html
+Disallow: /client
+Disallow: /client.html
+Disallow: /login
+Disallow: /login.html
+Disallow: /api/
+Disallow: /mediabox
+Disallow: /mediabox.html
+Disallow: /player
+Disallow: /player.html
+Disallow: /art-spring
+Disallow: /art-spring.html
+Disallow: /art-air
+Disallow: /art-air.html
+Disallow: /art-typewall
+Disallow: /art-typewall.html
+Disallow: /landing-references
+Disallow: /landing-references.html
+Disallow: /전화응대_핸드북
+Disallow: /전화응대_핸드북.html
+Disallow: /works
+Disallow: /works/
+Disallow: /%EC%A0%84%ED%99%94%EC%9D%91%EB%8C%80_%ED%95%B8%EB%93%9C%EB%B6%81.html
+
+User-agent: ClaudeBot
+Allow: /
+Allow: /llms.txt
+Disallow: /admin
+Disallow: /admin.html
+Disallow: /client
+Disallow: /client.html
+Disallow: /login
+Disallow: /login.html
+Disallow: /api/
+Disallow: /mediabox
+Disallow: /mediabox.html
+Disallow: /player
+Disallow: /player.html
+Disallow: /art-spring
+Disallow: /art-spring.html
+Disallow: /art-air
+Disallow: /art-air.html
+Disallow: /art-typewall
+Disallow: /art-typewall.html
+Disallow: /landing-references
+Disallow: /landing-references.html
+Disallow: /전화응대_핸드북
+Disallow: /전화응대_핸드북.html
+Disallow: /works
+Disallow: /works/
+Disallow: /%EC%A0%84%ED%99%94%EC%9D%91%EB%8C%80_%ED%95%B8%EB%93%9C%EB%B6%81.html
+
+User-agent: Claude-User
+Allow: /
+Allow: /llms.txt
+Disallow: /admin
+Disallow: /admin.html
+Disallow: /client
+Disallow: /client.html
+Disallow: /login
+Disallow: /login.html
+Disallow: /api/
+Disallow: /mediabox
+Disallow: /mediabox.html
+Disallow: /player
+Disallow: /player.html
+Disallow: /art-spring
+Disallow: /art-spring.html
+Disallow: /art-air
+Disallow: /art-air.html
+Disallow: /art-typewall
+Disallow: /art-typewall.html
+Disallow: /landing-references
+Disallow: /landing-references.html
+Disallow: /전화응대_핸드북
+Disallow: /전화응대_핸드북.html
+Disallow: /works
+Disallow: /works/
+Disallow: /%EC%A0%84%ED%99%94%EC%9D%91%EB%8C%80_%ED%95%B8%EB%93%9C%EB%B6%81.html
+
+User-agent: Claude-SearchBot
+Allow: /
+Allow: /llms.txt
+Disallow: /admin
+Disallow: /admin.html
+Disallow: /client
+Disallow: /client.html
+Disallow: /login
+Disallow: /login.html
+Disallow: /api/
+Disallow: /mediabox
+Disallow: /mediabox.html
+Disallow: /player
+Disallow: /player.html
+Disallow: /art-spring
+Disallow: /art-spring.html
+Disallow: /art-air
+Disallow: /art-air.html
+Disallow: /art-typewall
+Disallow: /art-typewall.html
+Disallow: /landing-references
+Disallow: /landing-references.html
+Disallow: /전화응대_핸드북
+Disallow: /전화응대_핸드북.html
+Disallow: /works
+Disallow: /works/
+Disallow: /%EC%A0%84%ED%99%94%EC%9D%91%EB%8C%80_%ED%95%B8%EB%93%9C%EB%B6%81.html
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /llms.txt
+Disallow: /admin
+Disallow: /admin.html
+Disallow: /client
+Disallow: /client.html
+Disallow: /login
+Disallow: /login.html
+Disallow: /api/
+Disallow: /mediabox
+Disallow: /mediabox.html
+Disallow: /player
+Disallow: /player.html
+Disallow: /art-spring
+Disallow: /art-spring.html
+Disallow: /art-air
+Disallow: /art-air.html
+Disallow: /art-typewall
+Disallow: /art-typewall.html
+Disallow: /landing-references
+Disallow: /landing-references.html
+Disallow: /전화응대_핸드북
+Disallow: /전화응대_핸드북.html
+Disallow: /works
+Disallow: /works/
+Disallow: /%EC%A0%84%ED%99%94%EC%9D%91%EB%8C%80_%ED%95%B8%EB%93%9C%EB%B6%81.html
+
+User-agent: Perplexity-User
+Allow: /
+Allow: /llms.txt
+Disallow: /admin
+Disallow: /admin.html
+Disallow: /client
+Disallow: /client.html
+Disallow: /login
+Disallow: /login.html
+Disallow: /api/
+Disallow: /mediabox
+Disallow: /mediabox.html
+Disallow: /player
+Disallow: /player.html
+Disallow: /art-spring
+Disallow: /art-spring.html
+Disallow: /art-air
+Disallow: /art-air.html
+Disallow: /art-typewall
+Disallow: /art-typewall.html
+Disallow: /landing-references
+Disallow: /landing-references.html
+Disallow: /전화응대_핸드북
+Disallow: /전화응대_핸드북.html
+Disallow: /works
+Disallow: /works/
+Disallow: /%EC%A0%84%ED%99%94%EC%9D%91%EB%8C%80_%ED%95%B8%EB%93%9C%EB%B6%81.html
+
+User-agent: Google-Extended
+Allow: /
+Allow: /llms.txt
+Disallow: /admin
+Disallow: /admin.html
+Disallow: /client
+Disallow: /client.html
+Disallow: /login
+Disallow: /login.html
+Disallow: /api/
+Disallow: /mediabox
+Disallow: /mediabox.html
+Disallow: /player
+Disallow: /player.html
+Disallow: /art-spring
+Disallow: /art-spring.html
+Disallow: /art-air
+Disallow: /art-air.html
+Disallow: /art-typewall
+Disallow: /art-typewall.html
+Disallow: /landing-references
+Disallow: /landing-references.html
+Disallow: /전화응대_핸드북
+Disallow: /전화응대_핸드북.html
+Disallow: /works
+Disallow: /works/
+Disallow: /%EC%A0%84%ED%99%94%EC%9D%91%EB%8C%80_%ED%95%B8%EB%93%9C%EB%B6%81.html
+
+User-agent: Applebot-Extended
+Allow: /
+Allow: /llms.txt
+Disallow: /admin
+Disallow: /admin.html
+Disallow: /client
+Disallow: /client.html
+Disallow: /login
+Disallow: /login.html
+Disallow: /api/
+Disallow: /mediabox
+Disallow: /mediabox.html
+Disallow: /player
+Disallow: /player.html
+Disallow: /art-spring
+Disallow: /art-spring.html
+Disallow: /art-air
+Disallow: /art-air.html
+Disallow: /art-typewall
+Disallow: /art-typewall.html
+Disallow: /landing-references
+Disallow: /landing-references.html
+Disallow: /전화응대_핸드북
+Disallow: /전화응대_핸드북.html
+Disallow: /works
+Disallow: /works/
+Disallow: /%EC%A0%84%ED%99%94%EC%9D%91%EB%8C%80_%ED%95%B8%EB%93%9C%EB%B6%81.html
+
+# 국내 검색엔진: Yeti(네이버) · Daumoa(다음)
+# AI 검색·답변 엔진: 회사 정보가 AI 답변에 인용되도록 명시적으로 허용한다.
 
 Sitemap: https://publicbloom.art/sitemap.xml
 Sitemap: https://publicbloom.art/rss.xml

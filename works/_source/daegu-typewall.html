@@ -1,0 +1,1002 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>DAEGU TYPE WALL — LIVE DATA · 다국어 타이포 모션</title>
+<style>
+  html,body{margin:0;height:100%;background:#050505;overflow:hidden;
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;}
+  #stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    box-sizing:border-box;transition:padding .22s ease;}
+  canvas{display:block;max-width:100%;max-height:100%;}
+  @media (min-width:901px){ body.pnl #stage{padding-right:328px;} }
+  /* ── 컨트롤 패널 ── */
+  #ui{position:fixed;top:0;right:0;width:328px;height:100%;overflow-y:auto;
+    background:rgba(8,8,8,.94);border-left:1px solid #241f1c;color:#e8e4dc;
+    font-size:12px;letter-spacing:.01em;padding:16px 18px 60px;box-sizing:border-box;
+    backdrop-filter:blur(8px);transition:transform .22s ease;}
+  #ui.hide{transform:translateX(100%);}
+  #ui h1{font-size:11px;letter-spacing:.22em;margin:0 0 2px;color:#0075c9;font-weight:800;}
+  #ui .sub{font-size:10px;color:#6d6560;margin:0 0 18px;letter-spacing:.06em;}
+  fieldset{border:0;border-top:1px solid #241f1c;margin:0 0 14px;padding:12px 0 0;}
+  legend{font-size:10px;letter-spacing:.18em;color:#8a8079;padding:0 8px 0 0;}
+  label{display:block;margin:10px 0 4px;color:#a49b93;font-size:11px;}
+  label span{float:right;color:#e8e4dc;font-variant-numeric:tabular-nums;}
+  input[type=range]{width:100%;accent-color:#0075c9;height:18px;}
+  textarea,input[type=text],input[type=number],select{
+    width:100%;box-sizing:border-box;background:#111;border:1px solid #2b2522;color:#f5f2ea;
+    padding:7px 8px;border-radius:3px;font-size:11px;font-family:ui-monospace,Menlo,monospace;}
+  textarea{height:172px;resize:vertical;line-height:1.7;}
+  textarea.sm{height:130px;}
+  input[type=color]{width:100%;height:30px;background:#111;border:1px solid #2b2522;border-radius:3px;}
+  .row{display:flex;gap:8px;}
+  .row>*{flex:1;}
+  button{width:100%;background:#161211;border:1px solid #3a2f2a;color:#f5f2ea;
+    padding:9px;border-radius:3px;cursor:pointer;font-size:11px;letter-spacing:.06em;margin-top:8px;}
+  button:hover{background:#1b2430;border-color:#0075c9;}
+  button.on{background:#0075c9;border-color:#0075c9;color:#fff;font-weight:700;}
+  .note{color:#6d6560;font-size:10px;line-height:1.6;margin-top:8px;}
+  .note code{color:#9fb6c9;font-size:10px;}
+  #status{margin-top:8px;padding:8px 9px;border:1px solid #1e2a33;border-radius:3px;
+    background:#0b1014;color:#9fb6c9;font-size:10px;line-height:1.7;
+    font-family:ui-monospace,Menlo,monospace;white-space:pre-wrap;}
+  .sw{display:flex;gap:4px;margin-top:8px;}
+  .sw i{flex:1;height:14px;border-radius:2px;display:block;}
+  #toggle{position:fixed;top:14px;right:14px;width:auto;margin:0;z-index:9;padding:7px 12px;
+    background:rgba(10,10,10,.8);border:1px solid #3a2f2a;color:#e8e4dc;font-size:11px;border-radius:3px;cursor:pointer;}
+  #hud{position:fixed;left:14px;bottom:12px;color:#5c5550;font-size:10px;
+    font-family:ui-monospace,Menlo,monospace;letter-spacing:.08em;z-index:9;}
+  .cap #ui,.cap #toggle,.cap #hud{display:none!important;}
+
+  /* ── 모바일: 패널을 하단 시트로 ── */
+  @media (max-width:900px){
+    #ui{width:100%;height:62vh;top:auto;bottom:0;border-left:0;border-top:1px solid #2b2522;
+      border-radius:14px 14px 0 0;padding:14px 16px 80px;font-size:13px;
+      -webkit-overflow-scrolling:touch;}
+    #ui.hide{transform:translateY(100%);}
+    #ui::before{content:"";display:block;width:38px;height:4px;border-radius:2px;
+      background:#3a2f2a;margin:-4px auto 12px;}
+    body.pnl #stage{padding-bottom:62vh;}
+    input[type=range]{height:30px;}
+    textarea{height:140px;font-size:13px;}
+    button{padding:12px;font-size:12px;}
+    #toggle{top:auto;bottom:calc(env(safe-area-inset-bottom) + 14px);right:14px;
+      padding:11px 16px;font-size:12px;border-radius:20px;background:rgba(0,117,201,.92);
+      color:#fff;border-color:#0075c9;font-weight:700;}
+    body.pnl #toggle{bottom:calc(62vh + 12px);}
+    #hud{left:12px;bottom:calc(env(safe-area-inset-bottom) + 16px);}
+    body.pnl #hud{display:none;}
+  }
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="c"></canvas></div>
+<button id="toggle">패널 숨기기 (H)</button>
+<div id="hud"></div>
+
+<div id="ui">
+  <h1>DAEGU TYPE WALL — LIVE</h1>
+  <p class="sub">VISIONPENCIL · 다국어 타이포 + 실시간 도시 데이터</p>
+
+  <fieldset><legend>실시간 데이터</legend>
+    <label>데이터 소스</label>
+    <select id="src">
+      <option value="auto">자동 — 기상·대기질 (키 불필요, 즉시 동작)</option>
+      <option value="airkorea">에어코리아 대기질 + 자동 기상 (서비스키 필요)</option>
+      <option value="manual">현재 값 고정 (통신 중단)</option>
+      <option value="demo">데모 스냅샷 (오프라인)</option>
+    </select>
+    <label>공공데이터포털 서비스키 (에어코리아, Decoding)</label>
+    <input type="text" id="apikey" placeholder="서비스키 붙여넣기">
+    <label>갱신 주기 <span id="v_poll"></span></label>
+    <input type="range" id="poll" min="1" max="30" step="1">
+    <div class="row">
+      <button id="fetchnow">지금 갱신</button>
+      <button id="livebtn" class="on">LIVE</button>
+    </div>
+    <div id="status">대기 중…</div>
+    <div class="note">LIVE를 끄면 마지막으로 받아온 값이 그대로 고정됩니다(납품 렌더용 스냅샷).
+      캡처 모드(<code>?capture=1</code>)에서는 절대 통신하지 않고 <code>?data=</code> 스냅샷 + <code>?t0=</code> 기준시각으로만 그려서 결정론성이 유지됩니다.</div>
+  </fieldset>
+
+  <fieldset><legend>데이터 문구 (템플릿)</legend>
+    <label>한 줄에 문구 하나씩</label>
+    <textarea id="dtxt" class="sm"></textarea>
+    <label>데이터 문구 비율 <span id="v_dratio"></span></label>
+    <input type="range" id="dratio" min="0" max="1" step="0.02">
+    <div class="note">사용 가능한 토큰 —
+      <code>{TIME}</code> <code>{TIMES}</code> <code>{DATE}</code> <code>{WDAY}</code>
+      <code>{TEMP}</code> <code>{TEMPN}</code> <code>{FEEL}</code> <code>{HUM}</code>
+      <code>{WIND}</code> <code>{RAIN}</code> <code>{SKY}</code> <code>{SKYEN}</code>
+      <code>{PM10}</code> <code>{PM10N}</code> <code>{PM25}</code> <code>{PM25N}</code>
+      <code>{AQI}</code> <code>{AQIT}</code> <code>{AQIEN}</code> <code>{UV}</code>
+      <code>{SUNRISE}</code> <code>{SUNSET}</code> <code>{STN}</code><br>
+      값의 자리폭은 미리 예약되므로 숫자가 바뀌어도 줄이 흔들리지 않습니다.</div>
+  </fieldset>
+
+  <fieldset><legend>도시명 텍스트</legend>
+    <label>한 줄에 문구 하나씩 (언어 자유)</label>
+    <textarea id="txt"></textarea>
+    <div class="note">여기만 바꾸면 도시·기관 이름을 통째로 교체할 수 있습니다. 줄 수 제한 없음.</div>
+  </fieldset>
+
+  <fieldset><legend>브랜딩 · 색</legend>
+    <label>컬러 모드</label>
+    <select id="cmode">
+      <option value="ci5">Colorful DAEGU 5색</option>
+      <option value="blue">대구 블루 단색</option>
+      <option value="aqi">대기질 반응형 (좋음↔나쁨)</option>
+      <option value="mono">모노 아이보리 (원본)</option>
+    </select>
+    <div class="sw" id="swatch"></div>
+    <div class="row">
+      <div><label>기본(문자)</label><input type="color" id="cbase"></div>
+      <div><label>포인트</label><input type="color" id="caccent"></div>
+    </div>
+    <div class="row">
+      <div><label>데이터 값</label><input type="color" id="cvalue"></div>
+      <div><label>배경</label><input type="color" id="cbg"></div>
+    </div>
+    <label>포인트 비율 <span id="v_aratio"></span></label><input type="range" id="aratio" min="0" max="1" step="0.02">
+    <label>데이터 라벨 밝기 <span id="v_lbldim"></span></label><input type="range" id="lbldim" min="0.2" max="1" step="0.02">
+    <button id="stamp">코너 데이터 스탬프</button>
+    <div class="note">Colorful DAEGU 5색 — 파랑(경제)·녹색(환경)·적색(열정)·보라(문화예술)·노랑(복지).
+      납품 전 시청 CIP 규정집의 정확한 별색값으로 위 컬러칩을 덮어쓰세요.</div>
+  </fieldset>
+
+  <fieldset><legend>구성</legend>
+    <label>기울기 <span id="v_angle"></span></label><input type="range" id="angle" min="-45" max="45" step="1">
+    <label>글자 크기 <span id="v_size"></span></label><input type="range" id="size" min="16" max="200" step="1">
+    <label>흐름 속도 <span id="v_speed"></span></label><input type="range" id="speed" min="0.2" max="3" step="0.05">
+    <label>줄 간격 <span id="v_lead"></span></label><input type="range" id="lead" min="1" max="2" step="0.02">
+    <label>흐름 방향</label>
+    <select id="dirmode">
+      <option value="alt">한 줄씩 좌우 교대 (질서)</option>
+      <option value="same">전부 같은 방향</option>
+      <option value="random">줄마다 무작위</option>
+    </select>
+    <label>줄별 크기 편차 <span id="v_sizevar"></span></label><input type="range" id="sizevar" min="0" max="1" step="0.05">
+    <label>줄별 밝기 편차 <span id="v_dimvar"></span></label><input type="range" id="dimvar" min="0" max="0.7" step="0.02">
+    <div class="note">속도는 모든 줄이 동일하게 고정됩니다. 편차를 0으로 두면 완전히 균질한 격자가 됩니다.</div>
+    <label>잔상(모션 블러) <span id="v_trail"></span></label><input type="range" id="trail" min="0" max="0.9" step="0.02">
+  </fieldset>
+
+  <fieldset><legend>날아가기</legend>
+    <label>분해 단위</label>
+    <select id="unit">
+      <option value="char">글자 낱개 — 한 자씩 날아갔다 돌아옴</option>
+      <option value="phrase">문구 통째</option>
+    </select>
+    <label>주기당 횟수 <span id="v_bursts"></span></label><input type="range" id="bursts" min="1" max="10" step="1">
+    <label>날아가는 비율 <span id="v_bratio"></span></label><input type="range" id="bratio" min="0" max="1" step="0.02">
+    <label>날아가는 거리 <span id="v_bamp"></span></label><input type="range" id="bamp" min="0.02" max="2" step="0.02">
+    <label>동작 성격 (0 완만 → 1 격렬) <span id="v_bsnap"></span></label><input type="range" id="bsnap" min="0" max="1" step="0.02">
+    <label>방향 퍼짐 (0 흐름축만) <span id="v_bspread"></span></label><input type="range" id="bspread" min="0" max="1" step="0.02">
+    <label>회전량 <span id="v_brot"></span></label><input type="range" id="brot" min="0" max="1" step="0.02">
+    <label>사라짐 정도 <span id="v_bfade"></span></label><input type="range" id="bfade" min="0" max="1" step="0.02">
+  </fieldset>
+
+  <fieldset><legend>사라짐 · 등장</legend>
+    <label>사라지기 시작 <span id="v_vstart"></span></label><input type="range" id="vstart" min="0" max="120" step="0.5">
+    <label>벽 전체 훑는 시간 <span id="v_vdur"></span></label><input type="range" id="vdur" min="0.3" max="10" step="0.1">
+    <label>암전 유지 <span id="v_vblank"></span></label><input type="range" id="vblank" min="0" max="8" step="0.1">
+    <label>한 글자씩 되돌아오는 시간 <span id="v_vreveal"></span></label><input type="range" id="vreveal" min="1" max="40" step="0.5">
+    <label>리듬 그리드 <span id="v_beat"></span></label><input type="range" id="beat" min="0.05" max="1" step="0.01">
+    <label>쏙 / 톡 팝 강도 <span id="v_vpop"></span></label><input type="range" id="vpop" min="0" max="0.8" step="0.02">
+    <label>밀려나는 정도 <span id="v_vdrift"></span></label><input type="range" id="vdrift" min="0" max="4" step="0.1">
+    <div class="note" id="vnote"></div>
+  </fieldset>
+
+  <fieldset><legend>설치 — ㄷ자 패널</legend>
+    <div class="row"><div><label>좌측 날개 px</label><input type="number" id="wingL"></div>
+      <div><label>우측 날개 px</label><input type="number" id="wingR"></div></div>
+    <button id="guide">접힘선 가이드 표시</button>
+    <div class="note">가이드는 화면에서만 보이고 렌더 결과에는 찍히지 않습니다. 코너에 로고·핵심 문구가 물리지 않는지 확인용.</div>
+  </fieldset>
+
+  <fieldset><legend>출력 규격</legend>
+    <label>프리셋</label>
+    <select id="preset">
+      <option value="3840x2160">4K 가로 3840 × 2160</option>
+      <option value="1920x1080">FHD 가로 1920 × 1080</option>
+      <option value="2160x3840">4K 세로 2160 × 3840</option>
+      <option value="1080x1920">FHD 세로 1080 × 1920</option>
+      <option value="5760x1080">와이드 LED 5760 × 1080</option>
+      <option value="7680x1080">초와이드 LED 7680 × 1080</option>
+      <option value="custom">직접 입력</option>
+    </select>
+    <div class="row"><div><label>가로 px</label><input type="number" id="w"></div>
+      <div><label>세로 px</label><input type="number" id="h"></div></div>
+    <div class="row"><div><label>길이(초)</label><input type="number" id="dur"></div>
+      <div><label>fps</label><input type="number" id="fps"></div></div>
+    <label>시드 (7자리)</label><input type="number" id="seed">
+    <button id="reseed">시드 새로 뽑기</button>
+    <label style="margin-top:14px">미리보기 화질</label>
+    <select id="pv"><option value="0.5">1/2 (부드러움)</option><option value="1">원본 100%</option><option value="0.35">1/3</option></select>
+  </fieldset>
+
+  <fieldset><legend>저장</legend>
+    <button id="play" class="on">일시정지</button>
+    <button id="rec">화면 녹화 시작 (WebM)</button>
+    <button id="png">현재 화면 PNG 저장</button>
+    <button id="cfg">설정 JSON 저장 (데이터 스냅샷 포함)</button>
+    <button id="url">설정 URL 복사</button>
+    <button id="capurl">캡처용 URL 복사 (render.mjs)</button>
+    <div class="note">WebM 녹화는 실시간이라 4K에선 프레임이 떨어집니다. 납품용 4K는 폴더의 render.mjs + ffmpeg 파이프라인에
+      「캡처용 URL」을 그대로 물려 주세요 — 데이터가 그 시점 값으로 고정되고 시계만 영상 시간에 맞춰 흐릅니다.</div>
+  </fieldset>
+</div>
+
+<script>
+/* =========================================================
+   DAEGU TYPE WALL — LIVE DATA EDITION
+   · 도시 데이터(시각·기온·대기질)를 타이포 흐름 안에 직접 새긴다
+   · 미리보기: 실시간 / 캡처(capture=1): 스냅샷 고정 → 결정론적 렌더 유지
+   ========================================================= */
+const q = new URLSearchParams(location.search);
+const CAPTURE = q.get('capture') === '1';
+
+const DEFAULT_TEXTS = [
+  "대구광역시","대구시청",
+  "DAEGU METROPOLITAN CITY","DAEGU CITY HALL",
+  "大邱広域市","大邱市役所",
+  "大邱广域市","大邱市政府",
+  "นครแทกู","ศาลาว่าการนครแทกู",
+  "Thành phố Daegu","Tòa thị chính Daegu"
+];
+
+const DEFAULT_DATA_TEXTS = [
+  "{TIME}",
+  "대구 {TEMP}",
+  "DAEGU {TEMP}",
+  "{SKY}",
+  "미세먼지 {PM10}",
+  "초미세먼지 {PM25}",
+  "AIR QUALITY {AQIEN}",
+  "대기질 {AQIT}",
+  "{DATE} {WDAY}",
+  "습도 {HUM}",
+  "체감 {FEEL}",
+  "바람 {WIND}",
+  "일몰 {SUNSET}",
+  "NOW {TIMES}"
+];
+
+/* Colorful DAEGU — 파랑(경제)·녹색(환경)·적색(열정)·보라(문화예술)·노랑(복지)
+   ※ 화면용 근사값. 납품 전 시청 CIP 규정집 별색으로 교체할 것 */
+const CI5 = ["#0075C9","#00A94F","#E8342A","#7D3F98","#FFC72C"];
+
+const DEFAULTS = {
+  w:3840, h:2160, fps:30, dur:106, seed:3147025,
+  angle:-14, size:56, speed:0.75, lead:1.24, trail:0.26,
+  sizevar:0.35, dimvar:0.25, dirmode:"alt",
+  bursts:3, bratio:0, bamp:0.26, unit:"char",
+  vstart:60, vdur:20, vblank:5, vreveal:20, vdrift:0.4,
+  beat:0.22, vpop:0.30,
+  brot:0.12, bspread:0.20, bfade:0.16, bsnap:0.30,
+  base:"#f5f2ea", accent:"#0075C9", value:"#FFC72C", bg:"#050505",
+  aratio:0.26, lbldim:0.62, cmode:"ci5", stamp:1,
+  wingL:0, wingR:0, guide:1,
+  src:"auto", apikey:"", poll:10, live:1, dratio:0.34,
+  texts: DEFAULT_TEXTS, dataTexts: DEFAULT_DATA_TEXTS
+};
+
+let CFG = Object.assign({}, DEFAULTS);
+if (q.get('cfg')) { try { Object.assign(CFG, JSON.parse(decodeURIComponent(q.get('cfg')))); } catch(e){} }
+for (const k of ['w','h','fps','dur','seed','angle','size','speed','lead','trail','bursts','bratio','bamp','aratio','brot','bspread','bfade','bsnap','wingL','wingR','guide',
+                 'vstart','vdur','vblank','vreveal','vdrift','beat','vpop','sizevar','dimvar','dratio','lbldim','stamp','live','poll'])
+  if (q.get(k) !== null) CFG[k] = +q.get(k);
+for (const k of ['base','accent','value','bg','unit','dirmode','cmode','src','apikey']) if (q.get(k)) CFG[k] = q.get(k);
+
+const MOBILE = !CAPTURE && matchMedia('(max-width:900px)').matches;
+let PV = CAPTURE ? 1 : (+q.get('pv') || (MOBILE ? 0.28 : 0.5));
+
+/* ---------- 시드 PRNG ---------- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;
+  let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;
+  return((t^t>>>14)>>>0)/4294967296}}
+function hash2(a,b){let x=(Math.imul(a,374761393)+Math.imul(b,668265263))|0;
+  x=Math.imul(x^x>>>13,1274126177)|0;return((x^x>>>16)>>>0)/4294967296}
+
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d',{alpha:false});
+
+const FONT_STACK = '"Helvetica Neue",Arial,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",'+
+  '"Hiragino Sans","Noto Sans JP","PingFang SC","Noto Sans SC","Microsoft YaHei",'+
+  '"Thonburi","Noto Sans Thai","Leelawadee UI",sans-serif';
+
+let ROWS=[], LW=0, LH=0, RAD=0, TOTAL=0, GRAIN=null, VIG=null;
+
+/* =========================================================
+   1. 도시 데이터 레이어
+   ========================================================= */
+const DAEGU = { lat:35.8714, lon:128.6014, name:"대구" };
+
+const DEMO = {
+  temp:29.4, feel:32.1, hum:58, wind:2.3, rain:0, code:2,
+  pm10:34, pm25:19, uv:7.2, sunrise:"05:26", sunset:"19:41",
+  stn:"대구 · 시청", ts:0, src:"데모 스냅샷"
+};
+
+let DATA = Object.assign({}, DEMO), DVER = 0, LASTERR = "";
+if (q.get('data')) { try { Object.assign(DATA, JSON.parse(decodeURIComponent(q.get('data')))); } catch(e){} }
+const T0 = +q.get('t0') || Math.floor(Date.now()/1000);   // 캡처 기준 시각(초)
+
+/* WMO weather code → 한글/영문 */
+const SKYMAP = {
+  0:["맑음","CLEAR"],1:["대체로 맑음","MOSTLY CLEAR"],2:["구름 조금","PARTLY CLOUDY"],3:["흐림","OVERCAST"],
+  45:["안개","FOG"],48:["짙은 안개","RIME FOG"],51:["이슬비","DRIZZLE"],53:["이슬비","DRIZZLE"],55:["이슬비","DRIZZLE"],
+  61:["약한 비","LIGHT RAIN"],63:["비","RAIN"],65:["강한 비","HEAVY RAIN"],
+  71:["약한 눈","LIGHT SNOW"],73:["눈","SNOW"],75:["강한 눈","HEAVY SNOW"],
+  80:["소나기","SHOWERS"],81:["소나기","SHOWERS"],82:["강한 소나기","HEAVY SHOWERS"],
+  95:["천둥번개","THUNDERSTORM"],96:["뇌우","THUNDERSTORM"],99:["뇌우","THUNDERSTORM"]
+};
+const sky = c => SKYMAP[c] || ["―","―"];
+
+/* 한국 통합대기환경 등급 (PM10 / PM2.5 중 나쁜 쪽) */
+function grade(d){
+  const g10 = d.pm10<=30?0 : d.pm10<=80?1 : d.pm10<=150?2 : 3;
+  const g25 = d.pm25<=15?0 : d.pm25<=35?1 : d.pm25<=75?2 : 3;
+  return Math.max(g10,g25);
+}
+const GRADE_KO = ["좋음","보통","나쁨","매우나쁨"];
+const GRADE_EN = ["GOOD","MODERATE","UNHEALTHY","VERY UNHEALTHY"];
+const GRADE_COL= ["#0075C9","#00A94F","#FFC72C","#E8342A"];
+
+/* KST 포맷터 */
+const kst = (d,o) => new Intl.DateTimeFormat('ko-KR',Object.assign({timeZone:'Asia/Seoul'},o)).format(d);
+const pad = n => String(n).padStart(2,'0');
+function hhmm(d){ return kst(d,{hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).replace(/\s/g,''); }
+function hhmmss(d){ return kst(d,{hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).replace(/\s/g,''); }
+
+/* 토큰 정의 — w: 자리폭 예약용 최대폭 문자열 */
+const TOKENS = {
+  TIME:   { w:"00:00",      get:(d,n)=>hhmm(n) },
+  TIMES:  { w:"00:00:00",   get:(d,n)=>hhmmss(n) },
+  DATE:   { w:"0000.00.00", get:(d,n)=>kst(n,{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\.\s?/g,'.').replace(/\.$/,'') },
+  WDAY:   { w:"수요일",      get:(d,n)=>kst(n,{weekday:'long'}) },
+  TEMP:   { w:"-00.0°C",    get:d=>d.temp.toFixed(1)+"°C" },
+  TEMPN:  { w:"-00.0",      get:d=>d.temp.toFixed(1) },
+  FEEL:   { w:"-00.0°C",    get:d=>d.feel.toFixed(1)+"°C" },
+  HUM:    { w:"000%",       get:d=>Math.round(d.hum)+"%" },
+  WIND:   { w:"00.0m/s",    get:d=>d.wind.toFixed(1)+"m/s" },
+  RAIN:   { w:"00.0mm",     get:d=>(+d.rain||0).toFixed(1)+"mm" },
+  SKY:    { w:"강한 소나기",  get:d=>sky(d.code)[0] },
+  SKYEN:  { w:"VERY UNHEALTHY", get:d=>sky(d.code)[1] },
+  PM10:   { w:"000㎍/㎥",    get:d=>Math.round(d.pm10)+"㎍/㎥" },
+  PM10N:  { w:"000",        get:d=>String(Math.round(d.pm10)) },
+  PM25:   { w:"000㎍/㎥",    get:d=>Math.round(d.pm25)+"㎍/㎥" },
+  PM25N:  { w:"000",        get:d=>String(Math.round(d.pm25)) },
+  AQI:    { w:"000",        get:d=>String(Math.round(Math.max(d.pm10,d.pm25*2))) },
+  AQIT:   { w:"매우나쁨",     get:d=>GRADE_KO[grade(d)] },
+  AQIEN:  { w:"VERY UNHEALTHY", get:d=>GRADE_EN[grade(d)] },
+  UV:     { w:"00.0",       get:d=>(+d.uv||0).toFixed(1) },
+  SUNRISE:{ w:"00:00",      get:d=>d.sunrise },
+  SUNSET: { w:"00:00",      get:d=>d.sunset },
+  STN:    { w:"대구 · 측정소", get:d=>d.stn }
+};
+
+/* 템플릿 → 조각 배열 [{s, v}] (v=1 이면 데이터 값) */
+const TRE = /\{([A-Z0-9_]+)\}/g;
+function parseTpl(tpl, d, now, forWidth){
+  const parts=[]; let last=0, m; TRE.lastIndex=0;
+  while((m=TRE.exec(tpl))){
+    if(m.index>last) parts.push({s:tpl.slice(last,m.index), v:0});
+    const spec=TOKENS[m[1]];
+    let s;
+    if(!spec) s=m[0];
+    else if(forWidth) s=spec.w;
+    else { try{ s=String(spec.get(d,now)); }catch(e){ s=spec.w; } }
+    parts.push({s, v:spec?1:0});
+    last=m.index+m[0].length;
+  }
+  if(last<tpl.length) parts.push({s:tpl.slice(last), v:0});
+  return parts;
+}
+const isTpl = s => /\{[A-Z0-9_]+\}/.test(s);
+
+/* ---------- 데이터 가져오기 (미리보기 전용, capture 모드에서는 절대 호출 안 함) ---------- */
+async function jget(u){
+  const r = await fetch(u, {cache:'no-store'});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  return r.json();
+}
+async function fetchAuto(){
+  const {lat,lon} = DAEGU;
+  const wu = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}`
+    + `&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m`
+    + `&daily=sunrise,sunset&timezone=Asia%2FSeoul&forecast_days=1`;
+  const au = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}`
+    + `&current=pm10,pm2_5,uv_index&timezone=Asia%2FSeoul&forecast_days=1`;
+  const [w,a] = await Promise.all([jget(wu), jget(au).catch(()=>null)]);
+  const c = w.current, out = {
+    temp:+c.temperature_2m, feel:+c.apparent_temperature, hum:+c.relative_humidity_2m,
+    wind:+c.wind_speed_10m/3.6, rain:+c.precipitation, code:+c.weather_code,
+    sunrise:(w.daily.sunrise[0]||'').slice(11,16), sunset:(w.daily.sunset[0]||'').slice(11,16),
+    stn:"대구 · 시청", src:"Open-Meteo"
+  };
+  if(a && a.current){ out.pm10=+a.current.pm10; out.pm25=+a.current.pm2_5; out.uv=+a.current.uv_index||0; }
+  else { out.pm10=DATA.pm10; out.pm25=DATA.pm25; out.uv=DATA.uv; }
+  return out;
+}
+async function fetchAirKorea(key){
+  const u = 'https://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty'
+    + `?sidoName=${encodeURIComponent('대구')}&returnType=json&numOfRows=100&pageNo=1&ver=1.3`
+    + `&serviceKey=${encodeURIComponent(key)}`;
+  const j = await jget(u);
+  const items = (j.response && j.response.body && j.response.body.items) || [];
+  const ok = items.filter(o => +o.pm10Value>0 && +o.pm25Value>0);
+  if(!ok.length) throw new Error('측정값 없음');
+  const avg = k => ok.reduce((a,o)=>a+ +o[k],0)/ok.length;
+  return { pm10:avg('pm10Value'), pm25:avg('pm25Value'),
+           stn:`대구 · ${ok.length}개 측정소 평균`, src:"에어코리아" };
+}
+let polling=null, fetching=false;
+async function refreshData(manualCall){
+  if(CAPTURE) return;
+  if(CFG.src==='demo'){ DATA=Object.assign({},DEMO,{ts:Date.now(),src:'데모 스냅샷'}); DVER++; showStatus(); return; }
+  if(CFG.src==='manual'){ DATA.src='고정값'; DVER++; showStatus(); return; }
+  if(fetching) return; fetching=true; LASTERR="";
+  try{
+    let out = await fetchAuto();
+    if(CFG.src==='airkorea' && CFG.apikey){
+      try{ Object.assign(out, await fetchAirKorea(CFG.apikey)); out.src='에어코리아 + Open-Meteo'; }
+      catch(e){ LASTERR='에어코리아 실패(' + e.message + ') → 자동 소스로 대체'; }
+    }
+    DATA = Object.assign({}, DATA, out, {ts:Date.now()});
+    DVER++;
+  }catch(e){
+    LASTERR = '수신 실패: ' + e.message + (manualCall?'':' · 이전 값 유지');
+  }
+  fetching=false; showStatus();
+}
+function startPolling(){
+  if(CAPTURE) return;
+  clearInterval(polling);
+  if(!CFG.live) { showStatus(); return; }
+  refreshData();
+  polling = setInterval(refreshData, Math.max(1,CFG.poll)*60*1000);
+}
+function showStatus(){
+  const el=document.getElementById('status'); if(!el) return;
+  const d=DATA, g=grade(d);
+  el.textContent =
+    `소스 ${d.src||'—'} · ${CFG.live?'LIVE':'고정'} · 갱신 ${d.ts?hhmmss(new Date(d.ts)):'—'}\n`+
+    `${d.temp.toFixed(1)}°C  체감 ${d.feel.toFixed(1)}°C  습도 ${Math.round(d.hum)}%  ${sky(d.code)[0]}\n`+
+    `PM10 ${Math.round(d.pm10)}  PM2.5 ${Math.round(d.pm25)}  → ${GRADE_KO[g]}\n`+
+    `일출 ${d.sunrise}  일몰 ${d.sunset}` + (LASTERR? `\n⚠ ${LASTERR}`:'');
+}
+
+/* =========================================================
+   2. 씬 구성
+   ========================================================= */
+const SEG = ('Segmenter' in Intl) ? new Intl.Segmenter('ko',{granularity:'grapheme'}) : null;
+function graphemes(s){
+  if (SEG) return Array.from(SEG.segment(s), o => o.segment);
+  return s.match(/\P{M}\p{M}*/gu) || Array.from(s);
+}
+/* 문자열 → [{c,x,w,v}] (현재 ctx.font 기준) */
+function layout(str, v){
+  const out=[]; let pre='';
+  for(const g of graphemes(str)){
+    const x0=ctx.measureText(pre).width; pre+=g;
+    const x1=ctx.measureText(pre).width;
+    if(!/^\s+$/.test(g)) out.push({c:g, x:x0, w:x1-x0, v:v});
+  }
+  return out;
+}
+
+function build(){
+  const {w:W,h:H,seed,angle,size,lead,speed,dur,fps} = CFG;
+  const rand = mulberry32(seed|0);
+  RAD = angle*Math.PI/180;
+  const c=Math.abs(Math.cos(RAD)), s=Math.abs(Math.sin(RAD));
+  LW = W*c + H*s + size*6;
+  LH = W*s + H*c + size*2;
+  TOTAL = Math.max(1, Math.round(fps*dur));
+  RCACHE.clear(); RSTAMP='';
+
+  const names = (CFG.texts && CFG.texts.length) ? CFG.texts : DEFAULT_TEXTS;
+  const datas = (CFG.dataTexts && CFG.dataTexts.length) ? CFG.dataTexts : DEFAULT_DATA_TEXTS;
+  const { sizevar, dimvar, dirmode, dratio } = CFG;
+
+  const V0     = size*2.2*speed;
+  const travel = V0*dur;
+  let L  = Math.max(1, Math.round(travel/(LW*1.25)));
+  let TL = travel/L;
+  if (TL < LW*0.9 && L > 1){ L = Math.max(1, Math.floor(travel/(LW*0.9))); TL = travel/L; }
+
+  ROWS = [];
+  let id = 0, y = -LH/2, r = 0;
+  while (y < LH/2) {
+    const pick   = [0.80,0.92,1.0,1.0,1.14,1.28][Math.floor(rand()*6)];
+    const fs     = size*(1 + (pick-1)*sizevar);
+    const weight = rand()<0.24 ? 500 : 800;
+    const dim    = 1 - dimvar*rand();
+    const font   = `${weight} ${fs.toFixed(1)}px ${FONT_STACK}`;
+    ctx.font = font;
+    if ('letterSpacing' in ctx) ctx.letterSpacing = (fs*0.012).toFixed(2)+'px';
+
+    // 문구 풀 — 도시명 / 데이터 템플릿을 비율로 섞는다
+    const gap0 = fs*0.62;
+    const pool = []; let acc = 0;
+    while (acc < TL + gap0*2) {
+      const useData = rand() < dratio && datas.length;
+      const t = useData ? datas[Math.floor(rand()*datas.length)]
+                        : names[Math.floor(rand()*names.length)];
+      // 데이터 문구는 '자리폭 예약 문자열'로 폭을 잰다 → 값이 바뀌어도 줄이 안 흔들린다
+      const meas = isTpl(t) ? parseTpl(t,DATA,new Date(),true).map(o=>o.s).join('') : t;
+      const wdt = ctx.measureText(meas).width;
+      pool.push({ t, meas, w:wdt, d:isTpl(t) }); acc += wdt + gap0;
+    }
+    let best = pool.length, err = Infinity, run = 0;
+    for (let k=0; k<pool.length; k++){
+      run += pool[k].w + gap0;
+      const e = Math.abs(run - TL);
+      if (e < err){ err = e; best = k+1; }
+    }
+    let used = pool.slice(0, best);
+    let sumW = used.reduce((a,o)=>a+o.w, 0);
+    let gap  = (TL - sumW)/best;
+    if (gap < fs*0.30 && best > 1){
+      best--; used = pool.slice(0, best);
+      sumW = used.reduce((a,o)=>a+o.w, 0);
+      gap  = (TL - sumW)/best;
+    }
+    gap = Math.max(fs*0.30, gap);
+
+    const toks=[]; let x=0;
+    for (const o of used){
+      toks.push({ t:o.meas, tpl:o.d?o.t:null, x, w:o.w, id:id++,
+                  chars: o.d ? null : layout(o.t,0),
+                  accent: rand() < CFG.aratio, h1:rand(), h2:rand(), h3:rand() });
+      x += o.w + gap;
+    }
+    const TLa = x;
+    const dir = dirmode==='same'   ?  1
+              : dirmode==='random' ? (rand()<0.5?-1:1)
+              : (r%2 ? -1 : 1);
+    ROWS.push({ y:y+fs*0.34, fs, font, dim, toks, TL:TLa, v:dir*TLa*L/dur });
+    y += fs*lead; r++;
+  }
+
+  GRAIN = document.createElement('canvas'); GRAIN.width=GRAIN.height=256;
+  const g=GRAIN.getContext('2d'), im=g.createImageData(256,256);
+  for(let i=0;i<im.data.length;i+=4){const n=(rand()*255)|0;
+    im.data[i]=im.data[i+1]=im.data[i+2]=n; im.data[i+3]=255;}
+  g.putImageData(im,0,0);
+  VIG=null;
+
+  cv.width  = Math.round(W*PV);
+  cv.height = Math.round(H*PV);
+  fitStage();
+}
+
+function fitStage(){
+  const st = document.getElementById('stage'), cs = getComputedStyle(st);
+  const aw = st.clientWidth  - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  const ah = st.clientHeight - parseFloat(cs.paddingTop)  - parseFloat(cs.paddingBottom);
+  const sc = Math.min(aw/CFG.w, ah/CFG.h);
+  cv.style.width  = (CFG.w*sc)+'px';
+  cv.style.height = (CFG.h*sc)+'px';
+}
+window.addEventListener('resize',fitStage);
+
+/* ---------- 데이터 문구 캐시 — 초당 1회만 재계산 ---------- */
+let RCACHE = new Map(), RSTAMP = '';
+function resolvedTok(tk, row, now){
+  const key = row.font + '|' + tk.tpl;
+  let o = RCACHE.get(key);
+  if (o) return o;
+  ctx.save(); ctx.font = row.font;
+  if ('letterSpacing' in ctx) ctx.letterSpacing = (row.fs*0.012).toFixed(2)+'px';
+  const parts = parseTpl(tk.tpl, DATA, now, false);
+  const chars = [], segs = []; let px = 0, pre='';
+  for (const p of parts){
+    const x0 = ctx.measureText(pre).width;
+    pre += p.s;
+    const x1 = ctx.measureText(pre).width;
+    segs.push({ s:p.s, x:x0, v:p.v });
+    for (const ch of layout(p.s, p.v)) chars.push({ c:ch.c, x:x0+ch.x, w:ch.w, v:p.v });
+    px = x1;
+  }
+  ctx.restore();
+  o = { chars, segs, w:px, dx:(tk.w - px)/2, str:pre };
+  RCACHE.set(key, o);
+  return o;
+}
+
+/* ---------- 날아갔다 돌아오는 궤적 ---------- */
+const BURST_SPAN = 0.56, DELAY_MAX = 0.36;
+function burstShape(s, snap){
+  if (s<=0 || s>=1) return 0;
+  const a = 0.50 - 0.34*snap;
+  if (s<a){ const k=s/a; return 1-Math.pow(1-k, 2+3*snap); }
+  const k=(s-a)/(1-a);
+  return 1-(k<0.5 ? 2*k*k : 1-Math.pow(-2*k+2,2)/2);
+}
+
+/* ---------- 색 ---------- */
+function hexrgb(h){ h=(h||'#050505').replace('#',''); if(h.length===3) h=h.split('').map(c=>c+c).join('');
+  const n=parseInt(h,16); return [(n>>16)&255,(n>>8)&255,n&255]; }
+let PAL = { base:'#f5f2ea', acc:['#0075C9'], val:'#FFC72C', lbl:'#a9a29a' };
+function palette(){
+  const g = grade(DATA);
+  const base = CFG.base;
+  let acc, val;
+  if (CFG.cmode==='ci5'){ acc = CI5.slice(); val = CFG.value; }
+  else if (CFG.cmode==='blue'){ acc = ['#0075C9']; val = '#7FC4EE'; }
+  else if (CFG.cmode==='aqi'){ acc = [GRADE_COL[g]]; val = GRADE_COL[g]; }
+  else { acc = [CFG.accent]; val = CFG.value; }
+  // 라벨은 기본색을 낮춘 밝기로
+  const [r,gg,b] = hexrgb(base), k = CFG.lbldim;
+  PAL = { base, acc, val,
+          lbl:`rgb(${Math.round(r*k)},${Math.round(gg*k)},${Math.round(b*k)})` };
+}
+const accOf = tk => PAL.acc[Math.floor(tk.h3*PAL.acc.length)%PAL.acc.length];
+
+/* =========================================================
+   3. 프레임 렌더
+   ========================================================= */
+window.renderFrame = function(n){
+  const {w:W,h:H,fps,dur,trail,bursts,bratio,bamp,unit,
+         brot,bspread,bfade,bsnap,vdrift,beat,vpop} = CFG;
+  const t = n/fps;
+
+  // 시각 — 캡처: 기준시각 + 영상 경과시간(결정론적) / 미리보기: 실제 현재시각
+  const now = CAPTURE ? new Date((T0 + t)*1000) : new Date();
+  const stamp = DVER + '|' + Math.floor(now.getTime()/1000) + '|' + CFG.dratio;
+  if (stamp !== RSTAMP){ RSTAMP = stamp; RCACHE.clear(); }
+  palette();
+
+  ctx.setTransform(PV,0,0,PV,0,0);
+  const [br,bg2,bb] = hexrgb(CFG.bg);
+  ctx.globalCompositeOperation='source-over';
+  ctx.globalAlpha=1;
+  ctx.fillStyle = trail>0 ? `rgba(${br},${bg2},${bb},${(1-trail*0.86).toFixed(3)})` : CFG.bg;
+  ctx.fillRect(0,0,W,H);
+
+  const cyc = t/dur*bursts;
+  const bi  = Math.floor(cyc);
+  const p   = cyc-bi;
+  const AMP = LW*0.42*bamp;
+  const SPR = Math.PI*bspread;
+
+  const BT = Math.max(0.02, beat);
+  const VF = Math.min(0.20, BT*0.85);
+  const RI = Math.min(0.24, BT*0.95);
+  const VS = Math.max(0, +CFG.vstart);
+  const VD = Math.max(0.2, +CFG.vdur);
+  const VB = Math.max(0, +CFG.vblank);
+  const RD = Math.max(0.5, Math.min(+CFG.vreveal, dur-(VS+VD+VB+RI)-BT-0.2));
+  const VEND = VS+VD+VB+RD+RI+BT;
+  const inVR = t >= VS-BT && t < VEND;
+  const snap = x => Math.round(x/BT)*BT;
+  const easeIO = k => k<=0?0 : k>=1?1 : (k<0.5 ? 2*k*k : 1-Math.pow(-2*k+2,2)/2);
+  const backOut = k => { const c=1.9; const u=k-1; return 1 + (c+1)*u*u*u + c*u*u; };
+
+  ctx.save();
+  ctx.translate(W/2,H/2); ctx.rotate(RAD);
+  ctx.textBaseline='middle';
+  ctx.globalCompositeOperation='source-over';
+
+  for (const row of ROWS){
+    ctx.font = row.font;
+    if ('letterSpacing' in ctx) ctx.letterSpacing = (row.fs*0.012).toFixed(2)+'px';
+    const off = ((t*row.v)%row.TL + row.TL)%row.TL;
+    const flow = row.v>0 ? 0 : Math.PI;
+    const reps = Math.ceil(LW/row.TL)+1;
+
+    for (const tk of row.toks){
+      const R  = tk.tpl ? resolvedTok(tk, row, now) : null;
+      const CH = R ? R.chars : tk.chars;
+      const DX = R ? R.dx : 0;
+      const solid = tk.accent ? accOf(tk) : PAL.base;
+      const colOf = ch => R ? (ch.v ? PAL.val : PAL.lbl) : solid;
+
+      for (let m=0;m<=reps;m++){
+        const px = -LW/2 + tk.x - off + m*row.TL;
+        if (px > LW/2+tk.w || px < -LW/2-tk.w-row.fs*2) continue;
+
+        // 통짜로 그리는 헬퍼 (데이터 문구는 라벨/값 두 색으로 나눠 그린다)
+        const whole = (x0) => {
+          if (!R){ ctx.fillStyle = solid; ctx.fillText(tk.t, x0, row.y); return; }
+          for (const s of R.segs){ if(!s.s) continue;
+            ctx.fillStyle = s.v ? PAL.val : PAL.lbl;
+            ctx.fillText(s.s, x0 + DX + s.x, row.y); }
+        };
+
+        if (inVR){
+          const N = CH.length;
+          for (let ci=0; ci<N; ci++){
+            const ch = CH[ci];
+            const cx = px + DX + ch.x;
+            const sx = (cx+LW/2)/LW;
+            const stag = N>1 ? ci/(N-1) : 0;
+            const ordV = 0.42*sx + 0.18*stag + 0.40*hash2(tk.id*61+ci, 3);
+            const tv = snap(VS + VD*ordV);
+            const ordR = 0.46*sx + 0.20*stag + 0.34*hash2(tk.id*53+ci, 9);
+            const tr = snap(VS+VD+VB + RD*ordR);
+            let a=1, sc=1;
+            if      (t < tv)    { a=1; }
+            else if (t < tv+VF) { const k=(t-tv)/VF; a=1-easeIO(k); sc=1-vpop*easeIO(k); }
+            else if (t < tr)    { a=0; }
+            else if (t < tr+RI) { const k=(t-tr)/RI; a=easeIO(k);
+                                  sc=(1-vpop)+vpop*backOut(k); }
+            if (a <= 0.004) continue;
+            ctx.globalAlpha = row.dim*a;
+            ctx.fillStyle = colOf(ch);
+            if (a >= 0.996 && Math.abs(sc-1) < 0.004){ ctx.fillText(ch.c, cx, row.y); continue; }
+            const dd = row.fs*1.4*vdrift*(1-a);
+            ctx.save();
+            ctx.translate(cx + Math.cos(flow)*dd + ch.w/2, row.y + Math.sin(flow)*dd*0.7);
+            ctx.scale(sc, sc);
+            ctx.fillText(ch.c, -ch.w/2, 0);
+            ctx.restore();
+          }
+          continue;
+        }
+
+        const active = bratio>0 && hash2(tk.id, bi*31+5) < bratio;
+        if (!active){ ctx.globalAlpha=row.dim; whole(px); continue; }
+        const sweep = (px+LW/2)/LW;
+
+        if (unit === 'char'){
+          const N = CH.length;
+          const dlo = DELAY_MAX*0.45*sweep, dhi = DELAY_MAX*(0.45*sweep+0.55);
+          if (p<=dlo || p>=dhi+BURST_SPAN){ ctx.globalAlpha=row.dim; whole(px); continue; }
+
+          for (let ci=0; ci<N; ci++){
+            const ch = CH[ci];
+            const stag = N>1 ? ci/(N-1) : 0;
+            const dl = DELAY_MAX*(0.45*sweep + 0.40*stag + 0.15*hash2(tk.id*97+ci, bi+7));
+            const e  = burstShape((p-dl)/BURST_SPAN, bsnap);
+            const cx = px + DX + ch.x;
+            ctx.fillStyle = colOf(ch);
+            if (e<=0){ ctx.globalAlpha=row.dim; ctx.fillText(ch.c, cx, row.y); continue; }
+            const ang = flow + (hash2(tk.id*131+ci, bi*17+3)-0.5)*2*SPR;
+            const d   = AMP*(0.6+0.8*hash2(tk.id*7+ci, bi*5+11))*e;
+            ctx.globalAlpha = row.dim*(1-bfade*e);
+            ctx.save();
+            ctx.translate(cx + Math.cos(ang)*d + ch.w/2, row.y + Math.sin(ang)*d*0.7);
+            ctx.rotate((hash2(tk.id*3+ci, bi*13+2)-0.5)*2*brot*e);
+            ctx.fillText(ch.c, -ch.w/2, 0);
+            ctx.restore();
+          }
+        } else {
+          const dl = DELAY_MAX*(0.72*sweep + 0.28*hash2(tk.id, bi+7));
+          const e  = burstShape((p-dl)/BURST_SPAN, bsnap);
+          if (e<=0){ ctx.globalAlpha=row.dim; whole(px); continue; }
+          const ang = flow + (hash2(tk.id, bi*17+3)-0.5)*2*SPR;
+          const d   = AMP*(0.6+0.8*tk.h1)*e;
+          ctx.globalAlpha = row.dim*(1-bfade*e);
+          ctx.save();
+          ctx.translate(px + Math.cos(ang)*d + tk.w/2, row.y + Math.sin(ang)*d*0.7);
+          ctx.rotate((tk.h2-0.5)*2*brot*e);
+          whole(-tk.w/2);
+          ctx.restore();
+        }
+      }
+    }
+  }
+  ctx.restore();
+
+  // 비네트
+  ctx.globalCompositeOperation='source-over'; ctx.globalAlpha=1;
+  if(!VIG){
+    VIG = ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*0.28,W/2,H/2,Math.max(W,H)*0.72);
+    VIG.addColorStop(0,'rgba(0,0,0,0)'); VIG.addColorStop(1,'rgba(0,0,0,0.55)');
+  }
+  ctx.fillStyle=VIG; ctx.fillRect(0,0,W,H);
+
+  // 필름 그레인
+  ctx.globalCompositeOperation='lighter'; ctx.globalAlpha=0.025;
+  const ox=-(hash2(n,11)*256|0), oy=-(hash2(n,29)*256|0);
+  for(let gx=ox;gx<W;gx+=256) for(let gy=oy;gy<H;gy+=256) ctx.drawImage(GRAIN,gx,gy);
+  ctx.globalCompositeOperation='source-over'; ctx.globalAlpha=1;
+
+  // 코너 데이터 스탬프 — 운영 확인용 (렌더에도 찍힘)
+  if (CFG.stamp){
+    const g = grade(DATA), fs = Math.round(H*0.0135);
+    ctx.font = `600 ${fs}px ${FONT_STACK}`;
+    if ('letterSpacing' in ctx) ctx.letterSpacing = (fs*0.10).toFixed(2)+'px';
+    ctx.textBaseline='alphabetic';
+    ctx.globalAlpha = 0.72;
+    ctx.fillStyle = PAL.lbl;
+    const line = `DAEGU LIVE  ${kst(now,{year:'numeric',month:'2-digit',day:'2-digit'})} ${hhmm(now)}  ·  `;
+    ctx.fillText(line, H*0.028, H-H*0.030);
+    const wl = ctx.measureText(line).width;
+    ctx.fillStyle = GRADE_COL[g];
+    ctx.fillText(`AIR ${GRADE_KO[g]} ${Math.round(DATA.pm10)}/${Math.round(DATA.pm25)}`, H*0.028+wl, H-H*0.030);
+    ctx.globalAlpha = 1;
+    if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
+  }
+
+  // ㄷ자 패널 접힘선 — 미리보기 전용
+  if (!CAPTURE && CFG.guide && (CFG.wingL>0 || CFG.wingR>0)){
+    ctx.save();
+    ctx.setLineDash([Math.max(10,W/220), Math.max(8,W/300)]);
+    ctx.lineWidth = Math.max(2, W/1500);
+    ctx.strokeStyle = 'rgba(0,117,201,.7)';
+    ctx.fillStyle   = 'rgba(0,117,201,.92)';
+    ctx.font = `700 ${Math.round(H*0.020)}px ${FONT_STACK}`;
+    ctx.textBaseline = 'top';
+    for (const [x,lb] of [[+CFG.wingL,'좌측 날개 ┃ 정면'],[W-(+CFG.wingR),'정면 ┃ 우측 날개']]){
+      if (!(x>0 && x<W)) continue;
+      ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke();
+      ctx.fillText(lb, x+H*0.012, H*0.016);
+    }
+    ctx.restore();
+  }
+};
+
+/* ---------- 미리보기 루프 ---------- */
+let playing=true, frame=0;
+function loop(){ if(playing){ renderFrame(frame%TOTAL); frame++; hud(); } requestAnimationFrame(loop); }
+function hud(){ const el=document.getElementById('hud'); if(el)
+  el.textContent = `${CFG.w}×${CFG.h} · ${CFG.fps}fps · ${CFG.dur}s · SEED ${CFG.seed} · f ${String(frame%TOTAL).padStart(5,'0')}/${TOTAL} · ${CFG.live?'LIVE':'FIXED'}`; }
+
+/* ---------- 컨트롤 패널 ---------- */
+function initUI(){
+  const $=id=>document.getElementById(id);
+  $('txt').value  = CFG.texts.join('\n');
+  $('dtxt').value = CFG.dataTexts.join('\n');
+
+  const sliders=[['angle','°'],['size','px'],['speed','×'],['lead','×'],['trail',''],
+                 ['bursts','회'],['bratio',''],['bamp','×'],['bsnap',''],['bspread',''],
+                 ['brot',''],['bfade',''],['aratio',''],['sizevar',''],['dimvar',''],
+                 ['vstart','초'],['vdur','초'],['vblank','초'],['vreveal','초'],
+                 ['beat','초'],['vpop',''],['vdrift','×'],['dratio',''],['lbldim','']];
+  sliders.forEach(([id,unit])=>{
+    const el=$(id); el.value=CFG[id];
+    const dec = ['bursts','angle','size'].includes(id) ? 0
+               : (['beat','vpop'].includes(id) ? 2 : (id[0]==='v' ? 1 : 2));
+    const show=()=>$('v_'+id).textContent=(+el.value).toFixed(dec)+unit;
+    show();
+    const rebuild = ['angle','size','speed','lead','sizevar','dimvar','dratio','aratio'].includes(id);
+    el.addEventListener('input',()=>{ CFG[id]=+el.value; show(); vnote();
+      if(rebuild) build(); });
+  });
+  $('poll').value=CFG.poll;
+  const pollShow=()=>$('v_poll').textContent=CFG.poll+'분';
+  pollShow();
+  $('poll').addEventListener('input',e=>{ CFG.poll=+e.target.value; pollShow(); startPolling(); });
+
+  function vnote(){
+    const VS=+CFG.vstart, VD=+CFG.vdur, VB=+CFG.vblank, BT=Math.max(0.02,+CFG.beat);
+    const RI=Math.min(0.24,BT*0.95);
+    const RD=Math.max(0.5, Math.min(+CFG.vreveal, CFG.dur-(VS+VD+VB+RI)-BT-0.2));
+    const end=VS+VD+VB+RD+RI+BT;
+    const el=$('vnote'); if(!el) return;
+    el.innerHTML = `흐름 ${VS.toFixed(0)}s → 하나씩 소멸 ${VD.toFixed(0)}s → `
+      + `암전 ${VB.toFixed(0)}s → 하나씩 복귀 ${RD.toFixed(0)}s <b>= 주기 ${end.toFixed(1)}s</b>`
+      + `<br>리듬 ${BT.toFixed(2)}초 격자 ≈ ${(60/BT).toFixed(0)} BPM`
+      + (end > CFG.dur-0.3
+          ? `<br><b style="color:#E8342A">길이 ${CFG.dur}초를 넘겨 복귀가 ${RD.toFixed(1)}초로 줄었습니다 — 길이를 ${Math.ceil(VS+VD+VB+ +CFG.vreveal+1)}초로 올리세요</b>`
+          : `<br>이후 ${(CFG.dur-end).toFixed(1)}초 전체 표시 후 루프`);
+  }
+  vnote();
+
+  $('wingL').value=CFG.wingL; $('wingR').value=CFG.wingR;
+  ['wingL','wingR'].forEach(id=>$(id).onchange=e=>{ CFG[id]=+e.target.value||0; });
+  $('guide').classList.toggle('on', !!CFG.guide);
+  $('guide').onclick=e=>{ CFG.guide=CFG.guide?0:1; e.target.classList.toggle('on',!!CFG.guide); };
+  $('stamp').classList.toggle('on', !!CFG.stamp);
+  $('stamp').onclick=e=>{ CFG.stamp=CFG.stamp?0:1; e.target.classList.toggle('on',!!CFG.stamp); };
+  $('dirmode').value = CFG.dirmode;
+  $('dirmode').onchange = e => { CFG.dirmode = e.target.value; build(); };
+  $('unit').value = CFG.unit;
+  $('unit').onchange = e => { CFG.unit = e.target.value; };
+
+  // 색
+  const drawSw=()=>{
+    const cols = CFG.cmode==='ci5' ? CI5
+               : CFG.cmode==='blue' ? ['#0075C9','#7FC4EE']
+               : CFG.cmode==='aqi' ? GRADE_COL
+               : [CFG.base, CFG.accent, CFG.value];
+    $('swatch').innerHTML = cols.map(c=>`<i style="background:${c}"></i>`).join('');
+  };
+  $('cmode').value=CFG.cmode; drawSw();
+  $('cmode').onchange=e=>{ CFG.cmode=e.target.value; drawSw(); };
+  $('cbase').value=CFG.base; $('caccent').value=CFG.accent;
+  $('cvalue').value=CFG.value; $('cbg').value=CFG.bg;
+  $('cbase').oninput=e=>{CFG.base=e.target.value; drawSw();};
+  $('caccent').oninput=e=>{CFG.accent=e.target.value; drawSw();};
+  $('cvalue').oninput=e=>{CFG.value=e.target.value; drawSw();};
+  $('cbg').oninput=e=>{CFG.bg=e.target.value; document.body.style.background=e.target.value;};
+  document.body.style.background=CFG.bg;
+
+  $('txt').addEventListener('input',e=>{
+    CFG.texts=e.target.value.split('\n').map(s=>s.trim()).filter(Boolean); build(); });
+  $('dtxt').addEventListener('input',e=>{
+    CFG.dataTexts=e.target.value.split('\n').map(s=>s.trim()).filter(Boolean); build(); });
+
+  // 데이터 소스
+  $('src').value=CFG.src;
+  $('src').onchange=e=>{ CFG.src=e.target.value; startPolling(); refreshData(true); };
+  $('apikey').value=CFG.apikey||'';
+  $('apikey').onchange=e=>{ CFG.apikey=e.target.value.trim(); };
+  $('fetchnow').onclick=()=>refreshData(true);
+  $('livebtn').classList.toggle('on', !!CFG.live);
+  $('livebtn').textContent = CFG.live?'LIVE':'고정';
+  $('livebtn').onclick=e=>{ CFG.live=CFG.live?0:1;
+    e.target.classList.toggle('on',!!CFG.live); e.target.textContent=CFG.live?'LIVE':'고정';
+    startPolling(); showStatus(); };
+
+  $('w').value=CFG.w; $('h').value=CFG.h; $('dur').value=CFG.dur;
+  $('fps').value=CFG.fps; $('seed').value=CFG.seed;
+  $('preset').value = `${CFG.w}x${CFG.h}`;
+  if(!$('preset').value) $('preset').value='custom';
+  $('preset').onchange=e=>{ if(e.target.value==='custom')return;
+    const [a,b]=e.target.value.split('x').map(Number);
+    CFG.w=a; CFG.h=b; $('w').value=a; $('h').value=b; build(); };
+  ['w','h','dur','fps','seed'].forEach(id=>$(id).onchange=e=>{
+    CFG[id]=+e.target.value||DEFAULTS[id]; frame=0; vnote(); build(); });
+  $('reseed').onclick=()=>{ CFG.seed=1000000+Math.floor(hash2(frame,CFG.seed)*8999999);
+    $('seed').value=CFG.seed; build(); };
+  $('pv').value=String(PV);
+  $('pv').onchange=e=>{ PV=+e.target.value; build(); };
+
+  $('play').onclick=e=>{ playing=!playing; e.target.textContent=playing?'일시정지':'재생';
+    e.target.classList.toggle('on',playing); };
+  $('png').onclick=()=>{ const a=document.createElement('a');
+    a.download=`typewall_${CFG.seed}_f${frame%TOTAL}.png`; a.href=cv.toDataURL('image/png'); a.click(); };
+  $('cfg').onclick=()=>{ const o=Object.assign({},CFG,{__data:DATA,__t0:Math.floor(Date.now()/1000)});
+    const b=new Blob([JSON.stringify(o,null,2)],{type:'application/json'});
+    const a=document.createElement('a'); a.download='config.json'; a.href=URL.createObjectURL(b); a.click(); };
+  const copy=async(u,el,msg)=>{ try{ await navigator.clipboard.writeText(u);
+      const old=el.textContent; el.textContent=msg; setTimeout(()=>el.textContent=old,1400);
+    }catch(_){ prompt('복사하세요',u);} };
+  $('url').onclick=e=>copy(location.origin+location.pathname+'?cfg='+encodeURIComponent(JSON.stringify(CFG)),e.target,'복사됨 ✓');
+  $('capurl').onclick=e=>{
+    const u = location.origin+location.pathname
+      + '?capture=1&cfg=' + encodeURIComponent(JSON.stringify(CFG))
+      + '&data='  + encodeURIComponent(JSON.stringify(DATA))
+      + '&t0='    + Math.floor(Date.now()/1000);
+    copy(u,e.target,'복사됨 ✓');
+  };
+
+  // WebM 녹화
+  let mr=null,chunks=[];
+  $('rec').onclick=e=>{
+    if(mr){ mr.stop(); return; }
+    const st=cv.captureStream(CFG.fps); chunks=[];
+    const mime=['video/webm;codecs=vp9','video/webm'].find(m=>MediaRecorder.isTypeSupported(m));
+    mr=new MediaRecorder(st,{mimeType:mime,videoBitsPerSecond:60_000_000});
+    mr.ondataavailable=ev=>ev.data.size&&chunks.push(ev.data);
+    mr.onstop=()=>{ const b=new Blob(chunks,{type:'video/webm'}); const a=document.createElement('a');
+      a.download=`typewall_${CFG.seed}.webm`; a.href=URL.createObjectURL(b); a.click();
+      mr=null; e.target.textContent='화면 녹화 시작 (WebM)'; e.target.classList.remove('on'); };
+    frame=0; playing=true; mr.start();
+    e.target.textContent='녹화 중 — 눌러서 종료'; e.target.classList.add('on');
+    setTimeout(()=>{ if(mr) mr.stop(); }, CFG.dur*1000+300);
+  };
+
+  const tg=$('toggle');
+  const syncPanel=()=>{
+    const open = !$('ui').classList.contains('hide');
+    document.body.classList.toggle('pnl', open);
+    tg.textContent = MOBILE ? (open?'닫기':'설정') : (open?'패널 숨기기 (H)':'패널 열기 (H)');
+    fitStage(); setTimeout(fitStage,240);
+  };
+  const togglePanel=()=>{ $('ui').classList.toggle('hide'); syncPanel(); };
+  tg.onclick=togglePanel;
+  if (MOBILE) $('ui').classList.add('hide');
+  syncPanel();
+  addEventListener('keydown',ev=>{ if(ev.key==='h'||ev.key==='H') togglePanel();
+    if(ev.key===' '){ ev.preventDefault(); $('play').click(); } });
+  showStatus();
+}
+
+/* ---------- 시작 ---------- */
+(async ()=>{
+  if (document.fonts && document.fonts.ready) await document.fonts.ready;
+  if (CAPTURE) document.body.classList.add('cap');
+  build();
+  if (!CAPTURE){ initUI(); startPolling(); loop(); }
+  window.__READY__ = true;
+})();
+</script>
+</body>
+</html>

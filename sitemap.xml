@@ -1,53 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- vercel.json의 cleanUrls:true 때문에 .html 주소는 308 리다이렉트를 탄다.
+<!-- canon/canon.json에서 생성한다. 페이지를 더하거나 뺄 때는 캐논을 먼저 고치고
+     node tools/check-canon.mjs로 이 파일과 어긋나지 않는지 확인한다.
+     vercel.json의 cleanUrls:true 때문에 .html 주소는 308 리다이렉트를 탄다.
      색인 대상은 확장자 없는 정규 주소로만 제출한다.
      rss.xml·llms.txt는 robots.txt의 Sitemap 지시자와 Allow로 안내하므로 여기서 뺀다. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://publicbloom.art/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-08-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://publicbloom.art/media-facade</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://publicbloom.art/led-install</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://publicbloom.art/media-facade-content</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://publicbloom.art/showcase</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://publicbloom.art/company</loc>
-    <lastmod>2026-08-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://publicbloom.art/data-media-art</loc>
-    <lastmod>2026-08-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://publicbloom.art/quote</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-08-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://publicbloom.art/landing</loc>
-    <lastmod>2026-08-21</lastmod>
+    <loc>https://publicbloom.art/quote</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://publicbloom.art/data-media-art</loc>
+    <lastmod>2026-08-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://publicbloom.art/landing</loc>
+    <lastmod>2026-08-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://publicbloom.art/%EA%B3%B5%EA%B8%B0%EC%A7%88%EC%9D%84%20%ED%86%B5%ED%95%9C%20%EC%9D%B8%ED%84%B0%EB%A0%89%EC%85%98</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-08-23</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://publicbloom.art/%EB%8C%80%EA%B5%AC%EC%BB%AC%EC%B3%90</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-08-23</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://publicbloom.art/%EC%98%81%ED%99%94%20(%E6%B0%B8%E8%8A%B1)</loc>
-    <lastmod>2026-08-21</lastmod>
+    <loc>https://publicbloom.art/%EC%98%81%ED%99%94%20%28%E6%B0%B8%E8%8A%B1%29</loc>
+    <lastmod>2026-08-23</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
