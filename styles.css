@@ -5265,3 +5265,15 @@ main > .section > .section-head .section-kicker {
   color: #fff;
   font-weight: 800;
 }
+
+/* 어느 빌드가 떠 있는지 눈으로 확인하는 표시.
+   배포가 나갔는지 캐시인지 매번 헷갈려서 넣었다.
+   canon.json의 updated와 일치하는지는 check-canon.mjs가 확인한다. */
+.footer-stamp {
+  grid-column: 1 / -1;
+  order: 4;
+  margin: 4px 0 0;
+  color: rgba(249, 250, 251, 0.42);
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+}

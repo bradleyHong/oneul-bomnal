@@ -72,6 +72,12 @@ for (const p of C.pages) {
   }
 
   if (!/naver-site-verification/.test(html)) warn(`${p.file}: 네이버 사이트 인증 메타 없음`);
+
+  // 배포된 빌드를 눈으로 구분하기 위한 표시. 캐논 날짜와 어긋나면 잡는다.
+  const stamp = html.match(/class="footer-stamp">사이트 최종 업데이트 ([\d-]+)</);
+  if (stamp && stamp[1] !== C.updated) {
+    fail(`${p.file}: 푸터 업데이트 표시가 ${stamp[1]}인데 캐논은 ${C.updated}`);
+  }
 }
 
 /* ── 2. 사이트맵: 캐논 페이지와 1:1인가 ─────────────────────── */
