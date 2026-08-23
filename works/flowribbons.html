@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>流帶 · 결결 — flowribbons studio</title>
+<style>
+  html,body{margin:0;background:#060814;height:100%;overflow:hidden;
+    font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif}
+  #stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+  canvas{display:block;max-width:100%;max-height:100%;width:auto;height:auto;
+    box-shadow:0 0 60px rgba(0,0,0,.6)}
+  body.capture #stage{display:block}
+  body.capture canvas{max-width:none;max-height:none;box-shadow:none}
+  #ui{position:fixed;left:14px;top:14px;z-index:10;width:274px;
+    background:rgba(6,8,20,.86);backdrop-filter:blur(14px);
+    border:1px solid rgba(255,255,255,.13);border-radius:14px;padding:14px;
+    color:#e9ecff;font-size:12px;line-height:1.5;user-select:none}
+  #ui h1{font-size:13px;margin:0 0 2px;letter-spacing:.06em;font-weight:600}
+  #ui .sub{opacity:.5;font-size:10.5px;margin-bottom:12px;letter-spacing:.04em}
+  .lab{opacity:.55;font-size:10px;letter-spacing:.1em;margin:11px 0 5px;text-transform:uppercase}
+  .row{display:flex;flex-wrap:wrap;gap:5px}
+  button{font:inherit;font-size:11px;color:#e9ecff;background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:6px 9px;cursor:pointer;
+    transition:.12s}
+  button:hover{background:rgba(255,255,255,.15)}
+  button.on{background:#1b2ff0;border-color:#4a63ff;color:#fff}
+  input[type=number],input[type=text]{font:inherit;font-size:11px;width:100%;box-sizing:border-box;
+    color:#e9ecff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);
+    border-radius:8px;padding:6px 8px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .big{width:100%;margin-top:6px;padding:9px;background:#e8142a;border-color:#ff3b2e;font-weight:600}
+  .big:hover{background:#ff2436}
+  .big.rec{background:#12a750;border-color:#3ecb6b}
+  #stat{margin-top:9px;font-size:10.5px;opacity:.62;min-height:15px}
+  #toggle{position:fixed;left:14px;top:14px;z-index:11;display:none}
+  body.hideui #ui{display:none} body.hideui #toggle{display:block}
+  body.capture #ui,body.capture #toggle{display:none}
+</style>
+
+<meta name="robots" content="noindex, nofollow" />
+<meta name="copyright" content="© 오늘은 봄날 (publicbloom.art). 무단 복제·배포·재사용 금지." />
+<style id="showcase-mode">
+  /* 고객 공개용. 스튜디오 조작 패널은 감추고 화면만 남긴다. */
+  #ui, #toggle, #dock, #drop, #file, #stat, #hint { display: none !important; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #000; }
+  #stage { position: fixed !important; inset: 0 !important; height: 100% !important;
+           display: flex !important; align-items: center; justify-content: center;
+           padding: 0 !important; }
+  #stage canvas { width: 100% !important; height: 100% !important;
+                  max-width: 100% !important; max-height: 100% !important;
+                  object-fit: contain; box-shadow: none !important; }
+  body { -webkit-user-select: none; user-select: none; }
+</style>
+<script src="./protect.js" defer></script>
+</head><body>
+<div id="stage"><canvas id="c"></canvas></div>
+
+<button id="toggle">패널 열기</button>
+<div id="ui">
+  <h1>流帶 · 결결</h1>
+  <div class="sub">flowribbons / VISIONPENCIL</div>
+
+  <div class="lab">비율</div>
+  <div class="row" id="ratios"></div>
+
+  <div class="lab">해상도 (긴 변 기준)</div>
+  <div class="row" id="quals"></div>
+
+  <div class="lab">시드 / 길이(초)</div>
+  <div class="grid2">
+    <input type="number" id="seed" value="4821937">
+    <input type="number" id="dur" value="20" min="2" max="120">
+  </div>
+
+  <div class="lab">흐름 세기 / 글로우</div>
+  <div class="grid2">
+    <input type="number" id="flow" value="100" min="0" max="300" step="10">
+    <input type="number" id="glow" value="100" min="0" max="200" step="10">
+  </div>
+
+  <div class="lab">동작</div>
+  <div class="row">
+    <button id="shuffle">시드 랜덤</button>
+    <button id="pause">일시정지</button>
+    <button id="png">PNG 저장</button>
+    <button id="hide">패널 숨김</button>
+  </div>
+
+  <button class="big" id="rec">MP4 저장 (실시간 녹화)</button>
+  <div id="stat"></div>
+</div>
+
+<script>
+
+const q    = new URLSearchParams(location.search);
+const CAP  = !!q.get('capture');
+const TAU  = Math.PI*2;
+
+const RATIOS = [
+  {n:'1:1',   w:1, h:1},
+  {n:'9:16',  w:9, h:16},
+  {n:'16:9',  w:16,h:9},
+  {n:'25:9',  w:25,h:9},
+  {n:'32:9',  w:32,h:9},
+];
+const QUALS = [
+  {n:'HD 1080', L:1920},
+  {n:'2.5K',    L:2560},
+  {n:'4K',      L:3840},
+  {n:'5K',      L:5120},
+];
+
+let state = {
+  ratio: q.get('ratio') || '16:9',
+  qual : +q.get('qual') || 3840,
+  seed : +q.get('seed') || 4821937,
+  dur  : +q.get('dur')  || 20,
+  fps  : +q.get('fps')  || 60,
+  flow : (+q.get('flow') || 100)/100,
+  glow : (+q.get('glow') || 100)/100,
+};
+
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;
+let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;
+return((t^t>>>14)>>>0)/4294967296}}
+
+const BG   = '#060814';
+const COOL = ['#1b2ff0','#0d18c8','#4a63ff','#9fd8ff','#b8a6f2'];
+const HOT  = ['#e8142a','#ff3b2e','#12a750','#3ecb6b','#f4d43a','#ee52a2','#f2efe6'];
+
+const cv  = document.getElementById('c');
+const ctx = cv.getContext('2d',{alpha:false});
+
+let W,H,U,TOTAL, waves, ribbons, glowBlobs, grainPat;
+
+function build(){
+
+  const R = RATIOS.find(r=>r.n===state.ratio) || RATIOS[2];
+  const long = state.qual;
+  if(R.w >= R.h){ W = long; H = Math.round(long*R.h/R.w); }
+  else          { H = long; W = Math.round(long*R.w/R.h); }
+  W -= W%2; H -= H%2;
+  cv.width=W; cv.height=H;
+  U = Math.min(W,H);
+  TOTAL = Math.round(state.fps*state.dur);
+
+  const rand = mulberry32(state.seed);
+  const rr=(a,b)=>a+(b-a)*rand();
+  const pick=a=>a[Math.floor(rand()*a.length)];
+
+  waves=[];
+  const nW = 5;
+  for(let i=0;i<nW;i++){
+    const ang = rr(0,TAU);
+    const f   = rr(1.1,3.4) * (1 + i*0.35);
+    waves.push({
+      fx: Math.cos(ang)*f,
+      fy: Math.sin(ang)*f,
+      A : rr(0.5,1.0)/(1+i*0.5),
+      kt: 1 + Math.floor(rand()*3),
+      ph: rr(0,TAU),
+    });
+  }
+
+  const dens = Math.round((U/1440) * 150);
+  const N = Math.max(60, dens);
+  const STEPS = 74;
+  const stepLen = 0.010 * U;
+  ribbons=[];
+  for(let i=0;i<N;i++){
+    const hot = rand()<0.34;
+    ribbons.push({
+      x0: rr(-0.06,1.06)*W,
+      y0: rr(-0.06,1.06)*H,
+      steps: STEPS,
+      slen: stepLen*rr(0.75,1.25),
+      col: hot ? pick(HOT) : pick(COOL),
+      wide: rr(1.6,4.2)*(U/1440),
+      al  : rr(0.35,0.8),
+      cyc : 1 + Math.floor(rand()*3),
+      poff: rand(),
+      pdir: rand()<0.5?1:-1,
+      swirl: rr(0.85,1.15),
+    });
+  }
+
+  glowBlobs=[];
+  for(let i=0;i<5;i++) glowBlobs.push({
+    x:rr(0.1,0.9)*W, y:rr(0.1,0.9)*H, r:rr(0.35,0.75)*U,
+    ax:rr(0.02,0.08)*W, ay:rr(0.02,0.08)*H,
+    k:1+Math.floor(rand()*2), ph:rr(0,TAU),
+    col: rand()<0.6 ? pick(COOL) : pick(HOT), al:rr(0.05,0.13),
+  });
+
+  const gt=document.createElement('canvas'); gt.width=gt.height=256;
+  const g=gt.getContext('2d'); const im=g.createImageData(256,256);
+  for(let i=0;i<im.data.length;i+=4){ const v=200+Math.floor(rand()*56);
+    im.data[i]=im.data[i+1]=im.data[i+2]=v; im.data[i+3]=255; }
+  g.putImageData(im,0,0);
+  grainPat = ctx.createPattern(gt,'repeat');
+}
+
+function fieldVel(x,y,p){
+  const X = x/U, Y = y/U;
+  let vx=0, vy=0;
+  const amp = state.flow;
+  for(const w of waves){
+    const c = Math.cos(w.fx*X + w.fy*Y + w.kt*TAU*p + w.ph);
+
+    vx +=  w.A * w.fy * c;
+    vy += -w.A * w.fx * c;
+  }
+  const m = Math.hypot(vx,vy) || 1e-6;
+  return [vx/m*amp, vy/m*amp];
+}
+
+function drawBackground(p){
+  ctx.globalCompositeOperation='source-over'; ctx.globalAlpha=1;
+  ctx.fillStyle=BG; ctx.fillRect(0,0,W,H);
+
+  ctx.globalCompositeOperation='lighter';
+  for(const b of glowBlobs){
+    const a = TAU*(b.k*p) + b.ph;
+    const x = b.x + Math.cos(a)*b.ax;
+    const y = b.y + Math.sin(a)*b.ay;
+    const gr = ctx.createRadialGradient(x,y,0,x,y,b.r);
+    gr.addColorStop(0, hexA(b.col, b.al*state.glow));
+    gr.addColorStop(1, hexA(b.col, 0));
+    ctx.fillStyle=gr; ctx.fillRect(x-b.r,y-b.r,b.r*2,b.r*2);
+  }
+  ctx.globalCompositeOperation='source-over';
+}
+
+function drawRibbons(p){
+  ctx.globalCompositeOperation='lighter';
+  ctx.lineCap='round'; ctx.lineJoin='round';
+  for(const rb of ribbons){
+
+    let x=rb.x0, y=rb.y0;
+    const pts=[];
+    for(let s=0;s<rb.steps;s++){
+      pts.push(x,y);
+      const [vx,vy]=fieldVel(x,y,p);
+      x += vx*rb.slen*rb.swirl;
+      y += vy*rb.slen*rb.swirl;
+    }
+    const n=rb.steps;
+    for(let s=0;s<n-1;s++){
+      const x1=pts[s*2], y1=pts[s*2+1], x2=pts[s*2+2], y2=pts[s*2+3];
+      const u = s/(n-1);
+
+      const env = Math.sin(Math.PI*u);
+
+      const pulse = 0.5 + 0.5*Math.cos(TAU*(rb.cyc*(u - rb.pdir*p)) + rb.poff*TAU);
+      const a = rb.al * env * (0.28 + 0.72*pulse) * state.glow;
+      if(a<=0.004) continue;
+
+      ctx.strokeStyle=hexA(rb.col, a*0.35);
+      ctx.lineWidth=rb.wide*3.0*(0.6+0.4*env);
+      ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+      ctx.strokeStyle=hexA(rb.col, a);
+      ctx.lineWidth=rb.wide*(0.5+0.9*env);
+      ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+    }
+  }
+  ctx.globalCompositeOperation='source-over';
+}
+
+window.renderFrame = function(n){
+  const p = (n % TOTAL) / TOTAL;
+  drawBackground(p);
+  drawRibbons(p);
+
+  const vg = ctx.createRadialGradient(W/2,H/2,U*0.25, W/2,H/2, Math.hypot(W,H)*0.62);
+  vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,0.55)');
+  ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
+
+  ctx.globalCompositeOperation='overlay'; ctx.globalAlpha=0.035;
+  ctx.fillStyle=grainPat; ctx.fillRect(0,0,W,H);
+  ctx.globalAlpha=1; ctx.globalCompositeOperation='source-over';
+};
+
+function hexA(hex,a){
+  const v=parseInt(hex.slice(1),16);
+  const r=(v>>16)&255, g=(v>>8)&255, b=v&255;
+  return `rgba(${r},${g},${b},${Math.max(0,Math.min(1,a))})`;
+}
+
+const $=id=>document.getElementById(id);
+const stat=m=>{ if($('stat')) $('stat').textContent=m; };
+
+if(CAP){
+  document.body.classList.add('capture');
+  build(); renderFrame(0);
+  window.__READY__ = true;
+} else {
+  const rw=$('ratios'), qw=$('quals');
+  RATIOS.forEach(r=>{ const b=document.createElement('button');
+    b.textContent=r.n; b.dataset.v=r.n; rw.appendChild(b); });
+  QUALS.forEach(v=>{ const b=document.createElement('button');
+    b.textContent=v.n; b.dataset.v=v.L; qw.appendChild(b); });
+
+  function syncBtns(){
+    [...rw.children].forEach(b=>b.classList.toggle('on', b.dataset.v===state.ratio));
+    [...qw.children].forEach(b=>b.classList.toggle('on', +b.dataset.v===state.qual));
+    stat(`${W}×${H} · ${state.fps}fps · ${state.dur}초 · seed ${state.seed}`);
+  }
+  function rebuild(){ build(); frame=0; syncBtns(); }
+
+  rw.onclick=e=>{ if(e.target.dataset.v){ state.ratio=e.target.dataset.v; rebuild(); } };
+  qw.onclick=e=>{ if(e.target.dataset.v){ state.qual=+e.target.dataset.v; rebuild(); } };
+  $('seed').onchange =e=>{ state.seed=+e.target.value||1; rebuild(); };
+  $('dur').onchange  =e=>{ state.dur=Math.max(2,+e.target.value||20); rebuild(); };
+  $('flow').oninput  =e=>{ state.flow=(+e.target.value||0)/100; };
+  $('glow').oninput  =e=>{ state.glow=(+e.target.value||0)/100; };
+  $('shuffle').onclick=()=>{ state.seed=1000000+Math.floor(Math.random()*8999999);
+    $('seed').value=state.seed; rebuild(); };
+
+  let paused=false, frame=0;
+  $('pause').onclick=()=>{ paused=!paused; $('pause').textContent=paused?'재생':'일시정지'; };
+  $('hide').onclick=()=>document.body.classList.add('hideui');
+  $('toggle').onclick=()=>document.body.classList.remove('hideui');
+
+  $('png').onclick=()=>{
+    cv.toBlob(b=>save(b, `flowribbons_${state.ratio.replace(':','x')}_${W}x${H}_s${state.seed}.png`),'image/png');
+  };
+
+  function save(blob, name){
+    const u=URL.createObjectURL(blob); const a=document.createElement('a');
+    a.href=u; a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(u),4000);
+  }
+
+  const MIMES=['video/mp4;codecs=avc1.640033','video/mp4;codecs=avc1.42E01E','video/mp4',
+               'video/webm;codecs=vp9','video/webm'];
+  let recording=false;
+  $('rec').onclick=()=>{
+    if(recording) return;
+    const mime = MIMES.find(m=>window.MediaRecorder && MediaRecorder.isTypeSupported(m));
+    if(!mime){ stat('이 브라우저는 캔버스 녹화를 지원하지 않습니다.'); return; }
+    const ext = mime.startsWith('video/mp4') ? 'mp4' : 'webm';
+    const stream = cv.captureStream(state.fps);
+    const chunks=[];
+    const mr = new MediaRecorder(stream,{mimeType:mime, videoBitsPerSecond: 40_000_000});
+    mr.ondataavailable=e=>{ if(e.data.size) chunks.push(e.data); };
+    mr.onstop=()=>{
+      recording=false; $('rec').classList.remove('rec');
+      $('rec').textContent='MP4 저장 (실시간 녹화)';
+      save(new Blob(chunks,{type:mime}),
+        `flowribbons_${state.ratio.replace(':','x')}_${W}x${H}_s${state.seed}.${ext}`);
+      stat(`저장 완료 · ${ext.toUpperCase()} · ${W}×${H}`);
+    };
+    recording=true; paused=false; frame=0;
+    $('rec').classList.add('rec'); $('rec').textContent='녹화 중…';
+    mr.start();
+    const t0=performance.now();
+    (function tick(){
+      const el=(performance.now()-t0)/1000;
+      stat(`녹화 ${el.toFixed(1)} / ${state.dur}초 — 창을 가리지 마세요`);
+      if(el>=state.dur){ mr.stop(); } else setTimeout(tick,200);
+    })();
+  };
+
+  build(); syncBtns();
+  (function loop(){
+    if(!paused){ renderFrame(frame); frame=(frame+1)%TOTAL; }
+    requestAnimationFrame(loop);
+  })();
+}
+</script></body></html>

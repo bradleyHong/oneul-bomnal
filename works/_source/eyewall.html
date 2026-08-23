@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>EYEWALL — 눈의 벽</title>
+<style>
+  :root{
+    --void:#050505; --panel:#0c0c0d; --line:#1e1e20;
+    --ink:#e8e4da; --dim:#6b6b70; --sig:#e01b1b;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--void);color:var(--ink);
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;-webkit-text-size-adjust:100%}
+  #stage{position:fixed;inset:0 0 auto 0;height:calc(100% - 232px);
+    display:flex;align-items:center;justify-content:center;padding:10px}
+  canvas{max-width:100%;max-height:100%;display:block;background:#000;
+    box-shadow:0 0 90px rgba(220,220,255,.06)}
+  #dock{position:fixed;left:0;right:0;bottom:0;height:232px;background:var(--panel);
+    border-top:1px solid var(--line);padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+    overflow-y:auto}
+  .row{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+  button{flex:1;min-width:82px;background:#141416;color:var(--ink);border:1px solid var(--line);
+    border-radius:2px;padding:11px 8px;font:inherit;font-size:12px;letter-spacing:.04em}
+  button:active{background:#1e1e21}
+  button.on{border-color:var(--sig);color:#fff}
+  button.rec{color:var(--sig)}
+  label{display:grid;grid-template-columns:74px 1fr 42px;align-items:center;gap:8px;
+    font-size:10.5px;color:var(--dim);letter-spacing:.08em;margin-bottom:5px}
+  input[type=range]{width:100%;accent-color:var(--sig);background:transparent}
+  .val{text-align:right;color:var(--ink);font-size:10.5px}
+  #hint{font-size:10.5px;color:var(--dim);line-height:1.5;letter-spacing:.02em}
+  #drop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+    background:rgba(5,5,5,.9);font-size:13px;letter-spacing:.1em;z-index:9}
+  #drop.show{display:flex}
+  input[type=file]{display:none}
+</style></head><body>
+
+<div id="stage"><canvas id="c"></canvas></div>
+
+<div id="dock">
+  <div class="row">
+    <button id="bOpen">영상 열기</button>
+    <button id="bDemo" class="on">데모 눈</button>
+    <button id="bRatio">3840×960</button>
+    <button id="bSeed">시드 ↻</button>
+    <button id="bRec" class="rec">녹화</button>
+  </div>
+  <label>초점 X<input type="range" id="fx" min="0" max="100" value="50"><span class="val" id="vfx">50</span></label>
+  <label>초점 Y<input type="range" id="fy" min="0" max="100" value="42"><span class="val" id="vfy">42</span></label>
+  <label>크롭<input type="range" id="zoom" min="12" max="100" value="42"><span class="val" id="vzoom">42</span></label>
+  <label>대비<input type="range" id="con" min="90" max="360" value="150"><span class="val" id="vcon">1.5</span></label>
+  <label>타일 수<input type="range" id="cols" min="8" max="46" value="26"><span class="val" id="vcols">26</span></label>
+  <label>붉은 블록<input type="range" id="red" min="0" max="6" value="3"><span class="val" id="vred">3</span></label>
+  <div id="hint">Pixabay에서 <b>eye close up</b> / <b>face portrait</b>로 받은 mp4를 “영상 열기”로 넣으면 그 얼굴로 벽이 채워집니다. 초점 X·Y를 눈에 맞추세요.</div>
+</div>
+
+<div id="drop">영상을 놓으세요</div>
+<input type="file" id="file" accept="video/*">
+
+<script>
+/* ============ 파라미터 ============ */
+const q    = new URLSearchParams(location.search);
+const CAP  = !!q.get('capture');
+const FPS  = +q.get('fps') || 60;
+const DUR  = +q.get('dur') || 30;
+const TOTAL_FRAMES = FPS * DUR;
+let   SEED = +q.get('seed') || 3708412;
+
+const RATIOS = [[3840,960],[3840,2160],[2160,3840]];
+let ratioIdx = +q.get('ratio') || 0;
+let W = +q.get('w') || RATIOS[ratioIdx][0];
+let H = +q.get('h') || RATIOS[ratioIdx][1];
+
+const P = {                       // 라이브 조절 파라미터
+  fx:.50, fy:.42, zoom:.42, contrast:1.50, cols:26, reds:3
+};
+
+/* ============ 시드 해시 (Math.random 금지) ============ */
+function hash(a,b){
+  let x = (a*374761393 + b*668265263 + SEED*2654435761) | 0;
+  x = Math.imul(x ^ (x>>>13), 1274126177);
+  return ((x ^ (x>>>16)) >>> 0) / 4294967296;
+}
+
+/* ============ 캔버스 ============ */
+const cv  = document.getElementById('c');
+const ctx = cv.getContext('2d', {alpha:false});
+function resize(){ cv.width = W; cv.height = H; }
+resize();
+
+/* 소스 파이프라인: 원본 → 정사각 크롭 → 그레이/대비 LUT → pos / neg */
+const S = 512;
+const raw = document.createElement('canvas'); raw.width=raw.height=S;
+const rctx = raw.getContext('2d', {willReadFrequently:true});
+const pos = document.createElement('canvas'); pos.width=pos.height=S;
+const pctx = pos.getContext('2d');
+const neg = document.createElement('canvas'); neg.width=neg.height=S;
+const nctx = neg.getContext('2d');
+const lut = new Uint8ClampedArray(256);
+function buildLUT(){
+  const c = P.contrast, m = 128;
+  for(let i=0;i<256;i++){
+    let v = (i-m)*c + m + 6;
+    lut[i] = v<0?0:v>255?255:v;
+  }
+}
+buildLUT();
+
+/* ============ 소스: 업로드 영상 또는 데모 눈 ============ */
+let video = null, useVideo = false;
+
+function drawDemoEye(g, t){
+  g.fillStyle='#4a4a4a'; g.fillRect(0,0,S,S);
+  const gl = g.createRadialGradient(S/2,S/2,40,S/2,S/2,S*.72);
+  gl.addColorStop(0,'#d8d5cf'); gl.addColorStop(1,'#2a2a2c');
+  g.fillStyle=gl; g.fillRect(0,0,S,S);
+
+  const blinkP = 4.3, bt = t % blinkP;
+  const blink = bt < .16 ? Math.sin(bt/.16*Math.PI) : 0;      // 0..1
+  const open = (1 - blink) * 122 + 4;                          // 눈꺼풀 높이
+  const cx = S/2, cy = S/2;
+  const dx = Math.sin(t*0.55)*16 + Math.sin(t*1.7)*4;
+  const dy = Math.cos(t*0.41)*7;
+
+  g.save();
+  g.beginPath();
+  g.moveTo(cx-198, cy);
+  g.quadraticCurveTo(cx, cy-open*1.55, cx+198, cy);
+  g.quadraticCurveTo(cx, cy+open*1.15, cx-198, cy);
+  g.closePath(); g.clip();
+
+  g.fillStyle='#efece4'; g.fillRect(0,0,S,S);
+  const sh = g.createRadialGradient(cx,cy-70,20,cx,cy-70,220);
+  sh.addColorStop(0,'rgba(255,255,255,0)'); sh.addColorStop(1,'rgba(20,20,24,.55)');
+  g.fillStyle=sh; g.fillRect(0,0,S,S);
+
+  const ix = cx+dx, iy = cy+dy, ir = 88;
+  const ig = g.createRadialGradient(ix-14,iy-14,8,ix,iy,ir);
+  ig.addColorStop(0,'#9b968c'); ig.addColorStop(.55,'#575450'); ig.addColorStop(1,'#232324');
+  g.fillStyle=ig; g.beginPath(); g.arc(ix,iy,ir,0,7); g.fill();
+
+  g.strokeStyle='rgba(214,210,200,.26)'; g.lineWidth=1.5;
+  for(let i=0;i<72;i++){
+    const a = i/72*Math.PI*2 + Math.sin(t*.3)*.02;
+    const r0 = 26 + hash(i,3)*16, r1 = ir*(.72+hash(i,9)*.26);
+    g.beginPath();
+    g.moveTo(ix+Math.cos(a)*r0, iy+Math.sin(a)*r0);
+    g.lineTo(ix+Math.cos(a)*r1, iy+Math.sin(a)*r1);
+    g.stroke();
+  }
+  const pr = 30 + Math.sin(t*.37)*7;
+  g.fillStyle='#131315'; g.beginPath(); g.arc(ix,iy,pr,0,7); g.fill();
+  g.strokeStyle='rgba(0,0,0,.7)'; g.lineWidth=5;
+  g.beginPath(); g.arc(ix,iy,ir,0,7); g.stroke();
+  g.fillStyle='rgba(255,255,255,.92)';
+  g.beginPath(); g.arc(ix-30,iy-32,13,0,7); g.fill();
+  g.beginPath(); g.arc(ix+22,iy+18,5,0,7); g.fill();
+  g.restore();
+
+  // 눈꺼풀 · 속눈썹
+  g.fillStyle='#121214';
+  g.beginPath(); g.moveTo(-10,-10); g.lineTo(S+10,-10); g.lineTo(S+10,cy);
+  g.quadraticCurveTo(cx, cy-open*1.55, -10, cy); g.closePath(); g.fill();
+  g.beginPath(); g.moveTo(-10,S+10); g.lineTo(S+10,S+10); g.lineTo(S+10,cy);
+  g.quadraticCurveTo(cx, cy+open*1.15, -10, cy); g.closePath(); g.fill();
+  g.strokeStyle='#0a0a0a'; g.lineWidth=4;
+  for(let i=0;i<34;i++){
+    const u = i/33, x = cx-190+380*u;
+    const y = cy - Math.sin(u*Math.PI)*open*1.5;
+    const L = 20 + hash(i,21)*22;
+    g.beginPath(); g.moveTo(x,y);
+    g.lineTo(x + (u-.5)*26, y - L); g.stroke();
+  }
+}
+
+function updateSource(n){
+  const t = n / FPS;
+  if(useVideo && video && video.readyState >= 2){
+    const vw = video.videoWidth, vh = video.videoHeight;
+    const side = Math.min(vw,vh) * (0.35 + P.zoom*0.65);
+    let sx = P.fx*vw - side/2, sy = P.fy*vh - side/2;
+    sx = Math.max(0, Math.min(vw-side, sx));
+    sy = Math.max(0, Math.min(vh-side, sy));
+    rctx.drawImage(video, sx, sy, side, side, 0, 0, S, S);
+  } else {
+    drawDemoEye(rctx, t);
+  }
+  const img = rctx.getImageData(0,0,S,S), d = img.data;
+  for(let i=0;i<d.length;i+=4){
+    const g = lut[(d[i]*77 + d[i+1]*150 + d[i+2]*29) >> 8];
+    d[i]=d[i+1]=d[i+2]=g;
+  }
+  pctx.putImageData(img,0,0);
+  for(let i=0;i<d.length;i+=4){ d[i]=d[i+1]=d[i+2]=255-d[i]; }
+  nctx.putImageData(img,0,0);
+}
+
+/* ============ 타일 크롭 정의 ============ */
+function cropRect(kind, i, t){
+  const dxx = Math.sin(t*.21 + i*1.7)*10, dyy = Math.cos(t*.17 + i*2.3)*8;
+  if(kind===0) return [0,0,S,S];                                  // 얼굴 전체
+  if(kind===1){ const z=S*.80; return [S/2-z/2+dxx, S/2-z/2+dyy, z, z]; }
+  if(kind===2){ const z=S*.50; return [S/2-z/2+dxx*.6, S/2-z/2+dyy*.6, z, z]; }
+  const z=S*.44; return [S/2-z/2, S/2-z/2, z, z];
+}
+
+/* ============ 메인 렌더 ============ */
+window.renderFrame = function(n){
+  const t = n / FPS;
+  updateSource(n);
+
+  ctx.fillStyle = '#050505';
+  ctx.fillRect(0,0,W,H);
+
+  // 벽 영역 (가장자리 여백)
+  const pad = Math.round(Math.min(W,H)*0.045);
+  const wx = pad, wy = pad, ww = W-pad*2, wh = H-pad*2;
+
+  const cols = Math.round(P.cols);
+  const tw = ww/cols;
+  const rows = Math.max(1, Math.round(wh/tw));
+  const th = wh/rows;
+  const g = Math.max(1.5, tw*0.022);   // 패널 사이 간격
+
+  ctx.fillStyle='#0a0a0b'; ctx.fillRect(wx,wy,ww,wh);
+
+  // ── 일반 타일
+  for(let r=0;r<rows;r++){
+    for(let cIdx=0;cIdx<cols;cIdx++){
+      const i = r*cols + cIdx;
+      const per = 78 + Math.floor(hash(i,7)*170);
+      const cyc = Math.floor((n + i*13) / per);
+      const h1 = hash(i, cyc*3+1);
+      let kind, inv = hash(i,cyc*3+2) < .18, micro = false, dark = h1 > .955;
+      if(h1 < .64) kind = 1;
+      else if(h1 < .84) kind = 2;
+      else if(h1 < .93){ kind = 2; micro = true; }
+      else kind = 0;
+
+      const dx = wx + cIdx*tw + g/2, dy = wy + r*th + g/2;
+      const dw = tw-g, dh = th-g;
+      if(dark){ ctx.fillStyle='#0d0d0e'; ctx.fillRect(dx,dy,dw,dh); continue; }
+
+      const src = inv ? neg : pos;
+      if(micro){
+        const m = 3;
+        for(let a=0;a<m;a++) for(let b=0;b<m;b++){
+          const [sx,sy,sw,sh] = cropRect(1, i+a*7+b*13, t);
+          ctx.drawImage(src, sx,sy,sw,sh, dx+a*dw/m, dy+b*dh/m, dw/m-1, dh/m-1);
+        }
+      } else {
+        const [sx,sy,sw,sh] = cropRect(kind, i, t);
+        ctx.drawImage(src, sx,sy,sw,sh, dx,dy,dw,dh);
+      }
+      // 패널별 미세 밝기 편차 (LED 느낌)
+      const v = (hash(i,99)-.5)*0.16;
+      ctx.fillStyle = v>0 ? `rgba(255,255,255,${v})` : `rgba(0,0,0,${-v})`;
+      ctx.fillRect(dx,dy,dw,dh);
+    }
+  }
+
+  // ── 붉은 히어로 블록
+  const NB = Math.round(P.reds);
+  for(let b=0;b<NB;b++){
+    const period = 230 + b*97;
+    const phase  = (n + b*140) % period;
+    if(phase > period*0.66) continue;
+    const cyc = Math.floor((n + b*140) / period);
+    const bw = 2 + Math.floor(hash(b*31+1, cyc)*Math.min(3, cols-2));
+    const bh = Math.min(rows, 2 + Math.floor(hash(b*31+2, cyc)*2));
+    const c0 = Math.floor(hash(b*31+3, cyc)*(cols-bw));
+    const r0 = Math.floor(hash(b*31+4, cyc)*(rows-bh+1));
+    const k  = phase/(period*0.66);
+    const ease = k<.12 ? k/.12 : k>.88 ? (1-k)/.12 : 1;   // 페이드 인·아웃
+
+    const dx = wx + c0*tw + g/2, dy = wy + r0*th + g/2;
+    const dw = bw*tw-g, dh = bh*th-g;
+    const zz = S*(0.30 + 0.05*Math.sin(t*.5 + b));
+    const sx = S/2 - zz/2 + Math.sin(t*.23+b*2)*12;
+    const sy = S/2 - zz/2 + Math.cos(t*.19+b*3)*10;
+
+    ctx.save();
+    ctx.beginPath(); ctx.rect(dx,dy,dw,dh); ctx.clip();
+    ctx.fillStyle='#000'; ctx.fillRect(dx,dy,dw,dh);
+    ctx.globalAlpha = ease;
+    ctx.drawImage(pos, sx,sy,zz,zz, dx,dy,dw,dh);
+    ctx.globalCompositeOperation='multiply';
+    ctx.fillStyle='#ff1010'; ctx.fillRect(dx,dy,dw,dh);
+    ctx.globalCompositeOperation='screen';
+    ctx.fillStyle='rgba(70,0,0,.55)'; ctx.fillRect(dx,dy,dw,dh);
+    ctx.restore();
+  }
+
+  // ── 흰 프레임 + 글로우
+  ctx.save();
+  ctx.shadowColor='rgba(230,235,255,.55)'; ctx.shadowBlur=Math.round(tw*0.5);
+  ctx.strokeStyle='rgba(245,242,234,.92)'; ctx.lineWidth=Math.max(2, tw*0.045);
+  ctx.strokeRect(wx-ctx.lineWidth/2, wy-ctx.lineWidth/2, ww+ctx.lineWidth, wh+ctx.lineWidth);
+  ctx.restore();
+
+  // ── 그레인 (밴딩 방지 디더)
+  ctx.globalAlpha = .035;
+  for(let i=0;i<420;i++){
+    const p = hash(i, (n>>1)+i);
+    ctx.fillStyle = p>.5 ? '#fff' : '#000';
+    ctx.fillRect(hash(i,n+7)*W, hash(i,n+11)*H, 2, 2);
+  }
+  ctx.globalAlpha = 1;
+};
+/* 오프라인 렌더용: ?video=file:///... 로 소스 지정, seekTo로 프레임 동기화 */
+const VSRC = q.get('video');
+if(VSRC){
+  window.__READY__ = false;
+  video = document.createElement('video');
+  video.src = VSRC; video.muted = true; video.playsInline = true;
+  video.addEventListener('loadeddata', ()=>{ useVideo = true; window.__READY__ = true; });
+} else {
+  window.__READY__ = true;
+}
+window.seekTo = function(t){
+  return new Promise(res=>{
+    if(!video || !video.duration) return res();
+    video.onseeked = ()=>res();
+    video.currentTime = t % video.duration;
+  });
+};
+
+/* ============ 미리보기 루프 ============ */
+let frame = 0, playing = true;
+if(!CAP){
+  (function loop(){
+    if(playing) renderFrame(frame++ % TOTAL_FRAMES);
+    requestAnimationFrame(loop);
+  })();
+}
+
+/* ============ 컨트롤 ============ */
+const $ = id => document.getElementById(id);
+function bind(id, valId, fn, fmt){
+  $(id).addEventListener('input', e=>{
+    const v = +e.target.value; fn(v);
+    $(valId).textContent = fmt ? fmt(v) : v;
+  });
+}
+bind('fx','vfx', v=>P.fx=v/100);
+bind('fy','vfy', v=>P.fy=v/100);
+bind('zoom','vzoom', v=>P.zoom=v/100);
+bind('con','vcon', v=>{P.contrast=v/100; buildLUT();}, v=>(v/100).toFixed(1));
+bind('cols','vcols', v=>P.cols=v);
+bind('red','vred', v=>P.reds=v);
+
+$('bSeed').onclick = ()=>{ SEED = (SEED*1103515245 + 12345) % 9999991; };
+$('bRatio').onclick = ()=>{
+  ratioIdx = (ratioIdx+1) % RATIOS.length;
+  [W,H] = RATIOS[ratioIdx]; resize();
+  $('bRatio').textContent = W+'×'+H;
+};
+$('bDemo').onclick = ()=>{
+  useVideo = false;
+  $('bDemo').classList.add('on'); $('bOpen').classList.remove('on');
+};
+$('bOpen').onclick = ()=> $('file').click();
+$('file').addEventListener('change', e=>{ if(e.target.files[0]) loadVideo(e.target.files[0]); });
+
+function loadVideo(f){
+  if(video) URL.revokeObjectURL(video.src);
+  video = document.createElement('video');
+  video.src = URL.createObjectURL(f);
+  video.muted = true; video.loop = true; video.playsInline = true;
+  video.play().catch(()=>{});
+  useVideo = true;
+  $('bOpen').classList.add('on'); $('bDemo').classList.remove('on');
+  $('hint').textContent = '영상 적용됨 — 초점 X·Y와 크롭으로 눈을 화면 한가운데 맞추세요.';
+}
+
+const dz = $('drop');
+['dragenter','dragover'].forEach(ev=>document.addEventListener(ev, e=>{
+  e.preventDefault(); dz.classList.add('show'); }));
+['dragleave','drop'].forEach(ev=>document.addEventListener(ev, e=>{
+  e.preventDefault(); if(ev==='drop' && e.dataTransfer.files[0]) loadVideo(e.dataTransfer.files[0]);
+  dz.classList.remove('show'); }));
+
+/* ============ 녹화 (webm) ============ */
+let rec = null;
+$('bRec').onclick = ()=>{
+  if(rec){ rec.stop(); return; }
+  const stream = cv.captureStream(60);
+  const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+    ? 'video/webm;codecs=vp9' : 'video/webm';
+  rec = new MediaRecorder(stream, {mimeType:mime, videoBitsPerSecond: 40e6});
+  const chunks = [];
+  rec.ondataavailable = e => chunks.push(e.data);
+  rec.onstop = ()=>{
+    const url = URL.createObjectURL(new Blob(chunks,{type:mime}));
+    const a = document.createElement('a');
+    a.href = url; a.download = `eyewall_${W}x${H}_${SEED}.webm`; a.click();
+    rec = null; $('bRec').textContent='녹화'; $('bRec').classList.remove('on');
+  };
+  rec.start();
+  $('bRec').textContent='정지'; $('bRec').classList.add('on');
+};
+</script></body></html>

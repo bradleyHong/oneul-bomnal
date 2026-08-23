@@ -1,0 +1,516 @@
+{
+  "_comment": "오늘은 봄날 사이트 캐논(정본). 사이트의 모든 문구·메타태그·스키마·llms.txt는 이 파일을 근거로 한다. 사실이 바뀌면 여기를 먼저 고치고, 그 다음 각 파일을 맞춘다. 검증: node tools/check-canon.mjs",
+  "version": "2026-08-23",
+  "updated": "2026-08-23",
+  "site": {
+    "brand": "오늘은 봄날",
+    "brandRomanized": "Oneul-eun Bomnal",
+    "domain": "publicbloom.art",
+    "baseUrl": "https://publicbloom.art",
+    "locale": "ko_KR",
+    "lang": "ko",
+    "ogImage": "https://publicbloom.art/assets/og-cover.jpg",
+    "logo": "https://publicbloom.art/assets/logo-bomnal.png",
+    "verification": {
+      "google": "rSP3OWNR2ASouqOrFTis7jWRtWRfvTIaF4xMhFqtWLs",
+      "naver": "065ca67de7d3753f1b02bdd17a7036c69ac372f7"
+    }
+  },
+  "identity": {
+    "legalName": "오늘은 봄날",
+    "representative": "박성실",
+    "businessNumber": "575-19-00976",
+    "address": "대구광역시 수성구 동대구로 250, 102동 1층",
+    "addressParts": {
+      "streetAddress": "동대구로 250, 102동 1층",
+      "addressLocality": "수성구",
+      "addressRegion": "대구광역시",
+      "addressCountry": "KR"
+    },
+    "phone": "010-4292-1999",
+    "phoneE164": "+82-10-4292-1999",
+    "email": "studio@publicbloom.art",
+    "isWomenOwned": true,
+    "credentials": [
+      {
+        "name": "여성기업 확인서",
+        "number": "제0113-2025-35456호",
+        "valid": "2025.11.07 ~ 2028.11.06",
+        "meaning": "공공기관 우선구매 대상"
+      },
+      {
+        "name": "직접생산확인증명서",
+        "number": "제2025-0495-02141호",
+        "valid": "2025.10.29 ~ 2027.10.28",
+        "meaning": "동영상제작서비스 · 중소기업자간 경쟁입찰 참여"
+      },
+      {
+        "name": "비디오물제작업 신고증",
+        "number": "제2025-000019호",
+        "valid": "",
+        "meaning": "영상물 제작업 등록"
+      },
+      {
+        "name": "방송영상독립제작사 신고증",
+        "number": "제12235호",
+        "valid": "",
+        "meaning": "방송영상 독립제작사"
+      }
+    ]
+  },
+  "business": {
+    "oneLiner": "미디어아트를 AI와 코드로 직접 만들고, 빠르게 제작하고, LED 패널·전광판 설치와 빔프로젝터 미디어파사드까지 한 계약으로 끝내는 대구 여성기업입니다.",
+    "elevator": "오늘은 봄날은 대구광역시 수성구에 있는 여성기업이자 AI 미디어아트 기업입니다. 미디어아트를 영상 편집이 아니라 코드로 만듭니다. 그래서 화면 비율과 해상도를 현장 규격에 맞춰 다시 뽑을 수 있고, 공공데이터나 기관 보유 DB를 연결하면 같은 화면이 매일 달라집니다. 시안 3종을 요청 후 1일 이내에 내는 빠른 제작이 강점이며, LED 패널·LED 전광판 설치와 빔프로젝터 프로젝션 매핑 시공까지 직접 수행합니다. 여성기업 확인서와 직접생산확인증명서를 보유해 공공기관 우선구매와 중소기업자간 경쟁입찰에 바로 참여합니다.",
+    "claimRules": "아래 scopes와 proof에 적힌 사실만 사이트에 쓴다. 여기에 없는 수치·실적·사양은 페이지에 쓰지 않는다.",
+    "scopes": [
+      {
+        "id": "media-art",
+        "name": "AI · 코드 기반 미디어아트 제작",
+        "short": "미디어아트를 코드로 만듭니다",
+        "summary": "미디어아트를 AI와 코드로 직접 만듭니다. 자체 HTML5 Canvas 엔진과 생성형 알고리즘으로 제작하므로 화면 비율·해상도를 현장 규격에 맞춰 다시 출력할 수 있고, 공공 API와 기관 보유 데이터를 연결하면 같은 화면이 매일 달라집니다.",
+        "includes": [
+          "AI 생성형·제너러티브 미디어아트 제작",
+          "공공데이터·기관 DB 연동 데이터 미디어아트",
+          "현장 화면 규격 맞춤 재출력 (비율·해상도·길이)",
+          "다국어 타이포 미디어아트"
+        ],
+        "page": "/media-facade-content"
+      },
+      {
+        "id": "fast",
+        "name": "빠른 제작",
+        "short": "빠르게 만듭니다",
+        "summary": "시안 3종을 요청 후 1일 이내에 제시합니다. 기관 CI·컬러·서체·금기 표현을 미리 반영해 둔 자체 제작 체계에서 기획·카피·비주얼·송출 코드를 한 번에 만들기 때문입니다.",
+        "includes": [
+          "시안 3종 1일 이내 제시",
+          "영상 외주 통상 5일 대비 단축",
+          "확정 후 원격 배포 · 현장 방문 불필요",
+          "계절·행사별 콘텐츠 교체 운영"
+        ],
+        "page": "/media-facade-content"
+      },
+      {
+        "id": "led",
+        "name": "LED 패널 · LED 전광판 설치",
+        "short": "LED를 설치합니다",
+        "summary": "로비 미디어월, 건물 외벽 LED 전광판, 세로형 사이니지를 사양 산정부터 공급·구조 보강·배선·전원 계통 시공까지 직접 설치합니다. 기존에 설치된 패널이 있으면 그 해상도와 입력 규격에 맞춰 콘텐츠만 올립니다.",
+        "includes": [
+          "LED 패널 사양 산정 · 공급 · 설치",
+          "LED 전광판 설치 · 구조 보강 · 배선",
+          "로비 LED 미디어월 구축",
+          "기존 패널 활용 시 콘텐츠만 교체"
+        ],
+        "page": "/led-install"
+      },
+      {
+        "id": "facade",
+        "name": "빔프로젝터 미디어파사드",
+        "short": "빔프로젝터로 미디어파사드를 만듭니다",
+        "summary": "건물 외벽과 전시장 벽면에 빔프로젝터를 설치하고 프로젝션 매핑으로 미디어파사드를 구현합니다. 현장 실측, 프로젝터 대수·밝기 산정, 매핑, 일몰 기준 상영 스케줄 운영까지 포함합니다.",
+        "includes": [
+          "현장 실측 · 프로젝터 배치 설계",
+          "벽면 형태 맞춤 프로젝션 매핑",
+          "축제·개관·전시 단기 설치와 철거",
+          "상시 상영 스케줄 운영"
+        ],
+        "page": "/media-facade"
+      }
+    ],
+    "differentiators": [
+      "AI 미디어아트 기업 — 영상 편집이 아니라 코드로 만들어, 현장 규격에 맞춰 다시 뽑는다",
+      "여성기업 확인서 보유 — 공공기관 우선구매 대상",
+      "직접생산확인증명서 보유 — 중소기업자간 경쟁입찰 즉시 참여",
+      "콘텐츠 제작과 설치 시공을 한 업체가 수행 — 발주처가 업체를 나눠 협의하지 않아도 됨",
+      "시안 3종 1일 이내 — 영상 외주 통상 5일 대비 단축"
+    ],
+    "proof": {
+      "delivered": "대구 북구청 사이니지 미디어아트 3편 (「황홀한 정원」·「끝없는 흐름」·「하늘의 속삭임」)",
+      "references": [
+        "부산 서구청 송도 — 실내 대형 벽면 미디어파사드",
+        "대구학생문화센터 — 로비 LED 월 미디어아트",
+        "구미 썸머나잇 페스티벌 — 야외 건물 미디어파사드",
+        "구미코 외벽 LED — 대형 LED 패널 콘텐츠",
+        "경북교육청 구미코 전시 — 전시장 미디어파사드",
+        "구미코 로비 — 세로형 LED 사이니지",
+        "안동 문화플랫폼 모디684 — 야외 건물 미디어파사드"
+      ],
+      "referenceNote": "위 레퍼런스는 상상연필과 함께 수행한 현장 작업이며, 오늘은 봄날 명의의 납품 실적은 대구 북구청 사이니지 미디어아트 3편이다. 이 구분은 페이지에서 지우지 않는다.",
+      "leadTime": {
+        "draft": "시안 3종 1일 이내",
+        "outsourceBaseline": "영상 외주 통상 5일"
+      }
+    },
+    "identityStatement": "오늘은 봄날은 AI 미디어아트 기업이다. 미디어아트를 코드로 만들고, 고객이 원하는 결과물의 형태로 납품한다. 영상 파일이 필요하면 4K 영상으로, 매일 달라져야 하면 실시간으로 도는 코드로, 화면이 없으면 LED·빔프로젝터까지 설치해서 넘긴다.",
+    "method": {
+      "headline": "코드로 만들어서, 원하는 형태로 드립니다",
+      "why": "미디어아트를 영상 편집기가 아니라 코드로 만듭니다. 화면마다 비율·해상도·길이가 다른 사이니지 현장에서, 코드는 같은 작품을 현장 규격에 맞춰 다시 뽑아낼 수 있습니다. 영상 파일 하나로 끝나는 외주 제작과 다른 점이 여기 있습니다.",
+      "steps": [
+        "① 현장 규격 확인 — 화면 비율, 해상도, 재생 길이, 밝기 조건",
+        "② AI·코드로 시안 생성 — 시안 3종을 1일 이내 제시",
+        "③ 확정본을 현장 규격으로 출력 — 같은 코드에서 비율·해상도만 바꿔 재출력",
+        "④ 원하는 형태로 납품 — 4K 영상 파일 · 실시간 구동 코드 · 설치까지 포함한 화면"
+      ],
+      "deliverables": [
+        {
+          "id": "video",
+          "name": "4K 영상 파일",
+          "detail": "기존 재생 장비에 그대로 올리는 mp4. 화면 비율과 길이를 현장 규격에 맞춰 출력합니다."
+        },
+        {
+          "id": "live",
+          "name": "실시간 구동 코드",
+          "detail": "현장 플레이어에서 코드가 직접 돌아, 날씨·대기질·기관 데이터에 따라 화면이 매일 달라집니다."
+        },
+        {
+          "id": "turnkey",
+          "name": "화면까지 포함한 설치",
+          "detail": "LED 패널·전광판 설치 또는 빔프로젝터 미디어파사드 시공과 콘텐츠를 한 계약으로 납품합니다."
+        }
+      ],
+      "determinism": "작품 코드는 결정론적으로 짭니다. 같은 시드와 같은 캔버스에서는 언제나 같은 결과가 나오므로, 승인받은 시안과 최종 납품본이 어긋나지 않습니다."
+    }
+  },
+  "areaServed": [
+    "대구광역시",
+    "경상북도",
+    "부산광역시",
+    "경상남도",
+    "울산광역시"
+  ],
+  "areaServedNote": "대구·경북 우선, 부산·경남·울산까지 시공. 그 외 지역은 협의.",
+  "keywords": {
+    "primary": [
+      "대구 미디어파사드",
+      "대구 LED 패널 설치",
+      "LED전광판 설치",
+      "미디어파사드 콘텐츠 제작"
+    ],
+    "secondary": [
+      "미디어파사드 제작",
+      "미디어파사드 업체",
+      "빔프로젝터 미디어파사드",
+      "프로젝션 매핑 업체",
+      "대구 LED 전광판",
+      "LED 미디어월 설치",
+      "로비 LED 사이니지 설치",
+      "건물 외벽 LED 설치",
+      "대구 미디어아트 제작",
+      "전시장 미디어파사드",
+      "여성기업 미디어파사드",
+      "여성기업 LED 설치",
+      "공공기관 우선구매 여성기업",
+      "관공서 미디어파사드",
+      "문화재단 미디어파사드",
+      "데이터 미디어아트",
+      "AI 미디어아트",
+      "코드 기반 미디어아트",
+      "생성형 미디어아트 제작",
+      "LED 전광판 영상 제작",
+      "사이니지 콘텐츠 제작"
+    ],
+    "brand": [
+      "오늘은 봄날",
+      "publicbloom.art",
+      "박성실 오늘은 봄날"
+    ]
+  },
+  "terminology": {
+    "preferred": {
+      "미디어 파사드": "미디어파사드",
+      "미디어파샤드": "미디어파사드",
+      "LED 전광판": "LED 전광판",
+      "엘이디": "LED",
+      "빔 프로젝터": "빔프로젝터",
+      "프로젝션맵핑": "프로젝션 매핑"
+    },
+    "note": "검색엔진과 LLM은 표기 일관성을 신뢰 신호로 본다. 위 왼쪽 표기는 사이트에서 쓰지 않는다. 단 'LED전광판 설치'는 검색 질의어라 키워드 메타·본문 1회 노출은 허용한다.",
+    "forbidden": [
+      "국내 최고",
+      "1위",
+      "최저가",
+      "100% 보장",
+      "특정 기관 납품 실적을 proof.delivered 외로 확대해 쓰는 표현"
+    ]
+  },
+  "pages": [
+    {
+      "path": "/",
+      "file": "index.html",
+      "title": "대구 미디어파사드 · LED 전광판 설치 여성기업 | 오늘은 봄날",
+      "description": "오늘은 봄날은 미디어아트를 코드로 만드는 AI 미디어아트 기업이자 대구 여성기업입니다. 미디어파사드 콘텐츠 제작, LED 패널·LED 전광판 설치, 빔프로젝터 미디어파사드를 한 계약으로 진행합니다. 시안 3종 1일 이내, 공공기관 우선구매 대상. 대구·경북·부산 전역 시공.",
+      "h1": "오늘은 봄날",
+      "primaryKeywords": [
+        "대구 미디어파사드",
+        "대구 LED 패널 설치",
+        "LED전광판 설치",
+        "미디어파사드 콘텐츠 제작"
+      ],
+      "sitemap": {
+        "priority": "1.0",
+        "changefreq": "weekly"
+      }
+    },
+    {
+      "path": "/media-facade",
+      "file": "media-facade.html",
+      "title": "대구 미디어파사드 제작·설치 | 빔프로젝터 프로젝션 매핑 | 오늘은 봄날",
+      "description": "미디어파사드는 건물 외벽이나 전시장 벽면을 하나의 큰 화면으로 쓰는 방식입니다. 오늘은 봄날은 대구 여성기업으로 현장 실측, 빔프로젝터 배치, 프로젝션 매핑, 상영 운영까지 직접 합니다. 대구·경북·부산 전역 시공.",
+      "h1": "대구 미디어파사드 제작·설치",
+      "primaryKeywords": [
+        "대구 미디어파사드",
+        "빔프로젝터 미디어파사드",
+        "프로젝션 매핑"
+      ],
+      "sitemap": {
+        "priority": "0.9",
+        "changefreq": "monthly"
+      }
+    },
+    {
+      "path": "/led-install",
+      "file": "led-install.html",
+      "title": "대구 LED 패널 설치 · LED전광판 설치 | 여성기업 오늘은 봄날",
+      "description": "로비 LED 미디어월, 건물 외벽 LED 전광판, 세로형 사이니지를 사양 산정부터 공급·설치·배선까지 직접 시공합니다. 화면에 올릴 미디어아트도 같은 계약 안에서 제작합니다. 대구 여성기업, 공공기관 우선구매 대상.",
+      "h1": "대구 LED 패널 설치 · LED 전광판 설치",
+      "primaryKeywords": [
+        "대구 LED 패널 설치",
+        "LED전광판 설치",
+        "LED 미디어월 설치"
+      ],
+      "sitemap": {
+        "priority": "0.9",
+        "changefreq": "monthly"
+      }
+    },
+    {
+      "path": "/media-facade-content",
+      "file": "media-facade-content.html",
+      "title": "미디어파사드 콘텐츠 제작 | 시안 3종 1일 이내 | 오늘은 봄날",
+      "description": "미디어파사드 콘텐츠 제작은 화면 규격에 맞춘 영상·미디어아트를 만드는 일입니다. 오늘은 봄날은 시안 3종을 1일 이내에 내고, 공공데이터와 기관 보유 DB를 연결한 데이터 미디어아트까지 제작합니다. 대구 여성기업.",
+      "h1": "미디어파사드 콘텐츠 제작",
+      "primaryKeywords": [
+        "미디어파사드 콘텐츠 제작",
+        "대구 미디어아트 제작",
+        "데이터 미디어아트"
+      ],
+      "sitemap": {
+        "priority": "0.9",
+        "changefreq": "monthly"
+      }
+    },
+    {
+      "path": "/showcase",
+      "file": "showcase.html",
+      "title": "사이니지 종류별 화면 예시 | LED 전광판·로비 미디어월·미디어파사드 | 오늘은 봄날",
+      "description": "어떤 사이니지에 어떤 영상이 어울리는지 실제 화면으로 보여드립니다. 건물 외벽 LED 전광판, 로비 LED 미디어월, 세로형 사이니지, 빔프로젝터 미디어파사드 네 종류별 작품 예시. 대구 여성기업 오늘은 봄날.",
+      "h1": "사이니지 종류별 화면 예시",
+      "primaryKeywords": [
+        "LED 전광판 영상",
+        "로비 미디어월 콘텐츠",
+        "미디어파사드 콘텐츠 제작"
+      ],
+      "sitemap": {
+        "priority": "0.9",
+        "changefreq": "monthly"
+      }
+    },
+    {
+      "path": "/company",
+      "file": "company.html",
+      "title": "회사소개 | 대구 미디어파사드·LED 설치 여성기업 오늘은 봄날",
+      "description": "오늘은 봄날은 미디어아트 제작, 빠른 제작, LED 패널·전광판 설치, 빔프로젝터 미디어파사드를 함께 수행하는 대구 여성기업입니다. 여성기업·직접생산확인 등 4종 인증 보유. 대구·경북·부산 전역 작업.",
+      "h1": "여성기업 미디어파사드 오늘은 봄날",
+      "primaryKeywords": [
+        "대구 미디어파사드",
+        "여성기업 미디어파사드"
+      ],
+      "sitemap": {
+        "priority": "0.8",
+        "changefreq": "monthly"
+      }
+    },
+    {
+      "path": "/quote",
+      "file": "quote.html",
+      "title": "견적문의 | 대구 미디어파사드·LED 전광판 설치 | 오늘은 봄날",
+      "description": "미디어파사드 설치, LED 패널·전광판 설치, 미디어파사드 콘텐츠 제작 견적 문의. 설치 장소와 벽면·화면 크기만 알려주시면 실측 후 회계연도 기준 견적서를 보내드립니다. 대구 여성기업, 대구·경북·부산 전역.",
+      "h1": "견적문의",
+      "primaryKeywords": [
+        "미디어파사드 견적",
+        "LED 전광판 설치 견적"
+      ],
+      "sitemap": {
+        "priority": "0.8",
+        "changefreq": "monthly"
+      }
+    },
+    {
+      "path": "/data-media-art",
+      "file": "data-media-art.html",
+      "title": null,
+      "description": null,
+      "h1": null,
+      "primaryKeywords": [
+        "데이터 미디어아트"
+      ],
+      "sitemap": {
+        "priority": "0.7",
+        "changefreq": "monthly"
+      }
+    },
+    {
+      "path": "/landing",
+      "file": "landing.html",
+      "title": null,
+      "description": null,
+      "h1": null,
+      "primaryKeywords": [
+        "랜딩페이지 제작"
+      ],
+      "sitemap": {
+        "priority": "0.6",
+        "changefreq": "monthly"
+      }
+    }
+  ],
+  "artworkPages": [
+    {
+      "path": "/공기질을 통한 인터렉션",
+      "name": "대구 공기 정원",
+      "sitemap": {
+        "priority": "0.6",
+        "changefreq": "yearly"
+      }
+    },
+    {
+      "path": "/대구컬쳐",
+      "name": "대구의 문화 맥박",
+      "sitemap": {
+        "priority": "0.6",
+        "changefreq": "yearly"
+      }
+    },
+    {
+      "path": "/영화 (永花)",
+      "name": "영화(永花)",
+      "sitemap": {
+        "priority": "0.6",
+        "changefreq": "yearly"
+      }
+    }
+  ],
+  "noindex": [
+    "/admin",
+    "/client",
+    "/login",
+    "/api/",
+    "/mediabox",
+    "/player",
+    "/art-spring",
+    "/art-air",
+    "/art-typewall",
+    "/landing-references",
+    "/전화응대_핸드북",
+    "/works"
+  ],
+  "crawlers": {
+    "search": [
+      "Googlebot",
+      "Yeti",
+      "Daumoa",
+      "Bingbot"
+    ],
+    "ai": [
+      "GPTBot",
+      "OAI-SearchBot",
+      "ChatGPT-User",
+      "ClaudeBot",
+      "Claude-User",
+      "Claude-SearchBot",
+      "PerplexityBot",
+      "Perplexity-User",
+      "Google-Extended",
+      "Applebot-Extended"
+    ],
+    "note": "AI 검색 인용을 노리므로 위 봇은 전부 Allow 유지. 차단하지 않는다."
+  },
+  "signageTypes": [
+    {
+      "id": "outdoor-led",
+      "name": "건물 외벽 대형 LED 전광판",
+      "spec": "가로로 긴 띠형 화면 (예: 32:9)",
+      "content": "멀리서 스쳐 보는 화면. 글자보다 색과 움직임으로 읽히는 추상 영상이 맞습니다.",
+      "example": "EYEWALL — 눈의 벽",
+      "media": "live"
+    },
+    {
+      "id": "lobby-wall",
+      "name": "관공서·기업 로비 LED 미디어월",
+      "spec": "16:9 대형 화면 상시 재생",
+      "content": "머무는 사람이 보는 화면. 천천히 흐르는 컬러 무빙과 기관 데이터 시각화가 맞습니다.",
+      "example": "流帶 · 결결 (flowribbons)",
+      "media": "live"
+    },
+    {
+      "id": "vertical-signage",
+      "name": "세로형 LED 사이니지",
+      "spec": "9:16 세로 화면 · 안내 사이니지 겸용",
+      "content": "안내 화면과 번갈아 트는 짧은 작품. 세로 구도로 다시 출력합니다.",
+      "example": "구미코 로비 사이니지",
+      "media": "photo"
+    },
+    {
+      "id": "projection-facade",
+      "name": "건물 외벽 빔프로젝터 미디어파사드",
+      "spec": "벽면 형태에 맞춘 프로젝션 매핑",
+      "content": "야간 상영. 건물 창·기둥 위치를 피해 매핑한 대형 영상.",
+      "example": "안동 문화플랫폼 모디684",
+      "media": "photo"
+    }
+  ],
+  "artworks": [
+    {
+      "id": "eyewall",
+      "name": "EYEWALL — 눈의 벽",
+      "file": "works/eyewall.html",
+      "source": "works/_source/eyewall.html",
+      "ratio": "32:9 (3840×960)",
+      "signage": "outdoor-led",
+      "description": "얼굴을 타일로 분해해 벽 전체를 눈으로 채우는 초광폭 작품. 붉은 블록이 규칙적으로 끼어들며 시선을 잡습니다.",
+      "public": true
+    },
+    {
+      "id": "flowribbons",
+      "name": "流帶 · 결결",
+      "file": "works/flowribbons.html",
+      "source": "works/_source/flowribbons.html",
+      "ratio": "16:9 (4K) · 1:1 · 9:16 · 25:9 · 32:9 재출력 가능",
+      "signage": "lobby-wall",
+      "description": "curl 흐름장을 타는 컬러 리본. 같은 시드에서 항상 같은 결과가 나오고, 첫 프레임과 마지막 프레임이 이어져 끊김 없이 반복됩니다.",
+      "public": true
+    },
+    {
+      "id": "daegu-typewall",
+      "name": "DAEGU TYPE WALL",
+      "file": null,
+      "source": "works/_source/daegu-typewall.html",
+      "ratio": "가변",
+      "signage": "lobby-wall",
+      "description": "다국어 타이포 모션. 메인 페이지 로비 목업에 같은 계열 작품이 이미 라이브로 돌고 있어 공개본은 따로 올리지 않는다.",
+      "public": false
+    }
+  ],
+  "policies": {
+    "codeProtection": {
+      "rule": "작품 코드는 그대로 공개하지 않는다.",
+      "how": [
+        "원본(works/_source/)은 .vercelignore로 배포에서 제외한다. 깃에는 남고 웹에는 올라가지 않는다.",
+        "공개본(works/*.html)은 tools/build-works.mjs가 주석을 모두 걷어내고 스튜디오 조작 패널을 감춘 뒤 생성한다. 손으로 고치지 말고 원본을 고쳐서 다시 빌드한다.",
+        "공개본은 showcase 페이지에 iframe으로만 싣는다. 페이지 소스에는 감싸는 틀만 보인다.",
+        "works/ 전체에 X-Robots-Tag: noindex와 frame-ancestors 'self'를 건다. 검색에 잡히지 않고 외부 사이트에 퍼가지도 못한다.",
+        "works/protect.js가 우클릭·드래그·소스보기 단축키를 막고 저작권을 표기한다."
+      ],
+      "limit": "브라우저로 보낸 코드는 원리상 완전히 감출 수 없다. 위 조치는 손쉬운 반출을 막는 데까지다. 완전한 보호가 필요한 작품은 코드를 보내지 말고 4K 영상(mp4)만 납품한다."
+    }
+  }
+}
