@@ -11,6 +11,10 @@ Disallow: /client.html
 Disallow: /login
 Disallow: /login.html
 Disallow: /api/
+# 미디어박스 소개는 당분간 비공개입니다.
+Disallow: /mediabox
+Disallow: /mediabox.html
+
 # 현장 송출용 플레이어와 아트 페이지. 고객사 화면이지 홍보 페이지가 아닙니다.
 Disallow: /player
 Disallow: /player.html
