@@ -37,13 +37,18 @@
 | `noindex` `crawlers` | `robots.txt` (그룹마다 반복해서 적어야 한다) |
 | `artworks` | `/showcase`, index.html 새 작품 미리보기 |
 | `terminology` | 표기 통일 (검증기가 경고를 낸다) |
+| 전체 | `docs/오늘은봄날_회사소개서.pptx` (영업용 소개서, `tools/build-deck.js`가 생성) |
 
 ## 도구
 
 ```bash
 node tools/check-canon.mjs    # 캐논과 실제 파일이 어긋나는지 검사. 커밋 전에 항상.
 node tools/build-works.mjs    # works/_source/ 원본 → works/ 고객 공개본 다시 생성
+node tools/build-deck.js      # 캐논 → docs/오늘은봄날_회사소개서.pptx (영업용 13장)
 ```
+
+회사 정보·사업영역·인증·납품 형태가 바뀌면 **캐논을 고치고 소개서를 다시 뽑습니다.**
+홈페이지와 소개서가 다른 말을 하지 않게 하려고 같은 출처를 씁니다.
 
 `check-canon.mjs`가 보는 것:
 
