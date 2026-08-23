@@ -3983,45 +3983,42 @@ main,
 :root {
   --night-mix: clamp(0, calc((0.47 - var(--daylight)) * 400), 1);
 }
-.stage-masthead h1 {
+.home-hero h1 {
   color: color-mix(in srgb, #f4f7ff calc(var(--night-mix) * 100%), #101b33);
   transition: color 2.4s linear;
 }
-.stage-masthead .section-kicker {
+.home-hero .section-kicker {
   color: color-mix(in srgb, rgba(226, 234, 252, 0.92) calc(var(--night-mix) * 100%), rgba(16, 27, 51, 0.78));
   transition: color 2.4s linear;
 }
 /* .section p { color: currentColor } 가 특이도(0,1,1)로 이 문단들을 덮고 있었다.
    히어로를 앞에 붙여 특이도를 올린다. */
-.stage-hero .stage-tagline,
-.stage-hero .stage-lead {
+.home-hero .home-tagline {
   color: color-mix(in srgb, #e8eefc calc(var(--night-mix) * 100%), #3d4964);
   transition: color 2.4s linear;
 }
-.stage-tagline strong,
-.stage-lead strong {
-  color: color-mix(in srgb, #b8cbf2 calc(var(--night-mix) * 100%), #10367d);
+.home-hero .home-tagline strong {
+  color: color-mix(in srgb, #e8f0ff calc(var(--night-mix) * 100%), #10367d);
   transition: color 2.4s linear;
 }
 /* 하늘 배경 위에 글자가 얹히는 자리다. 낮에는 해와 빛무리가,
    밤에는 별이 글자 뒤로 지나가므로 밝기에 맞춰 도는 후광을 깔아
    어느 시간대에도 글자 획이 배경과 붙지 않게 한다. */
-.stage-hero {
+.home-hero {
   --hero-halo: color-mix(
     in srgb,
     rgba(5, 11, 26, 0.62) calc(var(--night-mix) * 100%),
     rgba(255, 255, 255, 0.78)
   );
 }
-.stage-masthead h1,
-.stage-hero .stage-tagline,
-.stage-hero .stage-lead,
-.stage-masthead .section-kicker {
+.home-hero h1,
+.home-hero .home-tagline,
+.home-hero .section-kicker {
   text-shadow: 0 0 2px var(--hero-halo), 0 1px 12px var(--hero-halo);
 }
 
 /* 실시간 정보 줄: 날짜·시각·대구 날씨·초미세먼지와 등급 */
-.stage-hero .live-status {
+.home-hero .live-status {
   display: inline-flex;
   align-items: center;
   gap: 9px;
@@ -4042,7 +4039,7 @@ main,
 }
 /* 등급을 색으로도 한 번 더 알린다. 색만으로 뜻을 전하지는 않고
    글자에 '좋음·보통·나쁨'이 그대로 적히므로 색은 보조 신호다. */
-.stage-hero .live-status::before {
+.home-hero .live-status::before {
   content: "";
   flex: none;
   width: 8px;
@@ -4051,12 +4048,12 @@ main,
   background: #38b26a;
   box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 16%, transparent);
 }
-.stage-hero .live-status[data-grade="보통"]::before { background: #d9a021; }
-.stage-hero .live-status[data-grade="나쁨"]::before { background: #e2622c; }
-.stage-hero .live-status[data-grade="매우 나쁨"]::before { background: #c8323c; }
+.home-hero .live-status[data-grade="보통"]::before { background: #d9a021; }
+.home-hero .live-status[data-grade="나쁨"]::before { background: #e2622c; }
+.home-hero .live-status[data-grade="매우 나쁨"]::before { background: #c8323c; }
 
 @media (max-width: 640px) {
-  .stage-hero .live-status {
+  .home-hero .live-status {
     display: flex;
     padding: 9px 14px;
     line-height: 1.5;
@@ -4064,7 +4061,7 @@ main,
 }
 
 /* 밤에는 테두리만 있는 보조 버튼도 하늘 위에서 읽혀야 한다 */
-.stage-hero .secondary-link {
+.home-hero .secondary-link {
   background: color-mix(in srgb, rgba(255, 255, 255, 0.1) calc(var(--night-mix) * 100%), #ffffff);
   color: color-mix(in srgb, #e8eeff calc(var(--night-mix) * 100%), #10367d);
   border-color: color-mix(in srgb, rgba(226, 234, 252, 0.5) calc(var(--night-mix) * 100%), rgba(16, 54, 125, 0.32));
@@ -4095,48 +4092,15 @@ main,
    본문만 어두운 하늘(밝기 0.01) 위였고, 꽃잎 캔버스 위 문구, 맞춤 제작
    설명, 패키지 카드 안, 문의, 인증 섹션은 밤에도 밝은 판(0.64~0.96)
    위였다. 그쪽까지 흰 글자로 바꾸면 흰 판에 흰 글자가 된다. */
-main #today-art > .section-head h2,
-main #media-box > .section-head h2,
-main #media-box .mediabox-hero-copy h3,
-main #service > .section-head h2,
-main #package > .section-head h2 {
-  color: var(--sky-ink);
-  text-shadow: 0 0 2px var(--sky-halo), 0 1px 10px var(--sky-halo);
-  transition: color var(--sky-ink-fade), text-shadow var(--sky-ink-fade);
-}
-
-main #today-art > .section-head .section-kicker,
-main #media-box > .section-head .section-kicker,
-main #media-box .mediabox-hero-copy span,
-main #service > .section-head .section-kicker,
-main #service .service-flow-note strong,
-main #package > .section-head .section-kicker {
-  color: var(--sky-ink-accent);
-  text-shadow: 0 0 2px var(--sky-halo), 0 1px 10px var(--sky-halo);
-  transition: color var(--sky-ink-fade), text-shadow var(--sky-ink-fade);
-}
-
-main #today-art > .section-head p:not(.section-kicker),
-main #media-box > .section-head p:not(.section-kicker),
-main #media-box .mediabox-hero-copy p,
-main #media-box .mediabox-spec li,
-main #service > .section-head p:not(.section-kicker),
-main #service .service-flow-note span,
-main #package > .section-head p:not(.section-kicker) {
-  color: var(--sky-ink-soft);
-  text-shadow: 0 0 2px var(--sky-halo), 0 1px 10px var(--sky-halo);
-  transition: color var(--sky-ink-fade), text-shadow var(--sky-ink-fade);
-}
-
 /* 점 목록의 말머리와 얇은 구분선도 어두운 하늘에서 사라지지 않게 */
-main .mediabox-spec li::before {
+main .offer-card ul li::marker {
   background: var(--sky-ink-accent);
   transition: background var(--sky-ink-fade);
 }
 
 /* 짙은 네이비 버튼은 밤하늘과 같은 색이라 윤곽이 사라진다.
    테두리 한 겹으로 버튼이라는 것만 남긴다. */
-main #package .package-actions .primary-link {
+main .home-hero .primary-link {
   border: 1px solid color-mix(in srgb, rgba(226, 234, 252, 0.42) calc(var(--night-mix) * 100%), transparent);
   transition: border-color var(--sky-ink-fade);
 }
@@ -4943,4 +4907,361 @@ main #package .package-actions .primary-link {
 
 #new-work .signage-copy h3 {
   color: #101b33;
+}
+
+/* ══════════════════════════════════════════════════════════
+   야간 대비 (파일 맨 끝에 두는 이유)
+
+   하늘 배경 위 글자색은 같은 요소를 가리키는 원래 규칙과 특이도가
+   같다. 예: .ref-card figcaption b 는 양쪽 다 (0,1,2)다. 같으면 뒤에
+   오는 쪽이 이기므로, 이 블록은 반드시 스타일시트 맨 끝에 있어야
+   한다. 중간에 두었더니 캡션이 밤에도 낮 색 그대로였다.
+
+   새 섹션을 추가할 때 하늘 위에 글자를 얹었다면 여기에 선택자를
+   더한다. 흰 카드 안쪽 글자는 넣지 않는다.
+   ══════════════════════════════════════════════════════════ */
+
+/* 어느 글자가 하늘 위에 맨살로 놓이는지는 브라우저에서 직접 재서 골랐다.
+   각 텍스트 요소의 조상을 거슬러 올라가며 배경을 가진 첫 요소를 찾고,
+   끝까지 없으면 하늘 위로 판정한 목록이다. 흰 카드 안쪽 글자는 카드가
+   자기 바탕을 가지므로 여기 넣지 않는다. 넣으면 흰 판에 흰 글자가 된다.
+   .ref-note도 자기 배경(--petal)이 있어 뺐다. */
+main > .section > .section-head h2 {
+  color: var(--sky-ink);
+  text-shadow: 0 0 2px var(--sky-halo), 0 1px 10px var(--sky-halo);
+  transition: color var(--sky-ink-fade), text-shadow var(--sky-ink-fade);
+}
+
+main > .section > .section-head > p:not(.section-kicker) {
+  color: var(--sky-ink-soft);
+  text-shadow: 0 0 2px var(--sky-halo), 0 1px 10px var(--sky-halo);
+  transition: color var(--sky-ink-fade), text-shadow var(--sky-ink-fade);
+}
+
+main > .section > .section-head .section-kicker {
+  color: var(--sky-ink-accent);
+  text-shadow: 0 0 2px var(--sky-halo), 0 1px 10px var(--sky-halo);
+  transition: color var(--sky-ink-fade), text-shadow var(--sky-ink-fade);
+}
+
+/* 사진 아래 캡션. 판 없이 하늘 위에 그대로 놓인다. */
+.ref-card figcaption b,
+.live-piece figcaption b {
+  color: var(--sky-ink);
+  text-shadow: 0 0 2px var(--sky-halo), 0 1px 8px var(--sky-halo);
+  transition: color var(--sky-ink-fade), text-shadow var(--sky-ink-fade);
+}
+
+.ref-card figcaption span,
+.live-piece figcaption span {
+  color: var(--sky-ink-accent);
+  text-shadow: 0 0 2px var(--sky-halo), 0 1px 8px var(--sky-halo);
+  transition: color var(--sky-ink-fade), text-shadow var(--sky-ink-fade);
+}
+
+.ref-card figcaption small,
+.live-piece figcaption small,
+.air-demo-buttons > span {
+  color: var(--sky-ink-soft);
+  opacity: 1;
+  text-shadow: 0 0 2px var(--sky-halo), 0 1px 8px var(--sky-halo);
+  transition: color var(--sky-ink-fade), text-shadow var(--sky-ink-fade);
+}
+
+/* ══════════════════════════════════════════════════════════
+   지금 돌아가는 화면 (상단 실시간 시계)
+
+   첫 화면에서 "이 회사는 지금 뭔가를 돌리고 있다"를 먼저 보여준다.
+   작품이 정사각 무대로 그려지므로 화면도 정사각으로 잡는다. 가로로
+   길게 잡았더니 양옆이 검게 비어 설계가 아니라 사고처럼 보였다.
+
+   작품은 iframe으로만 싣고, 화면 밖으로 나가면 꺼서 CPU를 놓아준다.
+   ══════════════════════════════════════════════════════════ */
+.live-clock {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 460px) minmax(0, 1fr);
+  gap: clamp(20px, 4vw, 48px);
+  align-items: center;
+  padding: clamp(88px, 11vw, 120px) clamp(18px, 5vw, 64px) clamp(8px, 2vw, 20px);
+}
+
+.live-clock-screen {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  background: #0d0d0d;
+  box-shadow:
+    0 24px 60px rgba(6, 10, 22, 0.42),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+.live-clock-screen iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+/* 화면을 캡처해 가도 어디서 나온 화면인지 남는다. */
+.live-clock-mark {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  z-index: 2;
+  color: rgba(255, 255, 255, 0.32);
+  font-size: 10.5px;
+  letter-spacing: 0.05em;
+  pointer-events: none;
+  user-select: none;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.live-clock-caption {
+  display: grid;
+  gap: 12px;
+  align-content: center;
+}
+
+.live-clock-now {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--sky-ink-accent);
+  text-shadow: 0 0 2px var(--sky-halo), 0 1px 8px var(--sky-halo);
+  transition: color var(--sky-ink-fade), text-shadow var(--sky-ink-fade);
+}
+
+.live-clock-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #35d07f;
+  box-shadow: 0 0 0 3px rgba(53, 208, 127, 0.18);
+}
+
+.live-clock-copy {
+  margin: 0;
+  max-width: 34ch;
+  font-size: clamp(15px, 1.8vw, 18px);
+  line-height: 1.65;
+  color: var(--sky-ink-soft);
+  text-shadow: 0 0 2px var(--sky-halo), 0 1px 8px var(--sky-halo);
+  transition: color var(--sky-ink-fade), text-shadow var(--sky-ink-fade);
+}
+
+.live-clock-copy b {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--sky-ink);
+  font-size: clamp(19px, 2.4vw, 26px);
+  font-weight: 850;
+  letter-spacing: -0.01em;
+}
+
+.live-clock + .home-hero {
+  padding-top: clamp(24px, 4vw, 44px);
+}
+
+@media (max-width: 820px) {
+  .live-clock {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    padding-top: clamp(84px, 20vw, 104px);
+  }
+  .live-clock-screen { max-width: 420px; margin: 0 auto; width: 100%; }
+  .live-clock-copy { max-width: none; }
+}
+
+}
+
+/* 화면 비율 추가: 띠형 21:9와 기둥형 1:4 */
+.signage-screen[data-ratio="21-9"] { aspect-ratio: 21 / 9; }
+.signage-screen[data-ratio="1-4"] { aspect-ratio: 1 / 4; max-width: 220px; }
+
+.signage-card.is-vertical .signage-screen[data-ratio="1-4"] { width: 100%; }
+
+/* 작품 화면에는 출처 표시를 얹는다. 화면을 캡처해 가도 어디서 나온
+   화면인지 함께 남는다. 코드 자체를 막을 수는 없으니 최소한 흔적은 남긴다. */
+.signage-screen[data-art]::after {
+  content: "오늘은 봄날 · publicbloom.art";
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  z-index: 2;
+  color: rgba(255, 255, 255, 0.32);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  pointer-events: none;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
+}
+
+/* 커스텀 제작 항목. step-list와 같은 카드지만 번호가 크게 붙는다. */
+.capability-list {
+  margin-top: clamp(28px, 4vw, 44px);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.capability-list li b {
+  display: block;
+  margin-bottom: 10px;
+  color: #0075c9;
+  font-size: 22px;
+  font-weight: 850;
+  letter-spacing: 0;
+}
+
+.capability-list li h3 {
+  margin: 0 0 10px;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+/* ── 작품 화면: 기본은 이미지, 누르면 실행 ─────────────────
+   라이브 캔버스를 여러 개 동시에 띄우면 페이지가 버벅인다.
+   포스터를 먼저 보여주고 실제 코드는 눌렀을 때만 돈다. */
+.art-play {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  z-index: 3;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  background: rgba(9, 14, 28, 0.62);
+  backdrop-filter: blur(8px);
+  color: #f2f5fb;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.art-play::before {
+  content: "";
+  width: 0;
+  height: 0;
+  border-left: 7px solid currentColor;
+  border-top: 4.5px solid transparent;
+  border-bottom: 4.5px solid transparent;
+}
+
+.signage-screen.is-live .art-play::before,
+.live-clock-screen.is-live .art-play::before {
+  border: 0;
+  width: 8px;
+  height: 8px;
+  background: currentColor;
+  border-radius: 1px;
+}
+
+.art-play:hover,
+.art-play:focus-visible {
+  background: rgba(9, 14, 28, 0.82);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* 실행되면 포스터를 덮는다. 이미지를 지우지 않는 것은 다시 껐을 때
+   빈 화면이 보이지 않게 하기 위해서다. */
+.signage-screen.is-live iframe,
+.live-clock-screen.is-live iframe {
+  z-index: 1;
+}
+
+.live-clock-screen img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── 사진 스트립 ────────────────────────────────────────────
+   서비스 페이지가 글만 3천 자였다. 담당자는 글보다 화면을 먼저 본다.
+   실제 현장 사진과 우리 작품을 넣어 눈으로 먼저 이해하게 한다. */
+.photo-strip {
+  display: grid;
+  gap: clamp(12px, 1.6vw, 20px);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.photo-strip figure {
+  margin: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #0d1220;
+}
+
+.photo-strip img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.photo-strip figcaption {
+  padding: 10px 12px 12px;
+  color: #cfd6e4;
+  font-size: 12.5px;
+  line-height: 1.55;
+  background: #101b33;
+}
+
+.photo-strip figcaption b {
+  display: block;
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 800;
+  margin-bottom: 2px;
+}
+
+/* 세로 작품은 비율을 따로 준다 */
+.photo-strip figure.is-tall img { aspect-ratio: 1 / 2.4; }
+
+/* 실제 사이니지 목업에 우리 작품을 얹은 사진.
+   말로 열 줄 쓰는 것보다 이 한 장이 빠르다. */
+.mock-shot {
+  max-width: 1100px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #0d1220;
+  box-shadow: 0 22px 56px rgba(9, 14, 28, 0.26);
+}
+
+.mock-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.mock-shot figcaption {
+  padding: 12px 16px 14px;
+  background: #101b33;
+  color: #cfd6e4;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.mock-shot figcaption b {
+  color: #fff;
+  font-weight: 800;
 }

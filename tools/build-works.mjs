@@ -103,6 +103,9 @@ const SHOWCASE_HEAD = `
   #stage canvas { width: 100% !important; height: 100% !important;
                   max-width: 100% !important; max-height: 100% !important;
                   object-fit: contain; box-shadow: none !important; }
+  /* #stage 없이 캔버스만 있는 작품(예: 세로 작품)도 틀에 맞춘다. */
+  body > canvas { max-width: 100% !important; max-height: 100% !important;
+                  width: auto; height: auto; object-fit: contain; }
   body { -webkit-user-select: none; user-select: none; }
 </style>
 <script src="./protect.js" defer></script>

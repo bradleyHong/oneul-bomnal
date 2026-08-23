@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- canon/canon.json 기준으로 작성한다. 사업영역이 바뀌면 캐논을 먼저 고친다. -->
+<!-- canon/canon.json에서 생성한다. node tools/build-meta.mjs -->
 <rss version="2.0">
   <channel>
     <title>오늘은 봄날 | 대구 미디어파사드 · LED 전광판 설치 여성기업</title>
     <link>https://publicbloom.art/</link>
-    <description>미디어아트를 AI와 코드로 직접 만들고, 빠르게 제작하고, LED 패널·전광판 설치와 빔프로젝터 미디어파사드까지 한 계약으로 끝내는 대구 여성기업입니다.</description>
+    <description>미디어아트를 AI와 코드로 직접 만들고, LED 패널·전광판 설치와 빔프로젝터 미디어파사드까지 한 계약으로 끝내는 대구 여성기업입니다.</description>
     <language>ko-KR</language>
     <lastBuildDate>Sun, 23 Aug 2026 09:00:00 +0900</lastBuildDate>
     <item>
@@ -45,7 +45,7 @@
       <link>https://publicbloom.art/showcase</link>
       <guid>https://publicbloom.art/showcase</guid>
       <pubDate>Sun, 23 Aug 2026 09:00:00 +0900</pubDate>
-      <description>건물 외벽 대형 LED 전광판, 관공서 로비 LED 미디어월, 세로형 LED 사이니지, 건물 외벽 빔프로젝터 미디어파사드. 화면 종류마다 어떤 영상이 맞는지 실제로 돌아가는 화면으로 보여드립니다.</description>
+      <description>건물 외벽 대형 LED 전광판, 로비 LED 미디어월, 세로형 사이니지, 기둥형 화면, 빔프로젝터 미디어파사드. 화면 종류마다 어떤 영상이 맞는지 실제로 돌아가는 화면으로 보여드립니다.</description>
       <category>LED 전광판 영상</category>
       <category>로비 미디어월 콘텐츠</category>
       <category>사이니지 콘텐츠 제작</category>

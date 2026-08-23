@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- canon/canon.json에서 생성한다. 페이지를 더하거나 뺄 때는 캐논을 먼저 고치고
-     node tools/check-canon.mjs로 이 파일과 어긋나지 않는지 확인한다.
+<!-- canon/canon.json에서 생성한다. node tools/build-meta.mjs
      vercel.json의 cleanUrls:true 때문에 .html 주소는 308 리다이렉트를 탄다.
-     색인 대상은 확장자 없는 정규 주소로만 제출한다.
-     rss.xml·llms.txt는 robots.txt의 Sitemap 지시자와 Allow로 안내하므로 여기서 뺀다. -->
+     색인 대상은 확장자 없는 정규 주소로만 제출한다. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://publicbloom.art/</loc>
@@ -72,7 +70,7 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://publicbloom.art/%EC%98%81%ED%99%94%20%28%E6%B0%B8%E8%8A%B1%29</loc>
+    <loc>https://publicbloom.art/%EC%98%81%ED%99%94%20(%E6%B0%B8%E8%8A%B1)</loc>
     <lastmod>2026-08-23</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
