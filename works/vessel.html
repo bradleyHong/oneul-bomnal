@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<title>靑流 · 담김 II — vessel physics</title>
+<style>
+  html,body{margin:0;background:#04060f;overflow:hidden;height:100%}
+  body{display:flex;align-items:center;justify-content:center}
+  canvas{display:block;max-width:100vw;max-height:100vh}
+  body.capture{display:block}
+  body.capture canvas{max-width:none;max-height:none}
+</style>
+
+<meta name="robots" content="noindex, nofollow" />
+<meta name="copyright" content="© 오늘은 봄날 (publicbloom.art). 무단 복제·배포·재사용 금지." />
+<style id="showcase-mode">
+  /* 고객 공개용. 스튜디오 조작 패널은 감추고 화면만 남긴다. */
+  #ui, #toggle, #dock, #drop, #file, #stat, #hint { display: none !important; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #000; }
+  #stage { position: fixed !important; inset: 0 !important; height: 100% !important;
+           display: flex !important; align-items: center; justify-content: center;
+           padding: 0 !important; }
+  #stage canvas { width: 100% !important; height: 100% !important;
+                  max-width: 100% !important; max-height: 100% !important;
+                  object-fit: contain; box-shadow: none !important; }
+  /* #stage 없이 캔버스만 있는 작품(예: 세로 작품)도 틀에 맞춘다. */
+  body > canvas { max-width: 100% !important; max-height: 100% !important;
+                  width: auto; height: auto; object-fit: contain; }
+  body { -webkit-user-select: none; user-select: none; }
+</style>
+<script src="./protect.js" defer></script>
+</head><body>
+<canvas id="c"></canvas>
+<script>
+
+const q   = new URLSearchParams(location.search);
+const CAP = !!q.get('capture');
+if (CAP) document.body.classList.add('capture');
+
+const W    = +q.get('w')    || (CAP ? 640 : 340);
+const H    = +q.get('h')    || (CAP ? 3840 : 2040);
+const FPS  = +q.get('fps')  || 30;
+const DUR  = +q.get('dur')  || 24;
+const SEED = +q.get('seed') || 3906128;
+const TOTAL = FPS*DUR, TAU = Math.PI*2;
+
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;
+  let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;
+  return((t^t>>>14)>>>0)/4294967296}}
+const rand = mulberry32(SEED);
+const ri=(a,b)=>a+Math.floor(rand()*(b-a+1));
+const clamp=(x,a,b)=>x<a?a:x>b?b:x;
+function sstep(a,b,x){x=clamp((x-a)/(b-a),0,1);return x*x*(3-2*x);}
+
+const BG=[4,7,18], DEEP=[8,20,96], MID=[27,47,240], SHAL=[61,120,255],
+      RIM=[111,232,255], FOAM=[245,242,234];
+
+const N = 192;
+const SUB = 64;
+const G = 9.81;
+const H_REAL = 4.0;
+const W_REAL = H_REAL * W / H;
+const DX = W_REAL/N;
+const DTF = 1/FPS, DT = DTF/SUB;
+
+const HCAP = W_REAL/Math.PI;
+const SIGMA = 0.0728, RHO = 1000;
+const NODIFF=!!q.get('nodiff'), NOIMP=!!q.get('noimp'), NOWAVE=!!q.get('nowave');
+
+const h   = new Float32Array(N);
+const u   = new Float32Array(N+1);
+const FLX = new Float32Array(N+1);
+const HF  = new Float32Array(TOTAL*N);
+const FRAMES = new Array(TOTAL);
+
+const NDROP = 110;
+const SCHED = [];
+for(let i=0;i<NDROP;i++){
+  SCHED.push({
+    t : 0.40 + 12.6*(i/NDROP) + (rand()-0.5)*0.16,
+    x : 0.12 + 0.76*rand(),
+    r : (0.075 + rand()*0.052)*W_REAL,
+    ph: rand()*TAU
+  });
+}
+SCHED.sort((a,b)=>a.t-b.t);
+let sIdx = 0;
+
+let P = [], PLU = [];
+let nextId = 0;
+
+function surfaceM(u){
+  const i = clamp(Math.floor(u*N),0,N-1);
+  return H_REAL - h[i];
+}
+function gauss(xc, sig, fn){
+  const i0 = clamp(Math.floor((xc-3*sig)/DX),0,N-1);
+  const i1 = clamp(Math.ceil ((xc+3*sig)/DX),0,N-1);
+  let sum=0; const wgt=[];
+  for(let i=i0;i<=i1;i++){
+    const d=(i+0.5)*DX-xc, g=Math.exp(-0.5*(d/sig)*(d/sig));
+    wgt.push(g); sum+=g*DX;
+  }
+  if(sum<=0) return;
+  for(let i=i0,k=0;i<=i1;i++,k++) fn(i, wgt[k]/sum);
+}
+function addVolume(xc, area, sig){
+  gauss(xc, sig, (i,wn)=>{ h[i] += area*wn; });
+}
+function gaussPeak(xc, sig, fn){
+  const i0=clamp(Math.floor((xc-3*sig)/DX),0,N-1);
+  const i1=clamp(Math.ceil ((xc+3*sig)/DX),0,N-1);
+  for(let i=i0;i<=i1;i++){
+    const d=(i+0.5)*DX-xc;
+    fn(i, Math.exp(-0.5*(d/sig)*(d/sig)));
+  }
+}
+
+function addImpulse(xc, vimp, r){
+  if(NOIMP) return;
+  const ic=clamp(Math.floor(xc/DX),0,N-1), hl=h[ic];
+  const shallow=Math.min(1, hl/(3.0*r));
+  const dv=Math.min(vimp*0.42, 0.90*Math.sqrt(G*Math.max(Math.min(hl,HCAP),0.01)))*shallow;
+  if(dv<=0) return;
+  const sig=r*1.8;
+  for(let i=1;i<N;i++){
+    const d=i*DX-xc;
+    u[i] += Math.sign(d)*dv*Math.exp(-0.5*(d/sig)*(d/sig));
+  }
+}
+
+const T_DRAIN = 16.4;
+const ORIFICE = 0.095;
+let drainRate = 0;
+
+function step(t){
+
+  if(!NOWAVE){
+    for(let i=1;i<N;i++){
+      u[i] -= G*(h[i]-h[i-1])/DX*DT;
+      u[i] *= (1 - 1.9*DT);
+    }
+    u[0]=0; u[N]=0;
+    for(let i=1;i<N;i++){ const hf=(u[i]>0?h[i-1]:h[i]); FLX[i]=u[i]*Math.min(hf,HCAP); }
+    FLX[0]=0; FLX[N]=0;
+
+    for(let i=0;i<N;i++){
+      const outR = FLX[i+1]>0 ? FLX[i+1] : 0;
+      const outL = FLX[i]  <0 ? -FLX[i]  : 0;
+      const tot=(outR+outL)*DT/DX;
+      if(tot>h[i] && tot>0){
+        const k=h[i]/tot;
+        if(FLX[i+1]>0) FLX[i+1]*=k;
+        if(FLX[i]  <0) FLX[i]  *=k;
+      }
+    }
+    for(let i=0;i<N;i++) h[i] -= (FLX[i+1]-FLX[i])/DX*DT;
+  }
+
+  let deficit=0;
+  for(let i=0;i<N;i++) if(h[i]<0){ deficit-=h[i]; h[i]=0; }
+  if(deficit>0){ const add=deficit/N; for(let i=0;i<N;i++) h[i]+=add; }
+
+  if(!NODIFF){
+    const D=1.2e-3;
+    for(let i=1;i<N;i++) FLX[i] = -D*(h[i]-h[i-1])/DX;
+    FLX[0]=0; FLX[N]=0;
+    for(let i=0;i<N;i++) h[i] -= (FLX[i+1]-FLX[i])/DX*DT;
+  }
+
+  if(t>T_DRAIN){
+    let hm=0; for(let i=0;i<N;i++) hm+=h[i]; hm/=N;
+    drainRate = ORIFICE*Math.sqrt(2*G*Math.max(hm,0));
+    const dh = drainRate/W_REAL*DT;
+
+    let wsum=0; const wv=new Float32Array(N);
+    for(let i=0;i<N;i++){
+      const d=((i+0.5)*DX - W_REAL*0.5)/(W_REAL*0.16);
+      wv[i]=1+1.8*Math.exp(-0.5*d*d); wsum+=wv[i];
+    }
+    for(let i=0;i<N;i++) h[i]=Math.max(0, h[i]-dh*N*wv[i]/wsum);
+  } else drainRate = 0;
+
+  if(t>21.4){
+    const k = 1 - 5.5*DT*sstep(21.4,23.2,t);
+    for(let i=0;i<N;i++){ h[i]*=k; u[i]*=k; }
+    if(t>23.3){ h.fill(0); u.fill(0); }
+  }
+
+  while(sIdx<SCHED.length && SCHED[sIdx].t<=t){
+    const s=SCHED[sIdx++];
+    P.push({k:0, id:nextId++, x:s.x*W_REAL, y:-s.r*1.5, vy:0, r:s.r,
+            A:Math.PI*s.r*s.r, t0:t, ph:s.ph,
+            w:Math.sqrt(8*SIGMA/(RHO*s.r*s.r*s.r))});
+  }
+
+  const keep=[];
+  for(const p of P){
+    if(p.k===2){
+      p.vy += G*DT;
+      p.tip += p.vy*DT;
+      const base = surfaceM(p.x/W_REAL);
+      if(p.tip >= base){
+        addVolume(p.x, p.A, p.r*2.2);
+        addImpulse(p.x, Math.abs(p.vy)*0.5, p.r);
+        continue;
+      }
+      keep.push(p); continue;
+    }
+
+    p.vy += (G - 0.020*p.vy*Math.abs(p.vy))*DT;
+    p.y  += p.vy*DT;
+    const sy = surfaceM(clamp(p.x/W_REAL,0,0.999));
+    if(p.y + p.r*0.6 >= sy){
+      const vi = p.vy;
+      if(p.k===0){
+
+        const jetA = 0.30*p.A, crownA = 0.16*p.A;
+        addVolume(p.x, p.A - jetA - crownA, p.r*2.3);
+        addImpulse(p.x, vi, p.r);
+
+        const nc = ri(4,7), ca = crownA/nc;
+        for(let c=0;c<nc;c++){
+          const ang = (0.62+rand()*0.40)*(rand()<0.5?-1:1);
+          const sp  = vi*(0.28+rand()*0.34);
+          const rr  = Math.sqrt(ca/Math.PI);
+          P.push({k:1,id:nextId++,x:p.x+Math.sin(ang)*p.r*0.9,y:sy-p.r*0.4,
+                  vx:Math.sin(ang)*sp, vy:-Math.abs(Math.cos(ang))*sp,
+                  r:rr, A:ca, t0:t, ph:rand()*TAU,
+                  w:Math.sqrt(8*SIGMA/(RHO*rr*rr*rr))});
+        }
+
+        P.push({k:2,id:nextId++,x:p.x,tip:sy,vy:-vi*0.23,
+                A:jetA, r:p.r*0.52, t0:t});
+
+        const np = ri(3,5);
+        for(let c=0;c<np;c++)
+          PLU.push({x:p.x+(rand()-0.5)*p.r*1.4, y:sy+p.r*0.5,
+                    vy:vi*(0.16+rand()*0.16), r:p.r*(0.5+rand()*0.5),
+                    t0:t, life:0.9+rand()*0.8});
+      } else {
+        addVolume(p.x, p.A, p.r*2.4);
+      }
+      continue;
+    }
+    if(p.k===1){ p.x += p.vx*DT; if(p.x<0||p.x>W_REAL){ addVolume(clamp(p.x,0,W_REAL),p.A,p.r*2); continue; } }
+    keep.push(p);
+  }
+  P = keep;
+
+  PLU = PLU.filter(pl=>{
+    const age = t-pl.t0;
+    if(age>pl.life) return false;
+    pl.vy = pl.vy*(1-1.9*DT) - 0.32*DT;
+    pl.y += pl.vy*DT;
+    pl.r += 0.055*DT*W_REAL;
+    return pl.y < H_REAL;
+  });
+}
+
+for(let f=0; f<TOTAL; f++){
+  for(let s=0;s<SUB;s++) step((f*SUB+s)*DT);
+  HF.set(h, f*N);
+  const rec = {p:[], pl:[]};
+  const t = f*DTF;
+  for(const p of P){
+    if(p.k===2){
+      rec.p.push({k:2, x:p.x, tip:p.tip, base:surfaceM(p.x/W_REAL), r:p.r, v:p.vy});
+    } else {
+      const age=t-p.t0;
+      const osc=Math.cos(p.w*age+p.ph)*Math.exp(-age*0.7)*0.17;
+      rec.p.push({k:p.k, x:p.x, y:p.y, rx:p.r*(1-osc), ry:p.r*(1+osc), v:p.vy});
+    }
+  }
+  for(const pl of PLU){
+    const age=t-pl.t0;
+    rec.pl.push({x:pl.x, y:pl.y, r:pl.r, a:(1-age/pl.life)*(1-age/pl.life)});
+  }
+  FRAMES[f]=rec;
+}
+
+const cv=document.getElementById('c'); cv.width=W; cv.height=H;
+const ctx=cv.getContext('2d',{alpha:false});
+
+const FW = +q.get('fw') || 320;
+const FH = Math.round(FW*H/W);
+const M2PX = FW/W_REAL;
+
+const off=document.createElement('canvas'); off.width=FW; off.height=FH;
+const octx=off.getContext('2d',{alpha:false,willReadFrequently:true});
+const out=document.createElement('canvas'); out.width=FW; out.height=FH;
+const xctx=out.getContext('2d',{alpha:false});
+const oimg=xctx.createImageData(FW,FH); const OD=oimg.data;
+const BLUR=Math.max(2,Math.round(FW*0.010));
+
+function ballR(cx,cy,rx,ry){
+  if(rx<0.5) return;
+  octx.save(); octx.translate(cx,cy); octx.scale(1, ry/rx);
+  const g=octx.createRadialGradient(0,0,0,0,0,rx);
+  g.addColorStop(0,'rgba(255,0,0,1)');
+  g.addColorStop(0.42,'rgba(255,0,0,0.62)');
+  g.addColorStop(1,'rgba(255,0,0,0)');
+  octx.fillStyle=g; octx.beginPath(); octx.arc(0,0,rx,0,TAU); octx.fill();
+  octx.restore();
+}
+function ballG(cx,cy,r,a){
+  if(r<0.4) return;
+  const g=octx.createRadialGradient(cx,cy,0,cx,cy,r);
+  g.addColorStop(0,'rgba(0,255,0,'+a+')');
+  g.addColorStop(1,'rgba(0,255,0,0)');
+  octx.fillStyle=g; octx.beginPath(); octx.arc(cx,cy,r,0,TAU); octx.fill();
+}
+
+function makeNoise(gx,gy){const g=new Float32Array(gx*gy);
+  for(let i=0;i<g.length;i++)g[i]=rand();return{gx,gy,g};}
+function sampleN(Nn,x,y){
+  const fx=x*Nn.gx, fy=y*Nn.gy;
+  let x0=Math.floor(fx),y0=Math.floor(fy);
+  const tx=fx-x0,ty=fy-y0, sx=tx*tx*(3-2*tx), sy=ty*ty*(3-2*ty);
+  x0=((x0%Nn.gx)+Nn.gx)%Nn.gx; y0=((y0%Nn.gy)+Nn.gy)%Nn.gy;
+  const x1=(x0+1)%Nn.gx,y1=(y0+1)%Nn.gy,g=Nn.g,r0=y0*Nn.gx,r1=y1*Nn.gx;
+  const a=g[r0+x0],b=g[r0+x1],c=g[r1+x0],e=g[r1+x1];
+  const p=a+(b-a)*sx; return p+((c+(e-c)*sx)-p)*sy;
+}
+const CN1=makeNoise(9,18), CN2=makeNoise(18,36);
+
+window.renderFrame=function(n){
+  const f=((n%TOTAL)+TOTAL)%TOTAL;
+  const t=f/TOTAL;
+  const rec=FRAMES[f];
+
+  octx.filter='none'; octx.globalCompositeOperation='source-over';
+  octx.fillStyle='#000'; octx.fillRect(0,0,FW,FH);
+  octx.filter=`blur(${BLUR}px)`;
+  octx.globalCompositeOperation='lighter';
+
+  let hmax=0;
+  for(let i=0;i<N;i++) if(HF[f*N+i]>hmax) hmax=HF[f*N+i];
+  if(hmax>0.0015){
+    octx.fillStyle='rgba(255,0,0,1)';
+    octx.beginPath();
+    octx.moveTo(-BLUR*3, FH+BLUR*3);
+    for(let i=0;i<N;i++){
+      const y=(H_REAL-HF[f*N+i])/H_REAL*FH;
+      octx.lineTo((i+0.5)/N*FW, y);
+    }
+    octx.lineTo(FW+BLUR*3, FH+BLUR*3);
+    octx.closePath(); octx.fill();
+  }
+
+  for(const p of rec.p){
+    if(p.k===2){
+      const x=p.x*M2PX, y0=p.base/H_REAL*FH, y1=p.tip/H_REAL*FH;
+      const len=y0-y1; if(len<=1) continue;
+      const SEG=Math.max(4, Math.min(22, Math.ceil(len/(p.r*M2PX*0.5))));
+      for(let s=0;s<=SEG;s++){
+        const k=s/SEG;
+        ballR(x, y0-len*k, p.r*M2PX*(1-0.72*k), p.r*M2PX*(1-0.72*k));
+      }
+      ballG(x, y1, p.r*M2PX*1.5, 0.5);
+      continue;
+    }
+    const x=p.x*M2PX, y=p.y/H_REAL*FH;
+    const rx=p.rx*M2PX, ry=p.ry*M2PX;
+
+    const stretch=Math.min(15, Math.abs(p.v)*0.62)*rx;
+    if(stretch>rx*0.6){
+      const SEG=Math.max(6, Math.ceil(stretch/(rx*0.30)));
+      for(let s=1;s<=SEG;s++){
+        const k=s/SEG;
+        const bead=0.93+0.07*Math.cos(k*TAU*3.4);
+        const tp=1-0.93*Math.pow(k,1.35);
+        ballR(x, y-stretch*k, rx*tp*bead, ry*tp*bead);
+      }
+
+      ballG(x, y-stretch*0.42, Math.max(rx*0.55, stretch*0.28), 0.13);
+    }
+    ballR(x,y,rx,ry);
+
+    ballG(x-rx*0.34, y-ry*0.40, rx*0.46, 0.85);
+    ballG(x, y, rx*1.7, 0.10);
+  }
+
+  for(const pl of rec.pl)
+    ballG(pl.x*M2PX, pl.y/H_REAL*FH, pl.r*M2PX*1.9, 0.30*pl.a);
+
+  octx.filter='none'; octx.globalCompositeOperation='source-over';
+
+  const src=octx.getImageData(0,0,FW,FH).data;
+  const TH=0.46, nsh=(1/3)*t;
+  for(let py=0;py<FH;py++){
+    const w=py/FH, row=py*FW*4;
+    for(let px=0;px<FW;px++){
+      const o=row+px*4;
+      const d=src[o]/255, li=src[o+1]/255;
+      const e=d-TH;
+      let R,G_,B;
+      if(e<-0.09){
+        const gl=clamp(d/TH,0,1), gl2=gl*gl*gl;
+        R=BG[0]+(40-BG[0])*gl2; G_=BG[1]+(90-BG[1])*gl2; B=BG[2]+(235-BG[2])*gl2;
+        const lo=li*0.35;
+        R+=(RIM[0]-R)*lo; G_+=(RIM[1]-G_)*lo; B+=(RIM[2]-B)*lo;
+      } else {
+        const a=sstep(-0.09,0.015,e);
+        const inr=clamp((e-0.015)/0.42,0,1);
+        const hi=HF[f*N+clamp(Math.floor(px/FW*N),0,N-1)];
+        const surfW=1-hi/H_REAL;
+        const dep=clamp((w-surfW)/Math.max(hi/H_REAL,0.02),0,1);
+        let cr=SHAL[0]+(MID[0]-SHAL[0])*inr, cg=SHAL[1]+(MID[1]-SHAL[1])*inr, cb=SHAL[2]+(MID[2]-SHAL[2])*inr;
+        const dk=dep*dep*0.55+dep*0.45;
+        cr+=(DEEP[0]-cr)*dk; cg+=(DEEP[1]-cg)*dk; cb+=(DEEP[2]-cb)*dk;
+        const c1=sampleN(CN1,px/FW,w-nsh), c2=sampleN(CN2,px/FW+0.27,w-nsh*2);
+        const cm=c1*0.62+c2*0.38;
+        const ca=(sstep(0.50,0.74,cm)-0.55*sstep(0.74,0.94,cm))*inr*(0.30+0.70*(1-dep));
+        cr+=(RIM[0]-cr)*ca*0.80; cg+=(RIM[1]-cg)*ca*0.80; cb+=(RIM[2]-cb)*ca*0.80;
+        const sl=Math.exp(-dep*9.0)*inr;
+        cr+=(FOAM[0]-cr)*sl*0.40; cg+=(FOAM[1]-cg)*sl*0.40; cb+=(FOAM[2]-cb)*sl*0.40;
+        const rv=Math.exp(-(e/0.052)*(e/0.052));
+        cr+=(RIM[0]-cr)*rv*0.85; cg+=(RIM[1]-cg)*rv*0.85; cb+=(RIM[2]-cb)*rv*0.85;
+        const lk=clamp(li,0,1);
+        cr+=(FOAM[0]-cr)*lk*0.80; cg+=(FOAM[1]-cg)*lk*0.80; cb+=(FOAM[2]-cb)*lk*0.80;
+        R=BG[0]+(cr-BG[0])*a; G_=BG[1]+(cg-BG[1])*a; B=BG[2]+(cb-BG[2])*a;
+      }
+      OD[o]=R; OD[o+1]=G_; OD[o+2]=B; OD[o+3]=255;
+    }
+  }
+  xctx.putImageData(oimg,0,0);
+  ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
+  ctx.drawImage(out,0,0,FW,FH,0,0,W,H);
+};
+window.__READY__=true;
+if(!CAP){ let f=0; (function loop(){ renderFrame(f++); requestAnimationFrame(loop); })(); }
+</script></body></html>

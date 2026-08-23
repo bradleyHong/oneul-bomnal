@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>오늘은 봄날 · 공기질</title>
+    <link rel="preconnect" href="https://air-quality-api.open-meteo.com" />
+    <style>
+      html, body { margin: 0; height: 100%; overflow: hidden; background: #0d1017; }
+      body { cursor: none; }
+      .stage { position: fixed; inset: 0; }
+      #airArtCanvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+      /* 화면 밖 상태 표시. 엔진이 캔버스가 작을 때 문구를 여기에 맡긴다. */
+      .caption {
+        position: absolute;
+        left: 4vw;
+        bottom: 5vh;
+        max-width: 60ch;
+        font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+        color: rgba(255, 255, 255, 0.88);
+        text-shadow: 0 1px 12px rgba(0, 0, 0, 0.5);
+        pointer-events: none;
+      }
+      .caption strong { display: block; font-size: 3.4vw; font-weight: 800; letter-spacing: -0.02em; }
+      .caption small { display: block; margin-top: 0.5em; font-size: 1.4vw; opacity: 0.82; line-height: 1.6; }
+    </style>
+  </head>
+  <body>
+    <main class="stage">
+      <canvas id="airArtCanvas"></canvas>
+      <div class="caption">
+        <strong data-air-grade>불러오는 중</strong>
+        <small data-air-detail>대구 공기질 공공 API를 불러오는 중입니다.</small>
+      </div>
+    </main>
+
+    <script src="./air-art.js?v=20260803-player"></script>
+    <script src="./player-beat.js?v=20260803-player"></script>
+  </body>
+</html>

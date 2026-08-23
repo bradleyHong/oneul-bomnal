@@ -270,6 +270,7 @@
   function renderAll() {
     renderSummary();
     renderSites();
+    renderPlaySites();
     renderLogs();
     $("#storeMeta").textContent = db.updatedAt ? `마지막 저장 ${fmtDateTime(db.updatedAt)}` : "저장된 내용 없음";
   }
@@ -521,6 +522,147 @@
     });
   }
 
+  /* ---------------- 송출 설정 ---------------- */
+  /* 현장별 재생 목록·운영시간을 정해 미디어박스에 넣을 주소를 만듭니다.
+     플레이어는 이 주소의 물음표 뒤 설정만 읽고 동작하므로,
+     현장 장비에는 주소 하나만 넣어두면 됩니다. */
+
+  const PLAYER_PATH = "/player";
+
+  function playerOrigin() {
+    // 로컬에서 열어본 경우에도 현장에 줄 주소는 실제 도메인이어야 한다.
+    return location.protocol.startsWith("http") && location.hostname !== "localhost"
+      ? location.origin
+      : "https://publicbloom.art";
+  }
+
+  function readPlayForm() {
+    const picks = [...document.querySelectorAll(".play-list input:checked")].map((i) => i.value);
+    const custom = $("#playCustom").value
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const from = $("#playFrom").value.trim();
+    const to = $("#playTo").value.trim();
+    return {
+      list: [...picks, ...custom],
+      dwell: Math.min(600, Math.max(10, Number($("#playDwell").value) || 90)),
+      hours: from !== "" && to !== "" ? `${Number(from)}-${Number(to)}` : ""
+    };
+  }
+
+  function buildPlayerUrl(site, opts) {
+    if (!site || !opts.list.length) return "";
+    const q = new URLSearchParams();
+    q.set("site", `${site.org}${site.place ? " " + site.place : ""}`);
+    q.set("list", opts.list.join(","));
+    q.set("dwell", String(opts.dwell));
+    if (opts.hours) q.set("hours", opts.hours);
+    return `${playerOrigin()}${PLAYER_PATH}?${q.toString()}`;
+  }
+
+  function currentPlaySite() {
+    return db.sites.find((s) => s.id === $("#playSite").value) || null;
+  }
+
+  function renderPlayUrl() {
+    const site = currentPlaySite();
+    const opts = readPlayForm();
+    const url = buildPlayerUrl(site, opts);
+    const out = $("#playUrl");
+
+    if (!site) {
+      out.textContent = "현장을 선택하세요";
+    } else if (!opts.list.length) {
+      out.textContent = "재생할 작품을 하나 이상 선택하세요";
+    } else {
+      out.textContent = url;
+    }
+
+    ["#playCopy", "#playOpen", "#playSave"].forEach((sel) => {
+      $(sel).disabled = !url;
+    });
+    return url;
+  }
+
+  function renderPlaySites() {
+    const sel = $("#playSite");
+    const keep = sel.value;
+    if (!db.sites.length) {
+      sel.innerHTML = `<option value="">현장을 먼저 등록하세요</option>`;
+      renderPlayUrl();
+      return;
+    }
+    sel.innerHTML =
+      `<option value="">현장 선택…</option>` +
+      db.sites
+        .map((s) => `<option value="${esc(s.id)}">${esc(s.org)}${s.place ? " · " + esc(s.place) : ""}</option>`)
+        .join("");
+    if (keep && db.sites.some((s) => s.id === keep)) sel.value = keep;
+    renderPlayUrl();
+  }
+
+  function loadPlaySettings() {
+    const site = currentPlaySite();
+    const play = (site && site.play) || null;
+    const list = play ? play.list : ["spring", "air", "typewall"];
+
+    document.querySelectorAll(".play-list input").forEach((i) => {
+      i.checked = list.includes(i.value);
+    });
+    // 내장 작품이 아닌 항목은 기관 자체 콘텐츠 칸으로 되돌린다.
+    const builtIn = ["spring", "air", "typewall"];
+    $("#playCustom").value = list.filter((x) => !builtIn.includes(x)).join(", ");
+    $("#playDwell").value = play ? play.dwell : 90;
+
+    const hours = play && play.hours ? play.hours.split("-") : ["", ""];
+    $("#playFrom").value = hours[0] || "";
+    $("#playTo").value = hours[1] || "";
+    renderPlayUrl();
+  }
+
+  function bindPlay() {
+    $("#playSite").addEventListener("change", loadPlaySettings);
+    ["#playCustom", "#playDwell", "#playFrom", "#playTo"].forEach((sel) => {
+      $(sel).addEventListener("input", renderPlayUrl);
+    });
+    document.querySelectorAll(".play-list input").forEach((i) => {
+      i.addEventListener("change", renderPlayUrl);
+    });
+
+    $("#playCopy").addEventListener("click", async () => {
+      const url = renderPlayUrl();
+      if (!url) return;
+      const btn = $("#playCopy");
+      try {
+        await navigator.clipboard.writeText(url);
+        btn.textContent = "복사됨 ✓";
+      } catch (err) {
+        // 클립보드 권한이 막힌 브라우저에서도 손으로 복사할 수 있게 한다.
+        btn.textContent = "주소를 직접 선택해 복사하세요";
+      }
+      setTimeout(() => { btn.textContent = "주소 복사"; }, 2400);
+    });
+
+    $("#playOpen").addEventListener("click", () => {
+      const url = renderPlayUrl();
+      if (url) window.open(url, "_blank", "noopener");
+    });
+
+    $("#playSave").addEventListener("click", () => {
+      const site = currentPlaySite();
+      const url = renderPlayUrl();
+      if (!site || !url) return;
+      site.play = readPlayForm();
+      addLog(site.id, "content", "송출 설정", `재생 ${site.play.list.length}편 · 작품당 ${site.play.dwell}초${site.play.hours ? ` · ${site.play.hours}시 운영` : " · 24시간"}`);
+      save();
+      renderAll();
+      const btn = $("#playSave");
+      btn.textContent = "저장됨 ✓";
+      setTimeout(() => { btn.textContent = "이 현장 설정 저장"; }, 2400);
+    });
+  }
+
   /* ---------------- 초기화 ---------------- */
 
   dedupeSiteIds();
@@ -528,6 +670,7 @@
   bindSiteForm();
   bindTable();
   bindDataTools();
+  bindPlay();
   runCalc();
   renderAll();
 })();

@@ -397,3 +397,55 @@
   .login-main { grid-template-columns: 1fr; padding: 24px 16px 40px; }
   .login-card { padding: 24px 20px; }
 }
+
+/* ── 송출 설정 (④) ────────────────────────────────────────── */
+
+.play-setup { display: grid; gap: 16px; }
+
+.play-site,
+.play-extra { display: grid; gap: 6px; }
+.play-site > span,
+.play-extra > span { font-size: 13px; font-weight: 600; color: var(--fleet-ink-2, #5b6270); }
+.play-extra small { font-weight: 400; opacity: 0.7; }
+
+.play-list {
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--fleet-line, #e3e6ec);
+  border-radius: 10px;
+  display: grid;
+  gap: 10px;
+}
+.play-list legend { padding: 0 6px; font-size: 13px; font-weight: 600; color: var(--fleet-ink-2, #5b6270); }
+.play-list label {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.play-list input { margin: 0; flex: none; }
+.play-list small { color: var(--fleet-ink-3, #868d9b); font-size: 12px; }
+
+.play-nums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.play-nums label { display: grid; gap: 6px; }
+.play-nums span { font-size: 13px; font-weight: 600; color: var(--fleet-ink-2, #5b6270); }
+
+/* 만들어진 주소. 길어도 줄바꿈해서 전부 보여야 현장에서 옮겨 적을 수 있다. */
+.play-out { display: grid; gap: 8px; }
+.play-out > span { font-size: 13px; font-weight: 600; color: var(--fleet-ink-2, #5b6270); }
+.play-out code {
+  display: block;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: #0f1218;
+  color: #d8e4ff;
+  font-size: 13px;
+  line-height: 1.6;
+  word-break: break-all;
+  user-select: all;
+}
+
+@media (max-width: 620px) {
+  .play-nums { grid-template-columns: 1fr; }
+}

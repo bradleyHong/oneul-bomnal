@@ -114,6 +114,6 @@ if (contactForm && !contactForm.action.includes("formsubmit.co")) {
       form.get("message") || "",
     ].join("\n");
     const subject = encodeURIComponent("[오늘은 봄날] 공공 프로젝트 문의");
-    window.location.href = `mailto:visionpencil@gmail.com?subject=${subject}&body=${encodeURIComponent(body)}`;
+    window.location.href = `mailto:studio@publicbloom.art?subject=${subject}&body=${encodeURIComponent(body)}`;
   });
 }
