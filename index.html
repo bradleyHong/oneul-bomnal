@@ -457,21 +457,48 @@
     <main id="main-content" tabindex="-1">
       <!-- ⓪ 지금 돌아가는 화면 ──────────────────────────────
            담당자가 사이트를 열자마자 "이 회사는 지금 뭔가를 돌리고 있다"를
-           보게 하는 자리다. 녹화가 아니라 코드가 실시간으로 그리는 시계다. -->
-      <section class="live-clock" id="now" aria-label="지금 대구 시각을 그리는 실시간 미디어아트">
-        <div class="live-clock-screen" data-art="./works/brushtrace-clock.html" data-auto
-             data-art-title="지금 시각을 사람이 손으로 고쳐 그리는 실시간 미디어아트">
-          <img src="./assets/art/brushtrace-clock.webp" alt="지금 시각을 손으로 그리는 실시간 미디어아트"
-               width="1600" height="686" fetchpriority="high" decoding="async" />
-          <span class="live-clock-mark" aria-hidden="true">오늘은 봄날 · publicbloom.art</span>
+           보게 하는 자리다. 화면 비율이 제각각이라는 것도 같이 보여준다.
+           시계만 자동으로 돌고 나머지는 눌렀을 때 돈다. 넷을 동시에 돌리면
+           페이지가 버벅인다. -->
+      <section class="live-clock" id="now" aria-label="오늘은 봄날이 만든 미디어아트">
+        <p class="live-clock-now"><span class="live-clock-dot" aria-hidden="true"></span>지금 돌아가는 화면</p>
+        <div class="art-strip">
+          <figure class="art-tile">
+            <div class="art-tile-screen" data-art="./works/brushtrace-clock.html" data-auto
+                 data-art-title="筆跡 · 붓의 자취 미디어아트 화면">
+              <img src="./assets/art/tile/brushtrace-clock.webp" alt="筆跡 · 붓의 자취 미디어아트" width="440" height="440" loading="lazy" decoding="async" />
+            </div>
+            <figcaption><b>筆跡 · 붓의 자취</b><span>실시간 시계</span></figcaption>
+          </figure>
+          <figure class="art-tile">
+            <div class="art-tile-screen" data-art="./works/eyewall.html"
+                 data-art-title="EYEWALL · 눈의 벽 미디어아트 화면">
+              <img src="./assets/art/tile/eyewall.webp" alt="EYEWALL · 눈의 벽 미디어아트" width="440" height="440" loading="lazy" decoding="async" />
+            <button type="button" class="art-play art-play-sm" data-on="재생" data-off="정지">재생</button>
+            </div>
+            <figcaption><b>EYEWALL · 눈의 벽</b><span>외벽 전광판 32:9</span></figcaption>
+          </figure>
+          <figure class="art-tile">
+            <div class="art-tile-screen" data-art="./works/flowribbons.html"
+                 data-art-title="流帶 · 결결 미디어아트 화면">
+              <img src="./assets/art/tile/flowribbons.webp" alt="流帶 · 결결 미디어아트" width="440" height="440" loading="lazy" decoding="async" />
+            <button type="button" class="art-play art-play-sm" data-on="재생" data-off="정지">재생</button>
+            </div>
+            <figcaption><b>流帶 · 결결</b><span>로비 미디어월 16:9</span></figcaption>
+          </figure>
+          <figure class="art-tile">
+            <div class="art-tile-screen" data-art="./works/vessel.html"
+                 data-art-title="靑流 · 담김 II 미디어아트 화면">
+              <img src="./assets/art/tile/vessel.webp" alt="靑流 · 담김 II 미디어아트" width="440" height="440" loading="lazy" decoding="async" />
+            <button type="button" class="art-play art-play-sm" data-on="재생" data-off="정지">재생</button>
+            </div>
+            <figcaption><b>靑流 · 담김 II</b><span>기둥형 세로 1:6</span></figcaption>
+          </figure>
         </div>
-        <div class="live-clock-caption">
-          <p class="live-clock-now"><span class="live-clock-dot" aria-hidden="true"></span>지금 돌아가는 화면</p>
-          <p class="live-clock-copy">
-            <b>筆跡 · 붓의 자취</b>
-            유리벽 뒤의 사람이 시곗바늘을 지우고 다시 긋습니다. 지금 코드가 그리는 화면입니다.
-          </p>
-        </div>
+        <p class="art-strip-note">
+          모두 저희가 코드로 만든 작품입니다. 눌러보시면 실제로 돌아갑니다.
+          현장 화면 비율과 해상도에 맞춰 다시 출력해 드립니다.
+        </p>
       </section>
 
       <!-- ① 첫 화면 ─────────────────────────────────────────── -->

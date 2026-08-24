@@ -4971,84 +4971,32 @@ main > .section > .section-head .section-kicker {
 }
 
 /* ══════════════════════════════════════════════════════════
-   지금 돌아가는 화면 (상단 실시간 시계)
+   지금 돌아가는 화면 (상단 작품 띠)
 
    첫 화면에서 "이 회사는 지금 뭔가를 돌리고 있다"를 먼저 보여준다.
-   다만 회사 이름보다 커지면 안 된다. 처음에 화면 폭 전체를 쓰는
-   좌측 정렬 2단으로 짰더니 두 가지가 어긋났다.
+   작품 하나만 크게 걸었더니 회사 이름이 첫 화면 밖으로 밀렸고,
+   화면 폭 전체를 쓰는 좌측 정렬이라 아래 가운데 정렬 히어로와도
+   어긋났다. 지금은 정사각 타일 넷을 가운데 정렬로 나란히 둔다.
+   비율이 제각각인 작품들을 같은 크기로 잘라 보여주므로, 화면마다
+   비율이 다르다는 이야기도 이 자리에서 함께 전달된다.
 
-   하나, 아래 히어로는 가운데 정렬인데 이 블록만 왼쪽에 붙어 있어
-   2000px 화면에서 오른쪽 절반이 통째로 비었다.
-   둘, 블록 높이가 600px라 회사 이름이 첫 화면 밖으로 밀렸다.
-
-   그래서 가운데 정렬 한 줄로 줄이고 높이를 절반으로 낮췄다.
+   시계만 자동으로 돌고 나머지는 눌렀을 때 돈다. 넷을 동시에 돌리면
+   노트북 팬이 돈다.
    ══════════════════════════════════════════════════════════ */
 .live-clock {
   position: relative;
   z-index: 1;
-  display: grid;
-  grid-template-columns: minmax(0, 240px) minmax(0, 1fr);
-  gap: clamp(18px, 2.4vw, 32px);
-  align-items: center;
-  width: min(100%, 860px);
+  width: min(100%, 880px);
   margin: 0 auto;
-  padding: clamp(92px, 10vw, 120px) clamp(18px, 5vw, 40px) 0;
-}
-
-.live-clock-screen {
-  position: relative;
-  overflow: hidden;
-  aspect-ratio: 1 / 1;
-  border-radius: 12px;
-  background: #0d0d0d;
-  box-shadow:
-    0 18px 44px rgba(6, 10, 22, 0.38),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.07);
-}
-
-.live-clock-screen iframe {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-  display: block;
-}
-
-.live-clock-screen img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* 화면을 캡처해 가도 어디서 나온 화면인지 남는다. */
-.live-clock-mark {
-  position: absolute;
-  right: 10px;
-  bottom: 8px;
-  z-index: 2;
-  color: rgba(255, 255, 255, 0.3);
-  font-size: 9.5px;
-  letter-spacing: 0.04em;
-  pointer-events: none;
-  user-select: none;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-}
-
-.live-clock-caption {
-  display: grid;
-  gap: 8px;
-  align-content: center;
+  padding: clamp(90px, 10vw, 118px) clamp(16px, 4vw, 32px) 0;
+  text-align: center;
 }
 
 .live-clock-now {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin: 0;
+  margin: 0 0 14px;
   font-size: 11.5px;
   font-weight: 800;
   letter-spacing: 0.04em;
@@ -5065,40 +5013,144 @@ main > .section > .section-head .section-kicker {
   box-shadow: 0 0 0 3px rgba(53, 208, 127, 0.18);
 }
 
-.live-clock-copy {
+.art-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(10px, 1.4vw, 16px);
+}
+
+.art-tile {
   margin: 0;
-  font-size: 13.5px;
-  line-height: 1.6;
+  text-align: left;
+}
+
+.art-tile-screen {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  background: #0d0d0d;
+  box-shadow:
+    0 14px 34px rgba(6, 10, 22, 0.32),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+.art-tile-screen img,
+.art-tile-screen iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  object-fit: cover;
+}
+
+/* 화면을 캡처해 가도 어디서 나온 화면인지 남는다. */
+.art-tile-screen::after {
+  content: "publicbloom.art";
+  position: absolute;
+  right: 7px;
+  bottom: 6px;
+  z-index: 2;
+  color: rgba(255, 255, 255, 0.32);
+  font-size: 9px;
+  letter-spacing: 0.03em;
+  pointer-events: none;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
+}
+
+.art-play-sm {
+  left: auto;
+  right: 7px;
+  bottom: 22px;
+  transform: none;
+  padding: 5px 10px;
+  font-size: 11px;
+}
+
+/* 타일이 132px까지 좁아지면 버튼 글자가 두 줄로 쪼개진다 */
+.art-play {
+  white-space: nowrap;
+}
+
+.art-tile figcaption {
+  display: grid;
+  gap: 1px;
+  padding: 8px 2px 0;
+}
+
+.art-tile figcaption b {
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--sky-ink);
+  text-shadow: 0 0 2px var(--sky-halo), 0 1px 8px var(--sky-halo);
+  transition: color var(--sky-ink-fade), text-shadow var(--sky-ink-fade);
+}
+
+.art-tile figcaption span {
+  font-size: 11px;
+  color: var(--sky-ink-accent);
+  text-shadow: 0 0 2px var(--sky-halo), 0 1px 8px var(--sky-halo);
+  transition: color var(--sky-ink-fade), text-shadow var(--sky-ink-fade);
+}
+
+.art-strip-note {
+  max-width: 60ch;
+  margin: 16px auto 0;
+  font-size: 12.5px;
+  line-height: 1.65;
   color: var(--sky-ink-soft);
   text-shadow: 0 0 2px var(--sky-halo), 0 1px 8px var(--sky-halo);
   transition: color var(--sky-ink-fade), text-shadow var(--sky-ink-fade);
 }
 
-.live-clock-copy b {
-  display: block;
-  margin-bottom: 4px;
-  color: var(--sky-ink);
-  font-size: clamp(16px, 1.8vw, 19px);
-  font-weight: 850;
-  letter-spacing: -0.01em;
-}
-
-/* 시계가 위에 있으므로 히어로 윗여백을 줄인다 */
 .live-clock + .home-hero {
   padding-top: clamp(20px, 3vw, 34px);
 }
 
-@media (max-width: 720px) {
+@media (max-width: 640px) {
   .live-clock {
-    grid-template-columns: minmax(0, 132px) minmax(0, 1fr);
-    gap: 14px;
-    padding-top: clamp(86px, 22vw, 104px);
+    padding-top: clamp(84px, 22vw, 102px);
+    padding-right: 0;
+    padding-left: 0;
   }
-  .live-clock-copy { font-size: 12.5px; }
-  .live-clock-copy b { font-size: 15px; }
-  /* 패널이 132px까지 줄어 출처 표시가 화면 밖으로 삐져나온다.
-     이 크기에서는 캡처해 갈 만한 화면도 아니므로 감춘다. */
-  .live-clock-mark { display: none; }
+
+  /* 2열로 쌓았더니 블록이 두 배로 높아져 회사 이름이 또 첫 화면 밖으로
+     밀렸다. 가로로 밀어 보는 띠로 바꿔 높이를 한 줄로 유지한다. */
+  .art-strip {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 132px;
+    gap: 10px;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: 16px;
+    /* 스크롤 컨테이너의 padding은 첫 항목 앞 여백으로 잡히지 않는다.
+       첫·마지막 타일에 직접 여백을 준다. */
+    padding: 0 0 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .art-strip::-webkit-scrollbar { display: none; }
+
+  .art-tile { scroll-snap-align: start; }
+  .art-tile:first-child { margin-left: 16px; }
+  .art-tile:last-child { margin-right: 16px; }
+
+  .art-strip-note {
+    padding: 0 16px;
+    font-size: 12px;
+  }
+
+  /* 가운데 정렬이면 해와 겹치는 자리에 놓인다. 띠 시작점에 맞춰 왼쪽으로 */
+  .live-clock { text-align: left; }
+  .live-clock-now { margin: 0 16px 12px; }
+  .art-strip-note { text-align: left; }
+}
+
 }
 
 }
