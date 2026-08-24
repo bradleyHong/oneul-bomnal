@@ -1,7 +1,7 @@
 {
   "_comment": "오늘은 봄날 사이트 캐논(정본). 사이트의 모든 문구·메타태그·스키마·llms.txt는 이 파일을 근거로 한다. 사실이 바뀌면 여기를 먼저 고치고, 그 다음 각 파일을 맞춘다. 검증: node tools/check-canon.mjs",
-  "version": "2026-08-23",
-  "updated": "2026-08-23",
+  "version": "2026-08-24",
+  "updated": "2026-08-24",
   "site": {
     "brand": "오늘은 봄날",
     "brandRomanized": "Oneul-eun Bomnal",
