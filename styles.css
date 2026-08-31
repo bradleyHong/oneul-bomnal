@@ -5351,3 +5351,392 @@ main > .section > .section-head .section-kicker {
   font-size: 11.5px;
   letter-spacing: 0.02em;
 }
+
+/* ── 미디어아트 AX와 설치 탭 ─────────────────────────────────
+   2026-08-31 개편. 홈에서 두 가지를 앞세운다.
+   ① 화면이 데이터를 읽게 만드는 일(AX)
+   ② 그 화면을 실제로 다는 일(LED 패널 설치·미디어파사드 시공)
+   둘 다 눌러서 자기 현장에 해당하는 것만 골라 읽을 수 있게 만든다.
+   색·모서리·글자 굵기는 위쪽 .offer-card 규칙과 같은 값을 쓴다. */
+
+/* 히어로 제목이 한 줄짜리 상호에서 두 줄짜리 문장으로 바뀌었다.
+   104px 그대로 두면 모바일에서 글자가 화면 밖으로 나간다. */
+.home-hero h1 {
+  font-size: clamp(30px, 6.2vw, 72px);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.ax-explorer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.78fr);
+  gap: clamp(24px, 4vw, 56px);
+  align-items: start;
+  margin-bottom: clamp(32px, 5vw, 56px);
+}
+
+.ax-chips-label {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 830;
+  color: var(--muted);
+}
+
+.ax-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+/* 칩은 46px 이상으로 잡는다. 현장에서 휴대폰으로 여는 담당자가 있고
+   손가락으로 눌러야 하는 것은 그보다 작으면 안 눌린다. */
+.ax-chip {
+  min-height: 46px;
+  padding: 0 18px;
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--deep);
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+}
+.ax-chip:hover {
+  border-color: rgba(16, 54, 125, 0.4);
+  color: #10367d;
+}
+.ax-chip.is-on {
+  color: #ffffff;
+  background: #10367d;
+  border-color: #10367d;
+}
+
+.ax-detail {
+  display: grid;
+  gap: 12px;
+  padding: clamp(22px, 2.4vw, 30px);
+  border: 1px solid var(--edge);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.78);
+}
+.ax-detail h3 {
+  margin: 0;
+  font-size: clamp(19px, 2.2vw, 24px);
+  letter-spacing: -0.02em;
+}
+.ax-detail > p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.ax-uses {
+  margin: 4px 0 0;
+  padding: 14px 0 0;
+  list-style: none;
+  display: grid;
+  gap: 7px;
+  border-top: 1px solid var(--edge);
+}
+.ax-uses li {
+  position: relative;
+  padding-left: 15px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--deep);
+}
+.ax-uses li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #b7c9e7;
+}
+
+/* 예시 응답. 실측값이 아니라 형식을 보여주는 줄이므로 꼬리표를 붙인다. */
+.ax-sample {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 0 !important;
+  padding: 11px 14px;
+  border-radius: 10px;
+  background: #0d1220;
+}
+.ax-sample-tag {
+  flex-shrink: 0;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.ax-sample code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, "Consolas", monospace;
+  font-size: 13px;
+  color: #9fd0ff;
+  word-break: break-all;
+}
+
+/* 데이터 → 엔진 → 화면. 사진 대신 무엇이 무엇으로 이어지는지만 보여준다. */
+.ax-flow {
+  display: grid;
+  gap: 10px;
+  justify-items: stretch;
+  padding: clamp(22px, 2.4vw, 30px);
+  border: 1px solid var(--edge);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.5);
+}
+.ax-flow-node {
+  display: grid;
+  gap: 4px;
+  padding: 16px 18px;
+  border: 1px solid var(--edge);
+  border-radius: 12px;
+  background: #ffffff;
+}
+.ax-flow-node b {
+  font-size: 15.5px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.ax-flow-node span {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #5b6577;
+}
+.ax-flow-node-src {
+  border-color: rgba(16, 54, 125, 0.34);
+}
+.ax-flow-node-out {
+  color: #ffffff;
+  background: #0b2557;
+  border-color: #0b2557;
+}
+.ax-flow-node-out b { color: #ffffff; }
+.ax-flow-node-out span { color: rgba(255, 255, 255, 0.74); }
+.ax-flow-arrow {
+  width: 34px;
+  height: 12px;
+  justify-self: center;
+  color: rgba(16, 27, 51, 0.34);
+  transform: rotate(90deg);
+}
+
+.ax-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 26px);
+}
+
+/* ── 설치 현장 탭 ────────────────────────────────────────── */
+
+.install-tablist {
+  display: flex;
+  gap: 4px;
+  margin-bottom: clamp(22px, 3vw, 34px);
+  border-bottom: 1px solid var(--edge);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.install-tab {
+  flex-shrink: 0;
+  min-height: 48px;
+  padding: 0 4px 14px;
+  margin-right: 22px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--muted);
+  font-size: clamp(15px, 1.7vw, 17px);
+  font-weight: 800;
+  letter-spacing: -0.012em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.16s ease, border-color 0.16s ease;
+}
+.install-tab:hover { color: #10367d; }
+.install-tab.is-on {
+  color: #10367d;
+  border-bottom-color: #10367d;
+}
+
+/* 자바스크립트가 붙기 전에는 네 패널이 그대로 쌓여서 보인다.
+   붙고 나서야 한 번에 하나만 보이게 한다. */
+.install-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
+  gap: clamp(24px, 4vw, 52px);
+  align-items: center;
+}
+.install-tabs:not(.is-enhanced) .install-panel + .install-panel {
+  margin-top: clamp(32px, 5vw, 56px);
+  padding-top: clamp(32px, 5vw, 56px);
+  border-top: 1px solid var(--edge);
+}
+.install-panel[hidden] { display: none; }
+
+.install-panel-copy {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+}
+.install-panel-copy h3 {
+  margin: 0;
+  font-size: clamp(22px, 2.8vw, 30px);
+  letter-spacing: -0.024em;
+}
+.install-panel-copy > p {
+  margin: 0;
+  font-size: clamp(15px, 1.5vw, 17px);
+  line-height: 1.74;
+  color: var(--muted);
+}
+
+.install-points {
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 9px;
+}
+.install-points li {
+  position: relative;
+  padding-left: 26px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--deep);
+}
+/* 체크 표시는 배경 SVG로 그린다. 이모지를 쓰면 기기마다 다르게 나온다. */
+.install-points li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 17px;
+  height: 17px;
+  background: no-repeat center / 17px 17px
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M4.5 12.4l5 5L19.5 7' stroke='%2310367d' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.install-shot {
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+.install-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 12px;
+  background: #0d1017;
+  box-shadow: 0 10px 28px rgba(16, 27, 51, 0.14);
+}
+.install-shot figcaption {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: #5b6577;
+}
+
+@media (max-width: 900px) {
+  .ax-explorer,
+  .ax-grid,
+  .install-panel {
+    grid-template-columns: 1fr;
+  }
+  .install-shot { order: -1; }
+}
+
+/* 하늘 위에 맨살로 놓이는 글자들.
+   위쪽 4930줄 규칙과 같은 판단이다. 카드 안쪽(.ax-detail·.ax-flow·.offer-card)은
+   자기 바탕이 있으니 그대로 두고, 판 없이 하늘 위에 놓이는 것만 골라
+   시간대에 따라 색이 뒤집히게 한다. 밤에 남색 글자가 남색 하늘에 묻히면
+   담당자는 그 줄이 있는지도 모른다. */
+.ax-chips-label,
+.install-panel-copy > p,
+.install-shot figcaption {
+  color: var(--sky-ink-soft);
+  text-shadow: 0 0 2px var(--sky-halo), 0 1px 10px var(--sky-halo);
+  transition: color var(--sky-ink-fade), text-shadow var(--sky-ink-fade);
+}
+
+.install-panel-copy h3 {
+  color: var(--sky-ink);
+  text-shadow: 0 0 2px var(--sky-halo), 0 1px 10px var(--sky-halo);
+  transition: color var(--sky-ink-fade), text-shadow var(--sky-ink-fade);
+}
+
+.install-points li {
+  color: var(--sky-ink-soft);
+  text-shadow: 0 0 2px var(--sky-halo), 0 1px 8px var(--sky-halo);
+  transition: color var(--sky-ink-fade), text-shadow var(--sky-ink-fade);
+}
+/* 체크 표시도 같이 뒤집는다. 남색 체크는 밤하늘에서 보이지 않는다. */
+.install-points li::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M4.5 12.4l5 5L19.5 7' stroke='%23ffffff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  opacity: var(--night-mix);
+}
+.install-points li::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 17px;
+  height: 17px;
+  background: no-repeat center / 17px 17px
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M4.5 12.4l5 5L19.5 7' stroke='%2310367d' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  opacity: calc(1 - var(--night-mix));
+}
+
+.install-tab {
+  color: var(--sky-ink-soft);
+  opacity: 0.72;
+  text-shadow: 0 0 2px var(--sky-halo), 0 1px 8px var(--sky-halo);
+  transition: color var(--sky-ink-fade), opacity 0.16s ease, border-color 0.16s ease;
+}
+.install-tab:hover {
+  color: var(--sky-ink);
+  opacity: 1;
+}
+.install-tab.is-on {
+  color: var(--sky-ink);
+  opacity: 1;
+  border-bottom-color: var(--sky-ink-accent);
+}
+.install-tablist {
+  border-bottom-color: color-mix(in srgb, rgba(255, 255, 255, 0.24) calc(var(--night-mix) * 100%), rgba(16, 27, 51, 0.16));
+}
+
+/* 상세 페이지로 들어가는 링크. .offer-card 안쪽 링크와 생김새는 같지만
+   여기서는 카드 없이 하늘 위에 놓이므로 색만 시간대에 맞춰 뒤집는다. */
+.install-panel-copy .offer-more {
+  margin: 4px 0 0;
+  font-size: 14px;
+}
+.install-panel-copy .offer-more a {
+  color: var(--sky-ink-accent);
+  font-weight: 750;
+  text-decoration: none;
+  text-shadow: 0 0 2px var(--sky-halo), 0 1px 8px var(--sky-halo);
+  transition: color var(--sky-ink-fade), text-shadow var(--sky-ink-fade);
+}
+.install-panel-copy .offer-more a::after {
+  content: " \2192";
+}
+.install-panel-copy .offer-more a:hover,
+.install-panel-copy .offer-more a:focus-visible {
+  text-decoration: underline;
+}
