@@ -442,6 +442,7 @@
   "noindex": [
     "/admin",
     "/client",
+    "/ax-studio",
     "/login",
     "/api/",
     "/mediabox",

@@ -73,6 +73,11 @@
       nav.appendChild(client);
     }
 
+    // 제작 AX는 관리자와 회원사 담당자가 같이 씁니다.
+    const studio = makeLink("./ax-studio", "제작 AX", "nav-auth-studio");
+    studio.dataset.authLink = "studio";
+    nav.appendChild(studio);
+
     const who = document.createElement("a");
     who.href = "#";
     who.className = "nav-auth-logout";
