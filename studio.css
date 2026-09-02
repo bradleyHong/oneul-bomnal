@@ -72,12 +72,28 @@
 .sbtn.primary:hover { background: #c4d8ff; border-color: #c4d8ff; color: #08101f; }
 .sbtn:disabled { opacity: .5; cursor: not-allowed; }
 
+/* 건너뛰기 링크. 화면 밖으로 밀어내는 대신 잘라서 숨긴다.
+   left:-9999px 방식은 아랍어처럼 오른쪽에서 왼쪽으로 읽는 화면에서
+   반대편에 1만 픽셀짜리 가로 스크롤을 만든다. 실제로 그렇게 터졌다. */
 .skip-link {
-  position: absolute; left: -9999px;
-  background: var(--s-key); color: #08101f; padding: 10px 14px; border-radius: 8px;
-  font-weight: 800; z-index: 60;
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  z-index: 60;
 }
-.skip-link:focus { left: 12px; top: 12px; }
+.skip-link:focus {
+  width: auto; height: auto;
+  margin: 0; padding: 10px 14px;
+  clip-path: none;
+  inset-block-start: 12px;
+  inset-inline-start: 12px;
+  border-radius: 8px;
+  font-weight: 800;
+}
+.skip-link:focus { background: var(--s-key); color: #08101f; }
 
 /* ── 레이아웃 ─────────────────────────────────────────────── */
 .studio-shell {

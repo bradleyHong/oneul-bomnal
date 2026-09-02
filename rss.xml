@@ -9,8 +9,8 @@
     <lastBuildDate>Sun, 23 Aug 2026 09:00:00 +0900</lastBuildDate>
     <item>
       <title>미디어아트 AX 서비스</title>
-      <link>https://publicbloom.art/data-media-art</link>
-      <guid>https://publicbloom.art/data-media-art</guid>
+      <link>https://publicbloom.art/ai</link>
+      <guid>https://publicbloom.art/ai</guid>
       <pubDate>Sun, 23 Aug 2026 09:00:00 +0900</pubDate>
       <description>기관이 이미 가진 데이터를 화면의 재료로 바꾸는 일을 대행합니다. 공공 API와 기관 보유 DB를 연결해 같은 화면이 매일 달라지게 만들고, AI와 코드로 도는 제작 파이프라인을 대신 돌려 시안 3종을 1주일 이내에 냅니다. 기관이 AI 제작 도구를 직접 갖추지 않아도 됩니다.</description>
       <category>공공 API · 기관 보유 DB 연동 실시간 콘텐츠</category>
