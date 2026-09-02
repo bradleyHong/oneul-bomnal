@@ -41,6 +41,16 @@ const BODY = "맑은 고딕";
 const img = (p) => path.join(REPO, p);
 const art = (n) => path.join(REPO, "assets/deck", n);
 
+/* 두 가지로 뽑는다.
+     기본       영업용 회사소개서 13장
+     --grant   지원사업 발표자료 15장 (분량 제한이 15장이다)
+
+   지원사업 심사위원에게는 사업영역을 네 장에 걸쳐 파는 것보다
+   한 장으로 접고 그 자리에 사업비와 결과물을 넣는 편이 낫다. */
+const GRANT = process.argv.includes("--grant");
+const DROP_IN_GRANT = new Set(["service1", "service2", "service3", "service4", "faq"]);
+const WANT = (id) => !(GRANT && DROP_IN_GRANT.has(id));
+
 const pres = new pptxgen();
 pres.layout = "LAYOUT_WIDE";           // 13.3 × 7.5
 pres.author = "오늘은 봄날";
@@ -62,8 +72,10 @@ function pageTitle(s, kicker, title, opts = {}) {
     color: dark ? WHITE : NAVY, valign: "top",
   });
 }
-function pageNum(s, n) {
-  s.addText(String(n).padStart(2, "0"), {
+let _page = 1;
+function pageNum(s) {
+  _page += 1;
+  s.addText(String(_page).padStart(2, "0"), {
     x: W - 1.1, y: H - 0.62, w: 0.6, h: 0.3, margin: 0, align: "right",
     fontFace: BODY, fontSize: 10, color: "9AA3B0",
   });
@@ -157,7 +169,7 @@ function numBadge(s, x, y, label, color) {
       fontFace: BODY, fontSize: 10, color: GREY, lineSpacing: 15, valign: "top",
     });
   });
-  pageNum(s, 2);
+  pageNum(s);
   s.addNotes("사업영역 네 가지를 한 화면에. 상세는 뒤에서 각각 설명.");
 }
 
@@ -193,11 +205,11 @@ function numBadge(s, x, y, label, color) {
       fontFace: BODY, fontSize: 11, color: GREY, lineSpacing: 17, valign: "top",
     });
   });
-  pageNum(s, 3);
+  pageNum(s);
 }
 
 /* ── 4. 사업영역 01 · 코드로 만드는 미디어아트 ──────────── */
-{
+if (WANT("service1")) {
   const s = pres.addSlide();
   s.background = { color: WHITE };
   pageTitle(s, "SERVICE 01", "미디어아트를 코드로 만듭니다", { tw: 6.6, fs: 28 });
@@ -229,11 +241,11 @@ function numBadge(s, x, y, label, color) {
     });
     y += 1.18;
   });
-  pageNum(s, 4);
+  pageNum(s);
 }
 
 /* ── 5. 사업영역 02 · 빠른 제작 ─────────────────────────── */
-{
+if (WANT("service2")) {
   const s = pres.addSlide();
   s.background = { color: WHITE };
   pageTitle(s, "SERVICE 02", "시안 3종이 일주일 안에 나옵니다");
@@ -275,11 +287,11 @@ function numBadge(s, x, y, label, color) {
     s.addText(d, { x: 8.05, y: y + 0.47, w: 4.2, h: 0.3, margin: 0, fontFace: BODY, fontSize: 11, color: GREY });
     y += 1.06;
   });
-  pageNum(s, 5);
+  pageNum(s);
 }
 
 /* ── 6. 사업영역 03 · LED 설치 ──────────────────────────── */
-{
+if (WANT("service3")) {
   const s = pres.addSlide();
   s.background = { color: WHITE };
   pageTitle(s, "SERVICE 03", "LED 전광판을 직접 설치합니다", { tw: 7.5 });
@@ -307,11 +319,11 @@ function numBadge(s, x, y, label, color) {
     s.addText(d, { x: 1.0, y: y + 0.44, w: 6.7, h: 0.3, margin: 0, fontFace: BODY, fontSize: 10.5, color: GREY });
     y += 0.97;
   });
-  pageNum(s, 6);
+  pageNum(s);
 }
 
 /* ── 7. 사업영역 04 · 미디어파사드 ──────────────────────── */
-{
+if (WANT("service4")) {
   const s = pres.addSlide();
   s.background = { color: NAVY };
   s.addImage({ path: img("assets/works/andong-station-facade.jpg"), x: 0, y: 0, w: 6.2, h: H, sizing: { type: "cover", w: 6.2, h: H } });
@@ -341,7 +353,41 @@ function numBadge(s, x, y, label, color) {
   s.addText("안동 문화플랫폼 모디684 · 야외 건물 미디어파사드", {
     x: 0.35, y: 6.95, w: 5.5, h: 0.3, margin: 0, fontFace: BODY, fontSize: 9.5, color: "DDE3EE",
   });
-  pageNum(s, 7);
+  pageNum(s);
+}
+
+/* ── 사업영역 한 장 요약 (지원사업용) ───────────────────────
+   영업용에서는 네 장에 걸쳐 하나씩 파는 자리다. 심사 자료에서는
+   "이 회사가 무엇을 하는가"만 서면 되므로 한 장으로 접는다. */
+if (GRANT) {
+  const s = pres.addSlide();
+  s.background = { color: WHITE };
+  pageTitle(s, "WHAT WE DO", "네 가지를 한 계약 안에서 합니다");
+
+  const cw = 2.85, gap = 0.25, x0 = 0.7, y0 = 2.25, ch = 3.9;
+  /* 다섯 개 중 넷만 세운다. '빠른 제작'은 사업영역이라기보다 속도에 대한
+     주장이고, 그건 09장 진행 절차에서 이미 말한다. 여기서는 실제로 파는
+     네 가지(AX · 제작 · LED 설치 · 미디어파사드)를 세운다. */
+  const SHOW = ["ax", "media-art", "led", "facade"];
+  SHOW.map((id) => B.scopes.find((x) => x.id === id)).filter(Boolean).forEach((sc, i) => {
+    const x = x0 + i * (cw + gap);
+    card(s, x, y0, cw, ch);
+    numBadge(s, x + 0.35, y0 + 0.4, `0${i + 1}`, i === 0 ? NAVY : BLUE);
+    s.addText(sc.name, {
+      x: x + 0.35, y: y0 + 1.02, w: cw - 0.7, h: 0.66, margin: 0,
+      fontFace: HEAD, fontSize: 15, bold: true, color: NAVY, valign: "top",
+    });
+    s.addText(sc.includes.map((t) => ({ text: t, options: { bullet: { characterCode: "2022" } } })), {
+      x: x + 0.35, y: y0 + 1.78, w: cw - 0.7, h: 1.95, margin: 0,
+      fontFace: BODY, fontSize: 10, color: GREY, lineSpacing: 15, valign: "top",
+    });
+  });
+
+  s.addText(B.oneLiner, {
+    x: 0.7, y: 6.35, w: 11.9, h: 0.5, margin: 0,
+    fontFace: BODY, fontSize: 12, color: INK, lineSpacing: 17,
+  });
+  pageNum(s);
 }
 
 /* ── 8. 사이니지 종류별 화면 ────────────────────────────── */
@@ -378,7 +424,7 @@ function numBadge(s, x, y, label, color) {
       fontFace: BODY, fontSize: 10, color: GREY, lineSpacing: 15, valign: "top",
     });
   });
-  pageNum(s, 8);
+  pageNum(s);
 }
 
 /* ── 9. 진행 절차 ───────────────────────────────────────── */
@@ -416,7 +462,7 @@ function numBadge(s, x, y, label, color) {
   s.addText("현장 실측 없이 산정한 견적은 대부분 틀립니다. 현장을 먼저 보고 확정한 뒤 회계연도 기준 견적서를 발행합니다.", {
     x: 0.7, y: 6.25, w: 11.9, h: 0.35, margin: 0, fontFace: BODY, fontSize: 11.5, italic: true, color: "8A93A3",
   });
-  pageNum(s, 9);
+  pageNum(s);
 }
 
 /* ── 10. 납품 형태 ──────────────────────────────────────── */
@@ -445,11 +491,11 @@ function numBadge(s, x, y, label, color) {
   s.addText("화면이 아직 없는 현장은 LED 설치 또는 빔프로젝터 시공까지 한 계약으로 진행합니다.", {
     x: 0.7, y: 6.35, w: 11.9, h: 0.35, margin: 0, fontFace: BODY, fontSize: 11.5, italic: true, color: "8A93A3",
   });
-  pageNum(s, 10);
+  pageNum(s);
 }
 
 /* ── 11. 발주처가 자주 확인하는 것 ─────────────────────── */
-{
+if (WANT("faq")) {
   const s = pres.addSlide();
   s.background = { color: WHITE };
   pageTitle(s, "WHAT YOU ASKED", "이런 것까지 해드립니다");
@@ -472,7 +518,7 @@ function numBadge(s, x, y, label, color) {
       fontFace: BODY, fontSize: 10, color: GREY, lineSpacing: 14.5, valign: "top",
     });
   });
-  pageNum(s, 11);
+  pageNum(s);
 }
 
 /* ── 11. 현장 레퍼런스 ──────────────────────────────────── */
@@ -501,7 +547,7 @@ function numBadge(s, x, y, label, color) {
     "위 현장은 상상연필과 함께 수행한 레퍼런스입니다. 오늘은 봄날 명의의 납품 실적은 대구 북구청 사이니지 미디어아트 3편이며, 입찰·수의계약용 실적증명서는 요청 시 발송합니다.",
     { x: 0.7, y: 6.62, w: 10.8, h: 0.5, margin: 0, fontFace: BODY, fontSize: 10, color: "8A93A3", lineSpacing: 14 }
   );
-  pageNum(s, 12);
+  pageNum(s);
 }
 
 /* ── 12. 인증 · 공공구매 ────────────────────────────────── */
@@ -530,13 +576,38 @@ function numBadge(s, x, y, label, color) {
     `시공 지역   ${C.areaServed.join(" · ")}      |      ${C.areaServedNote}`,
     { x: 1.05, y: 6.05, w: 11.3, h: 0.55, margin: 0, fontFace: BODY, fontSize: 11.5, color: NAVY, valign: "middle" }
   );
-  pageNum(s, 19);
+  pageNum(s);
 }
 
 /* ── 14~18. 사업비 ──────────────────────────────────────────
    AI 활용 소상공인 지원사업 집행기준(별표 11·12)에 맞춘 지출 계획.
    금액은 canon/grant.json 에서만 읽는다. 총액을 고치면 표가 함께 바뀐다. */
-if (G) {
+/* ── 오늘 만든 것 (지원사업용) ─────────────────────────────
+   영업용 소개서에는 넣지 않는다. "협약 이전에 자체 비용으로 만들었고
+   정산 대상이 아니다"는 심사위원에게 하는 말이지 발주처에 할 말이 아니다. */
+if (G && GRANT) {
+  const s = pres.addSlide();
+  s.background = { color: NAVY };
+  pageTitle(s, "STATUS", G.built.title, { dark: true, fs: 30 });
+  s.addText(G.built.note, {
+    x: 0.7, y: 1.95, w: 11.9, h: 0.34, margin: 0, fontFace: BODY, fontSize: 10.5, color: "8FA0BE",
+  });
+
+  const y0 = 2.55, rh = 0.86;
+  G.built.items.forEach(([t, d], i) => {
+    const y = y0 + i * rh;
+    s.addShape(pres.ShapeType.ellipse, { x: 0.75, y: y + 0.14, w: 0.2, h: 0.2, fill: { color: BLUE }, line: { color: BLUE } });
+    s.addText(t, { x: 1.2, y, w: 3.6, h: 0.34, margin: 0, fontFace: HEAD, fontSize: 14, bold: true, color: WHITE });
+    s.addText(d, { x: 4.95, y: y + 0.02, w: 7.6, h: 0.62, margin: 0, fontFace: BODY, fontSize: 10, color: "B9C6DC", lineSpacing: 13.5, valign: "top" });
+    s.addShape(pres.ShapeType.line, { x: 1.2, y: y + rh - 0.12, w: 11.35, h: 0, line: { color: "2C3A57", width: 1 } });
+  });
+  s.addText("publicbloom.art/studio  ·  publicbloom.art/ai  ·  publicbloom.art/ax-studio", {
+    x: 0.7, y: 6.85, w: 11.9, h: 0.3, margin: 0, fontFace: BODY, fontSize: 10.5, color: BLUE,
+  });
+  pageNum(s);
+}
+
+if (G && GRANT) {
   const GOV = Math.round(G.total.amount * G.total.govRatio);
   const OWN = G.total.amount - GOV;
 
@@ -587,7 +658,7 @@ if (G) {
     s.addText(G.total.note, {
       x: 0.7, y: 6.88, w: 11.9, h: 0.42, margin: 0, fontFace: BODY, fontSize: 8.5, italic: true, color: "9AA3B0", lineSpacing: 11,
     });
-    pageNum(s, 14);
+    pageNum(s);
   }
 
   /* ── 15. 정부지원금 상세 ─────────────────────────────── */
@@ -625,7 +696,7 @@ if (G) {
       s.addText(why, { x: 8.0, y, w: 4.55, h: rh - 0.1, margin: 0, fontFace: BODY, fontSize: 8.5, color: GREY, valign: "middle", lineSpacing: 11 });
       s.addShape(pres.ShapeType.line, { x: 0.75, y: y + rh - 0.06, w: 11.8, h: 0, line: { color: LINE, width: 1 } });
     });
-    pageNum(s, 15);
+    pageNum(s);
   }
 
   /* ── 16. 대응자금 ────────────────────────────────────── */
@@ -656,7 +727,7 @@ if (G) {
       s.addText(k, { x: 0.75, y, w: 1.75, h: erh, margin: 0, fontFace: HEAD, fontSize: 9, bold: true, color: NAVY, valign: "middle" });
       s.addText(v, { x: 2.6, y, w: 9.95, h: erh, margin: 0, fontFace: BODY, fontSize: 8.5, color: GREY, valign: "middle" });
     });
-    pageNum(s, 16);
+    pageNum(s);
   }
 
   /* ── 17. 집행 시 주의 ────────────────────────────────── */
@@ -677,31 +748,9 @@ if (G) {
       s.addText(r.t, { x: x + 0.22, y: y + 0.02, w: cw - 0.3, h: 0.28, margin: 0, fontFace: HEAD, fontSize: 11, bold: true, color: r.flag ? key : NAVY });
       s.addText(r.d, { x: x + 0.22, y: y + 0.3, w: cw - 0.3, h: 0.55, margin: 0, fontFace: BODY, fontSize: 8.8, color: GREY, lineSpacing: 11.5, valign: "top" });
     });
-    pageNum(s, 17);
+    pageNum(s);
   }
 
-  /* ── 18. 오늘 만든 것 ────────────────────────────────── */
-  {
-    const s = pres.addSlide();
-    s.background = { color: NAVY };
-    pageTitle(s, "STATUS", G.built.title, { dark: true, fs: 30 });
-    s.addText(G.built.note, {
-      x: 0.7, y: 1.95, w: 11.9, h: 0.34, margin: 0, fontFace: BODY, fontSize: 10.5, color: "8FA0BE",
-    });
-
-    const y0 = 2.55, rh = 0.86;
-    G.built.items.forEach(([t, d], i) => {
-      const y = y0 + i * rh;
-      s.addShape(pres.ShapeType.ellipse, { x: 0.75, y: y + 0.14, w: 0.2, h: 0.2, fill: { color: BLUE }, line: { color: BLUE } });
-      s.addText(t, { x: 1.2, y, w: 3.6, h: 0.34, margin: 0, fontFace: HEAD, fontSize: 14, bold: true, color: WHITE });
-      s.addText(d, { x: 4.95, y: y + 0.02, w: 7.6, h: 0.62, margin: 0, fontFace: BODY, fontSize: 10, color: "B9C6DC", lineSpacing: 13.5, valign: "top" });
-      s.addShape(pres.ShapeType.line, { x: 1.2, y: y + rh - 0.12, w: 11.35, h: 0, line: { color: "2C3A57", width: 1 } });
-    });
-    s.addText("publicbloom.art/studio  ·  publicbloom.art/ai  ·  publicbloom.art/ax-studio", {
-      x: 0.7, y: 6.85, w: 11.9, h: 0.3, margin: 0, fontFace: BODY, fontSize: 10.5, color: BLUE,
-    });
-    pageNum(s, 18);
-  }
 }
 
 /* ── 13. 연락처 ─────────────────────────────────────────── */
@@ -738,5 +787,8 @@ if (G) {
   });
 }
 
-const OUT = process.argv[2] || path.join(REPO, "docs/오늘은봄날_회사소개서.pptx");
-pres.writeFile({ fileName: OUT }).then(() => console.log("생성 완료:", OUT));
+const named = process.argv.slice(2).find((a) => a.endsWith(".pptx"));
+const OUT = named || path.join(REPO, GRANT
+  ? "docs/오늘은봄날_지원사업_발표자료.pptx"
+  : "docs/오늘은봄날_회사소개서.pptx");
+pres.writeFile({ fileName: OUT }).then(() => console.log(`생성 완료 (${GRANT ? "지원사업 발표자료" : "회사소개서"} ${_page}장):`, OUT));
