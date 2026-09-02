@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<title>온 미디어아트 에디트 · 렌더 엔진</title>
+<style>html,body{margin:0;background:#050505;overflow:hidden}canvas{display:block;width:100%;height:100%}</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+/* 온 미디어아트 에디트 — 렌더 엔진
+ *
+ * 이 파일 하나가 두 곳에서 쓰인다.
+ *   1) 고객 에디터(/studio)의 미리보기 — 작은 해상도로 iframe 안에서 돈다
+ *   2) 우리 납품 렌더 — tools/render-studio.mjs가 3840×2160으로 프레임을 뽑는다
+ *
+ * 둘이 같은 파일이어야 하는 이유: 고객이 화면에서 고른 그 그림이 그대로
+ * 납품본이 되어야 한다. 파일이 둘이면 언젠가 어긋나고, 그때 고객은
+ * "내가 고른 게 이게 아닌데"라고 말하게 된다.
+ *
+ * 그래서 결정론적으로 짠다. Math.random·Date.now·performance.now를 쓰지 않는다.
+ * 같은 파라미터 + 같은 시드 = 언제 어디서 돌려도 같은 그림.
+ */
+"use strict";
+
+const q = new URLSearchParams(location.search);
+const num = (k, d) => { const v = parseFloat(q.get(k)); return Number.isFinite(v) ? v : d; };
+
+const W    = num("w", 1280);
+const H    = num("h", 720);
+const FPS  = num("fps", 30);
+const SEED = Math.floor(num("seed", 4821937));
+const DUR  = num("dur", 20);              // 초. 완전 루프 길이
+const TOTAL_FRAMES = Math.max(1, Math.round(FPS * DUR));
+
+/* 고객이 만지는 값들. 전부 URL로 오간다.
+   에디터는 이 문자열을 그대로 저장하고, 우리는 그대로 다시 렌더한다. */
+const P = {
+  style:      q.get("style") || "aurora",
+  palette:    q.get("palette") || "ink",
+  density:    num("density", 50),      // 0~100
+  speed:      num("speed", 50),        // 0~100
+  scale:      num("scale", 50),        // 0~100
+  contrast:   num("contrast", 50),     // 0~100
+  glow:       num("glow", 35),         // 0~100
+  grain:      num("grain", 18),        // 0~100
+  motion:     q.get("motion") || "drift",   // drift · pulse · orbit · still
+  symmetry:   Math.floor(num("symmetry", 1)),  // 1·2·4·6
+  invert:     q.get("invert") === "1",
+  accent:     num("accent", 60),       // 0~100 포인트 컬러 비중
+};
+
+/* ── 시드 난수 (mulberry32). Math.random 금지 ───────────────── */
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/* ── 시드 값잡음(value noise) ────────────────────────────────
+   플로우필드·오로라·구름의 바탕이 된다. 격자에 시드 난수를 깔고
+   부드럽게 이어 붙인다. 같은 시드면 같은 지형이 나온다. */
+const NG = 256;
+const noiseTable = (function () {
+  const r = mulberry32(SEED ^ 0x9e3779b9);
+  const t = new Float32Array(NG * NG);
+  for (let i = 0; i < t.length; i++) t[i] = r();
+  return t;
+})();
+const fade = (x) => x * x * (3 - 2 * x);
+function noise2(x, y) {
+  const xi = Math.floor(x), yi = Math.floor(y);
+  const xf = x - xi, yf = y - yi;
+  const g = (a, b) => noiseTable[(((a % NG) + NG) % NG) * NG + (((b % NG) + NG) % NG)];
+  const u = fade(xf), v = fade(yf);
+  const a = g(xi, yi) * (1 - u) + g(xi + 1, yi) * u;
+  const b = g(xi, yi + 1) * (1 - u) + g(xi + 1, yi + 1) * u;
+  return a * (1 - v) + b * v;
+}
+function fbm(x, y, oct) {
+  let s = 0, amp = 0.5, f = 1;
+  for (let i = 0; i < (oct || 3); i++) { s += noise2(x * f, y * f) * amp; amp *= 0.5; f *= 2; }
+  return s * 2 - 0.75;
+}
+
+/* ── 팔레트 ──────────────────────────────────────────────────
+   절반은 저작권이 만료된 작품에서 색만 가져왔다. 색 자체는 저작권의
+   대상이 아니고, 아래 작품들은 모두 퍼블릭 도메인이다. 형태나 구도를
+   베끼지 않는다. 색의 관계만 빌려 우리 알고리즘으로 다시 그린다. */
+const PALETTES = {
+  ink:       { name: "수묵",            bg: "#050505", ink: "#f5f2ea", accent: "#8fa6c9", tones: ["#f5f2ea", "#c9c4b8", "#8a8madd".slice(0,7), "#4a4a4a"] },
+  bomnal:    { name: "봄날",            bg: "#070b16", ink: "#e8eefc", accent: "#10367d", tones: ["#e8eefc", "#a9c4ff", "#2f6ad8", "#10367d"] },
+  hokusai:   { name: "가나가와 파도",    bg: "#07131f", ink: "#eef2f0", accent: "#1b4c78", tones: ["#eef2f0", "#a9c6d6", "#1b4c78", "#0d2740"] },
+  gogh:      { name: "별이 빛나는 밤",   bg: "#0a1430", ink: "#f2d98a", accent: "#2a5fa8", tones: ["#f2d98a", "#e8b64c", "#2a5fa8", "#12224d"] },
+  klimt:     { name: "황금",            bg: "#0a0805", ink: "#e8c45a", accent: "#8a6a1f", tones: ["#f0d98a", "#c9a234", "#8a6a1f", "#3a2c10"] },
+  munch:     { name: "절규의 하늘",      bg: "#1a0f14", ink: "#e8934a", accent: "#c4452c", tones: ["#f2c07a", "#e8934a", "#c4452c", "#3a4a6a"] },
+  monet:     { name: "수련",            bg: "#0b1512", ink: "#dfe8d8", accent: "#5a8f7b", tones: ["#dfe8d8", "#a9c4a0", "#5a8f7b", "#7a6a9a"] },
+  vermeer:   { name: "진주",            bg: "#0a0c14", ink: "#f0e6d2", accent: "#2a4a8f", tones: ["#f0e6d2", "#d8b46a", "#2a4a8f", "#14213d"] },
+  hiroshige: { name: "명소백경",         bg: "#0d1020", ink: "#f2ece0", accent: "#b83c2c", tones: ["#f2ece0", "#b83c2c", "#2a4a7a", "#1a2a44"] },
+  turner:    { name: "노을",            bg: "#140d0a", ink: "#f5e2c0", accent: "#d87a3c", tones: ["#f5e2c0", "#e8a95a", "#d87a3c", "#6a4a3a"] },
+  mono:      { name: "흑백",            bg: "#000000", ink: "#ffffff", accent: "#9a9a9a", tones: ["#ffffff", "#c0c0c0", "#7a7a7a", "#3a3a3a"] },
+  neon:      { name: "네온",            bg: "#04060f", ink: "#e6faff", accent: "#00e5c0", tones: ["#e6faff", "#00e5c0", "#3d6bff", "#ff3d8a"] },
+};
+PALETTES.ink.tones[2] = "#8a8a8a";
+
+/* ── 캔버스 ─────────────────────────────────────────────────── */
+const cv = document.getElementById("c");
+cv.width = W; cv.height = H;
+const ctx = cv.getContext("2d", { alpha: false });
+
+const S = Math.min(W, H) / 1080;          // 4K에서도 FHD에서도 같은 비례로 그린다
+const pal = PALETTES[P.palette] || PALETTES.ink;
+const BG  = P.invert ? pal.ink : pal.bg;
+const INK = P.invert ? pal.bg : pal.ink;
+
+const k = {
+  density:  P.density / 100,
+  speed:    P.speed / 100,
+  scale:    0.35 + (P.scale / 100) * 1.8,
+  contrast: 0.4 + (P.contrast / 100) * 1.4,
+  glow:     P.glow / 100,
+  grain:    P.grain / 100,
+  accent:   P.accent / 100,
+};
+
+const rand = mulberry32(SEED);
+/* 스타일마다 쓰는 초기 배치. 시드에서 한 번만 뽑고 이후에는 t의 함수로만 움직인다. */
+const seeds = [];
+for (let i = 0; i < 900; i++) seeds.push({ a: rand(), b: rand(), c: rand(), d: rand() });
+
+const TAU = Math.PI * 2;
+const lerp = (a, b, t) => a + (b - a) * t;
+const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+
+/* 색을 rgba로. 팔레트 tone 인덱스와 알파를 받는다. */
+function tone(i, alpha) {
+  const hex = pal.tones[((i % pal.tones.length) + pal.tones.length) % pal.tones.length];
+  const n = parseInt(hex.slice(1), 16);
+  return "rgba(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + alpha + ")";
+}
+function inkA(alpha) {
+  const n = parseInt(INK.slice(1), 16);
+  return "rgba(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + alpha + ")";
+}
+
+/* 움직임 방식. 완전 루프를 위해 주기는 전부 DUR의 정수배로 잡는다. */
+function motionPhase(t, i) {
+  const p = t / DUR;                       // 0~1 한 바퀴
+  switch (P.motion) {
+    case "still": return 0;
+    case "pulse": return (Math.sin(p * TAU) * 0.5 + 0.5);
+    case "orbit": return p * TAU;
+    default:      return p * TAU;          // drift
+  }
+}
+
+/* 대칭. 고객이 2·4·6을 고르면 같은 그림을 회전 복제한다. */
+function withSymmetry(draw) {
+  const n = [1, 2, 4, 6].indexOf(P.symmetry) >= 0 ? P.symmetry : 1;
+  if (n === 1) { draw(); return; }
+  for (let i = 0; i < n; i++) {
+    ctx.save();
+    ctx.translate(W / 2, H / 2);
+    ctx.rotate((i / n) * TAU);
+    ctx.translate(-W / 2, -H / 2);
+    draw();
+    ctx.restore();
+  }
+}
+
+/* ── 스타일 20종 ─────────────────────────────────────────────
+   전부 t(초)의 함수로 그린다. 프레임을 건너뛰어도, 되감아도 같은 그림이
+   나와야 에디터에서 슬라이더를 움직일 때 그림이 어긋나지 않는다. */
+const STYLES = {
+
+  /* 01 미니멀 — 여백이 주인공. 선 몇 개와 원 하나. */
+  minimal(t) {
+    const n = 3 + Math.round(k.density * 9);
+    const ph = motionPhase(t);
+    ctx.lineWidth = 1.4 * S * k.contrast;
+    for (let i = 0; i < n; i++) {
+      const s = seeds[i];
+      const y = H * (0.18 + 0.64 * s.a);
+      const w = W * (0.12 + 0.5 * s.b);
+      const x = W * 0.5 - w / 2 + Math.sin(ph + s.c * TAU) * W * 0.03 * k.speed;
+      ctx.strokeStyle = inkA(0.16 + 0.5 * s.d * k.contrast);
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + w, y); ctx.stroke();
+    }
+    const r = Math.min(W, H) * (0.06 + 0.06 * Math.sin(ph));
+    ctx.beginPath();
+    ctx.arc(W * 0.5, H * 0.5, Math.abs(r), 0, TAU);
+    ctx.strokeStyle = tone(2, 0.7 * k.accent + 0.2);
+    ctx.lineWidth = 2.2 * S; ctx.stroke();
+  },
+
+  /* 02 맥시멀 — 층층이 쌓는다. 밀도가 성격이다. */
+  maximal(t) {
+    const layers = 4 + Math.round(k.density * 10);
+    const ph = motionPhase(t);
+    ctx.globalCompositeOperation = "lighter";
+    for (let L = 0; L < layers; L++) {
+      const s = seeds[L];
+      const rr = Math.min(W, H) * (0.05 + 0.42 * s.a) * k.scale;
+      const cx = W * (0.2 + 0.6 * s.b) + Math.cos(ph + s.c * TAU) * W * 0.06 * k.speed;
+      const cy = H * (0.2 + 0.6 * s.c) + Math.sin(ph * 1.3 + s.b * TAU) * H * 0.06 * k.speed;
+      const petals = 5 + Math.floor(s.d * 9);
+      ctx.beginPath();
+      for (let i = 0; i <= 220; i++) {
+        const a = (i / 220) * TAU;
+        const r = rr * (0.6 + 0.4 * Math.sin(a * petals + ph * 2));
+        const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+        i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = tone(L, 0.10 + 0.22 * k.contrast);
+      ctx.lineWidth = 1.2 * S; ctx.stroke();
+    }
+    ctx.globalCompositeOperation = "source-over";
+  },
+
+  /* 03 퓨처리스틱 — 궤도와 계측선. 화면이 무언가를 재고 있는 느낌. */
+  futuristic(t) {
+    const ph = motionPhase(t);
+    const cx = W / 2, cy = H / 2, R = Math.min(W, H) * 0.42 * k.scale;
+    const rings = 3 + Math.round(k.density * 7);
+    for (let i = 0; i < rings; i++) {
+      const r = R * (0.2 + 0.8 * (i / rings));
+      ctx.beginPath();
+      const gap = 0.15 + 0.5 * seeds[i].a;
+      ctx.arc(cx, cy, r, ph * (i % 2 ? 1 : -1) + seeds[i].b * TAU, ph * (i % 2 ? 1 : -1) + TAU - gap);
+      ctx.strokeStyle = i % 3 === 0 ? tone(1, 0.55 + 0.35 * k.contrast) : inkA(0.30 + 0.35 * k.contrast);
+      ctx.lineWidth = (i % 3 === 0 ? 3 : 1.4) * S; ctx.stroke();
+      /* 눈금. 화면이 무언가를 재고 있다는 인상은 이 잔선이 만든다. */
+      const ticks = 24 + i * 6;
+      ctx.strokeStyle = inkA(0.16 + 0.2 * k.contrast);
+      ctx.lineWidth = 1 * S;
+      for (let j = 0; j < ticks; j++) {
+        const a = (j / ticks) * TAU + ph * (i % 2 ? 0.4 : -0.4);
+        const t0 = r * 0.97, t1 = r * (j % 4 === 0 ? 1.06 : 1.02);
+        ctx.beginPath();
+        ctx.moveTo(cx + Math.cos(a) * t0, cy + Math.sin(a) * t0);
+        ctx.lineTo(cx + Math.cos(a) * t1, cy + Math.sin(a) * t1);
+        ctx.stroke();
+      }
+    }
+    ctx.beginPath();
+    ctx.arc(cx, cy, R * 0.14, ph, ph + Math.PI * 1.1);
+    ctx.strokeStyle = tone(1, 0.9); ctx.lineWidth = 5 * S; ctx.stroke();
+    ctx.strokeStyle = inkA(0.10);
+    ctx.lineWidth = 1 * S;
+    for (let i = 0; i < 12; i++) {
+      const a = (i / 12) * TAU + ph * 0.2;
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(a) * R * 0.2, cy + Math.sin(a) * R * 0.2);
+      ctx.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R);
+      ctx.stroke();
+    }
+  },
+
+  /* 04 벡터 아트 — 면으로 자른 도형. 그라데이션 없이 평평하게. */
+  vector(t) {
+    const n = 5 + Math.round(k.density * 26);
+    const ph = motionPhase(t);
+    for (let i = 0; i < n; i++) {
+      const s = seeds[i];
+      const sides = 3 + Math.floor(s.a * 5);
+      const r = Math.min(W, H) * (0.03 + 0.16 * s.b) * k.scale;
+      const cx = W * s.c + Math.cos(ph + s.a * TAU) * W * 0.02 * k.speed;
+      const cy = H * s.d + Math.sin(ph + s.b * TAU) * H * 0.02 * k.speed;
+      ctx.beginPath();
+      for (let j = 0; j <= sides; j++) {
+        const a = (j / sides) * TAU + s.a * TAU + ph * 0.3;
+        const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+        j ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fillStyle = tone(i, 0.35 + 0.45 * k.contrast * s.d);
+      ctx.fill();
+    }
+  },
+
+  /* 05 콜라주 — 오려 붙인 종이. 결이 서로 다른 조각이 겹친다. */
+  collage(t) {
+    const n = 6 + Math.round(k.density * 22);
+    const ph = motionPhase(t);
+    for (let i = 0; i < n; i++) {
+      const s = seeds[i];
+      const w = W * (0.06 + 0.28 * s.a) * k.scale;
+      const h = H * (0.05 + 0.3 * s.b) * k.scale;
+      const x = W * s.c - w / 2, y = H * s.d - h / 2;
+      ctx.save();
+      ctx.translate(x + w / 2, y + h / 2);
+      ctx.rotate((s.a - 0.5) * 0.5 + Math.sin(ph + s.b * TAU) * 0.04 * k.speed);
+      ctx.fillStyle = tone(i, 0.22 + 0.5 * k.contrast * s.c);
+      if (s.d > 0.62) { ctx.beginPath(); ctx.arc(0, 0, Math.min(w, h) / 2, 0, TAU); ctx.fill(); }
+      else ctx.fillRect(-w / 2, -h / 2, w, h);
+      if (s.b > 0.5) {                    // 찢긴 결
+        ctx.strokeStyle = inkA(0.18);
+        ctx.lineWidth = 1 * S;
+        ctx.beginPath();
+        for (let j = 0; j <= 20; j++) {
+          const xx = -w / 2 + (w * j) / 20;
+          const yy = -h / 2 + fbm(xx * 0.01, i * 3, 2) * 8 * S;
+          j ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy);
+        }
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+  },
+
+  /* 06 레트로 — 수평선과 해. 70년대 실크스크린의 층. */
+  retro(t) {
+    const ph = motionPhase(t);
+    const hor = H * 0.62;
+    const sunR = Math.min(W, H) * 0.2 * k.scale;
+    const sy = hor - sunR * 0.25 + Math.sin(ph) * H * 0.02 * k.speed;
+    ctx.save();
+    ctx.beginPath(); ctx.arc(W / 2, sy, sunR, 0, TAU); ctx.clip();
+    const bands = 6 + Math.round(k.density * 12);
+    for (let i = 0; i < bands; i++) {
+      ctx.fillStyle = tone(i % 3, 0.35 + 0.5 * (1 - i / bands) * k.contrast);
+      const bh = (sunR * 2) / bands;
+      ctx.fillRect(W / 2 - sunR, sy - sunR + i * bh, sunR * 2, bh * 0.62);
+    }
+    ctx.restore();
+    for (let i = 0; i < 14; i++) {
+      const y = hor + Math.pow(i / 14, 2) * H * 0.4;
+      ctx.strokeStyle = tone(2, 0.3 * k.contrast);
+      ctx.lineWidth = (1 + i * 0.25) * S;
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+  },
+
+  /* 07 사이버펑크 — 원근 격자와 글리치. */
+  cyber(t) {
+    const ph = motionPhase(t);
+    const hor = H * 0.5;
+    ctx.strokeStyle = tone(1, 0.5 * k.contrast);
+    ctx.lineWidth = 1.2 * S;
+    const cols = 10 + Math.round(k.density * 18);
+    for (let i = -cols; i <= cols; i++) {
+      ctx.beginPath(); ctx.moveTo(W / 2 + (i / cols) * W * 0.1, hor);
+      ctx.lineTo(W / 2 + (i / cols) * W * 2.2, H); ctx.stroke();
+    }
+    for (let i = 0; i < 22; i++) {
+      const p = ((i / 22) + (ph / TAU) * k.speed) % 1;
+      const y = hor + Math.pow(p, 2.4) * (H - hor);
+      ctx.strokeStyle = tone(1, 0.18 + 0.4 * p * k.contrast);
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+    for (let i = 0; i < 6; i++) {         // 글리치 슬라이스
+      const s = seeds[i + 40];
+      if ((Math.sin(ph * 3 + s.a * TAU) + 1) / 2 < 0.72) continue;
+      const y = H * s.b, h = H * 0.01 + H * 0.03 * s.c;
+      ctx.fillStyle = tone(3, 0.5);
+      ctx.fillRect(0, y, W, h);
+      ctx.fillStyle = tone(1, 0.35);
+      ctx.fillRect(W * (s.d - 0.5) * 0.2, y + h * 0.3, W, h * 0.35);
+    }
+  },
+
+  /* 08 팝아트 — 하프톤 점과 굵은 면. */
+  pop(t) {
+    const ph = motionPhase(t);
+    const step = Math.max(10, 48 * S / (0.4 + k.density * 1.6));
+    ctx.fillStyle = tone(1, 0.9);
+    for (let y = step / 2; y < H; y += step) {
+      for (let x = step / 2; x < W; x += step) {
+        const v = fbm(x / (W * 0.4) * k.scale + Math.cos(ph) * 0.3, y / (H * 0.4) * k.scale + Math.sin(ph) * 0.3, 2);
+        const r = clamp(v, 0, 1) * step * 0.48 * k.contrast;
+        if (r < 0.4) continue;
+        ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+      }
+    }
+    ctx.fillStyle = tone(3, 0.55);
+    const bw = W * 0.16 * k.scale;
+    ctx.fillRect(W * 0.5 - bw / 2 + Math.sin(ph) * W * 0.08 * k.speed, 0, bw, H);
+  },
+
+  /* 09 글래스모피즘 — 반투명 판이 겹치며 흐려진다. */
+  glass(t) {
+    const n = 3 + Math.round(k.density * 9);
+    const ph = motionPhase(t);
+    for (let i = 0; i < n; i++) {
+      const s = seeds[i + 10];
+      const w = W * (0.16 + 0.32 * s.a) * k.scale;
+      const h = H * (0.14 + 0.34 * s.b) * k.scale;
+      const x = W * s.c - w / 2 + Math.cos(ph + s.a * TAU) * W * 0.04 * k.speed;
+      const y = H * s.d - h / 2 + Math.sin(ph + s.b * TAU) * H * 0.04 * k.speed;
+      const r = Math.min(w, h) * 0.14;
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);        ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+      ctx.fillStyle = tone(i, 0.10 + 0.14 * k.contrast);
+      ctx.fill();
+      ctx.strokeStyle = inkA(0.20 + 0.2 * k.contrast);
+      ctx.lineWidth = 1.4 * S; ctx.stroke();
+    }
+  },
+
+  /* 10 클레이 — 말랑한 덩어리. 부드러운 그림자로 두께를 만든다. */
+  clay(t) {
+    const n = 3 + Math.round(k.density * 8);
+    const ph = motionPhase(t);
+    for (let i = 0; i < n; i++) {
+      const s = seeds[i + 20];
+      const R = Math.min(W, H) * (0.08 + 0.16 * s.a) * k.scale;
+      const cx = W * (0.15 + 0.7 * s.b) + Math.cos(ph + s.c * TAU) * W * 0.03 * k.speed;
+      const cy = H * (0.15 + 0.7 * s.c) + Math.sin(ph + s.a * TAU) * H * 0.03 * k.speed;
+      const blob = (off, fill) => {
+        ctx.beginPath();
+        for (let j = 0; j <= 180; j++) {
+          const a = (j / 180) * TAU;
+          const r = R * (0.86 + 0.14 * Math.sin(a * 3 + s.d * TAU + ph));
+          const x = cx + Math.cos(a) * r + off, y = cy + Math.sin(a) * r + off;
+          j ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+        }
+        ctx.closePath(); ctx.fillStyle = fill; ctx.fill();
+      };
+      blob(R * 0.10, "rgba(0,0,0,0.35)");
+      blob(0, tone(i, 0.55 + 0.35 * k.contrast));
+    }
+  },
+
+  /* 11 픽셀아트 — 필드를 저해상도 격자로 계단화한다. */
+  pixel(t) {
+    const ph = motionPhase(t);
+    const cells = Math.round(18 + k.density * 74);
+    const cw = W / cells, chh = H / cells * (H / W) * (W / H);
+    const rows = Math.round(cells * (H / W));
+    for (let yy = 0; yy < rows; yy++) {
+      for (let xx = 0; xx < cells; xx++) {
+        const v = fbm(xx * 0.08 * k.scale + Math.cos(ph) * 0.6, yy * 0.08 * k.scale + Math.sin(ph) * 0.6, 3);
+        const q4 = Math.floor(clamp(v * 1.35, 0, 0.999) * 5);
+        if (q4 === 0) continue;
+        ctx.fillStyle = tone(4 - Math.min(q4, 4), 0.30 + 0.6 * k.contrast);
+        ctx.fillRect(Math.floor(xx * cw), Math.floor(yy * (H / rows)), Math.ceil(cw), Math.ceil(H / rows));
+      }
+    }
+  },
+
+  /* 12 에디토리얼 — 잡지 지면. 굵은 규칙선과 넓은 여백. */
+  editorial(t) {
+    const ph = motionPhase(t);
+    const m = Math.min(W, H) * 0.1;
+    ctx.strokeStyle = inkA(0.5 * k.contrast);
+    ctx.lineWidth = 2.4 * S;
+    ctx.strokeRect(m, m, W - m * 2, H - m * 2);
+    const cols = 2 + Math.round(k.density * 5);
+    ctx.lineWidth = 1 * S;
+    for (let i = 1; i < cols; i++) {
+      const x = m + ((W - m * 2) * i) / cols;
+      ctx.strokeStyle = inkA(0.16);
+      ctx.beginPath(); ctx.moveTo(x, m); ctx.lineTo(x, H - m); ctx.stroke();
+    }
+    const bars = 3 + Math.round(k.density * 9);
+    for (let i = 0; i < bars; i++) {
+      const s = seeds[i + 30];
+      const y = m + (H - m * 2) * (0.08 + 0.84 * s.a);
+      const w = (W - m * 2) * (0.1 + 0.5 * s.b);
+      const x = m + (W - m * 2 - w) * ((s.c + ph / TAU * k.speed * 0.2) % 1);
+      ctx.fillStyle = i === 0 ? tone(1, 0.85) : inkA(0.12 + 0.4 * s.d * k.contrast);
+      ctx.fillRect(x, y, w, Math.min(H, W) * (i === 0 ? 0.045 : 0.012) * k.scale);
+    }
+  },
+
+  /* 13 Y2K — 크롬 방울과 별 스파클. 무지개 대신 두 톤 금속. */
+  y2k(t) {
+    const ph = motionPhase(t);
+    const n = 3 + Math.round(k.density * 8);
+    for (let i = 0; i < n; i++) {
+      const s = seeds[i + 50];
+      const R = Math.min(W, H) * (0.06 + 0.15 * s.a) * k.scale;
+      const cx = W * s.b + Math.cos(ph + s.c * TAU) * W * 0.05 * k.speed;
+      const cy = H * s.c + Math.sin(ph + s.a * TAU) * H * 0.05 * k.speed;
+      const g = ctx.createLinearGradient(cx - R, cy - R, cx + R, cy + R);
+      g.addColorStop(0, tone(0, 0.95)); g.addColorStop(0.5, tone(2, 0.75)); g.addColorStop(1, tone(0, 0.9));
+      ctx.beginPath();
+      for (let j = 0; j <= 160; j++) {
+        const a = (j / 160) * TAU;
+        const r = R * (0.8 + 0.2 * Math.sin(a * 2 + ph * 2 + s.d * TAU));
+        const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+        j ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+      }
+      ctx.closePath(); ctx.fillStyle = g; ctx.fill();
+    }
+    for (let i = 0; i < 14; i++) {          // 스파클
+      const s = seeds[i + 70];
+      const x = W * s.a, y = H * s.b, r = Math.min(W, H) * 0.012 * (0.4 + s.c) * k.scale;
+      const tw = 0.35 + 0.65 * ((Math.sin(ph * 2 + s.d * TAU) + 1) / 2);
+      ctx.strokeStyle = inkA(0.8 * tw); ctx.lineWidth = 1.6 * S;
+      ctx.beginPath();
+      ctx.moveTo(x - r, y); ctx.lineTo(x + r, y); ctx.moveTo(x, y - r); ctx.lineTo(x, y + r);
+      ctx.stroke();
+    }
+  },
+
+  /* 14 스위스 — 격자, 대각, 굵은 바. 장식 없음. */
+  swiss(t) {
+    const ph = motionPhase(t);
+    const m = Math.min(W, H) * 0.08;
+    const rows = 3 + Math.round(k.density * 9);
+    const cellH = (H - m * 2) / rows;
+    for (let i = 0; i < rows; i++) {
+      const s = seeds[i + 60];
+      if (s.a > 0.55) continue;
+      const w = (W - m * 2) * (0.2 + 0.7 * s.b);
+      const x = m + (W - m * 2 - w) * ((s.c + (ph / TAU) * k.speed * 0.15) % 1);
+      ctx.fillStyle = s.d > 0.7 ? tone(1, 0.9) : inkA(0.75 * k.contrast);
+      ctx.fillRect(x, m + i * cellH, w, cellH * 0.42);
+    }
+    ctx.save();
+    ctx.translate(W / 2, H / 2); ctx.rotate(-Math.PI / 4);
+    ctx.fillStyle = tone(1, 0.6);
+    ctx.fillRect(-W * 0.7, -Math.min(W, H) * 0.02 * k.scale, W * 1.4, Math.min(W, H) * 0.04 * k.scale);
+    ctx.restore();
+  },
+
+  /* 15 초현실 — 지평선 위에 떠 있는 구체와 긴 그림자. */
+  surreal(t) {
+    const ph = motionPhase(t);
+    const hor = H * 0.72;
+    ctx.fillStyle = tone(3, 0.5);
+    ctx.fillRect(0, hor, W, H - hor);
+    const n = 2 + Math.round(k.density * 6);
+    for (let i = 0; i < n; i++) {
+      const s = seeds[i + 80];
+      const R = Math.min(W, H) * (0.05 + 0.12 * s.a) * k.scale;
+      const cx = W * (0.1 + 0.8 * s.b);
+      const cy = hor - Math.min(W, H) * (0.05 + 0.35 * s.c) - Math.sin(ph + s.d * TAU) * H * 0.03 * k.speed;
+      ctx.beginPath();                       // 늘어진 그림자
+      ctx.ellipse(cx, hor + R * 0.1, R * (1.4 + (hor - cy) / H * 4), R * 0.16, 0, 0, TAU);
+      ctx.fillStyle = "rgba(0,0,0,0.42)"; ctx.fill();
+      const g = ctx.createRadialGradient(cx - R * 0.35, cy - R * 0.35, R * 0.05, cx, cy, R);
+      g.addColorStop(0, tone(0, 0.95)); g.addColorStop(1, tone(i + 1, 0.5 + 0.4 * k.contrast));
+      ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU); ctx.fillStyle = g; ctx.fill();
+    }
+  },
+
+  /* 16 보헤미안 — 아치와 점묘. 흙빛의 유기적 반복. */
+  bohemian(t) {
+    const ph = motionPhase(t);
+    const n = 2 + Math.round(k.density * 7);
+    for (let i = 0; i < n; i++) {
+      const s = seeds[i + 90];
+      const w = W * (0.08 + 0.16 * s.a) * k.scale;
+      const cx = W * (0.1 + 0.8 * s.b), base = H * (0.55 + 0.3 * s.c);
+      ctx.beginPath();
+      ctx.moveTo(cx - w / 2, base);
+      ctx.lineTo(cx - w / 2, base - w * 0.9);
+      ctx.arc(cx, base - w * 0.9, w / 2, Math.PI, 0);
+      ctx.lineTo(cx + w / 2, base);
+      ctx.closePath();
+      ctx.fillStyle = tone(i, 0.3 + 0.4 * k.contrast);
+      ctx.fill();
+      ctx.strokeStyle = inkA(0.3); ctx.lineWidth = 1.6 * S; ctx.stroke();
+    }
+    const dots = Math.round(60 + k.density * 320);
+    for (let i = 0; i < dots; i++) {
+      const s = seeds[i % seeds.length];
+      const x = W * ((s.a + i * 0.013) % 1), y = H * ((s.b + i * 0.021) % 1);
+      const r = Math.min(W, H) * 0.0035 * (0.5 + s.c) * k.scale;
+      ctx.beginPath(); ctx.arc(x, y + Math.sin(ph + s.d * TAU) * H * 0.008 * k.speed, r, 0, TAU);
+      ctx.fillStyle = tone(1, 0.25 + 0.4 * s.d * k.contrast); ctx.fill();
+    }
+  },
+
+  /* 17 빅토리안 — 좌우 대칭 아라베스크와 액자 장식. */
+  victorian(t) {
+    const ph = motionPhase(t);
+    const cx = W / 2, cy = H / 2;
+    const m = Math.min(W, H) * 0.07;
+    ctx.strokeStyle = tone(1, 0.7); ctx.lineWidth = 3 * S;
+    ctx.strokeRect(m, m, W - m * 2, H - m * 2);
+    ctx.strokeStyle = inkA(0.3); ctx.lineWidth = 1 * S;
+    ctx.strokeRect(m * 1.5, m * 1.5, W - m * 3, H - m * 3);
+    const arms = 4 + Math.round(k.density * 8) * 2;
+    for (let a = 0; a < arms; a++) {
+      const base = (a / arms) * TAU;
+      ctx.beginPath();
+      for (let j = 0; j <= 140; j++) {
+        const u = j / 140;
+        const r = Math.min(W, H) * 0.46 * k.scale * (0.35 + 0.65 * Math.sin(u * Math.PI)) * (0.7 + 0.3 * Math.sin(u * 6 + ph));
+        const ang = base + Math.sin(u * Math.PI * 2) * 0.5;
+        const x = cx + Math.cos(ang) * r, y = cy + Math.sin(ang) * r;
+        j ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+      }
+      ctx.strokeStyle = a % 2 ? tone(1, 0.35 + 0.45 * k.contrast) : inkA(0.30 + 0.5 * k.contrast);
+      ctx.lineWidth = 1.8 * S; ctx.stroke();
+    }
+  },
+
+  /* 18 그래피티 — 스프레이 궤적과 튀는 입자. */
+  graffiti(t) {
+    const ph = motionPhase(t);
+    const strokes = 2 + Math.round(k.density * 6);
+    for (let sN = 0; sN < strokes; sN++) {
+      const s = seeds[sN + 100];
+      const y0 = H * (0.2 + 0.6 * s.a);
+      ctx.lineCap = "round";
+      for (let pass = 0; pass < 3; pass++) {
+        ctx.beginPath();
+        for (let j = 0; j <= 60; j++) {
+          const u = j / 60;
+          const x = W * (0.08 + 0.84 * u);
+          const y = y0 + Math.sin(u * 6 + s.b * TAU + ph) * H * 0.09 * k.scale + fbm(u * 6, sN * 5 + pass, 2) * H * 0.02;
+          j ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+        }
+        ctx.strokeStyle = tone(sN + pass, (0.1 + 0.2 * k.contrast) / (pass + 1));
+        ctx.lineWidth = Math.min(W, H) * (0.03 - pass * 0.008) * k.scale;
+        ctx.stroke();
+      }
+    }
+    const spray = Math.round(80 + k.density * 420);
+    for (let i = 0; i < spray; i++) {
+      const s = seeds[i % seeds.length];
+      const x = W * ((s.c + i * 0.017) % 1), y = H * ((s.d + i * 0.029) % 1);
+      ctx.fillStyle = inkA(0.05 + 0.2 * s.a);
+      ctx.fillRect(x, y, 1.6 * S, 1.6 * S);
+    }
+  },
+
+  /* 19 오로라 — 흐르는 빛의 커튼. 영류 연작의 기본형. */
+  aurora(t) {
+    const ph = motionPhase(t);
+    const bands = 3 + Math.round(k.density * 9);
+    ctx.globalCompositeOperation = "lighter";
+    for (let b = 0; b < bands; b++) {
+      const s = seeds[b + 110];
+      ctx.beginPath();
+      const steps = 140;
+      for (let j = 0; j <= steps; j++) {
+        const u = j / steps, x = u * W;
+        const y = H * (0.2 + 0.6 * s.a)
+          + fbm(u * 2.2 * k.scale + s.b * 10, ph * 0.5 + b, 3) * H * 0.28
+          + Math.sin(u * TAU + ph + s.c * TAU) * H * 0.05;
+        j ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+      }
+      for (let j = steps; j >= 0; j--) {
+        const u = j / steps, x = u * W;
+        const th = H * (0.02 + 0.10 * s.d) * k.scale;
+        const y = H * (0.2 + 0.6 * s.a)
+          + fbm(u * 2.2 * k.scale + s.b * 10, ph * 0.5 + b, 3) * H * 0.28
+          + Math.sin(u * TAU + ph + s.c * TAU) * H * 0.05 + th;
+        ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      const g = ctx.createLinearGradient(0, 0, 0, H);
+      g.addColorStop(0, tone(b, 0.02 + 0.14 * k.contrast));
+      g.addColorStop(0.5, tone(b + 1, 0.06 + 0.3 * k.contrast));
+      g.addColorStop(1, tone(b, 0.02));
+      ctx.fillStyle = g; ctx.fill();
+    }
+    ctx.globalCompositeOperation = "source-over";
+  },
+
+  /* 20 손글씨 — 획의 압력이 살아 있는 자유곡선. */
+  hand(t) {
+    const ph = motionPhase(t);
+    const lines = 2 + Math.round(k.density * 6);
+    ctx.lineCap = "round"; ctx.lineJoin = "round";
+    for (let L = 0; L < lines; L++) {
+      const s = seeds[L + 120];
+      const y0 = H * (0.2 + 0.6 * (L / Math.max(1, lines - 1)) * 0.9 + 0.05 * s.a);
+      const steps = 220;
+      let px = W * 0.08, py = y0;
+      for (let j = 1; j <= steps; j++) {
+        const u = j / steps;
+        const x = W * (0.08 + 0.84 * u);
+        const y = y0
+          + Math.sin(u * 14 + s.b * TAU) * H * 0.035 * k.scale
+          + fbm(u * 5 + L * 3, ph * 0.3, 2) * H * 0.03;
+        /* 붓의 압력: 획의 시작과 끝이 가늘다 */
+        const press = Math.sin(u * Math.PI) * (0.6 + 0.4 * Math.sin(u * 9 + s.c * TAU));
+        ctx.strokeStyle = inkA(0.25 + 0.6 * k.contrast * Math.abs(press));
+        ctx.lineWidth = Math.max(0.4, Math.min(W, H) * 0.012 * k.scale * Math.abs(press));
+        ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(x, y); ctx.stroke();
+        px = x; py = y;
+      }
+    }
+  },
+};
+
+/* 스타일 목록. 에디터가 이 순서로 버튼을 만든다. */
+window.STUDIO_STYLES = [
+  ["minimal", "미니멀"], ["maximal", "맥시멀"], ["futuristic", "퓨처리스틱"], ["vector", "벡터 아트"],
+  ["collage", "콜라주"], ["retro", "레트로"], ["cyber", "사이버펑크"], ["pop", "팝아트"],
+  ["glass", "글래스"], ["clay", "클레이"], ["pixel", "픽셀아트"], ["editorial", "에디토리얼"],
+  ["y2k", "Y2K"], ["swiss", "스위스"], ["surreal", "초현실"], ["bohemian", "보헤미안"],
+  ["victorian", "빅토리안"], ["graffiti", "그래피티"], ["aurora", "오로라"], ["hand", "손글씨"],
+];
+window.STUDIO_PALETTES = Object.keys(PALETTES).map((id) => [id, PALETTES[id].name]);
+
+/* ── 마감 처리 ────────────────────────────────────────────────
+   그레인은 밴딩을 덮는다. 어두운 그라데이션을 LED에 올리면 계단이
+   보이는데, 아주 옅은 노이즈 한 겹이 그걸 지운다. */
+let grainTile = null;
+function makeGrain() {
+  const g = document.createElement("canvas");
+  g.width = g.height = 128;
+  const gx = g.getContext("2d");
+  const im = gx.createImageData(128, 128);
+  const r = mulberry32(SEED ^ 0x5bf03635);
+  for (let i = 0; i < im.data.length; i += 4) {
+    const v = Math.floor(r() * 255);
+    im.data[i] = im.data[i + 1] = im.data[i + 2] = v;
+    im.data[i + 3] = 255;
+  }
+  gx.putImageData(im, 0, 0);
+  return g;
+}
+function applyGrain() {
+  if (k.grain <= 0.001) return;
+  if (!grainTile) grainTile = makeGrain();
+  ctx.save();
+  ctx.globalCompositeOperation = "overlay";
+  ctx.globalAlpha = 0.03 + k.grain * 0.10;
+  const p = ctx.createPattern(grainTile, "repeat");
+  ctx.fillStyle = p; ctx.fillRect(0, 0, W, H);
+  ctx.restore();
+}
+function applyVignette() {
+  const g = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.25, W / 2, H / 2, Math.max(W, H) * 0.72);
+  g.addColorStop(0, "rgba(0,0,0,0)");
+  g.addColorStop(1, "rgba(0,0,0," + (0.18 + 0.28 * (1 - k.glow)) + ")");
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+}
+
+/* ── 프레임 ──────────────────────────────────────────────────
+   n번째 프레임을 그린다. 같은 n은 언제나 같은 그림이다. */
+window.renderFrame = function (n) {
+  const t = (n % TOTAL_FRAMES) / FPS;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = "source-over";
+  ctx.fillStyle = BG;
+  ctx.fillRect(0, 0, W, H);
+
+  const draw = STYLES[P.style] || STYLES.aurora;
+  if (k.glow > 0.02) {
+    ctx.shadowColor = tone(1, 0.6);
+    ctx.shadowBlur = Math.min(W, H) * 0.012 * k.glow;
+  } else {
+    ctx.shadowBlur = 0;
+  }
+  withSymmetry(() => draw(t));
+  ctx.shadowBlur = 0;
+
+  applyVignette();
+  applyGrain();
+};
+
+window.__READY__ = true;
+
+/* 에디터 미리보기용 루프. 캡처(capture=1)일 때는 돌지 않는다.
+   render-studio.mjs가 프레임을 하나씩 직접 부른다. */
+if (!q.get("capture")) {
+  let f = 0;
+  let paused = false;
+  let raf = 0;
+
+  /* 부모 창(에디터)이 멈추라고 하면 루프를 진짜로 세운다.
+     화면만 감추고 루프를 계속 돌리면 고객 노트북의 팬은 계속 돈다.
+     보이지도 않는 그림 때문에 배터리를 쓰게 두지 않는다. */
+  window.addEventListener("message", (e) => {
+    if (e.data === "bomnal:pause" && !paused) { paused = true; cancelAnimationFrame(raf); }
+    else if (e.data === "bomnal:play" && paused) { paused = false; raf = requestAnimationFrame(step); }
+  });
+
+  const step = () => {
+    if (paused) return;
+    f = (f + 1) % TOTAL_FRAMES;
+    window.renderFrame(f);
+    raf = requestAnimationFrame(step);
+  };
+  raf = requestAnimationFrame(step);
+}
+</script>
+</body>
+</html>
