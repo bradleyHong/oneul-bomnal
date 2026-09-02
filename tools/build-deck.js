@@ -19,6 +19,13 @@ const REPO = path.join(__dirname, "..");
 const C = JSON.parse(fs.readFileSync(path.join(REPO, "canon/canon.json"), "utf8"));
 const I = C.identity, B = C.business;
 
+/* 사업비 계획. canon/grant.json 에만 있고 웹에는 올라가지 않는다.
+   파일이 없으면 사업비 장은 통째로 건너뛴다. 소개서만 필요한 경우가 있다. */
+const GRANT_PATH = path.join(REPO, "canon/grant.json");
+const G = fs.existsSync(GRANT_PATH) ? JSON.parse(fs.readFileSync(GRANT_PATH, "utf8")) : null;
+const won = (n) => n.toLocaleString("ko-KR") + "원";
+const man = (n) => Math.round(n / 10000).toLocaleString("ko-KR") + "만원";
+
 /* 사이트에서 그대로 가져온 색. 소개서와 홈페이지가 같은 회사로 보이게 한다. */
 const NAVY = "101B33";
 const BLUE = "0075C9";
@@ -523,7 +530,161 @@ function numBadge(s, x, y, label, color) {
     `시공 지역   ${C.areaServed.join(" · ")}      |      ${C.areaServedNote}`,
     { x: 1.05, y: 6.05, w: 11.3, h: 0.55, margin: 0, fontFace: BODY, fontSize: 11.5, color: NAVY, valign: "middle" }
   );
-  pageNum(s, 13);
+  pageNum(s, 19);
+}
+
+/* ── 14~18. 사업비 ──────────────────────────────────────────
+   AI 활용 소상공인 지원사업 집행기준(별표 11·12)에 맞춘 지출 계획.
+   금액은 canon/grant.json 에서만 읽는다. 총액을 고치면 표가 함께 바뀐다. */
+if (G) {
+  const GOV = Math.round(G.total.amount * G.total.govRatio);
+  const OWN = G.total.amount - GOV;
+
+  /* ── 14. 사업비 총괄 ─────────────────────────────────── */
+  {
+    const s = pres.addSlide();
+    s.background = { color: WHITE };
+    pageTitle(s, "BUDGET", "사업비 구성");
+
+    /* 총액 띠 */
+    card(s, 0.7, 2.1, 11.9, 1.5, PAPER);
+    s.addText("총 사업비", { x: 1.1, y: 2.35, w: 2, h: 0.32, margin: 0, fontFace: HEAD, fontSize: 12, bold: true, color: GREY });
+    s.addText(man(G.total.amount), { x: 1.1, y: 2.68, w: 3, h: 0.6, margin: 0, fontFace: HEAD, fontSize: 30, bold: true, color: NAVY });
+
+    const barX = 4.6, barW = 7.6, barY = 2.62, barH = 0.62;
+    s.addShape(pres.ShapeType.rect, { x: barX, y: barY, w: barW * G.total.govRatio, h: barH, fill: { color: BLUE } });
+    s.addShape(pres.ShapeType.rect, { x: barX + barW * G.total.govRatio, y: barY, w: barW * G.total.ownRatio, h: barH, fill: { color: NAVY } });
+    s.addText(`정부지원금 ${Math.round(G.total.govRatio * 100)}%   ${man(GOV)}`, {
+      x: barX + 0.16, y: barY, w: barW * G.total.govRatio - 0.3, h: barH, margin: 0,
+      fontFace: HEAD, fontSize: 12.5, bold: true, color: WHITE, valign: "middle",
+    });
+    s.addText(`대응자금 ${Math.round(G.total.ownRatio * 100)}%\n${man(OWN)}`, {
+      x: barX + barW * G.total.govRatio + 0.12, y: barY - 0.02, w: barW * G.total.ownRatio, h: barH + 0.04, margin: 0,
+      fontFace: HEAD, fontSize: 9.5, bold: true, color: WHITE, valign: "middle", lineSpacing: 11,
+    });
+    s.addText("대응자금은 현금 또는 현물. 현물은 대표자·기 고용 인력 인건비, 사무실 임차료, 이행보증보험증권 수수료.", {
+      x: barX, y: barY + 0.72, w: barW, h: 0.3, margin: 0, fontFace: BODY, fontSize: 9.5, color: GREY,
+    });
+
+    /* 비목별 배분 */
+    const rows = G.gov.map((x) => [x.item, x.spend, Math.round(GOV * x.share)]);
+    /* 아홉 줄이 들어가야 한다. 줄 높이를 먼저 재서 슬라이드 안에 맞춘다.
+       처음엔 0.42로 잡았다가 마지막 두 줄이 화면 밖으로 나갔다. */
+    const tTop = 3.96, tBot = 6.78;
+    const rh = (tBot - tTop) / rows.length;
+    const maxAmt = Math.max(...rows.map((r) => r[2]));
+    s.addText("정부지원금 비목별 배분", { x: 0.7, y: 3.66, w: 6, h: 0.26, margin: 0, fontFace: HEAD, fontSize: 11, bold: true, color: BLUE });
+    rows.forEach(([item, spend, amt], i) => {
+      const y = tTop + i * rh;
+      s.addText(item, { x: 0.75, y, w: 2.3, h: rh, margin: 0, fontFace: HEAD, fontSize: 9, bold: true, color: NAVY, valign: "middle" });
+      s.addText(spend, { x: 3.1, y, w: 5.1, h: rh, margin: 0, fontFace: BODY, fontSize: 9, color: GREY, valign: "middle" });
+      const w = 2.6 * (amt / maxAmt);
+      s.addShape(pres.ShapeType.rect, { x: 8.35, y: y + rh / 2 - 0.07, w: Math.max(w, 0.08), h: 0.14, fill: { color: BLUE } });
+      s.addText(man(amt), { x: 11.05, y, w: 1.5, h: rh, margin: 0, align: "right", fontFace: BODY, fontSize: 9, bold: true, color: NAVY, valign: "middle" });
+      s.addShape(pres.ShapeType.line, { x: 0.75, y: y + rh, w: 11.8, h: 0, line: { color: LINE, width: 1 } });
+    });
+    s.addText(G.total.note, {
+      x: 0.7, y: 6.88, w: 11.9, h: 0.42, margin: 0, fontFace: BODY, fontSize: 8.5, italic: true, color: "9AA3B0", lineSpacing: 11,
+    });
+    pageNum(s, 14);
+  }
+
+  /* ── 15. 정부지원금 상세 ─────────────────────────────── */
+  {
+    const s = pres.addSlide();
+    s.background = { color: WHITE };
+    pageTitle(s, "BUDGET · 정부지원금", "무엇에 쓰고, 왜 필요한가", { fs: 30 });
+
+    const y0 = 2.05, rh = 0.545;
+    const head = [["비목 · 세목", 0.75, 2.6], ["집행항목", 3.4, 1.5], ["우리 지출", 4.95, 3.0], ["필요한 이유", 8.0, 4.55]];
+    head.forEach(([t, x, w]) => s.addText(t, { x, y: y0 - 0.3, w, h: 0.26, margin: 0, fontFace: HEAD, fontSize: 9.5, bold: true, charSpacing: 1, color: BLUE }));
+    s.addShape(pres.ShapeType.line, { x: 0.75, y: y0 - 0.02, w: 11.8, h: 0, line: { color: NAVY, width: 1.5 } });
+
+    G.gov.forEach((g, i) => {
+      const y = y0 + i * rh + 0.06;
+      s.addText(g.code, { x: 0.75, y, w: 2.6, h: rh - 0.1, margin: 0, fontFace: BODY, fontSize: 8.5, color: GREY, valign: "middle" });
+      s.addText(g.item, { x: 3.4, y, w: 1.5, h: rh - 0.1, margin: 0, fontFace: HEAD, fontSize: 9.5, bold: true, color: NAVY, valign: "middle" });
+      s.addText(g.spend, { x: 4.95, y, w: 3.0, h: rh - 0.1, margin: 0, fontFace: HEAD, fontSize: 9.5, bold: true, color: g.warn ? "B0442C" : INK, valign: "middle" });
+      s.addText(g.why, { x: 8.0, y, w: 4.55, h: rh - 0.1, margin: 0, fontFace: BODY, fontSize: 8.5, color: GREY, valign: "middle", lineSpacing: 11 });
+      s.addShape(pres.ShapeType.line, { x: 0.75, y: y + rh - 0.06, w: 11.8, h: 0, line: { color: LINE, width: 1 } });
+    });
+    pageNum(s, 15);
+  }
+
+  /* ── 16. 대응자금 ────────────────────────────────────── */
+  {
+    const s = pres.addSlide();
+    s.background = { color: WHITE };
+    pageTitle(s, "BUDGET · 대응자금", "20%는 현물로 채운다", { fs: 30 });
+    const OWNv = G.total.amount - Math.round(G.total.amount * G.total.govRatio);
+
+    s.addText("대응자금은 100% 소진이 필수이며, 계획에 대해 주관기관 사전 승인이 필요하다.", {
+      x: 0.7, y: 1.95, w: 11.9, h: 0.3, margin: 0, fontFace: BODY, fontSize: 11, color: GREY,
+    });
+
+    const cw = 3.85, gap = 0.28, x0 = 0.7, y0 = 2.5, ch = 2.15;
+    G.own.forEach((o, i) => {
+      const x = x0 + i * (cw + gap);
+      card(s, x, y0, cw, ch);
+      numBadge(s, x + 0.3, y0 + 0.3, `0${i + 1}`, NAVY);
+      s.addText(o.item, { x: x + 0.3, y: y0 + 0.88, w: cw - 0.6, h: 0.32, margin: 0, fontFace: HEAD, fontSize: 14, bold: true, color: NAVY });
+      s.addText(man(Math.round(OWNv * o.share)), { x: x + 0.3, y: y0 + 1.2, w: cw - 0.6, h: 0.3, margin: 0, fontFace: HEAD, fontSize: 13, bold: true, color: BLUE });
+      s.addText(o.spend, { x: x + 0.3, y: y0 + 1.54, w: cw - 0.6, h: 0.5, margin: 0, fontFace: BODY, fontSize: 9.5, color: GREY, lineSpacing: 12 });
+    });
+
+    s.addText("비목별 증빙자료", { x: 0.7, y: 4.95, w: 6, h: 0.26, margin: 0, fontFace: HEAD, fontSize: 11.5, bold: true, color: BLUE });
+    const ey = 5.25, erh = 0.32;
+    G.evidence.forEach(([k, v], i) => {
+      const y = ey + i * erh;
+      s.addText(k, { x: 0.75, y, w: 1.75, h: erh, margin: 0, fontFace: HEAD, fontSize: 9, bold: true, color: NAVY, valign: "middle" });
+      s.addText(v, { x: 2.6, y, w: 9.95, h: erh, margin: 0, fontFace: BODY, fontSize: 8.5, color: GREY, valign: "middle" });
+    });
+    pageNum(s, 16);
+  }
+
+  /* ── 17. 집행 시 주의 ────────────────────────────────── */
+  {
+    const s = pres.addSlide();
+    s.background = { color: WHITE };
+    pageTitle(s, "BUDGET · 집행", "미리 알고 가는 열 가지", { fs: 30 });
+    s.addText("소상공인 사업비 집행기준 <별표 11> · 집행 유의사항 <별표 12>에서 우리 사업에 걸리는 것만 추렸다.", {
+      x: 0.7, y: 1.95, w: 11.9, h: 0.3, margin: 0, fontFace: BODY, fontSize: 10.5, color: GREY,
+    });
+
+    const cw = 5.85, gap = 0.35, x0 = 0.7, y0 = 2.45, ch = 0.86;
+    G.rules.forEach((r, i) => {
+      const col = i % 2, row = Math.floor(i / 2);
+      const x = x0 + col * (cw + gap), y = y0 + row * (ch + 0.1);
+      const key = r.flag === "warn" ? "B0442C" : r.flag === "good" ? "0F7A4A" : BLUE;
+      s.addShape(pres.ShapeType.rect, { x, y, w: 0.045, h: ch, fill: { color: key } });
+      s.addText(r.t, { x: x + 0.22, y: y + 0.02, w: cw - 0.3, h: 0.28, margin: 0, fontFace: HEAD, fontSize: 11, bold: true, color: r.flag ? key : NAVY });
+      s.addText(r.d, { x: x + 0.22, y: y + 0.3, w: cw - 0.3, h: 0.55, margin: 0, fontFace: BODY, fontSize: 8.8, color: GREY, lineSpacing: 11.5, valign: "top" });
+    });
+    pageNum(s, 17);
+  }
+
+  /* ── 18. 오늘 만든 것 ────────────────────────────────── */
+  {
+    const s = pres.addSlide();
+    s.background = { color: NAVY };
+    pageTitle(s, "STATUS", G.built.title, { dark: true, fs: 30 });
+    s.addText(G.built.note, {
+      x: 0.7, y: 1.95, w: 11.9, h: 0.34, margin: 0, fontFace: BODY, fontSize: 10.5, color: "8FA0BE",
+    });
+
+    const y0 = 2.55, rh = 0.86;
+    G.built.items.forEach(([t, d], i) => {
+      const y = y0 + i * rh;
+      s.addShape(pres.ShapeType.ellipse, { x: 0.75, y: y + 0.14, w: 0.2, h: 0.2, fill: { color: BLUE }, line: { color: BLUE } });
+      s.addText(t, { x: 1.2, y, w: 3.6, h: 0.34, margin: 0, fontFace: HEAD, fontSize: 14, bold: true, color: WHITE });
+      s.addText(d, { x: 4.95, y: y + 0.02, w: 7.6, h: 0.62, margin: 0, fontFace: BODY, fontSize: 10, color: "B9C6DC", lineSpacing: 13.5, valign: "top" });
+      s.addShape(pres.ShapeType.line, { x: 1.2, y: y + rh - 0.12, w: 11.35, h: 0, line: { color: "2C3A57", width: 1 } });
+    });
+    s.addText("publicbloom.art/studio  ·  publicbloom.art/ai  ·  publicbloom.art/ax-studio", {
+      x: 0.7, y: 6.85, w: 11.9, h: 0.3, margin: 0, fontFace: BODY, fontSize: 10.5, color: BLUE,
+    });
+    pageNum(s, 18);
+  }
 }
 
 /* ── 13. 연락처 ─────────────────────────────────────────── */
