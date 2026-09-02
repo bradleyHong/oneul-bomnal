@@ -578,9 +578,10 @@ if (G) {
       const y = tTop + i * rh;
       s.addText(item, { x: 0.75, y, w: 2.3, h: rh, margin: 0, fontFace: HEAD, fontSize: 9, bold: true, color: NAVY, valign: "middle" });
       s.addText(spend, { x: 3.1, y, w: 5.1, h: rh, margin: 0, fontFace: BODY, fontSize: 9, color: GREY, valign: "middle" });
-      const w = 2.6 * (amt / maxAmt);
+      const w = 2.1 * (amt / maxAmt);
       s.addShape(pres.ShapeType.rect, { x: 8.35, y: y + rh / 2 - 0.07, w: Math.max(w, 0.08), h: 0.14, fill: { color: BLUE } });
-      s.addText(man(amt), { x: 11.05, y, w: 1.5, h: rh, margin: 0, align: "right", fontFace: BODY, fontSize: 9, bold: true, color: NAVY, valign: "middle" });
+      s.addText(man(amt), { x: 10.55, y, w: 1.25, h: rh, margin: 0, align: "right", fontFace: BODY, fontSize: 9.5, bold: true, color: NAVY, valign: "middle" });
+      s.addText((amt / GOV * 100).toFixed(1) + "%", { x: 11.85, y, w: 0.7, h: rh, margin: 0, align: "right", fontFace: BODY, fontSize: 8.5, color: "9AA3B0", valign: "middle" });
       s.addShape(pres.ShapeType.line, { x: 0.75, y: y + rh, w: 11.8, h: 0, line: { color: LINE, width: 1 } });
     });
     s.addText(G.total.note, {
@@ -593,19 +594,35 @@ if (G) {
   {
     const s = pres.addSlide();
     s.background = { color: WHITE };
+    const GOV_T = Math.round(G.total.amount * G.total.govRatio);
     pageTitle(s, "BUDGET · 정부지원금", "무엇에 쓰고, 왜 필요한가", { fs: 30 });
+    s.addText(`정부지원금 ${man(GOV_T)}`, {
+      x: 8.0, y: 1.42, w: 4.55, h: 0.3, margin: 0, align: "right",
+      fontFace: HEAD, fontSize: 13, bold: true, color: NAVY,
+    });
 
-    const y0 = 2.05, rh = 0.545;
+    const y0 = 2.05, rh = Math.min(0.70, 4.85 / G.gov.length);
     const head = [["비목 · 세목", 0.75, 2.6], ["집행항목", 3.4, 1.5], ["우리 지출", 4.95, 3.0], ["필요한 이유", 8.0, 4.55]];
     head.forEach(([t, x, w]) => s.addText(t, { x, y: y0 - 0.3, w, h: 0.26, margin: 0, fontFace: HEAD, fontSize: 9.5, bold: true, charSpacing: 1, color: BLUE }));
     s.addShape(pres.ShapeType.line, { x: 0.75, y: y0 - 0.02, w: 11.8, h: 0, line: { color: NAVY, width: 1.5 } });
 
     G.gov.forEach((g, i) => {
       const y = y0 + i * rh + 0.06;
-      s.addText(g.code, { x: 0.75, y, w: 2.6, h: rh - 0.1, margin: 0, fontFace: BODY, fontSize: 8.5, color: GREY, valign: "middle" });
-      s.addText(g.item, { x: 3.4, y, w: 1.5, h: rh - 0.1, margin: 0, fontFace: HEAD, fontSize: 9.5, bold: true, color: NAVY, valign: "middle" });
-      s.addText(g.spend, { x: 4.95, y, w: 3.0, h: rh - 0.1, margin: 0, fontFace: HEAD, fontSize: 9.5, bold: true, color: g.warn ? "B0442C" : INK, valign: "middle" });
-      s.addText(g.why, { x: 8.0, y, w: 4.55, h: rh - 0.1, margin: 0, fontFace: BODY, fontSize: 8.5, color: GREY, valign: "middle", lineSpacing: 11 });
+      s.addText(g.code, { x: 0.75, y: y + 0.02, w: 2.6, h: 0.32, margin: 0, fontFace: BODY, fontSize: 8.5, color: GREY, valign: "top" });
+      s.addText(g.item, { x: 3.4, y: y + 0.02, w: 1.5, h: 0.32, margin: 0, fontFace: HEAD, fontSize: 9.5, bold: true, color: NAVY, valign: "top" });
+      s.addText(g.spend, {
+        x: 4.95, y: y + 0.02, w: 3.0, h: 0.32, margin: 0,
+        fontFace: HEAD, fontSize: 9.5, bold: true, color: g.warn ? "B0442C" : INK, valign: "top",
+      });
+      s.addText(man(Math.round(GOV_T * g.share)), {
+        x: 4.95, y: y + 0.32, w: 3.0, h: 0.26, margin: 0,
+        fontFace: HEAD, fontSize: 12, bold: true, color: BLUE, valign: "top",
+      });
+      const why = g.warn
+        ? [{ text: g.why + "  ", options: { color: GREY } },
+           { text: g.warn, options: { color: "B0442C", bold: true } }]
+        : g.why;
+      s.addText(why, { x: 8.0, y, w: 4.55, h: rh - 0.1, margin: 0, fontFace: BODY, fontSize: 8.5, color: GREY, valign: "middle", lineSpacing: 11 });
       s.addShape(pres.ShapeType.line, { x: 0.75, y: y + rh - 0.06, w: 11.8, h: 0, line: { color: LINE, width: 1 } });
     });
     pageNum(s, 15);
