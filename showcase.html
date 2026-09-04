@@ -358,6 +358,41 @@
             </tbody>
           </table>
         </div>
+
+        <div class="api-kit" id="api-kit">
+          <h3>기관 담당자용 · 공공 API 복붙 키트</h3>
+          <p class="api-kit-lead">지역만 고르시면 화면에 물릴 주소와 코드가 나옵니다.
+            인증키가 필요 없고 브라우저에서 바로 호출되는 API라 그대로 붙여 쓰시면 됩니다.</p>
+
+          <label class="api-kit-pick">
+            <span>지역</span>
+            <select data-kit-place aria-label="지역 선택"></select>
+          </label>
+
+          <div class="api-kit-box" data-kit-out="weather">
+            <div class="api-kit-head"><b>기상 (기온 · 습도 · 풍속 · 강수 · 구름)</b>
+              <button type="button" data-kit-copy>주소 복사</button></div>
+            <code data-kit-value></code>
+          </div>
+
+          <div class="api-kit-box" data-kit-out="air">
+            <div class="api-kit-head"><b>대기질 (미세먼지 · 초미세먼지 · 지수)</b>
+              <button type="button" data-kit-copy>주소 복사</button></div>
+            <code data-kit-value></code>
+          </div>
+
+          <div class="api-kit-box" data-kit-out="code">
+            <div class="api-kit-head"><b>붙여넣기용 코드</b>
+              <button type="button" data-kit-copy>코드 복사</button></div>
+            <pre data-kit-value></pre>
+          </div>
+
+          <p class="api-kit-note"><b>인증키가 필요한 API는 이 방식으로 되지 않습니다.</b>
+            공공데이터포털(data.go.kr) 계열은 브라우저에서 직접 부르면 키가 그대로 노출되고,
+            기관 서버가 외부 호출(CORS)을 막아 두는 경우가 많습니다. 그런 API와 기관 내부
+            데이터베이스는 중계 서버를 한 겹 두고 연결해 드립니다.
+            <a href="./quote">문의</a>하시면 기관 정책에 맞춰 설계합니다.</p>
+        </div>
       </section>
 
       <section class="section faq-section" id="faq">
@@ -429,5 +464,6 @@
     <script src="./auth.js?v=20260728-auth"></script>
     <script src="./art-embed.js?v=20260823-art" defer></script>
     <script src="./quote-cta.js?v=20260803-cta"></script>
-  </body>
+    <script src="./api-kit.js" defer></script>
+</body>
 </html>

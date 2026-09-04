@@ -5361,3 +5361,24 @@ main > .section > .section-head .section-kicker {
 .data-status td:first-child { font-weight: 700; white-space: nowrap; }
 .data-status td b { color: #0b62c4; }
 .data-status small { display: block; margin-top: 6px; color: #7a8899; line-height: 1.55; }
+
+/* 공공 API 복붙 키트 (showcase) */
+.api-kit { margin-top: 44px; padding: 28px; background: #f7f9fb; border-radius: 12px; }
+.api-kit h3 { font-size: 1.15rem; margin: 0 0 8px; }
+.api-kit-lead { margin: 0 0 18px; color: #41505f; line-height: 1.6; }
+.api-kit-pick { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+.api-kit-pick span { font-weight: 700; font-size: .95rem; }
+.api-kit-pick select { padding: 9px 14px; border: 1px solid #cfd8e2; border-radius: 8px;
+  background: #fff; font: inherit; min-width: 220px; }
+.api-kit-box { background: #fff; border: 1px solid #e2e8ef; border-radius: 10px;
+  padding: 14px 16px; margin-bottom: 12px; }
+.api-kit-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.api-kit-head b { font-size: .95rem; }
+.api-kit-head button { border: 1px solid #0b62c4; background: #fff; color: #0b62c4;
+  border-radius: 999px; padding: 5px 14px; font: inherit; font-size: .85rem; cursor: pointer; white-space: nowrap; }
+.api-kit-head button:hover { background: #0b62c4; color: #fff; }
+.api-kit-box code, .api-kit-box pre { display: block; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .8rem; line-height: 1.65; color: #16233a; white-space: pre-wrap; word-break: break-all; margin: 0; }
+.api-kit-box pre { white-space: pre; overflow-x: auto; word-break: normal; }
+.api-kit-note { margin: 16px 0 0; font-size: .9rem; color: #55636f; line-height: 1.7; }
+.api-kit-note b { color: #16233a; }
