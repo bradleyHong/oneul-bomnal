@@ -44,8 +44,24 @@
     { id: "우주",   bg: "#05060f", ink: ["#9db4ff", "#d6c8ff", "#ffffff", "#4a5bb0", "#e8ecff"] },
     { id: "흙",     bg: "#120d09", ink: ["#d9a066", "#8c5a2b", "#f0d9b8", "#5c4022", "#fff6e8"] },
     { id: "안개",   bg: "#101418", ink: ["#c9d6de", "#8ea3b0", "#e8f0f4", "#5c6f7a", "#ffffff"] },
-    { id: "형광",   bg: "#06080a", ink: ["#c6ff4f", "#4fffd0", "#ff4f8b", "#4f9bff", "#ffffff"] }
+    { id: "형광",   bg: "#06080a", ink: ["#c6ff4f", "#4fffd0", "#ff4f8b", "#4f9bff", "#ffffff"] },
+    { id: "청자",   bg: "#081412", ink: ["#9fd8c8", "#5aa896", "#d6f0e6", "#2f6b60", "#f0fbf7"] },
+    { id: "산호",   bg: "#18090c", ink: ["#ff7a7a", "#ffb08a", "#ffd9c0", "#c04a5a", "#fff0ea"] },
+    { id: "라벤더", bg: "#0d0a16", ink: ["#c3b0ff", "#8f7ae0", "#e8dfff", "#5a4a9a", "#ffffff"] },
+    { id: "심해",   bg: "#03080f", ink: ["#2f7fa8", "#1b4f70", "#7fd0e8", "#0f3550", "#cfeaf5"] }
   ];
+
+  /* 낱말이 고른 색과 잘 어울리는 이웃들. 같은 문장이라도 여기서 돌려 쓴다. */
+  var KIN = {
+    "바다": ["심해", "청자", "안개"], "심해": ["바다", "우주", "겨울밤"],
+    "봄빛": ["산호", "라벤더", "노을"], "산호": ["봄빛", "노을"],
+    "겨울밤": ["우주", "안개", "심해"], "우주": ["겨울밤", "라벤더", "심해"],
+    "단청": ["흙", "노을", "산호"], "흙": ["단청", "먹", "노을"],
+    "노을": ["산호", "봄빛", "단청"], "숲": ["청자", "흙", "안개"],
+    "청자": ["숲", "바다", "안개"], "도시밤": ["형광", "라벤더", "우주"],
+    "형광": ["도시밤", "라벤더"], "먹": ["안개", "흙"],
+    "안개": ["먹", "청자", "겨울밤"], "라벤더": ["우주", "봄빛", "도시밤"]
+  };
 
   /* ── 낱말 사전 — 문장에서 색과 움직임을 읽는다 ──────────── */
   /* 한 글자짜리 낱말은 쓰지 않는다. "물"은 건물에, "강"은 강렬에,
@@ -68,54 +84,86 @@
     { re: /입자|먼지|알갱이|파티클/,               pal: null, style: "particle", tags: ["입자"] }
   ];
 
-  var MOOD = [
-    { re: /고요|차분|느리|잔잔|평온|은은/, speed: 1, density: 0.7 },
-    { re: /경쾌|빠르|활기|역동|신나|화려/, speed: 3, density: 1.5 },
-    { re: /웅장|장엄|묵직|깊/,             speed: 1, density: 1.35 },
-    { re: /화사|밝|따뜻|산뜻/,             speed: 2, density: 1.1 }
+  /* 분위기 12종 — 속도와 밀도, 선 굵기와 밝기를 함께 정한다.
+   * 속도는 정수여야 5초 한 바퀴가 정확히 맞아떨어진다. */
+  var MOODS = [
+    { id: "고요", re: /고요|정적|멈춘/,        speed: 1, density: 0.6, weight: 0.8, glow: 0.9 },
+    { id: "잔잔", re: /잔잔|평온|느리|천천/,   speed: 1, density: 0.8, weight: 1.0, glow: 1.0 },
+    { id: "은은", re: /은은|살며시|옅/,        speed: 1, density: 0.9, weight: 0.8, glow: 0.8 },
+    { id: "차분", re: /차분|담담|정갈/,        speed: 1, density: 1.0, weight: 1.0, glow: 0.9 },
+    { id: "몽환", re: /몽환|꿈결|아련|신비/,   speed: 2, density: 1.2, weight: 0.9, glow: 1.3 },
+    { id: "화사", re: /화사|밝|환하/,          speed: 2, density: 1.1, weight: 1.1, glow: 1.2 },
+    { id: "산뜻", re: /산뜻|상큼|가볍/,        speed: 2, density: 1.0, weight: 1.0, glow: 1.1 },
+    { id: "경쾌", re: /경쾌|활기|발랄|신나/,   speed: 3, density: 1.3, weight: 1.1, glow: 1.2 },
+    { id: "역동", re: /역동|빠르|힘차|질주/,   speed: 3, density: 1.5, weight: 1.3, glow: 1.2 },
+    { id: "강렬", re: /강렬|짙|선명|대담/,     speed: 3, density: 1.4, weight: 1.6, glow: 1.4 },
+    { id: "웅장", re: /웅장|장엄|거대|압도/,   speed: 1, density: 1.5, weight: 1.6, glow: 1.2 },
+    { id: "묵직", re: /묵직|깊|무겁|진중/,     speed: 1, density: 1.3, weight: 1.5, glow: 0.9 }
   ];
 
-  var STYLE_IDS = ["flow", "wave", "particle", "contour", "grid", "bloom", "column", "snow"];
-  var STYLE_KO = {
-    flow: "흐름", wave: "파동", particle: "입자", contour: "등고",
-    grid: "격자", bloom: "번짐", column: "기둥", snow: "설경"
+  var STYLE_IDS = ["flow", "wave", "particle", "contour", "grid", "bloom", "column",
+                   "snow", "ribbon", "orbit", "mesh", "bar", "spiral", "drift"];
+
+  /* 화면 비율에 따라 어울리는 것이 다르다. 1:6 기둥에 등고선을 그리면
+   * 가운데만 뭉치고 위아래가 비어 버린다. 실제로 그렇게 나왔다. */
+  var FIT = {
+    tall:  ["column", "bar", "flow", "wave", "drift", "snow", "particle", "mesh", "ribbon"],
+    wide:  ["wave", "flow", "bar", "ribbon", "grid", "drift", "mesh", "particle", "column"],
+    even:  STYLE_IDS
   };
 
   /* ── 문장 읽기 ────────────────────────────────────────────
-   * 같은 문장이라도 씨앗이 바뀌면 다른 화면이 나온다.
-   * "다시 만들기"를 누를 때마다 씨앗만 바꾼다. */
-  function compose(text, seed) {
+   * 낱말은 방향만 잡는다. 고정하지 않는다.
+   * 문장이 정한 것을 매번 그대로 쓰면 "다른 화면 보기"를 눌러도
+   * 늘 같은 그림이 나온다. 그래서 낱말이 고른 것을 가장 자주 쓰되,
+   * 어울리는 이웃으로도 돌려 가며 쓴다. */
+  function pick(r, arr) { return arr[Math.floor(r() * arr.length)]; }
+
+  function compose(text, seed, aspect) {
     var r = rng(seed);
-    var pal = null, style = null, tags = [];
+    var palHint = null, styleHint = null, tags = [];
 
     LEX.forEach(function (e) {
       if (!e.re.test(text)) return;
-      if (e.pal && !pal) pal = e.pal;
-      if (e.style && !style) style = e.style;
+      if (e.pal && !palHint) palHint = e.pal;
+      if (e.style && !styleHint) styleHint = e.style;
       tags = tags.concat(e.tags);
     });
 
-    var speed = 2, density = 1;
-    MOOD.forEach(function (m) {
-      if (m.re.test(text)) { speed = m.speed; density = m.density; }
-    });
+    // 분위기 — 문장에 없으면 씨앗으로 고른다
+    var mood = null;
+    MOODS.forEach(function (m) { if (!mood && m.re.test(text)) mood = m; });
+    if (!mood) mood = pick(r, MOODS);
 
-    var palette = pal
-      ? PALETTES.filter(function (p) { return p.id === pal; })[0]
-      : PALETTES[Math.floor(r() * PALETTES.length)];
-    if (!style) style = STYLE_IDS[Math.floor(r() * STYLE_IDS.length)];
+    // 색 — 낱말이 고른 것 55%, 어울리는 이웃 30%, 나머지는 자유
+    var palId;
+    var d = r();
+    if (palHint && d < 0.55) palId = palHint;
+    else if (palHint && d < 0.85 && KIN[palHint]) palId = pick(r, KIN[palHint]);
+    else palId = pick(r, PALETTES).id;
+    var palette = PALETTES.filter(function (p) { return p.id === palId; })[0] || PALETTES[0];
 
-    // 같은 낱말이라도 매번 조금씩 달라지도록 흔든다
-    density *= 0.85 + r() * 0.4;
-    var layers = 3 + Math.floor(r() * 3);
+    // 스타일 — 화면 비율에 맞는 것들 중에서 고른다
+    var ar = aspect || 16 / 9;
+    var fit = ar >= 2.2 ? FIT.wide : (ar <= 0.62 ? FIT.tall : FIT.even);
+    var style;
+    if (styleHint && fit.indexOf(styleHint) >= 0 && r() < 0.45) style = styleHint;
+    else style = pick(r, fit);
 
     if (!tags.length) tags = ["자유 구성"];
-    tags = tags.filter(function (t, i, a) { return a.indexOf(t) === i; });
+    tags = tags.filter(function (t, i, a2) { return a2.indexOf(t) === i; });
 
     return {
-      seed: seed, style: style, palette: palette, tags: tags,
-      speed: speed, density: density, layers: layers,
-      rot: r() * TAU, warp: 0.4 + r() * 1.2, grain: r()
+      seed: seed, style: style, palette: palette, mood: mood, tags: tags,
+      speed: mood.speed,
+      density: mood.density * (0.8 + r() * 0.5),
+      weight: mood.weight * (0.85 + r() * 0.35),
+      glow: mood.glow,
+      layers: 3 + Math.floor(r() * 4),
+      rot: r() * TAU,
+      warp: 0.4 + r() * 1.4,
+      dir: r() < 0.5 ? 1 : -1,
+      ar: ar
     };
   }
 
@@ -175,17 +223,21 @@
   };
 
   Gen.prototype.watermark = function (ctx, W, H) {
-    var fs = Math.max(12, Math.round(W / 34));
+    var fs = Math.max(9, Math.round(Math.min(W / 22, H / 22, 26)));
     ctx.font = "700 " + fs + "px Pretendard, sans-serif";
+    while (fs > 8 && ctx.measureText(this.mark).width > W * 0.82) {
+      fs -= 1;
+      ctx.font = "700 " + fs + "px Pretendard, sans-serif";
+    }
     ctx.textAlign = "right";
     ctx.fillStyle = "rgba(0,0,0,.45)";
     ctx.fillText(this.mark, W - 15, H - 15);
     ctx.fillStyle = "rgba(255,255,255,.9)";
     ctx.fillText(this.mark, W - 16, H - 16);
     ctx.textAlign = "left";
-    ctx.font = "600 " + Math.round(fs * 0.6) + "px Pretendard, sans-serif";
+    ctx.font = "600 " + Math.round(fs * 0.62) + "px Pretendard, sans-serif";
     ctx.fillStyle = "rgba(255,255,255,.55)";
-    ctx.fillText("시연본 · 5초 반복", 16, H - 16);
+    if (W > 260) ctx.fillText("시연본 · 5초 반복", 14, H - 14);
   };
 
   function hexA(hex, a) {
@@ -362,6 +414,148 @@
       }
     },
 
+    /* 띠 — 두꺼운 면이 겹쳐 흐른다. 넓은 화면에서 시원하다 */
+    ribbon: function (ctx, W, H, t, s) {
+      var n = Math.round(9 * s.density) + 3, r = rng(s.seed);
+      for (var i = 0; i < n; i++) {
+        var col = s.palette.ink[i % s.palette.ink.length];
+        var y0 = r() * H, th = (0.04 + r() * 0.16) * H * s.weight;
+        var wv = 1 + Math.floor(r() * 3), k = 1 + Math.floor(r() * 2);
+        var off = r() * TAU, amp = (0.04 + r() * 0.14) * H;
+        ctx.fillStyle = hexA(col, (0.1 + r() * 0.18) * s.glow);
+        ctx.beginPath();
+        for (var x = 0; x <= W; x += 6) {
+          var u = x / W;
+          ctx.lineTo(x, y0 + Math.sin(u * TAU * wv + ph(t, k) * s.dir + off) * amp);
+        }
+        for (var x2 = W; x2 >= 0; x2 -= 6) {
+          var u2 = x2 / W;
+          ctx.lineTo(x2, y0 + th + Math.sin(u2 * TAU * wv + ph(t, k) * s.dir + off) * amp);
+        }
+        ctx.closePath();
+        ctx.fill();
+      }
+    },
+
+    /* 궤도 — 동심원 호가 각기 다른 속도로 돈다 */
+    orbit: function (ctx, W, H, t, s) {
+      var n = Math.round(16 * s.density) + 4, r = rng(s.seed);
+      var cx = W * 0.5, cy = H * 0.5, R = Math.max(W, H) * 0.55;
+      ctx.lineCap = "round";
+      for (var i = 0; i < n; i++) {
+        var col = s.palette.ink[i % s.palette.ink.length];
+        var rr = R * (0.1 + 0.9 * (i + 1) / n);
+        var k = 1 + Math.floor(r() * 3), span = 0.5 + r() * 2.2;
+        var a0 = r() * TAU + ph(t, k) * s.dir;
+        ctx.strokeStyle = hexA(col, (0.18 + r() * 0.3) * s.glow);
+        ctx.lineWidth = (0.8 + r() * 3.2) * s.weight * (Math.max(W, H) / 900);
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, rr, rr * (H / W < 0.5 ? 2.2 : 0.82), s.rot, a0, a0 + span);
+        ctx.stroke();
+      }
+    },
+
+    /* 그물 — 점을 잇는 선. 별자리처럼 보인다 */
+    mesh: function (ctx, W, H, t, s) {
+      if (!this.pts) {
+        var r0 = rng(s.seed), m = Math.round(46 * s.density), a = [];
+        for (var i = 0; i < m; i++) {
+          a.push({ x: r0(), y: r0(), rx: 0.01 + r0() * 0.05, ry: 0.01 + r0() * 0.05,
+                   k: 1 + Math.floor(r0() * 2), off: r0() * TAU });
+        }
+        this.pts = a;
+      }
+      var P = this.pts, pos = [];
+      for (var j = 0; j < P.length; j++) {
+        var p = P[j], a2 = ph(t, p.k) * s.dir + p.off;
+        pos.push([(p.x + Math.cos(a2) * p.rx) * W, (p.y + Math.sin(a2) * p.ry) * H]);
+      }
+      var lim = Math.min(W, H) * 0.26;
+      var ink = s.palette.ink;
+      ctx.lineWidth = 0.8 * s.weight * (Math.max(W, H) / 900);
+      for (var i2 = 0; i2 < pos.length; i2++) {
+        for (var j2 = i2 + 1; j2 < pos.length; j2++) {
+          var dx = pos[i2][0] - pos[j2][0], dy = pos[i2][1] - pos[j2][1];
+          var d2 = Math.sqrt(dx * dx + dy * dy);
+          if (d2 > lim) continue;
+          ctx.strokeStyle = hexA(ink[(i2 + j2) % ink.length], (1 - d2 / lim) * 0.34 * s.glow);
+          ctx.beginPath();
+          ctx.moveTo(pos[i2][0], pos[i2][1]);
+          ctx.lineTo(pos[j2][0], pos[j2][1]);
+          ctx.stroke();
+        }
+        ctx.fillStyle = hexA(ink[i2 % ink.length], 0.6 * s.glow);
+        ctx.beginPath();
+        ctx.arc(pos[i2][0], pos[i2][1], 1.6 * s.weight * (Math.max(W, H) / 900), 0, TAU);
+        ctx.fill();
+      }
+    },
+
+    /* 막대 — 이퀄라이저처럼 오르내린다. 전광판에서 잘 읽힌다 */
+    bar: function (ctx, W, H, t, s) {
+      var tall = s.ar < 1;
+      var n = Math.round((tall ? 16 : 28) * s.density);
+      var r = rng(s.seed), ink = s.palette.ink;
+      for (var i = 0; i < n; i++) {
+        var f = i / n;
+        var k = 1 + Math.floor(r() * 3), off = r() * TAU;
+        var lev = 0.15 + 0.85 * (0.5 + 0.5 * Math.sin(ph(t, k) * s.dir + off + f * TAU));
+        ctx.fillStyle = hexA(ink[i % ink.length], (0.2 + r() * 0.3) * s.glow);
+        if (tall) {
+          var bh = H / n * 0.62;
+          ctx.fillRect(0, f * H + bh * 0.2, W * lev, bh);
+        } else {
+          var bw = W / n * 0.62;
+          ctx.fillRect(f * W + bw * 0.2, H * (1 - lev), bw, H * lev);
+        }
+      }
+    },
+
+    /* 소용돌이 — 중심에서 풀려 나오는 나선 */
+    spiral: function (ctx, W, H, t, s) {
+      var arms = 2 + Math.floor(rng(s.seed)() * 4);
+      var r = rng(s.seed + 1);
+      var cx = W * 0.5, cy = H * 0.5, R = Math.max(W, H) * 0.62;
+      ctx.lineCap = "round";
+      for (var a2 = 0; a2 < arms; a2++) {
+        var col = s.palette.ink[a2 % s.palette.ink.length];
+        var k = 1 + Math.floor(r() * 2);
+        var turns = 2 + Math.floor(r() * 3);
+        ctx.strokeStyle = hexA(col, (0.2 + r() * 0.3) * s.glow);
+        ctx.lineWidth = (1 + r() * 3) * s.weight * (Math.max(W, H) / 900);
+        ctx.beginPath();
+        for (var u = 0; u <= 1; u += 0.008) {
+          var ang = u * TAU * turns + (a2 / arms) * TAU + ph(t, k) * s.dir + s.rot;
+          var rr = R * u;
+          var x = cx + Math.cos(ang) * rr;
+          var y = cy + Math.sin(ang) * rr * (H / W < 0.55 ? 2.0 : 0.85);
+          u === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+    },
+
+    /* 표류 — 옆으로 천천히 흘러가는 넓은 띠. 어느 비율에나 붙는다 */
+    drift: function (ctx, W, H, t, s) {
+      var n = Math.round(14 * s.density) + 4, r = rng(s.seed);
+      var tall = s.ar < 1;
+      for (var i = 0; i < n; i++) {
+        var col = s.palette.ink[i % s.palette.ink.length];
+        var k = 1 + Math.floor(r() * 2), off = r();
+        var band = (tall ? H : W) * (0.06 + r() * 0.22);
+        var travel = ((off + (t / PERIOD) * k * s.dir) % 1 + 1) % 1;
+        var pos = travel * ((tall ? H : W) + band) - band;
+        var g = tall
+          ? ctx.createLinearGradient(0, pos, 0, pos + band)
+          : ctx.createLinearGradient(pos, 0, pos + band, 0);
+        g.addColorStop(0, hexA(col, 0));
+        g.addColorStop(0.5, hexA(col, (0.1 + r() * 0.16) * s.glow));
+        g.addColorStop(1, hexA(col, 0));
+        ctx.fillStyle = g;
+        tall ? ctx.fillRect(0, pos, W, band) : ctx.fillRect(pos, 0, band, H);
+      }
+    },
+
     /* 설경 — 천천히 내려오는 알갱이. 겨울 문장에 붙는다 */
     snow: function (ctx, W, H, t, s) {
       if (!this.pts) {
@@ -394,7 +588,6 @@
 
   global.BomnalGen = {
     compose: compose, Gen: Gen,
-    STYLE_KO: STYLE_KO,
-    counts: { styles: STYLE_IDS.length, palettes: PALETTES.length }
+    counts: { styles: STYLE_IDS.length, palettes: PALETTES.length, moods: MOODS.length }
   };
 })(window);

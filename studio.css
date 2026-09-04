@@ -149,3 +149,21 @@
 .st-code-note { margin: 8px 0 0; font-size: .86rem; line-height: 1.6; color: var(--st-body); }
 .st-code-note b { color: var(--st-ink); }
 .st-code-sub { margin: 8px 0 0; font-size: .78rem; color: var(--st-gray); }
+
+/* 방금 만든 화면들 — 좋은 것이 지나가 버리지 않게 */
+.st-hist-wrap { margin-top: 20px; }
+.st-hist { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.st-hist-item {
+  flex: 0 0 auto; border: 2px solid transparent; background: none; padding: 0;
+  border-radius: 8px; cursor: pointer; font: inherit; text-align: center;
+}
+.st-hist-item canvas {
+  display: block; height: 74px; width: auto; border-radius: 6px; background: #0b0e13;
+}
+.st-hist-item span {
+  display: block; margin-top: 4px; font-size: .66rem; letter-spacing: .04em;
+  color: var(--st-gray); font-variant-numeric: tabular-nums;
+}
+.st-hist-item:hover { border-color: #cfd8e2; }
+.st-hist-item.is-on { border-color: var(--st-blue); }
+.st-hist-item.is-on span { color: var(--st-blue); font-weight: 700; }
