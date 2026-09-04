@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>봄날 미디어박스 · USB 플레이어</title>
+    <link rel="stylesheet" href="./usb.css" />
+  </head>
+  <body>
+    <!-- 영상 두 장을 번갈아 쓴다. 한 장으로 돌리면 다음 영상을 읽는 동안
+         화면이 검게 깜빡인다. 로비에서 그 깜빡임이 제일 눈에 띈다. -->
+    <div class="stage" id="stage">
+      <video class="layer is-on" id="v0" muted playsinline preload="auto"></video>
+      <video class="layer" id="v1" muted playsinline preload="auto"></video>
+      <img class="layer" id="im0" alt="" />
+    </div>
+
+    <!-- USB가 없을 때. 검은 화면만 떠 있으면 고장으로 오해받는다. -->
+    <div class="notice" id="notice" hidden>
+      <p class="notice-title">USB를 꽂아 주세요</p>
+      <p class="notice-body">영상이 담긴 USB를 연결하면 바로 재생됩니다.</p>
+    </div>
+
+    <!-- 설치할 때만 쓰는 화면들. 평소에는 숨어 있다. -->
+    <div class="panel" id="settings" hidden>
+      <h1>화면 맞추기</h1>
+      <div class="row">
+        <span>화면 채우기</span>
+        <div class="opts" data-set="fit">
+          <button type="button" data-v="contain">여백 두기</button>
+          <button type="button" data-v="cover">꽉 채우기</button>
+          <button type="button" data-v="fill">늘이기</button>
+        </div>
+      </div>
+      <div class="row">
+        <span>회전</span>
+        <div class="opts" data-set="rotate">
+          <button type="button" data-v="0">0°</button>
+          <button type="button" data-v="90">90°</button>
+          <button type="button" data-v="180">180°</button>
+          <button type="button" data-v="270">270°</button>
+        </div>
+      </div>
+      <div class="row">
+        <span>좌우 반전</span>
+        <div class="opts" data-set="flipH">
+          <button type="button" data-v="0">그대로</button>
+          <button type="button" data-v="1">뒤집기</button>
+        </div>
+      </div>
+      <div class="row">
+        <span>상하 반전</span>
+        <div class="opts" data-set="flipV">
+          <button type="button" data-v="0">그대로</button>
+          <button type="button" data-v="1">뒤집기</button>
+        </div>
+      </div>
+      <div class="row">
+        <span>사진 한 장 시간</span>
+        <div class="opts" data-set="dwell">
+          <button type="button" data-v="8">8초</button>
+          <button type="button" data-v="15">15초</button>
+          <button type="button" data-v="30">30초</button>
+          <button type="button" data-v="60">60초</button>
+        </div>
+      </div>
+      <p class="hint">
+        설정은 이 상자에 저장됩니다. 전원을 껐다 켜도 그대로입니다.<br />
+        <b>S</b> 닫기 · <b>F</b> 전체화면 · <b>←</b> <b>→</b> 이전·다음 · <b>스페이스</b> 멈춤 · <b>D</b> 상태
+      </p>
+    </div>
+
+    <div class="panel diag" id="diag" hidden>
+      <h1>상태</h1>
+      <dl id="diagBody"></dl>
+      <p class="hint"><b>D</b> 닫기</p>
+    </div>
+
+    <script src="./usb.js"></script>
+  </body>
+</html>

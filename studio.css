@@ -112,3 +112,30 @@
 .st-order-btn:hover { background: #0a55aa; }
 
 .st-legal { margin: 26px 0 0; font-size: .78rem; color: var(--st-gray); line-height: 1.7; }
+
+/* 견적서 받기 — 가입 없이 이메일만 남기는 자리 */
+.st-form { margin: 4px 0 18px; }
+.st-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+@media (max-width: 520px) { .st-form-row { grid-template-columns: 1fr; } }
+.st-form label { display: block; font-size: .86rem; font-weight: 700; color: var(--st-ink); }
+.st-form label span[aria-hidden] { color: var(--st-blue); }
+.st-form input[type="text"], .st-form input[type="email"], .st-form input[type="tel"] {
+  width: 100%; box-sizing: border-box; margin-top: 5px; border: 1px solid #cfd8e2;
+  border-radius: 8px; padding: 10px 12px; font: inherit; background: #fff; color: var(--st-ink);
+}
+.st-form input:focus-visible { outline: 2px solid var(--st-blue); outline-offset: 1px; }
+
+.st-consent {
+  display: flex; gap: 9px; align-items: flex-start; margin: 9px 0;
+  font-weight: 400; font-size: .82rem; color: var(--st-body); line-height: 1.55;
+}
+.st-consent input { margin-top: 3px; flex: none; }
+.st-consent b { color: var(--st-ink); }
+
+.st-form button[type="submit"] { border: 0; cursor: pointer; font: inherit; font-weight: 700; margin-top: 8px; }
+.st-form button[disabled] { background: #93a6bd; cursor: default; }
+.st-form-msg { margin: 10px 0 0; font-size: .84rem; line-height: 1.6; min-height: 1.2em; }
+.st-form-msg[data-tone="ok"] { color: #1c7a44; }
+.st-form-msg[data-tone="err"] { color: #c0392b; }
+.st-form-alt { margin: 14px 0 0; font-size: .82rem; color: var(--st-gray); line-height: 1.65; }
+.st-form-alt a { color: var(--st-blue); font-weight: 600; }

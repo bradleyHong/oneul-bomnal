@@ -1,5 +1,5 @@
 /**
- * 오늘은 봄날 · 미디어아트 제작기 (고객 화면)
+ * 오늘은 봄날 · 봄날 스튜디오 (고객 화면)
  *
  * 흐름
  *   ① 만들고 싶은 장면을 한국어로 적는다
@@ -288,6 +288,10 @@
     var elQuote = $("[data-st-quote]", root);
     var elStat = $("[data-st-stat]", root);
     var elChips = $("[data-st-chips]", root);
+    var elForm = $("[data-st-form]", root);
+    var elSend = $("[data-st-send]", root);
+    var elMsg = $("[data-st-msg]", root);
+    var LAST = null;
 
     PANELS.forEach(function (p, i) {
       var o = el("option", null, p.name + "  (" + p.note + " · " + p.w + "×" + p.h + ")");
@@ -332,6 +336,8 @@
     function updateQuote() {
       var p = currentPanel(), sec = Math.max(5, +elSec.value || 30);
       var q = quote(p, sec, opts());
+      // 견적서 메일에 지금 화면의 설정을 그대로 실어 보내기 위해 마지막 값을 들고 있는다.
+      LAST = { panel: p, sec: sec, q: q, o: opts() };
       elQuote.innerHTML =
         '<div class="st-q-row"><span>화면 규격</span><b>' + p.w + " × " + p.h + '</b></div>' +
         '<div class="st-q-row"><span>재생 길이</span><b>' + sec + '초</b></div>' +
@@ -390,6 +396,74 @@
       b.addEventListener("click", function () { elStory.value = b.textContent; make(); });
     });
     window.addEventListener("resize", syncPanel);
+
+    // ── 견적서 받기 ────────────────────────────────────────────
+    // 가입시키지 않습니다. 이름과 이메일만 받아 지금 화면의 설정을 그대로 실어 보냅니다.
+    // 광고성 메일은 정보통신망법 제50조에 따라 사전 동의가 있어야 하므로,
+    // 회신 동의와 수신 동의를 반드시 따로 받고 그 결과를 접수 내용에 남깁니다.
+    function specText(story) {
+      if (!LAST) return "(견적을 계산하기 전에 보내셨습니다)";
+      var picked = [];
+      if (LAST.o.asset) picked.push("기관 로고·이미지 반영");
+      if (LAST.o.custom) picked.push("커스텀 스타일 요청");
+      if (LAST.o.rush) picked.push("당일 급행");
+      return [
+        "원하시는 화면: " + (story || "(적지 않으심)"),
+        "화면 규격: " + LAST.panel.name + " " + LAST.panel.w + "×" + LAST.panel.h,
+        "재생 길이: " + LAST.sec + "초",
+        "렌더 크레딧: " + LAST.q.credits + " 크레딧 (옵션 배수 ×" + LAST.q.mult + ")",
+        "추가 요청: " + (picked.join(", ") || "없음"),
+        "예상 금액: " + comma(LAST.q.won) + "원 (부가세 별도)"
+      ].join("\n");
+    }
+
+    function say(text, tone) {
+      if (!elMsg) return;
+      elMsg.textContent = text;
+      if (tone) elMsg.setAttribute("data-tone", tone);
+      else elMsg.removeAttribute("data-tone");
+    }
+
+    if (elForm) {
+      elForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var d = new FormData(elForm);
+        var name = String(d.get("name") || "").trim();
+        var email = String(d.get("email") || "").trim();
+
+        if (!name) { say("이름을 적어 주세요.", "err"); return; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { say("이메일 주소를 다시 확인해 주세요.", "err"); return; }
+        if (!d.get("consentRequired")) { say("견적 회신을 위한 수집 동의가 필요합니다.", "err"); return; }
+
+        var marketing = d.get("consentMarketing") ? "동의함" : "동의하지 않음";
+        elSend.disabled = true;
+        say("보내는 중…");
+
+        fetch("/api/inquiry", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            name: name,
+            email: email,
+            phone: String(d.get("phone") || "").trim(),
+            organization: String(d.get("organization") || "").trim(),
+            service: ["미디어아트 제작 (봄날 스튜디오 견적)"],
+            page: "studio",
+            message: specText((elStory.value || "").trim()) +
+              "\n\n[동의 기록] 개인정보 수집·이용: 동의함 / 광고성 정보 수신: " + marketing
+          })
+        })
+          .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json().catch(function () { return {}; }); })
+          .then(function () {
+            elForm.reset();
+            say("접수했습니다. 적어 주신 주소로 견적서를 보내드리겠습니다. (평일 기준)", "ok");
+          })
+          .catch(function () {
+            elSend.disabled = false;
+            say("전송이 되지 않았습니다. 010-4292-1999 또는 studio@publicbloom.art로 연락 주세요.", "err");
+          });
+      });
+    }
 
     fetch("./assets/library.json")
       .then(function (r) { return r.json(); })

@@ -5,7 +5,9 @@ import { COOKIE_NAME, readCookie, verifySession } from "./api/_auth.js";
  * 자바스크립트로 메뉴만 숨기는 방식은 보호가 되지 않으므로, 페이지 자체를 여기서 막습니다.
  */
 export const config = {
-  matcher: ["/admin.html", "/admin", "/client.html", "/client", "/studio.html", "/studio"],
+  // 제작기(/studio)는 잠그지 않습니다. 시연본은 워터마크가 찍힌 5초짜리이고 저장되지 않으므로
+  // 누구나 만져 보게 두고, 실제 렌더 파일을 받는 곳(/client)만 회원으로 막습니다.
+  matcher: ["/admin.html", "/admin", "/client.html", "/client"],
 };
 
 const ADMIN_ONLY = ["/admin.html", "/admin"];
