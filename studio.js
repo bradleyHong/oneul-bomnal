@@ -130,44 +130,88 @@
 
     var gen = new GEN.Gen(elCanvas);
     var spec = null;
+    var sceneIdx = 0;
     var history = [];              // 방금 만든 화면들. 좋은 것이 지나가 버리면 안 된다.
     var HISTORY_MAX = 8;
 
-    /** 씨앗을 사람이 부를 수 있는 번호로. 이 번호가 곧 작품의 신분증이다.
-     *  고객이 고른 번호를 그대로 받아 사내에서 고화질로 다시 렌더한다. */
-    function code(seed) {
-      return "BN-" + seed.toString(16).toUpperCase().padStart(6, "0").slice(-6);
+    /* 느낌 열둘. 순서는 작품 번호에 박히므로 바꾸거나 중간에 끼워 넣지 않는다.
+     * 새로 만들면 뒤에 붙인다. */
+    var SCENES = [
+      { ko: "봄빛 리본",   text: "로비 미디어월에 걸 봄바람 빛 리본, 따뜻하고 화사하게" },
+      { ko: "바다 물결",   text: "바다와 파도, 잔잔하게 흐르는 로비 화면" },
+      { ko: "겨울 눈",     text: "겨울 밤 도심 전광판, 눈송이 내리는 화면, 차분하게" },
+      { ko: "전통 단청",   text: "고분군 야간 포토존, 전통 색감으로 웅장하게" },
+      { ko: "도시 야경",   text: "도시 야경 네온 전광판, 경쾌하게" },
+      { ko: "우주 별빛",   text: "우주와 별빛, 고요하게 흐르는 밤하늘" },
+      { ko: "숲 초록",     text: "숲과 나무, 초록빛으로 산뜻하게" },
+      { ko: "노을",        text: "노을 지는 저녁, 은은하게" },
+      { ko: "수묵 여백",   text: "수묵 담백한 여백, 묵직하게" },
+      { ko: "형광 사이버", text: "형광 사이버 글리치, 강렬하게" },
+      { ko: "안개 하늘",   text: "안개 낀 하늘과 바람결, 몽환적으로" },
+      { ko: "빛 번짐",     text: "빛줄기 번짐, 은은하고 잔잔하게" }
+    ];
+    var CUSTOM = 31;               // 직접 적은 문장. 번호만으로는 되살릴 수 없다.
+
+    /* 작품 번호 = 느낌 번호(위 5비트) + 씨앗(아래 19비트).
+     * 문장 정보가 번호 안에 들어 있어야 붙여넣기로 같은 화면이 나온다. */
+    function code(idx, seed) {
+      var v = (((idx & 31) << 19) | (seed & 0x7FFFF)) >>> 0;
+      return "BN-" + v.toString(16).toUpperCase().padStart(6, "0");
+    }
+    function parseCode(txt) {
+      var m = /([0-9A-Fa-f]{6})\s*$/.exec(String(txt || "").trim());
+      if (!m) return null;
+      var v = parseInt(m[1], 16) >>> 0;
+      return { idx: (v >> 19) & 31, seed: v & 0x7FFFF };
+    }
+    function newSeed() { return Math.floor(Math.random() * 0x7FFFF); }
+
+    function storyOf(idx) {
+      return idx === CUSTOM ? (elStory.value || "").trim() : SCENES[idx].text;
     }
 
-    function newSeed() { return Math.floor(Math.random() * 0xFFFFFF); }
-
-    function make(seed, fromHistory) {
-      var story = (elStory.value || "").trim();
+    function make(idx, seed, fromHistory) {
+      if (idx == null) idx = sceneIdx;
+      var story = storyOf(idx);
       if (!story) { elStory.focus(); return; }
+      sceneIdx = idx;
       var pn = currentPanel();
-      spec = GEN.compose(story, seed == null ? newSeed() : seed, pn.w / pn.h);
+      var sd = seed == null ? newSeed() : seed;
+      spec = GEN.compose(story, sd, pn.w / pn.h);
+      spec.idx = idx;
       gen.set(spec).start();
-      if (!fromHistory) remember(spec, story);
+      if (!fromHistory) remember(idx, sd, story, spec.ar);
       drawHistory();
+      markScene();
 
       elChips.innerHTML = "";
       spec.tags.forEach(function (t) { elChips.appendChild(el("span", "st-chip", t)); });
 
       elCuts.innerHTML =
-        '<p class="st-code-num">' + code(spec.seed) + '</p>' +
+        '<div class="st-code-head">' +
+        '<p class="st-code-num">' + code(idx, sd) + '</p>' +
+        '<button type="button" class="st-copy" data-st-copy>번호 복사</button>' +
+        '</div>' +
         '<p class="st-code-note">이 번호가 이 화면의 설계도입니다. ' +
         '결제하시면 <b>같은 번호로</b> 화면 규격에 맞춰 고화질로 렌더링해 드립니다.</p>' +
-        '<p class="st-code-sub">마음에 드는 화면이 나올 때까지 눌러 보세요. ' +
-        '번호만 적어 두시면 언제든 그 화면으로 돌아옵니다.</p>';
+        (idx === CUSTOM
+          ? '<p class="st-code-sub">직접 적으신 문장으로 만든 번호입니다. 나중에 부르실 때는 문장도 함께 적어 주세요.</p>'
+          : '<p class="st-code-sub">번호를 복사해 두시면 언제든 이 화면으로 돌아옵니다.</p>');
 
-      elGo.textContent = "다른 화면 보기";
+      elGo.textContent = "다시 만들기";
       updateQuote();
     }
 
+    function markScene() {
+      Array.prototype.forEach.call(root.querySelectorAll(".st-scene"), function (b, i) {
+        b.classList.toggle("is-on", i === sceneIdx);
+      });
+    }
+
     /* 랜덤으로 돌리다 보면 좋은 것이 지나간다. 여덟 장까지 남겨 둔다. */
-    function remember(sp, story) {
-      history = history.filter(function (h) { return h.seed !== sp.seed; });
-      history.unshift({ seed: sp.seed, story: story, ar: sp.ar });
+    function remember(idx, seed, story, ar) {
+      history = history.filter(function (h) { return !(h.seed === seed && h.idx === idx); });
+      history.unshift({ idx: idx, seed: seed, story: story, ar: ar });
       if (history.length > HISTORY_MAX) history.pop();
     }
 
@@ -179,8 +223,8 @@
       history.forEach(function (h) {
         var b = el("button", "st-hist-item");
         b.type = "button";
-        b.title = code(h.seed) + " 다시 보기";
-        if (spec && h.seed === spec.seed) b.className += " is-on";
+        b.title = code(h.idx, h.seed) + " 다시 보기";
+        if (spec && h.seed === spec.seed && h.idx === spec.idx) b.className += " is-on";
         var c = document.createElement("canvas");
         c.width = 240; c.height = Math.max(80, Math.round(240 / Math.max(0.4, h.ar)));
         if (c.height > 300) { c.height = 300; c.width = Math.round(300 * h.ar); }
@@ -188,8 +232,8 @@
         one.set(GEN.compose(h.story, h.seed, h.ar));
         one.draw(1.6);
         b.appendChild(c);
-        b.appendChild(el("span", null, code(h.seed)));
-        b.addEventListener("click", function () { make(h.seed, true); });
+        b.appendChild(el("span", null, code(h.idx, h.seed)));
+        b.addEventListener("click", function () { make(h.idx, h.seed, true); });
         elHist.appendChild(b);
       });
     }
@@ -204,11 +248,69 @@
     });
     elGo.addEventListener("click", function () { make(); });
     elStory.addEventListener("keydown", function (e) {
-      if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) make();
+      if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) make(CUSTOM);
     });
-    Array.prototype.forEach.call(root.querySelectorAll("[data-st-example]"), function (b) {
-      b.addEventListener("click", function () { elStory.value = b.textContent; make(); });
+    elStory.addEventListener("input", function () { sceneIdx = CUSTOM; markScene(); });
+
+    // 느낌 버튼 — 문장을 치지 않아도 계속 만들 수 있어야 한다
+    var elScenes = $("[data-st-scenes]", root);
+    SCENES.forEach(function (sc, i) {
+      var b = el("button", "st-scene");
+      b.type = "button";
+      b.appendChild(el("b", null, sc.ko));
+      b.appendChild(el("i", null, i < 9 ? String(i + 1) : (i === 9 ? "0" : "")));
+      b.addEventListener("click", function () { elStory.value = ""; make(i); });
+      elScenes.appendChild(b);
     });
+
+    $("[data-st-random]", root).addEventListener("click", function () {
+      elStory.value = "";
+      make(Math.floor(Math.random() * SCENES.length));
+    });
+
+    // 숫자키로도 고를 수 있다. 1~9 그리고 0.
+    document.addEventListener("keydown", function (e) {
+      if (e.target === elStory || /input|textarea|select/i.test(e.target.tagName)) return;
+      if (e.key >= "1" && e.key <= "9") { elStory.value = ""; make(+e.key - 1); }
+      else if (e.key === "0") { elStory.value = ""; make(9); }
+      else if (e.key === "r" || e.key === "R" || e.key === "ㄱ") {
+        elStory.value = "";
+        make(Math.floor(Math.random() * SCENES.length));
+      }
+    });
+
+    // 번호 복사 · 번호로 불러오기
+    root.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-st-copy]");
+      if (!b || !spec) return;
+      var txt = code(spec.idx, spec.seed);
+      var done = function () { b.textContent = "복사했습니다"; setTimeout(function () { b.textContent = "번호 복사"; }, 1600); };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(txt).then(done, function () { prompt("이 번호를 복사해 두세요", txt); });
+      } else { prompt("이 번호를 복사해 두세요", txt); }
+    });
+
+    var elLoad = $("[data-st-load]", root);
+    var elLoadBtn = $("[data-st-load-go]", root);
+    var elLoadMsg = $("[data-st-load-msg]", root);
+    function loadCode() {
+      var p2 = parseCode(elLoad.value);
+      if (!p2) { elLoadMsg.textContent = "BN- 으로 시작하는 번호를 넣어 주세요."; return; }
+      if (p2.idx === CUSTOM && !(elStory.value || "").trim()) {
+        elLoadMsg.textContent = "직접 적으신 문장으로 만든 번호입니다. 그 문장을 아래에 적어 주세요.";
+        return;
+      }
+      if (p2.idx !== CUSTOM && p2.idx >= SCENES.length) {
+        elLoadMsg.textContent = "확인되지 않는 번호입니다. 다시 확인해 주세요.";
+        return;
+      }
+      elLoadMsg.textContent = "";
+      elLoad.value = "";
+      make(p2.idx, p2.seed);
+    }
+    elLoadBtn.addEventListener("click", loadCode);
+    elLoad.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); loadCode(); } });
+
     window.addEventListener("resize", syncPanel);
 
     // ── 견적서 받기 ────────────────────────────────────────────
@@ -218,7 +320,7 @@
     function specText(story) {
       if (!LAST) return "(견적을 계산하기 전에 보내셨습니다)";
       var picked = [];
-      var art = spec ? code(spec.seed) : null;
+      var art = spec ? code(spec.idx, spec.seed) : null;
       if (LAST.o.asset) picked.push("기관 로고·이미지 반영");
       if (LAST.o.custom) picked.push("커스텀 스타일 요청");
       if (LAST.o.rush) picked.push("당일 급행");
