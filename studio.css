@@ -139,3 +139,13 @@
 .st-form-msg[data-tone="err"] { color: #c0392b; }
 .st-form-alt { margin: 14px 0 0; font-size: .82rem; color: var(--st-gray); line-height: 1.65; }
 .st-form-alt a { color: var(--st-blue); font-weight: 600; }
+
+/* 작품 번호 — 시연본과 납품본을 잇는 유일한 값 */
+.st-code { background: var(--st-pale); border-radius: 12px; padding: 18px 20px; }
+.st-code-num {
+  margin: 0; font-size: 1.9rem; font-weight: 800; letter-spacing: .06em;
+  color: var(--st-blue); font-variant-numeric: tabular-nums;
+}
+.st-code-note { margin: 8px 0 0; font-size: .86rem; line-height: 1.6; color: var(--st-body); }
+.st-code-note b { color: var(--st-ink); }
+.st-code-sub { margin: 8px 0 0; font-size: .78rem; color: var(--st-gray); }
