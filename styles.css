@@ -5394,3 +5394,21 @@ main > .section > .section-head .section-kicker {
 .studio-steps p { margin: 0; font-size: .89rem; color: #41505f; line-height: 1.6; }
 .studio-note { margin: 20px 0 0; font-size: .92rem; color: #55636f; }
 .studio-note a { color: #0b62c4; font-weight: 600; }
+
+/* 콘텐츠 제작 패키지 가격 */
+.pk-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+@media (max-width: 860px) { .pk-grid { grid-template-columns: 1fr; } }
+.pk-card { position: relative; background: #f1f4f8; border-radius: 12px; padding: 26px 24px; }
+.pk-card.is-lead { background: #16233a; color: #fff; }
+.pk-badge { position: absolute; top: -11px; left: 24px; background: #0b62c4; color: #fff;
+  font-size: .74rem; font-weight: 700; padding: 4px 12px; border-radius: 999px; }
+.pk-card h3 { margin: 0 0 10px; font-size: 1.12rem; }
+.pk-price { margin: 0 0 6px; }
+.pk-price b { font-size: 2.1rem; font-weight: 800; letter-spacing: -.02em; }
+.pk-card.is-lead .pk-price b { color: #8fb4dc; }
+.pk-sum { margin: 0 0 16px; font-size: .92rem; color: #55636f; }
+.pk-card.is-lead .pk-sum { color: #b6c2d0; }
+.pk-card ul { margin: 0; padding-left: 17px; line-height: 1.75; font-size: .9rem; color: #41505f; }
+.pk-card.is-lead ul { color: #c5d1df; }
+.pk-note { margin: 20px 0 0; font-size: .9rem; color: #55636f; line-height: 1.7; }
+.pk-note a { color: #0b62c4; font-weight: 600; }
