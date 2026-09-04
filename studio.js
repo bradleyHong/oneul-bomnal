@@ -70,6 +70,8 @@
     var elForm = $("[data-st-form]", root);
     var elSend = $("[data-st-send]", root);
     var elMsg = $("[data-st-msg]", root);
+    var elHist = $("[data-st-hist]", root);
+    var elHistWrap = $("[data-st-hist-wrap]", root);
     var LAST = null;
 
     PANELS.forEach(function (p, i) {
@@ -128,6 +130,8 @@
 
     var gen = new GEN.Gen(elCanvas);
     var spec = null;
+    var history = [];              // 방금 만든 화면들. 좋은 것이 지나가 버리면 안 된다.
+    var HISTORY_MAX = 8;
 
     /** 씨앗을 사람이 부를 수 있는 번호로. 이 번호가 곧 작품의 신분증이다.
      *  고객이 고른 번호를 그대로 받아 사내에서 고화질로 다시 렌더한다. */
@@ -137,11 +141,14 @@
 
     function newSeed() { return Math.floor(Math.random() * 0xFFFFFF); }
 
-    function make(seed) {
+    function make(seed, fromHistory) {
       var story = (elStory.value || "").trim();
       if (!story) { elStory.focus(); return; }
-      spec = GEN.compose(story, seed == null ? newSeed() : seed);
+      var pn = currentPanel();
+      spec = GEN.compose(story, seed == null ? newSeed() : seed, pn.w / pn.h);
       gen.set(spec).start();
+      if (!fromHistory) remember(spec, story);
+      drawHistory();
 
       elChips.innerHTML = "";
       spec.tags.forEach(function (t) { elChips.appendChild(el("span", "st-chip", t)); });
@@ -157,7 +164,40 @@
       updateQuote();
     }
 
-    elPanel.addEventListener("change", syncPanel);
+    /* 랜덤으로 돌리다 보면 좋은 것이 지나간다. 여덟 장까지 남겨 둔다. */
+    function remember(sp, story) {
+      history = history.filter(function (h) { return h.seed !== sp.seed; });
+      history.unshift({ seed: sp.seed, story: story, ar: sp.ar });
+      if (history.length > HISTORY_MAX) history.pop();
+    }
+
+    function drawHistory() {
+      if (!elHist) return;
+      elHist.innerHTML = "";
+      if (history.length < 2) { elHistWrap.hidden = true; return; }
+      elHistWrap.hidden = false;
+      history.forEach(function (h) {
+        var b = el("button", "st-hist-item");
+        b.type = "button";
+        b.title = code(h.seed) + " 다시 보기";
+        if (spec && h.seed === spec.seed) b.className += " is-on";
+        var c = document.createElement("canvas");
+        c.width = 240; c.height = Math.max(80, Math.round(240 / Math.max(0.4, h.ar)));
+        if (c.height > 300) { c.height = 300; c.width = Math.round(300 * h.ar); }
+        var one = new GEN.Gen(c);
+        one.set(GEN.compose(h.story, h.seed, h.ar));
+        one.draw(1.6);
+        b.appendChild(c);
+        b.appendChild(el("span", null, code(h.seed)));
+        b.addEventListener("click", function () { make(h.seed, true); });
+        elHist.appendChild(b);
+      });
+    }
+
+    elPanel.addEventListener("change", function () {
+      syncPanel();
+      if (spec) make();          // 비율이 바뀌면 어울리는 그림도 달라진다
+    });
     [elW, elH, elSec].forEach(function (n) { n.addEventListener("input", updateQuote); });
     Array.prototype.forEach.call(root.querySelectorAll("[data-st-opt]"), function (n) {
       n.addEventListener("change", updateQuote);
