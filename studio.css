@@ -167,3 +167,56 @@
 .st-hist-item:hover { border-color: #cfd8e2; }
 .st-hist-item.is-on { border-color: var(--st-blue); }
 .st-hist-item.is-on span { color: var(--st-blue); font-weight: 700; }
+
+/* 느낌 고르기 — 문장을 치지 않아도 계속 만들 수 있어야 한다 */
+.st-help { margin: 0 0 10px; font-size: .8rem; color: var(--st-gray); line-height: 1.55; }
+.st-opt-tag {
+  font-size: .68rem; font-weight: 600; color: var(--st-gray);
+  border: 1px solid #cfd8e2; border-radius: 999px; padding: 1px 7px; margin-left: 4px;
+}
+.st-scenes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+@media (max-width: 420px) { .st-scenes { grid-template-columns: repeat(2, 1fr); } }
+.st-scene {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+  border: 1px solid #cfd8e2; background: #fff; color: var(--st-ink);
+  border-radius: 9px; padding: 8px 10px; font: inherit; cursor: pointer; text-align: left;
+  transition: border-color .15s ease, background .15s ease;
+}
+.st-scene b { font-size: .84rem; font-weight: 700; }
+.st-scene i { font-style: normal; font-size: .66rem; color: var(--st-gray); letter-spacing: .04em; }
+.st-scene:hover { border-color: var(--st-blue); background: #f4f8fd; }
+.st-scene.is-on { border-color: var(--st-blue); background: #e9f1fb; }
+.st-scene.is-on b { color: var(--st-blue); }
+
+.st-random {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  width: 100%; margin-top: 8px; border: 1px dashed #a9bcd2; background: #fff;
+  border-radius: 10px; padding: 11px; font: inherit; cursor: pointer; color: var(--st-blue);
+}
+.st-random b { font-size: .92rem; font-weight: 700; }
+.st-random span { font-size: .72rem; color: var(--st-gray); }
+.st-random:hover { background: #f4f8fd; border-color: var(--st-blue); }
+
+/* 번호 복사 · 번호로 불러오기 */
+.st-code-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.st-copy {
+  flex: none; border: 1px solid #cfd8e2; background: #fff; color: var(--st-blue);
+  border-radius: 999px; padding: 6px 14px; font: inherit; font-size: .78rem;
+  font-weight: 700; cursor: pointer;
+}
+.st-copy:hover { border-color: var(--st-blue); background: #f4f8fd; }
+
+.st-load { margin-top: 18px; }
+.st-load label { display: block; font-size: .82rem; font-weight: 700; margin-bottom: 6px; }
+.st-load-row { display: flex; gap: 6px; }
+.st-load-row input {
+  flex: 1; min-width: 0; border: 1px solid #cfd8e2; border-radius: 8px;
+  padding: 9px 12px; font: inherit; background: #fff; color: var(--st-ink);
+  letter-spacing: .06em; text-transform: uppercase;
+}
+.st-load-row button {
+  flex: none; border: 1px solid var(--st-blue); background: var(--st-blue); color: #fff;
+  border-radius: 8px; padding: 9px 16px; font: inherit; font-weight: 700; cursor: pointer;
+}
+.st-load-row button:hover { background: #0a55aa; }
+.st-load-msg { margin: 7px 0 0; font-size: .78rem; color: #c0392b; min-height: 1em; }
