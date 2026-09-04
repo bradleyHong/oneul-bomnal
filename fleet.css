@@ -449,3 +449,11 @@
 @media (max-width: 620px) {
   .play-nums { grid-template-columns: 1fr; }
 }
+
+/* 로그인 안내 — 계정 발급 방식 */
+.login-side-note {
+  margin: 14px 0 0;
+  font-size: .84rem;
+  color: #7a8899;
+  line-height: 1.65;
+}

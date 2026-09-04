@@ -112,7 +112,7 @@ export default async function handler(request) {
       secret
     );
     return json(
-      { ok: true, role: "member", org: member.org || id, redirect: "/client.html" },
+      { ok: true, role: "member", org: member.org || id, redirect: "/studio.html" },
       200,
       { "set-cookie": cookieHeader(token) }
     );
