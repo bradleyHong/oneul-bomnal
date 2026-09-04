@@ -103,6 +103,13 @@ const PALETTES = {
   hiroshige: { name: "명소백경",         bg: "#0d1020", ink: "#f2ece0", accent: "#b83c2c", tones: ["#f2ece0", "#b83c2c", "#2a4a7a", "#1a2a44"] },
   turner:    { name: "노을",            bg: "#140d0a", ink: "#f5e2c0", accent: "#d87a3c", tones: ["#f5e2c0", "#e8a95a", "#d87a3c", "#6a4a3a"] },
   mono:      { name: "흑백",            bg: "#000000", ink: "#ffffff", accent: "#9a9a9a", tones: ["#ffffff", "#c0c0c0", "#7a7a7a", "#3a3a3a"] },
+  dancheong: { name: "단청",            bg: "#0d100e", ink: "#f0ede4", accent: "#1f7a6e", tones: ["#f0ede4", "#e0b23c", "#c8482f", "#1f7a6e"] },
+  baekja:    { name: "백자",            bg: "#14120e", ink: "#f2ede3", accent: "#a89c88", tones: ["#f2ede3", "#d9d2c4", "#a89c88", "#6a6152"] },
+  cheonghwa: { name: "청화백자",         bg: "#0b0f18", ink: "#f2ede3", accent: "#2b4a8c", tones: ["#f2ede3", "#7a9ccc", "#2b4a8c", "#16233f"] },
+  seurat:    { name: "점묘",            bg: "#0e1210", ink: "#f0e4b8", accent: "#7aa8c4", tones: ["#f0e4b8", "#7aa8c4", "#c4805a", "#4a6a4a"] },
+  kandinsky: { name: "구성",            bg: "#0f0e0c", ink: "#f2ece0", accent: "#c4452c", tones: ["#f2ece0", "#e8c34a", "#c4452c", "#2a5fa8"] },
+  mondrian:  { name: "삼원색",           bg: "#0a0a0a", ink: "#f7f7f2", accent: "#d82c2c", tones: ["#f7f7f2", "#f2d22c", "#d82c2c", "#2c4ad8"] },
+  schiele:   { name: "마른 흙",          bg: "#12100c", ink: "#e8dcc4", accent: "#b85c4a", tones: ["#e8dcc4", "#d8a05a", "#b85c4a", "#6a7a5a"] },
   neon:      { name: "네온",            bg: "#04060f", ink: "#e6faff", accent: "#00e5c0", tones: ["#e6faff", "#00e5c0", "#3d6bff", "#ff3d8a"] },
 };
 PALETTES.ink.tones[2] = "#8a8a8a";
@@ -686,6 +693,538 @@ const STYLES = {
       }
     }
   },
+
+  /* 21 수묵 — 먹이 종이에 번진다. 획 하나와 그 둘레의 물기. */
+  inkwash(t) {
+    const ph = motionPhase(t);
+    const n = 2 + Math.round(k.density * 6);
+    for (let i = 0; i < n; i++) {
+      const s = seeds[i + 130];
+      const cx = W * (0.15 + 0.7 * s.a), cy = H * (0.2 + 0.6 * s.b);
+      const R = Math.min(W, H) * (0.07 + 0.17 * s.c) * k.scale;
+      /* 바깥에서 안으로 겹쳐 칠하면 가장자리가 옅고 가운데가 진해진다.
+         먹이 번진 자국이 그렇게 생긴다. */
+      for (let L = 5; L >= 1; L--) {
+        ctx.beginPath();
+        for (let j = 0; j <= 120; j++) {
+          const a = (j / 120) * TAU;
+          const wob = fbm(Math.cos(a) * 1.6 + s.d * 9, Math.sin(a) * 1.6 + ph * 0.25, 3);
+          const r = R * (L / 5) * (0.72 + 0.5 * wob);
+          const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r * 0.86;
+          j ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+        }
+        ctx.closePath();
+        ctx.fillStyle = inkA(0.05 + 0.12 * k.contrast);
+        ctx.fill();
+      }
+    }
+  },
+
+  /* 22 파동 — 두 점에서 퍼진 물결이 겹치며 간섭한다. */
+  wave(t) {
+    const ph = motionPhase(t);
+    const src = 2 + Math.round(k.density * 4);
+    const step = Math.max(3, 7 * S);
+    const pts = [];
+    for (let i = 0; i < src; i++) {
+      const s = seeds[i + 150];
+      pts.push([W * (0.2 + 0.6 * s.a), H * (0.2 + 0.6 * s.b)]);
+    }
+    ctx.lineWidth = 1 * S;
+    for (let y = 0; y < H; y += step) {
+      ctx.beginPath();
+      for (let x = 0; x <= W; x += step) {
+        let v = 0;
+        for (const [px, py] of pts) {
+          const d = Math.hypot(x - px, y - py);
+          v += Math.sin(d / (26 * S * k.scale) - ph * 2);
+        }
+        const yy = y + (v / pts.length) * 30 * S * k.contrast * k.scale;
+        x ? ctx.lineTo(x, yy) : ctx.moveTo(x, yy);
+      }
+      ctx.strokeStyle = inkA(0.22 + 0.5 * k.contrast);
+      ctx.lineWidth = 1.3 * S;
+      ctx.stroke();
+    }
+  },
+
+  /* 23 군집 — 새떼. 같은 방향으로 가되 조금씩 어긋난다. */
+  flock(t) {
+    const ph = motionPhase(t);
+    const n = 30 + Math.round(k.density * 260);
+    for (let i = 0; i < n; i++) {
+      const s = seeds[i % seeds.length];
+      const lane = s.a;
+      const drift = (ph / TAU + s.b) % 1;
+      const x = W * ((drift + fbm(lane * 5, ph * 0.3, 2) * 0.08) % 1);
+      const y = H * (0.12 + 0.76 * lane) + Math.sin(ph * 2 + s.c * TAU) * H * 0.05 * k.scale;
+      const sz = Math.min(W, H) * 0.006 * (0.5 + s.d) * k.scale;
+      const a = Math.atan2(Math.cos(ph + s.c * TAU) * 0.4, 1);
+      ctx.save();
+      ctx.translate(x, y); ctx.rotate(a);
+      ctx.beginPath();
+      ctx.moveTo(-sz, -sz * 0.7); ctx.lineTo(sz * 1.6, 0); ctx.lineTo(-sz, sz * 0.7);
+      ctx.closePath();
+      ctx.fillStyle = tone(Math.floor(s.d * 3), 0.25 + 0.55 * k.contrast);
+      ctx.fill();
+      ctx.restore();
+    }
+  },
+
+  /* 24 결정 — 씨앗에서 가장 가까운 영역으로 화면을 나눈다. */
+  crystal(t) {
+    const ph = motionPhase(t);
+    const n = 6 + Math.round(k.density * 30);
+    const cells = [];
+    for (let i = 0; i < n; i++) {
+      const s = seeds[i + 170];
+      cells.push([
+        W * s.a + Math.cos(ph + s.c * TAU) * W * 0.03 * k.speed,
+        H * s.b + Math.sin(ph + s.d * TAU) * H * 0.03 * k.speed,
+        i,
+      ]);
+    }
+    /* 정직한 보로노이는 비싸다. 성기게 찍어 칠하고 경계는 선으로 덮는다. */
+    const g = Math.max(6, 14 * S / k.scale);
+    for (let y = 0; y < H; y += g) {
+      for (let x = 0; x < W; x += g) {
+        let best = 0, bd = 1e9;
+        for (const [cx, cy, i] of cells) {
+          const d = (x - cx) * (x - cx) + (y - cy) * (y - cy);
+          if (d < bd) { bd = d; best = i; }
+        }
+        ctx.fillStyle = tone(best, 0.10 + 0.30 * k.contrast * ((best % 4) / 3 + 0.25));
+        ctx.fillRect(x, y, g + 1, g + 1);
+      }
+    }
+    ctx.strokeStyle = inkA(0.22 + 0.3 * k.contrast);
+    ctx.lineWidth = 1 * S;
+    cells.forEach(([cx, cy]) => {
+      ctx.beginPath(); ctx.arc(cx, cy, 2.4 * S, 0, TAU); ctx.stroke();
+    });
+  },
+
+  /* 25 실 — 원 위의 점을 이어 만드는 스트링아트. 곡선은 선에서 나온다. */
+  thread(t) {
+    const ph = motionPhase(t);
+    const N = 60 + Math.round(k.density * 180);
+    const R = Math.min(W, H) * 0.42 * k.scale;
+    const cx = W / 2, cy = H / 2;
+    const jump = 2 + Math.floor((0.5 + 0.5 * Math.sin(ph)) * 7);
+    ctx.lineWidth = 0.8 * S;
+    ctx.globalCompositeOperation = "lighter";
+    for (let i = 0; i < N; i++) {
+      const a1 = (i / N) * TAU + ph * 0.2;
+      const a2 = ((i * jump) / N) * TAU + ph * 0.2;
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(a1) * R, cy + Math.sin(a1) * R);
+      ctx.lineTo(cx + Math.cos(a2) * R, cy + Math.sin(a2) * R);
+      ctx.strokeStyle = tone(i % 3, 0.05 + 0.16 * k.contrast);
+      ctx.stroke();
+    }
+    ctx.globalCompositeOperation = "source-over";
+  },
+
+  /* 26 비 — 빗줄기와 바닥의 파문. */
+  rain(t) {
+    const ph = motionPhase(t);
+    const n = 40 + Math.round(k.density * 300);
+    const tilt = 0.18;
+    ctx.lineCap = "round";
+    for (let i = 0; i < n; i++) {
+      const s = seeds[i % seeds.length];
+      const fall = ((ph / TAU) * (1 + s.a) * (0.6 + k.speed) + s.b) % 1;
+      const x = W * s.c + fall * H * tilt;
+      const y = fall * H;
+      const len = Math.min(W, H) * (0.02 + 0.05 * s.a) * k.scale;
+      ctx.strokeStyle = inkA(0.22 + 0.55 * s.d * k.contrast);
+      ctx.lineWidth = (0.9 + s.d * 1.4) * S;
+      ctx.beginPath();
+      ctx.moveTo(x, y); ctx.lineTo(x - len * tilt, y - len);
+      ctx.stroke();
+    }
+    const rip = 3 + Math.round(k.density * 7);
+    for (let i = 0; i < rip; i++) {
+      const s = seeds[i + 190];
+      const grow = ((ph / TAU) * 1.6 + s.a) % 1;
+      const r = grow * Math.min(W, H) * 0.12 * k.scale;
+      ctx.beginPath();
+      ctx.ellipse(W * s.b, H * (0.78 + 0.18 * s.c), r, r * 0.3, 0, 0, TAU);
+      ctx.strokeStyle = tone(1, (1 - grow) * 0.45 * k.contrast);
+      ctx.lineWidth = 1.4 * S; ctx.stroke();
+    }
+  },
+
+  /* 27 개화 — 가운데에서 꽃잎이 열린다. 봄날의 이름값. */
+  bloom(t) {
+    const ph = motionPhase(t);
+    const layers = 3 + Math.round(k.density * 7);
+    const cx = W / 2, cy = H / 2;
+    for (let L = layers; L >= 1; L--) {
+      const open = clamp((Math.sin(ph - L * 0.25) + 1) / 2, 0, 1);
+      const petals = 5 + L;
+      const R = Math.min(W, H) * 0.06 * L * k.scale * (0.5 + 0.7 * open);
+      for (let p = 0; p < petals; p++) {
+        const a = (p / petals) * TAU + L * 0.3 + ph * 0.15;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.quadraticCurveTo(
+          cx + Math.cos(a - 0.3) * R * 0.8, cy + Math.sin(a - 0.3) * R * 0.8,
+          cx + Math.cos(a) * R, cy + Math.sin(a) * R
+        );
+        ctx.quadraticCurveTo(
+          cx + Math.cos(a + 0.3) * R * 0.8, cy + Math.sin(a + 0.3) * R * 0.8,
+          cx, cy
+        );
+        ctx.closePath();
+        ctx.fillStyle = tone(L, 0.08 + 0.22 * k.contrast);
+        ctx.fill();
+        ctx.strokeStyle = inkA(0.10 + 0.18 * k.contrast);
+        ctx.lineWidth = 1 * S; ctx.stroke();
+      }
+    }
+  },
+
+  /* 28 회로 — 직각으로만 꺾이는 배선과 접점. */
+  circuit(t) {
+    const ph = motionPhase(t);
+    const lines = 6 + Math.round(k.density * 26);
+    ctx.lineCap = "square";
+    for (let i = 0; i < lines; i++) {
+      const s = seeds[i + 210];
+      let x = W * s.a, y = H * s.b;
+      ctx.beginPath(); ctx.moveTo(x, y);
+      const segs = 3 + Math.floor(s.c * 5);
+      for (let j = 0; j < segs; j++) {
+        const len = Math.min(W, H) * (0.04 + 0.16 * ((s.d + j * 0.21) % 1)) * k.scale;
+        if ((j + Math.floor(s.a * 2)) % 2 === 0) x += len * (s.c > 0.5 ? 1 : -1);
+        else y += len * (s.d > 0.5 ? 1 : -1);
+        ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = tone(1, 0.16 + 0.4 * k.contrast);
+      ctx.lineWidth = 1.6 * S; ctx.stroke();
+      /* 접점. 신호가 지나가는 것처럼 밝기가 돈다. */
+      const on = (Math.sin(ph * 2 + s.a * TAU) + 1) / 2;
+      ctx.beginPath(); ctx.arc(x, y, 3 * S * k.scale, 0, TAU);
+      ctx.fillStyle = tone(0, 0.25 + 0.7 * on * k.contrast); ctx.fill();
+    }
+  },
+
+  /* 29 등고선 — 같은 높이를 잇는 선. 지형이 드러난다. */
+  topo(t) {
+    const ph = motionPhase(t);
+    const levels = 4 + Math.round(k.density * 10);
+    const g = Math.max(3, 5 * S);
+    for (let L = 0; L < levels; L++) {
+      const thr = L / levels;
+      ctx.beginPath();
+      for (let y = 0; y < H; y += g) {
+        let pen = false;
+        for (let x = 0; x < W; x += g) {
+          const v = fbm(x / (W * 0.5) * k.scale * 2 + ph * 0.15, y / (H * 0.5) * k.scale * 2, 4);
+          const near = Math.abs(clamp(v, 0, 1) - thr) < 0.030;
+          if (near) { pen ? ctx.lineTo(x, y) : ctx.moveTo(x, y); pen = true; }
+          else pen = false;
+        }
+      }
+      ctx.strokeStyle = L % 4 === 0
+        ? tone(1, 0.5 + 0.45 * k.contrast)
+        : inkA(0.26 + 0.45 * k.contrast);
+      ctx.lineWidth = (L % 4 === 0 ? 2.2 : 1.2) * S;
+      ctx.stroke();
+    }
+  },
+
+  /* 30 모자이크 — 조각마다 색이 다른 타일. 줄눈이 그림을 만든다. */
+  mosaic(t) {
+    const ph = motionPhase(t);
+    const cols = Math.round(10 + k.density * 46);
+    const cw = W / cols, rows = Math.max(1, Math.round(cols * (H / W)));
+    const chh = H / rows;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const v = fbm(c * 0.14 * k.scale + Math.cos(ph) * 0.5, r * 0.14 * k.scale + Math.sin(ph) * 0.5, 3);
+        const q = clamp(v, 0, 0.999);
+        const gap = Math.max(1, cw * 0.10);
+        ctx.fillStyle = tone(Math.floor(q * 4), 0.2 + 0.7 * q * k.contrast);
+        ctx.fillRect(c * cw + gap / 2, r * chh + gap / 2, cw - gap, chh - gap);
+      }
+    }
+  },
+
+  /* 31 연기 — 위로 오르며 흩어진다. */
+  smoke(t) {
+    const ph = motionPhase(t);
+    const n = 20 + Math.round(k.density * 130);
+    ctx.globalCompositeOperation = "lighter";
+    for (let i = 0; i < n; i++) {
+      const s = seeds[i % seeds.length];
+      const rise = ((ph / TAU) * (0.4 + s.a) + s.b) % 1;
+      const spread = rise * rise;
+      const x = W * (0.5 + (s.c - 0.5) * 0.3)
+        + fbm(s.d * 7, rise * 3 + ph * 0.2, 3) * W * 0.34 * spread;
+      const y = H * (1.02 - rise * 1.05);
+      const r = Math.min(W, H) * (0.012 + 0.09 * spread) * k.scale;
+      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0, tone(0, (1 - rise) * 0.26 * k.contrast));
+      g.addColorStop(1, tone(0, 0));
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+    }
+    ctx.globalCompositeOperation = "source-over";
+  },
+
+  /* 32 격자 왜곡 — 반듯한 격자가 보이지 않는 힘에 눌린다. */
+  warp(t) {
+    const ph = motionPhase(t);
+    const cols = 8 + Math.round(k.density * 30);
+    const rows = Math.max(4, Math.round(cols * (H / W)));
+    const amp = Math.min(W, H) * 0.09 * k.scale;
+    const off = (u, v) => {
+      const n1 = fbm(u * 2.2 + ph * 0.3, v * 2.2, 3) - 0.25;
+      const n2 = fbm(u * 2.2 + 9, v * 2.2 + ph * 0.3, 3) - 0.25;
+      return [n1 * amp, n2 * amp];
+    };
+    ctx.lineWidth = 1.1 * S;
+    ctx.strokeStyle = inkA(0.16 + 0.4 * k.contrast);
+    for (let r = 0; r <= rows; r++) {
+      ctx.beginPath();
+      for (let c = 0; c <= cols; c++) {
+        const u = c / cols, v = r / rows;
+        const [dx, dy] = off(u, v);
+        const x = u * W + dx, y = v * H + dy;
+        c ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+      }
+      ctx.stroke();
+    }
+    ctx.strokeStyle = tone(1, 0.14 + 0.3 * k.contrast);
+    for (let c = 0; c <= cols; c++) {
+      ctx.beginPath();
+      for (let r = 0; r <= rows; r++) {
+        const u = c / cols, v = r / rows;
+        const [dx, dy] = off(u, v);
+        const x = u * W + dx, y = v * H + dy;
+        r ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+      }
+      ctx.stroke();
+    }
+  },
+
+  /* 33 별자리 — 가까운 점끼리만 잇는다. 선이 저절로 형태를 만든다. */
+  constellation(t) {
+    const ph = motionPhase(t);
+    const n = 22 + Math.round(k.density * 110);
+    const pts = [];
+    for (let i = 0; i < n; i++) {
+      const s = seeds[i % seeds.length];
+      pts.push([
+        W * ((s.a + Math.cos(ph + s.c * TAU) * 0.02 * k.speed + 1) % 1),
+        H * ((s.b + Math.sin(ph + s.d * TAU) * 0.02 * k.speed + 1) % 1),
+        s.d,
+      ]);
+    }
+    const near = Math.min(W, H) * 0.17 * k.scale;
+    ctx.lineWidth = 1 * S;
+    for (let i = 0; i < pts.length; i++) {
+      for (let j = i + 1; j < pts.length; j++) {
+        const d = Math.hypot(pts[i][0] - pts[j][0], pts[i][1] - pts[j][1]);
+        if (d > near) continue;
+        ctx.strokeStyle = inkA((1 - d / near) * 0.55 * k.contrast);
+        ctx.beginPath();
+        ctx.moveTo(pts[i][0], pts[i][1]); ctx.lineTo(pts[j][0], pts[j][1]);
+        ctx.stroke();
+      }
+    }
+    pts.forEach(([x, y, w]) => {
+      ctx.beginPath();
+      ctx.arc(x, y, Math.min(W, H) * 0.0055 * (0.5 + w) * k.scale, 0, TAU);
+      ctx.fillStyle = tone(0, 0.6 + 0.4 * w * k.contrast);
+      ctx.fill();
+    });
+  },
+
+  /* 34 옵아트 — 굵기가 변하는 줄무늬. 가만히 있는데 움직여 보인다. */
+  stripe(t) {
+    const ph = motionPhase(t);
+    const bands = 10 + Math.round(k.density * 60);
+    const vertical = P.symmetry % 2 === 1;
+    for (let i = 0; i < bands; i++) {
+      const u = i / bands;
+      const w = (1 / bands) * (0.35 + 0.65 * (0.5 + 0.5 * Math.sin(u * TAU * 3 + ph * 2)));
+      ctx.fillStyle = i % 2 ? tone(0, 0.10 + 0.6 * k.contrast) : tone(2, 0.10 + 0.5 * k.contrast);
+      if (vertical) ctx.fillRect(u * W, 0, w * W, H);
+      else ctx.fillRect(0, u * H, W, w * H);
+    }
+  },
+
+  /* 35 나선 — 한 점에서 풀려 나오는 궤적. */
+  spiral(t) {
+    const ph = motionPhase(t);
+    const arms = 1 + Math.round(k.density * 8);
+    const cx = W / 2, cy = H / 2;
+    const R = Math.min(W, H) * 0.46 * k.scale;
+    ctx.lineCap = "round";
+    for (let a = 0; a < arms; a++) {
+      const base = (a / arms) * TAU + ph * 0.4;
+      ctx.beginPath();
+      const steps = 320;
+      for (let j = 0; j <= steps; j++) {
+        const u = j / steps;
+        const ang = base + u * TAU * 2.6;
+        const r = R * u * (0.75 + 0.25 * Math.sin(u * 8 + ph));
+        const x = cx + Math.cos(ang) * r, y = cy + Math.sin(ang) * r;
+        j ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+      }
+      ctx.strokeStyle = tone(a, 0.2 + 0.5 * k.contrast);
+      ctx.lineWidth = (1 + 2.2 * (1 - a / arms)) * S;
+      ctx.stroke();
+    }
+  },
+
+  /* 36 균열 — 한 점에서 갈라져 뻗는다. 갈라질수록 가늘어진다. */
+  fracture(t) {
+    const ph = motionPhase(t);
+    const grow = 0.4 + 0.6 * ((Math.sin(ph) + 1) / 2);
+    const cx = W * 0.5, cy = H * 0.5;
+    ctx.lineCap = "round";
+    const branch = (x, y, ang, len, depth) => {
+      if (depth <= 0 || len < 2 * S) return;
+      const s = seeds[(depth * 37 + Math.round(ang * 12) + 230) % seeds.length];
+      const nx = x + Math.cos(ang) * len, ny = y + Math.sin(ang) * len;
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(nx, ny);
+      ctx.strokeStyle = inkA(0.12 + 0.5 * (depth / 7) * k.contrast);
+      ctx.lineWidth = Math.max(0.5, depth * 0.7 * S);
+      ctx.stroke();
+      const spread = 0.34 + s.a * 0.5;
+      branch(nx, ny, ang - spread * 0.5, len * (0.62 + s.b * 0.2), depth - 1);
+      branch(nx, ny, ang + spread * 0.5, len * (0.62 + s.c * 0.2), depth - 1);
+    };
+    const arms = 3 + Math.round(k.density * 5);
+    for (let i = 0; i < arms; i++) {
+      branch(cx, cy, (i / arms) * TAU + ph * 0.2,
+        Math.min(W, H) * 0.13 * k.scale * grow, 6);
+    }
+  },
+
+  /* 37 네온사인 — 유리관에 갇힌 빛. 관 자체보다 둘레가 더 밝다. */
+  neonsign(t) {
+    const ph = motionPhase(t);
+    const n = 2 + Math.round(k.density * 6);
+    ctx.lineCap = "round"; ctx.lineJoin = "round";
+    for (let i = 0; i < n; i++) {
+      const s = seeds[i + 250];
+      const flick = 0.55 + 0.45 * ((Math.sin(ph * 3 + s.a * TAU) + 1) / 2);
+      const path = () => {
+        ctx.beginPath();
+        for (let j = 0; j <= 90; j++) {
+          const u = j / 90;
+          const x = W * (0.12 + 0.76 * u);
+          const y = H * (0.2 + 0.6 * s.b)
+            + Math.sin(u * TAU * (1 + Math.floor(s.c * 3)) + s.d * TAU) * H * 0.12 * k.scale;
+          j ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+        }
+      };
+      /* 굵고 옅게 → 가늘고 진하게. 세 번 겹치면 유리관처럼 보인다. */
+      ctx.globalCompositeOperation = "lighter";
+      [[16, 0.05], [7, 0.12], [2.4, 0.55]].forEach(([w, al]) => {
+        path();
+        ctx.strokeStyle = tone(i % 3 + 1, al * flick * (0.5 + k.contrast));
+        ctx.lineWidth = w * S * k.scale;
+        ctx.stroke();
+      });
+      path();
+      ctx.strokeStyle = inkA(0.85 * flick);
+      ctx.lineWidth = 1.1 * S; ctx.stroke();
+      ctx.globalCompositeOperation = "source-over";
+    }
+  },
+
+  /* 38 종이 — 접힌 면. 같은 색인데 각도가 달라 밝기가 갈린다. */
+  paper(t) {
+    const ph = motionPhase(t);
+    const n = 5 + Math.round(k.density * 22);
+    for (let i = 0; i < n; i++) {
+      const s = seeds[i + 270];
+      const cx = W * s.a, cy = H * s.b;
+      const R = Math.min(W, H) * (0.08 + 0.22 * s.c) * k.scale;
+      const a0 = s.d * TAU + ph * 0.2;
+      const pts = [];
+      for (let j = 0; j < 3; j++) {
+        const a = a0 + (j / 3) * TAU + s.a;
+        pts.push([cx + Math.cos(a) * R, cy + Math.sin(a) * R * (0.7 + 0.3 * s.b)]);
+      }
+      ctx.beginPath();
+      ctx.moveTo(pts[0][0], pts[0][1]);
+      ctx.lineTo(pts[1][0], pts[1][1]);
+      ctx.lineTo(pts[2][0], pts[2][1]);
+      ctx.closePath();
+      /* 면의 방향으로 밝기를 정한다. 접힌 종이는 그렇게 읽힌다. */
+      const face = (Math.cos(a0 * 2) + 1) / 2;
+      ctx.fillStyle = tone(Math.floor(face * 3), 0.18 + 0.55 * face * k.contrast);
+      ctx.fill();
+      ctx.strokeStyle = inkA(0.10 + 0.2 * k.contrast);
+      ctx.lineWidth = 1 * S; ctx.stroke();
+    }
+  },
+
+  /* 39 대나무 — 수직의 마디. 획과 여백이 전부다. */
+  bamboo(t) {
+    const ph = motionPhase(t);
+    const stalks = 3 + Math.round(k.density * 14);
+    for (let i = 0; i < stalks; i++) {
+      const s = seeds[i + 290];
+      const x = W * (0.05 + 0.9 * s.a);
+      const w = Math.min(W, H) * (0.008 + 0.022 * s.b) * k.scale;
+      const sway = Math.sin(ph + s.c * TAU) * W * 0.012 * k.speed;
+      ctx.fillStyle = tone(Math.floor(s.d * 3), 0.16 + 0.45 * k.contrast);
+      ctx.beginPath();
+      ctx.moveTo(x - w / 2, H);
+      ctx.lineTo(x - w / 2 + sway, 0);
+      ctx.lineTo(x + w / 2 + sway, 0);
+      ctx.lineTo(x + w / 2, H);
+      ctx.closePath(); ctx.fill();
+      /* 마디 */
+      const joints = 4 + Math.floor(s.b * 6);
+      ctx.strokeStyle = inkA(0.28 + 0.4 * k.contrast);
+      ctx.lineWidth = 1.6 * S;
+      for (let j = 1; j < joints; j++) {
+        const u = j / joints, y = H * u;
+        ctx.beginPath();
+        ctx.moveTo(x - w * 0.7 + sway * (1 - u), y);
+        ctx.lineTo(x + w * 0.7 + sway * (1 - u), y);
+        ctx.stroke();
+      }
+    }
+  },
+
+  /* 40 궤도 — 타원 궤적 위를 도는 점과 그 자취. */
+  orbit(t) {
+    const ph = motionPhase(t);
+    const n = 3 + Math.round(k.density * 14);
+    const cx = W / 2, cy = H / 2;
+    for (let i = 0; i < n; i++) {
+      const s = seeds[i + 310];
+      const rx = Math.min(W, H) * (0.08 + 0.38 * s.a) * k.scale;
+      const ry = rx * (0.25 + 0.7 * s.b);
+      const tilt = s.c * TAU;
+      ctx.save();
+      ctx.translate(cx, cy); ctx.rotate(tilt);
+      ctx.beginPath(); ctx.ellipse(0, 0, rx, ry, 0, 0, TAU);
+      ctx.strokeStyle = inkA(0.10 + 0.18 * k.contrast);
+      ctx.lineWidth = 1 * S; ctx.stroke();
+      /* 자취. 진행 방향 뒤쪽으로 옅어진다. */
+      const a = ph * (0.6 + s.d) + s.a * TAU;
+      for (let j = 0; j < 16; j++) {
+        const aa = a - j * 0.055;
+        ctx.beginPath();
+        ctx.arc(Math.cos(aa) * rx, Math.sin(aa) * ry,
+          Math.min(W, H) * 0.006 * k.scale * (1 - j / 18), 0, TAU);
+        ctx.fillStyle = tone(i % 4, (1 - j / 16) * 0.5 * (0.4 + k.contrast));
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+  },
 };
 
 /* 스타일 목록. 에디터가 이 순서로 버튼을 만든다. */
@@ -695,6 +1234,11 @@ window.STUDIO_STYLES = [
   ["glass", "글래스"], ["clay", "클레이"], ["pixel", "픽셀아트"], ["editorial", "에디토리얼"],
   ["y2k", "Y2K"], ["swiss", "스위스"], ["surreal", "초현실"], ["bohemian", "보헤미안"],
   ["victorian", "빅토리안"], ["graffiti", "그래피티"], ["aurora", "오로라"], ["hand", "손글씨"],
+  ["inkwash", "수묵"], ["wave", "파동"], ["flock", "군집"], ["crystal", "결정"],
+  ["thread", "실"], ["rain", "비"], ["bloom", "개화"], ["circuit", "회로"],
+  ["topo", "등고선"], ["mosaic", "모자이크"], ["smoke", "연기"], ["warp", "격자 왜곡"],
+  ["constellation", "별자리"], ["stripe", "옵아트"], ["spiral", "나선"], ["fracture", "균열"],
+  ["neonsign", "네온사인"], ["paper", "종이"], ["bamboo", "대나무"], ["orbit", "궤도"],
 ];
 window.STUDIO_PALETTES = Object.keys(PALETTES).map((id) => [id, PALETTES[id].name]);
 
