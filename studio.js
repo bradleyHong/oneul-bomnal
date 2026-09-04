@@ -58,6 +58,22 @@
     ["paper", "종이", "접힌 면. 각도가 밝기를 가른다"],
     ["bamboo", "대나무", "수직의 마디. 획과 여백"],
     ["orbit", "궤도", "타원을 도는 점과 그 자취"],
+    ["ripple", "파문", "떨어진 자리마다 동심원. 겹치면 밝아진다"],
+    ["moire", "간섭무늬", "결이 다른 두 격자가 없던 무늬를 만든다"],
+    ["lissajous", "리사주", "가로세로 진동수의 비가 곧 모양"],
+    ["attractor", "끌개", "같은 식을 수만 번. 점이 모이는 자리"],
+    ["slitscan", "슬릿스캔", "띠마다 시간이 다르다. 한 장에 여러 순간"],
+    ["dotmatrix", "도트매트릭스", "LED 패널 그 자체. 점 하나가 화소 하나"],
+    ["oscillo", "파형", "오실로스코프. 겹쳐 흐르는 신호"],
+    ["lowpoly", "로우폴리", "삼각형 면만으로 이룬 지형"],
+    ["isocity", "아이소 도시", "비스듬히 내려다본 블록의 높낮이"],
+    ["branch", "가지", "하나의 획이 둘로 갈라지기를 되풀이"],
+    ["mandala", "만다라", "하나의 결을 원 둘레로 되풀이"],
+    ["hanji", "한지", "젖은 종이에 번지는 먹. 경계가 없다"],
+    ["blinds", "블라인드", "날개가 물결처럼 돌아간다"],
+    ["magnet", "자기장", "두 극 사이를 흐르는 선"],
+    ["terrace", "계단 지형", "등고선 사이를 칠해 층으로 세운다"],
+    ["weave", "직조", "씨줄과 날줄. 위아래가 번갈아 지나간다"],
   ];
 
   /* 색. 명화에서 온 것은 출처를 적는다. 전부 저작권이 만료된 작품이고,
@@ -491,6 +507,13 @@
         .toLowerCase().indexOf(q) !== -1;
     });
     $("[data-gal-count]").textContent = galItems.length.toLocaleString("ko-KR") + "가지";
+    /* 여는 버튼의 안내도 같이 맞춘다. 화면에 개수를 적어 두면 스타일을
+       늘릴 때마다 어긋난다. 늘 실제 개수를 읽는다. */
+    var openSub = $("[data-preset-count]");
+    var total = presets().length;
+    if (openSub && total) {
+      openSub.textContent = total.toLocaleString("ko-KR") + "가지 생김새 중에서 고르기";
+    }
     $("[data-gal-empty]").hidden = galItems.length > 0;
     galDrawn.forEach(function (el) { el.remove(); });
     galDrawn.clear();
