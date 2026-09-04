@@ -144,17 +144,14 @@
       gen.set(spec).start();
 
       elChips.innerHTML = "";
-      var chips = [GEN.STYLE_KO[spec.style] + " 스타일", spec.palette.id + " 팔레트"]
-        .concat(spec.tags);
-      chips.forEach(function (t) { elChips.appendChild(el("span", "st-chip", t)); });
+      spec.tags.forEach(function (t) { elChips.appendChild(el("span", "st-chip", t)); });
 
       elCuts.innerHTML =
         '<p class="st-code-num">' + code(spec.seed) + '</p>' +
         '<p class="st-code-note">이 번호가 이 화면의 설계도입니다. ' +
         '결제하시면 <b>같은 번호로</b> 화면 규격에 맞춰 고화질로 렌더링해 드립니다.</p>' +
-        '<p class="st-code-sub">스타일 ' + GEN.STYLE_KO[spec.style] +
-        ' · 팔레트 ' + spec.palette.id +
-        ' · 겹 ' + spec.layers + ' · 속도 ' + spec.speed + '</p>';
+        '<p class="st-code-sub">마음에 드는 화면이 나올 때까지 눌러 보세요. ' +
+        '번호만 적어 두시면 언제든 그 화면으로 돌아옵니다.</p>';
 
       elGo.textContent = "다른 화면 보기";
       updateQuote();
@@ -188,7 +185,7 @@
       return [
         "작품 번호: " + (art || "(만들기 전)"),
         "원하시는 화면: " + (story || "(적지 않으심)"),
-        "스타일 · 팔레트: " + (spec ? GEN.STYLE_KO[spec.style] + " · " + spec.palette.id : "-"),
+        "엔진 설정(사내 확인용): " + (spec ? spec.style + " / " + spec.palette.id : "-"),
         "화면 규격: " + LAST.panel.name + " " + LAST.panel.w + "×" + LAST.panel.h,
         "재생 길이: " + LAST.sec + "초",
         "렌더 크레딧: " + LAST.q.credits + " 크레딧 (옵션 배수 ×" + LAST.q.mult + ")",
@@ -246,8 +243,7 @@
     }
 
     elStat.textContent =
-      "스타일 " + GEN.counts.styles + "종 · 팔레트 " + GEN.counts.palettes +
-      "종 · 씨앗은 매번 새로 뽑습니다. 같은 문장이라도 누를 때마다 다른 화면이 나옵니다.";
+      "누를 때마다 새 화면이 나옵니다. 같은 문장이라도 매번 다르게 그립니다.";
     syncPanel();
   });
 })();
