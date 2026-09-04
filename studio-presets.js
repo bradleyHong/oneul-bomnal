@@ -68,19 +68,32 @@
         var r = mulberry32((h * 7919 + vi * 104729) | 0);
 
         var fam = FAMILY[Math.floor(vi / 10)];
-        var pick = function (range) {
-          return Math.round(range[0] + r() * (range[1] - range[0]));
+        var slot = vi % 10;              /* 가족 안에서의 자리 0~9 */
+        var soff = ((h % 10) + 10) % 10; /* 스타일마다 자리를 밀어 놓는다 */
+
+        /* 값을 무작위로 뽑지 않고 자리를 나눠 준다.
+           무작위로 뽑으면 열 개 중 서넛이 비슷한 값에 몰려 같은 그림이 된다.
+           범위를 열 칸으로 쪼개고 자리마다 다른 칸을 쓰면 열 개가 범위를
+           고르게 덮는다. 칸 안에서만 흔들어 기계적으로 보이지 않게 한다.
+           항목마다 10과 서로소인 다른 수를 곱해, 밀도가 큰 것이 크기도
+           큰 식으로 값끼리 붙어 다니는 일을 막는다. */
+        var pick = function (range, mult) {
+          var s = (slot * mult + soff) % 10;
+          return Math.round(range[0] + (s + r()) / 10 * (range[1] - range[0]));
         };
 
         var sym = 1, invert = false;
         if (fam.key === "mirror") {
-          sym = [2, 4, 6][Math.floor(r() * 3)];
-          invert = r() < 0.3;
-        } else if (r() < 0.06) {
+          sym = [2, 4, 6][slot % 3];     /* 열 개가 2·4·6을 골고루 쓴다 */
+          invert = slot % 10 === 3 || slot % 10 === 8;
+        } else if ((slot + soff) % 10 === 5 && vi % 20 < 10) {
           invert = true;                 /* 가끔 밝은 바탕. 너무 자주면 눈이 피로하다 */
         }
 
-        var pal = pals[Math.floor(r() * pals.length)];
+        /* 색도 돌려 쓴다. 19가지와 서로소인 7씩 건너뛰면 50개가 19가지를
+           두세 번씩 고르게 돈다. 무작위로 뽑았을 때는 한 가족 열 개 안에서
+           415번이나 같은 색이 겹쳤다. */
+        var pal = pals[(vi * 7 + soff * 3 + si) % pals.length];
         var num = String(vi + 1).padStart(2, "0");
 
         out.push({
@@ -92,14 +105,14 @@
           palette: pal,
           paletteName: A.PALETTES[pal] ? A.PALETTES[pal].name : pal,
           family: fam.label,
-          density: pick(fam.density),
-          scale: pick(fam.scale),
-          speed: pick(fam.speed),
-          contrast: pick(fam.contrast),
-          glow: pick(fam.glow),
+          density: pick(fam.density, 1),
+          scale: pick(fam.scale, 3),
+          speed: pick(fam.speed, 7),
+          contrast: pick(fam.contrast, 9),
+          glow: pick(fam.glow, 3),
           grain: Math.round(6 + r() * 34),
-          accent: Math.round(28 + r() * 66),
-          motion: MOTIONS[Math.floor(r() * MOTIONS.length)],
+          accent: pick([28, 94], 7),
+          motion: MOTIONS[(slot * 3 + soff + si) % MOTIONS.length],
           symmetry: sym,
           invert: invert,
           seed: 1000000 + Math.floor(r() * 8999999),

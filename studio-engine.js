@@ -126,9 +126,50 @@ function create(canvas, opts) {
   const lerp = (a, b, t) => a + (b - a) * t;
   const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 
+  /* 밝은 바탕으로 뒤집을 때 쓸 색.
+     배경만 밝게 바꾸고 그림 색은 그대로 두었더니, 밝은 바탕에 밝은 그림이
+     되어 아무것도 안 보였다(네온사인 07, 실 10은 통째로 백지였다).
+     색상과 선명도는 그대로 두고 명도만 뒤집는다. 뒤집기 전과 같은 정도의
+     대비가 남으면서 팔레트의 성격은 유지된다. */
+  function flipLightness(hex) {
+    const n = parseInt(hex.slice(1), 16);
+    const r = ((n >> 16) & 255) / 255, g = ((n >> 8) & 255) / 255, b = (n & 255) / 255;
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+    let l = (mx + mn) / 2;
+    const d = mx - mn;
+    let h = 0, sat = 0;
+    if (d > 1e-6) {
+      sat = l > 0.5 ? d / (2 - mx - mn) : d / (mx + mn);
+      if (mx === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+      else if (mx === g) h = ((b - r) / d + 2) / 6;
+      else h = ((r - g) / d + 4) / 6;
+    }
+    l = 1 - l;
+    const q = l < 0.5 ? l * (1 + sat) : l + sat - l * sat;
+    const pp = 2 * l - q;
+    const hue = (t) => {
+      if (t < 0) t += 1; else if (t > 1) t -= 1;
+      if (t < 1 / 6) return pp + (q - pp) * 6 * t;
+      if (t < 1 / 2) return q;
+      if (t < 2 / 3) return pp + (q - pp) * (2 / 3 - t) * 6;
+      return pp;
+    };
+    const to = (v) => Math.round(Math.max(0, Math.min(1, v)) * 255);
+    return "#" + ((1 << 24) + (to(hue(h + 1 / 3)) << 16) + (to(hue(h)) << 8) + to(hue(h - 1 / 3)))
+      .toString(16).slice(1);
+  }
+
+  const TONES = P.invert ? pal.tones.map(flipLightness) : pal.tones;
+
+  /* 덧셈 합성으로 빛을 쌓는 스타일들이 있다(네온사인·결정·오로라 등).
+     흰 바탕에서는 이미 255라 아무리 더해도 변하지 않아 그림이 통째로
+     사라진다. 뒤집었을 때는 같은 뜻의 반대 연산인 곱셈으로 바꾼다.
+     어두운 바탕에 빛을 더하는 것 = 밝은 바탕에서 그늘을 더하는 것. */
+  const ADD = P.invert ? "multiply" : "lighter";
+
   /* 색을 rgba로. 팔레트 tone 인덱스와 알파를 받는다. */
   function tone(i, alpha) {
-    const hex = pal.tones[((i % pal.tones.length) + pal.tones.length) % pal.tones.length];
+    const hex = TONES[((i % TONES.length) + TONES.length) % TONES.length];
     const n = parseInt(hex.slice(1), 16);
     return "rgba(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + alpha + ")";
   }
@@ -192,7 +233,7 @@ function create(canvas, opts) {
     maximal(t) {
       const layers = 4 + Math.round(k.density * 10);
       const ph = motionPhase(t);
-      ctx.globalCompositeOperation = "lighter";
+      ctx.globalCompositeOperation = ADD;
       for (let L = 0; L < layers; L++) {
         const s = seeds[L];
         const rr = Math.min(W, H) * (0.05 + 0.42 * s.a) * k.scale;
@@ -622,7 +663,7 @@ function create(canvas, opts) {
     aurora(t) {
       const ph = motionPhase(t);
       const bands = 3 + Math.round(k.density * 9);
-      ctx.globalCompositeOperation = "lighter";
+      ctx.globalCompositeOperation = ADD;
       for (let b = 0; b < bands; b++) {
         const s = seeds[b + 110];
         ctx.beginPath();
@@ -795,15 +836,22 @@ function create(canvas, opts) {
       const R = Math.min(W, H) * 0.42 * k.scale;
       const cx = W / 2, cy = H / 2;
       const jump = 2 + Math.floor((0.5 + 0.5 * Math.sin(ph)) * 7);
-      ctx.lineWidth = 0.8 * S;
-      ctx.globalCompositeOperation = "lighter";
+      /* 0.8 * S 그대로 두면 미리보기(640px)에서 0.27픽셀이 되어 화면의
+         한 점보다 가늘어진다. 4K에서는 멀쩡한데 고객 화면에서는 백지로
+         보였다. 어느 크기에서도 한 점은 넘게 잡는다. */
+      ctx.lineWidth = Math.max(0.9, 0.8 * S);
+      /* 선이 적을수록 한 가닥이 진해야 한다. 알파를 고정해 두었더니
+         성긴 변주일수록 옅어져, 성기게 만들라고 한 것이 안 보이게
+         만들라는 뜻이 되어 있었다. */
+      const alpha = (0.05 + 0.16 * k.contrast) * (1 + (1 - k.density) * 1.6);
+      ctx.globalCompositeOperation = ADD;
       for (let i = 0; i < N; i++) {
         const a1 = (i / N) * TAU + ph * 0.2;
         const a2 = ((i * jump) / N) * TAU + ph * 0.2;
         ctx.beginPath();
         ctx.moveTo(cx + Math.cos(a1) * R, cy + Math.sin(a1) * R);
         ctx.lineTo(cx + Math.cos(a2) * R, cy + Math.sin(a2) * R);
-        ctx.strokeStyle = tone(i % 3, 0.05 + 0.16 * k.contrast);
+        ctx.strokeStyle = tone(i % 3, alpha);
         ctx.stroke();
       }
       ctx.globalCompositeOperation = "source-over";
@@ -940,7 +988,7 @@ function create(canvas, opts) {
     smoke(t) {
       const ph = motionPhase(t);
       const n = 20 + Math.round(k.density * 130);
-      ctx.globalCompositeOperation = "lighter";
+      ctx.globalCompositeOperation = ADD;
       for (let i = 0; i < n; i++) {
         const s = seeds[i % seeds.length];
         const rise = ((ph / TAU) * (0.4 + s.a) + s.b) % 1;
@@ -1109,7 +1157,7 @@ function create(canvas, opts) {
           }
         };
         /* 굵고 옅게 → 가늘고 진하게. 세 번 겹치면 유리관처럼 보인다. */
-        ctx.globalCompositeOperation = "lighter";
+        ctx.globalCompositeOperation = ADD;
         [[16, 0.05], [7, 0.12], [2.4, 0.55]].forEach(([w, al]) => {
           path();
           ctx.strokeStyle = tone(i % 3 + 1, al * flick * (0.5 + k.contrast));
@@ -1253,6 +1301,16 @@ function create(canvas, opts) {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.globalAlpha = 1;
     ctx.globalCompositeOperation = "source-over";
+    /* 선 설정까지 전부 되돌린다. 여기까지 하지 않으면 앞 프레임이 남긴
+       lineCap·lineWidth를 물려받아, 페이지를 열고 처음 그린 프레임만
+       다른 그림이 된다. 미리보기와 납품본이 어긋나는 원인이었다. */
+    ctx.lineCap = "butt";
+    ctx.lineJoin = "miter";
+    ctx.lineWidth = 1;
+    ctx.miterLimit = 10;
+    ctx.setLineDash([]);
+    ctx.shadowColor = "rgba(0,0,0,0)";
+    ctx.shadowBlur = 0;
     ctx.fillStyle = BG;
     ctx.fillRect(0, 0, W, H);
 
