@@ -494,6 +494,7 @@
   "noindex": [
     "/admin",
     "/client",
+    "/studio",
     "/login",
     "/api/",
     "/mediabox",

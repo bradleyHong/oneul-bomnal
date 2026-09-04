@@ -5,7 +5,7 @@ import { COOKIE_NAME, readCookie, verifySession } from "./api/_auth.js";
  * 자바스크립트로 메뉴만 숨기는 방식은 보호가 되지 않으므로, 페이지 자체를 여기서 막습니다.
  */
 export const config = {
-  matcher: ["/admin.html", "/admin", "/client.html", "/client"],
+  matcher: ["/admin.html", "/admin", "/client.html", "/client", "/studio.html", "/studio"],
 };
 
 const ADMIN_ONLY = ["/admin.html", "/admin"];
