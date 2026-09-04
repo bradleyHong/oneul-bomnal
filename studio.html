@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>봄날 스튜디오 | 오늘은 봄날</title>
+    <meta
+      name="description"
+      content="전문 기업의 기술로 나만의 미디어아트를 만듭니다. 만들고 싶은 화면을 문장으로 적으면 5초 시연본을 바로 보여 드립니다. 로그인 없이 만져 보세요."
+    />
+    <link rel="canonical" href="https://publicbloom.art/studio" />
+    <link rel="stylesheet" href="./styles.css?v=20260824-hero" />
+    <link rel="stylesheet" href="./studio.css?v=20260904b" />
+    <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
+  </head>
+  <body class="st-page">
+    <header class="st-nav">
+      <div class="st-brand">
+        <strong>봄날 스튜디오</strong>
+        <span>오늘은 봄날 · 로그인 없이 만들어 보세요</span>
+      </div>
+      <div class="st-nav-tools">
+        <a href="./">홈페이지</a>
+        <a href="./quote">의뢰하기</a>
+        <a href="./login">회원 로그인</a>
+      </div>
+    </header>
+
+    <main class="st-main" id="studio">
+      <h1 class="st-h1">만들고 싶은 화면을 적어 보세요</h1>
+      <p class="st-lead">
+        전문 기업의 기술로 <b>나만의 미디어아트</b>를 만듭니다.
+        문장을 적으면 라이브러리에서 어울리는 소재를 골라 5초짜리 시연본을 만들어 드립니다.
+        <b>로그인도 가입도 필요 없습니다.</b> 마음에 드시면 그대로 의뢰하세요.
+        화면 규격에 맞춰 고화질로 렌더링해 <b>평일 24시간 이내</b>에 보내드립니다. (휴일·공휴일 제외)
+      </p>
+
+      <section class="st-grid">
+        <!-- 좌: 입력 -->
+        <div class="st-panelbox">
+          <label class="st-label" for="stStory">① 어떤 화면을 원하시나요</label>
+          <textarea id="stStory" data-st-story rows="3"
+            placeholder="예) 로비 미디어월에 걸 봄바람 빛 리본, 따뜻하고 화사하게"></textarea>
+          <div class="st-examples">
+            <button type="button" data-st-example>로비 미디어월에 걸 봄바람 빛 리본, 따뜻하고 화사하게</button>
+            <button type="button" data-st-example>겨울 밤 도심 전광판, 눈 내리는 화면, 푸르고 차분하게</button>
+            <button type="button" data-st-example>고분군 야간 포토존, 전통 색감으로 웅장하게</button>
+            <button type="button" data-st-example>바다와 파도, 잔잔하게 흐르는 로비 화면</button>
+          </div>
+
+          <label class="st-label" for="stPanel">② 어느 화면에 트시나요</label>
+          <select id="stPanel" data-st-panel></select>
+          <div class="st-size">
+            <label>가로 <input type="number" data-st-w value="3840" min="64" step="1" /> px</label>
+            <label>세로 <input type="number" data-st-h value="2160" min="64" step="1" /> px</label>
+            <label>길이 <input type="number" data-st-sec value="30" min="5" max="600" step="1" /> 초</label>
+          </div>
+
+          <label class="st-label">③ 추가 요청</label>
+          <div class="st-opts">
+            <label><input type="checkbox" data-st-opt="asset" /> 기관 로고·이미지 반영 <span>×1.2</span></label>
+            <label><input type="checkbox" data-st-opt="custom" /> 커스텀 스타일 요청 <span>×1.6</span></label>
+            <label><input type="checkbox" data-st-opt="rush" /> 당일 급행 <span>×1.5</span></label>
+          </div>
+
+          <button type="button" class="st-go" data-st-go>시연본 만들기</button>
+          <p class="st-stat" data-st-stat>라이브러리를 불러오는 중…</p>
+        </div>
+
+        <!-- 우: 결과 -->
+        <div class="st-result">
+          <div class="st-stage">
+            <canvas data-st-canvas width="720" height="405" aria-label="시연본 미리보기"></canvas>
+          </div>
+          <div class="st-chips" data-st-chips></div>
+          <p class="st-cuts-title">고른 소재</p>
+          <div class="st-cuts" data-st-cuts></div>
+        </div>
+      </section>
+
+      <section class="st-bottom">
+        <div class="st-quote" data-st-quote></div>
+        <div class="st-order">
+          <h2>이 견적서를 이메일로 받아 보세요</h2>
+          <p>
+            화면에 보이는 것은 <b>워터마크가 찍힌 5초 시연본</b>이고 저장되지 않습니다.
+            지금 설정한 규격과 금액을 그대로 담아 견적서를 보내드립니다. <b>가입은 필요 없습니다.</b>
+          </p>
+
+          <form class="st-form" data-st-form novalidate>
+            <div class="st-form-row">
+              <label>
+                이름 <span aria-hidden="true">*</span>
+                <input type="text" name="name" autocomplete="name" required />
+              </label>
+              <label>
+                이메일 <span aria-hidden="true">*</span>
+                <input type="email" name="email" autocomplete="email" required />
+              </label>
+            </div>
+            <div class="st-form-row">
+              <label>
+                연락처
+                <input type="tel" name="phone" autocomplete="tel" placeholder="선택" />
+              </label>
+              <label>
+                기관·상호
+                <input type="text" name="organization" autocomplete="organization" placeholder="선택" />
+              </label>
+            </div>
+
+            <label class="st-consent">
+              <input type="checkbox" name="consentRequired" required />
+              <span>
+                <b>(필수)</b> 견적 회신을 위해 이름·이메일·연락처를 수집하는 데 동의합니다.
+                회신이 끝나면 <b>6개월 뒤 파기</b>합니다.
+              </span>
+            </label>
+            <label class="st-consent">
+              <input type="checkbox" name="consentMarketing" />
+              <span>
+                <b>(선택)</b> 새 작품과 사례를 메일로 받아 보겠습니다.
+                동의하지 않아도 견적서는 받으실 수 있고, 언제든 수신 거부할 수 있습니다.
+              </span>
+            </label>
+
+            <button type="submit" class="st-order-btn" data-st-send>견적서 받기</button>
+            <p class="st-form-msg" data-st-msg role="status" aria-live="polite"></p>
+          </form>
+
+          <ul>
+            <li>확정 후 <b>평일 24시간 이내</b> 전달 · 휴일·공휴일 제외</li>
+            <li>금요일 오후 확정 건은 다음 영업일에 나갑니다</li>
+            <li>기존 재생 장비에 그대로 올리는 파일로 드립니다</li>
+          </ul>
+          <p class="st-form-alt">
+            바로 상담을 원하시면 <a href="./quote">의뢰하기</a>로 오세요.
+            이미 계약하신 회원사는 <a href="./login">로그인</a> 후 렌더 파일을 받으실 수 있습니다.
+          </p>
+        </div>
+      </section>
+
+      <p class="st-legal">
+        시연본은 대표 프레임 위에 생성 레이어를 얹어 브라우저에서 그린 것입니다.
+        원본 영상과 최종 렌더링은 사내에서만 처리하며, 이 화면에서는 저장되지 않습니다.
+        소재 라이브러리는 라이선스를 확보한 유료 에셋과 자체 제작 작품으로 구성되어 있습니다.
+        여기 보이는 시연본은 상업적으로 사용하실 수 없으며, 납품용 파일은 계약 후 별도로 렌더링해 드립니다.
+      </p>
+    </main>
+
+    <script src="./studio.js?v=20260904b" defer></script>
+  </body>
+</html>

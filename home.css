@@ -1,0 +1,391 @@
+/* ─────────────────────────────────────────────────────────────
+   홈 첫 화면 — 미디어아트 스튜디오 문법으로 다시 짠다.
+
+   해외 스튜디오(Moment Factory, Float4 등)의 공통점은 단순하다.
+   작품이 화면을 전부 먹고, 글자는 한 줄만 남고, 자격 배지는 첫 화면에
+   두지 않는다. 파는 사람이 아니라 만드는 사람으로 보이려는 배치다.
+
+   그래서 첫 화면은 어둡게 두고 본문은 흰색으로 간다. 5,400줄짜리 기존
+   스타일을 뒤집지 않고 첫 화면만 갈아 끼우는 방법이기도 하다.
+   styles.css 뒤에 실린다.
+   ───────────────────────────────────────────────────────────── */
+
+body.home-2026 {
+  --h-ink: #06080c;
+  --h-white: #fff;
+  --h-mute: rgba(255, 255, 255, 0.6);
+  --h-dim: rgba(255, 255, 255, 0.38);
+  --h-line: rgba(255, 255, 255, 0.14);
+  --h-pad: clamp(18px, 4vw, 56px);
+}
+
+/* 실시간 하늘 배경은 첫 화면에서 걷는다.
+   연보라 그라데이션이 화면 전체를 덮으면 작품 색이 죽는다.
+   대신 지금 날씨는 첫 화면 아래 한 줄로 남긴다. */
+body.home-2026 .sky-layer { display: none; }
+body.home-2026 { background: #fff; color: #16233a; }
+
+/* ── 첫 화면 ────────────────────────────────────────────── */
+.home2-hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  background: var(--h-ink);
+  color: var(--h-white);
+  isolation: isolate;
+}
+
+/* 살아 있는 작품이 그대로 배경이 된다. 이미지가 아니라 돌아가는 코드다. */
+.home2-art {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: var(--h-ink);
+}
+.home2-art img,
+.home2-art iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  object-fit: cover;
+}
+.home2-art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(180deg, rgba(6, 8, 12, 0.72) 0%, rgba(6, 8, 12, 0.18) 34%,
+                    rgba(6, 8, 12, 0.62) 74%, rgba(6, 8, 12, 0.92) 100%);
+}
+
+.home2-body {
+  position: relative;
+  z-index: 2;
+  padding: 0 var(--h-pad) clamp(26px, 4vh, 44px);
+  max-width: 1180px;
+}
+
+.home2-eyebrow {
+  margin: 0 0 clamp(14px, 2vh, 24px);
+  font-size: clamp(10px, 1vw, 12px);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--h-dim);
+  font-weight: 600;
+}
+
+.home2-word {
+  margin: 0;
+  font-size: clamp(2.9rem, 8.4vw, 7.6rem);
+  line-height: 0.94;
+  letter-spacing: -0.045em;
+  font-weight: 800;
+  color: var(--h-white);
+  text-wrap: balance;
+}
+
+.home2-line {
+  margin: clamp(16px, 2.4vh, 30px) 0 0;
+  font-size: clamp(1.15rem, 2.3vw, 2rem);
+  line-height: 1.34;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--h-white);
+  max-width: 22ch;
+}
+
+.home2-sub {
+  margin: 14px 0 0;
+  max-width: 56ch;
+  font-size: clamp(0.9rem, 1.2vw, 1.02rem);
+  line-height: 1.75;
+  color: var(--h-mute);
+}
+.home2-sub b { color: rgba(255, 255, 255, 0.9); font-weight: 600; }
+
+.home2-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: clamp(22px, 3vh, 34px);
+}
+.home2-cta a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 12px 24px;
+  font-size: 0.94rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+.home2-cta .is-solid { background: var(--h-white); color: #0b0e13; }
+.home2-cta .is-solid:hover { background: #d7e3f3; }
+.home2-cta .is-ghost {
+  color: var(--h-white);
+  border: 1px solid rgba(255, 255, 255, 0.34);
+}
+.home2-cta .is-ghost:hover { border-color: var(--h-white); background: rgba(255, 255, 255, 0.1); }
+
+/* 지금 대구 — "오늘은 봄날"이라는 이름이 사는 자리 */
+.home2-now {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+  padding: 14px var(--h-pad);
+  border-top: 1px solid var(--h-line);
+  font-size: 0.8rem;
+  letter-spacing: 0.01em;
+  color: var(--h-mute);
+}
+.home2-now b { color: var(--h-white); font-weight: 600; }
+.home2-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #7ee2a8; flex: none;
+  box-shadow: 0 0 0 3px rgba(126, 226, 168, 0.18);
+}
+
+/* ── 작업 색인 ──────────────────────────────────────────── */
+.home2-index {
+  background: var(--h-ink);
+  color: var(--h-white);
+  padding: clamp(48px, 8vh, 96px) var(--h-pad) clamp(40px, 6vh, 74px);
+}
+.home2-index-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: clamp(22px, 3vh, 36px);
+}
+.home2-index-head h2 {
+  margin: 0;
+  font-size: clamp(1.5rem, 3.4vw, 2.6rem);
+  letter-spacing: -0.03em;
+  font-weight: 800;
+}
+.home2-index-head p { margin: 0; font-size: 0.88rem; color: var(--h-mute); max-width: 44ch; line-height: 1.7; }
+
+.home2-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(10px, 1.4vw, 18px);
+}
+@media (max-width: 900px) { .home2-tiles { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .home2-tiles { grid-template-columns: 1fr; } }
+
+.home2-tile { margin: 0; }
+.home2-screen {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: #0d0f14;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+}
+.home2-screen img,
+.home2-screen iframe {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  border: 0; display: block; object-fit: cover;
+}
+.home2-screen::after {
+  content: "publicbloom.art";
+  position: absolute; right: 8px; bottom: 7px; z-index: 2;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 9px; letter-spacing: 0.04em; pointer-events: none;
+}
+.home2-tile .art-play {
+  position: absolute;
+  left: 10px; bottom: 10px; z-index: 3;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  background: rgba(8, 10, 14, 0.56);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font: inherit; font-size: 0.76rem; font-weight: 700;
+  cursor: pointer;
+}
+.home2-tile .art-play:hover { background: rgba(8, 10, 14, 0.82); border-color: #fff; }
+
+.home2-cap { display: block; padding-top: 12px; }
+.home2-cap b { display: block; font-size: 1rem; font-weight: 700; letter-spacing: -0.01em; }
+.home2-cap span { display: block; margin-top: 3px; font-size: 0.79rem; color: var(--h-dim); }
+
+/* ── 자격 — 첫 화면이 아니라 여기에 둔다 ────────────────── */
+.home2-cred {
+  background: var(--h-ink);
+  color: var(--h-white);
+  padding: 0 var(--h-pad) clamp(52px, 8vh, 96px);
+}
+.home2-cred ul {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  margin: 0;
+  padding: clamp(20px, 3vh, 30px) 0 0;
+  list-style: none;
+  border-top: 1px solid var(--h-line);
+}
+@media (max-width: 760px) { .home2-cred ul { grid-template-columns: repeat(2, 1fr); row-gap: 22px; } }
+.home2-cred li { padding: 0 clamp(14px, 2vw, 26px); border-left: 1px solid var(--h-line); }
+.home2-cred li:first-child { padding-left: 0; border-left: 0; }
+@media (max-width: 760px) {
+  .home2-cred li:nth-child(odd) { padding-left: 0; border-left: 0; }
+}
+.home2-cred b { display: block; font-size: 0.98rem; font-weight: 700; }
+.home2-cred span { display: block; margin-top: 4px; font-size: 0.78rem; color: var(--h-dim); line-height: 1.55; }
+
+/* ── 어두운 첫 화면 위의 메뉴 ───────────────────────────── */
+/* 기존 스타일은 메뉴를 흐름 안에 둔다(position: relative). 그러면 첫 화면 위에
+   흰 띠 72px이 생기고 흰 글씨가 그 위에서 보이지 않는다. 여기서는 작품 위로 띄운다. */
+body.home-2026 .site-nav {
+  position: fixed;
+  inset: 0 0 auto;
+  background: transparent;
+}
+body.home-2026 .site-nav.scrolled {
+  background: rgba(6, 8, 12, 0.88);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+body.home-2026.site-page .brand strong,
+body.home-2026.site-page .brand span,
+body.home-2026.site-page .site-nav nav a { color: #fff; }
+body.home-2026.site-page .brand span { color: rgba(255, 255, 255, 0.56); }
+body.home-2026.site-page .site-nav nav a:hover { color: #fff; }
+body.home-2026.site-page .nav-toggle span { background: #fff; }
+body.home-2026 .site-nav nav a.is-cta {
+  border: 1px solid rgba(255, 255, 255, 0.36);
+  border-radius: 999px;
+  padding: 7px 16px;
+}
+body.home-2026 .site-nav nav a.is-cta:hover { background: rgba(255, 255, 255, 0.12); border-color: #fff; }
+
+/* 본문은 흰 바탕에서 다시 읽힌다 */
+body.home-2026 main > .section { background: #fff; }
+
+@media (prefers-reduced-motion: reduce) {
+  .home2-cta a { transition: none; }
+}
+
+/* ── 미디어박스 — 흰 본문 사이에 넣는 어두운 마디 ─────────── */
+.home2-box {
+  background: var(--h-ink);
+  color: var(--h-white);
+  padding: clamp(56px, 9vh, 108px) var(--h-pad);
+}
+.home2-box-in { max-width: 1180px; margin: 0 auto; }
+.home2-box h2 {
+  margin: 0;
+  font-size: clamp(1.7rem, 4vw, 3.1rem);
+  line-height: 1.16;
+  letter-spacing: -0.035em;
+  font-weight: 800;
+  color: var(--h-white);
+}
+.home2-box-lead {
+  margin: 18px 0 0;
+  max-width: 60ch;
+  font-size: clamp(0.95rem, 1.3vw, 1.1rem);
+  line-height: 1.8;
+  color: var(--h-mute);
+}
+.home2-box-lead b { color: var(--h-white); font-weight: 700; }
+
+.home2-box-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  margin: clamp(30px, 5vh, 46px) 0 0;
+  padding: clamp(22px, 3vh, 32px) 0 0;
+  list-style: none;
+  border-top: 1px solid var(--h-line);
+}
+@media (max-width: 900px) { .home2-box-list { grid-template-columns: repeat(2, 1fr); row-gap: 26px; } }
+@media (max-width: 520px) { .home2-box-list { grid-template-columns: 1fr; row-gap: 22px; } }
+.home2-box-list li { padding: 0 clamp(14px, 2vw, 26px); border-left: 1px solid var(--h-line); }
+.home2-box-list li:first-child { padding-left: 0; border-left: 0; }
+@media (max-width: 900px) { .home2-box-list li:nth-child(odd) { padding-left: 0; border-left: 0; } }
+@media (max-width: 520px) { .home2-box-list li { padding-left: 0; border-left: 0; } }
+.home2-box-list b { display: block; font-size: 1rem; font-weight: 700; }
+.home2-box-list span { display: block; margin-top: 7px; font-size: 0.83rem; color: var(--h-dim); line-height: 1.7; }
+
+.home2-box-more { display: flex; flex-wrap: wrap; gap: 10px; margin: clamp(26px, 4vh, 38px) 0 0; }
+.home2-box-more a {
+  display: inline-flex; align-items: center;
+  border-radius: 999px; padding: 11px 22px;
+  font-size: 0.92rem; font-weight: 700; text-decoration: none;
+  color: var(--h-white); border: 1px solid rgba(255, 255, 255, 0.34);
+}
+.home2-box-more a:first-child { background: var(--h-white); color: #0b0e13; border-color: var(--h-white); }
+.home2-box-feat li:nth-last-child(-n+2) { border-bottom: 0; }
+@media (max-width: 620px) { .home2-box-feat li:nth-last-child(-n+2) { border-bottom: 1px solid var(--h-line); }
+  .home2-box-feat li:last-child { border-bottom: 0; } }
+.home2-box-more a:hover { background: rgba(255, 255, 255, 0.12); }
+.home2-box-more a:first-child:hover { background: #d7e3f3; }
+
+.home2-box-proof {
+  margin: clamp(24px, 3.5vh, 34px) 0 0;
+  padding-top: clamp(18px, 2.5vh, 24px);
+  border-top: 1px solid var(--h-line);
+  max-width: 70ch;
+  font-size: 0.9rem;
+  line-height: 1.75;
+  color: var(--h-mute);
+}
+.home2-box-proof b { color: var(--h-white); font-weight: 700; }
+
+.home2-box-sub {
+  margin: clamp(34px, 5vh, 52px) 0 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: none;
+  font-weight: 700;
+  color: var(--h-dim);
+}
+.home2-box-sub + .home2-box-list { margin-top: clamp(16px, 2vh, 22px); }
+
+.home2-box-feat {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 clamp(24px, 4vw, 56px);
+  margin: clamp(16px, 2vh, 22px) 0 0;
+  padding: 0;
+  list-style: none;
+}
+@media (max-width: 620px) { .home2-box-feat { grid-template-columns: 1fr; } }
+.home2-box-feat li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--h-line);
+  font-size: 0.86rem;
+  line-height: 1.6;
+  color: var(--h-dim);
+}
+.home2-box-feat b { flex: 0 0 8.5em; color: var(--h-white); font-weight: 700; }
+
+.home2-box-terms {
+  margin: clamp(20px, 3vh, 28px) 0 0;
+  max-width: 70ch;
+  font-size: 0.86rem;
+  line-height: 1.75;
+  color: var(--h-mute);
+}
+.home2-box-terms b { color: var(--h-white); font-weight: 700; }

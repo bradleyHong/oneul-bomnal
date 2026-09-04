@@ -33,7 +33,7 @@
       ]
     },
     {
-      "source": "/(admin|client|login)",
+      "source": "/(admin|client|login|studio)",
       "headers": [
         {
           "key": "Cache-Control",
