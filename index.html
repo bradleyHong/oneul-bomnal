@@ -459,46 +459,69 @@
     <main id="main-content" tabindex="-1">
       <!-- ⓪ 지금 돌아가는 화면 ──────────────────────────────
            담당자가 사이트를 열자마자 "이 회사는 지금 뭔가를 돌리고 있다"를
-           보게 하는 자리다. 화면 비율이 제각각이라는 것도 같이 보여준다.
-           시계만 자동으로 돌고 나머지는 눌렀을 때 돈다. 넷을 동시에 돌리면
-           페이지가 버벅인다. -->
+           보게 하는 자리다. 넷을 늘어놓으면 하나하나가 우표만 해져서
+           무엇을 만드는 회사인지 안 보인다. 그래서 한 번에 하나만, 크게,
+           제 비율 그대로 띄우고 매시 정각에 다음 화면으로 넘긴다.
+           동시에 도는 화면이 하나뿐이라 노트북 팬도 덜 돈다.
+
+           자바스크립트가 없으면 첫 화면 하나가 그대로 보인다. -->
       <section class="live-clock" id="now" aria-label="오늘은 봄날이 만든 미디어아트">
         <p class="live-clock-now"><span class="live-clock-dot" aria-hidden="true"></span>지금 돌아가는 화면</p>
-        <div class="art-strip">
-          <figure class="art-tile">
-            <div class="art-tile-screen" data-art="./works/brushtrace-clock.html" data-auto
+        <div class="art-stage" data-art-stage>
+          <figure class="art-slide is-on" data-slide data-name="筆跡 · 붓의 자취">
+            <div class="art-tile-screen art-stage-screen" style="--arw: 1; --arh: 1;"
+                 data-art="./works/brushtrace-clock.html" data-auto
                  data-art-title="筆跡 · 붓의 자취 미디어아트 화면">
-              <img src="./assets/art/tile/brushtrace-clock.webp" alt="筆跡 · 붓의 자취 미디어아트" width="440" height="440" loading="lazy" decoding="async" />
+              <img src="./assets/art/tile/brushtrace-clock.webp" alt="筆跡 · 붓의 자취 미디어아트" width="440" height="440" decoding="async" />
+              <button type="button" class="art-play art-play-sm" data-on="재생" data-off="정지">재생</button>
             </div>
-            <figcaption><b>筆跡 · 붓의 자취</b><span>실시간 시계</span></figcaption>
+            <figcaption><b>筆跡 · 붓의 자취</b><span>실시간 시계 · 1:1</span></figcaption>
           </figure>
-          <figure class="art-tile">
-            <div class="art-tile-screen" data-art="./works/eyewall.html"
+          <figure class="art-slide" data-slide data-name="EYEWALL · 눈의 벽">
+            <div class="art-tile-screen art-stage-screen" style="--arw: 32; --arh: 9;"
+                 data-art="./works/eyewall.html" data-auto
                  data-art-title="EYEWALL · 눈의 벽 미디어아트 화면">
-              <img src="./assets/art/tile/eyewall.webp" alt="EYEWALL · 눈의 벽 미디어아트" width="440" height="440" loading="lazy" decoding="async" />
-            <button type="button" class="art-play art-play-sm" data-on="재생" data-off="정지">재생</button>
+              <img src="./assets/art/tile/eyewall.webp" alt="EYEWALL · 눈의 벽 미디어아트" width="440" height="440" decoding="async" />
+              <button type="button" class="art-play art-play-sm" data-on="재생" data-off="정지">재생</button>
             </div>
-            <figcaption><b>EYEWALL · 눈의 벽</b><span>외벽 전광판 32:9</span></figcaption>
+            <figcaption><b>EYEWALL · 눈의 벽</b><span>외벽 전광판 · 32:9</span></figcaption>
           </figure>
-          <figure class="art-tile">
-            <div class="art-tile-screen" data-art="./works/flowribbons.html"
+          <figure class="art-slide" data-slide data-name="流帶 · 결결">
+            <div class="art-tile-screen art-stage-screen" style="--arw: 16; --arh: 9;"
+                 data-art="./works/flowribbons.html" data-auto
                  data-art-title="流帶 · 결결 미디어아트 화면">
-              <img src="./assets/art/tile/flowribbons.webp" alt="流帶 · 결결 미디어아트" width="440" height="440" loading="lazy" decoding="async" />
-            <button type="button" class="art-play art-play-sm" data-on="재생" data-off="정지">재생</button>
+              <img src="./assets/art/tile/flowribbons.webp" alt="流帶 · 결결 미디어아트" width="440" height="440" decoding="async" />
+              <button type="button" class="art-play art-play-sm" data-on="재생" data-off="정지">재생</button>
             </div>
-            <figcaption><b>流帶 · 결결</b><span>로비 미디어월 16:9</span></figcaption>
+            <figcaption><b>流帶 · 결결</b><span>로비 미디어월 · 16:9</span></figcaption>
           </figure>
-          <figure class="art-tile">
-            <div class="art-tile-screen" data-art="./works/vessel.html"
+          <figure class="art-slide" data-slide data-name="靑流 · 담김 II">
+            <div class="art-tile-screen art-stage-screen" style="--arw: 1; --arh: 6;"
+                 data-art="./works/vessel.html" data-auto
                  data-art-title="靑流 · 담김 II 미디어아트 화면">
-              <img src="./assets/art/tile/vessel.webp" alt="靑流 · 담김 II 미디어아트" width="440" height="440" loading="lazy" decoding="async" />
-            <button type="button" class="art-play art-play-sm" data-on="재생" data-off="정지">재생</button>
+              <img src="./assets/art/tile/vessel.webp" alt="靑流 · 담김 II 미디어아트" width="440" height="440" decoding="async" />
+              <button type="button" class="art-play art-play-sm" data-on="재생" data-off="정지">재생</button>
             </div>
-            <figcaption><b>靑流 · 담김 II</b><span>기둥형 세로 1:6</span></figcaption>
+            <figcaption><b>靑流 · 담김 II</b><span>기둥형 세로 · 1:6</span></figcaption>
           </figure>
         </div>
+        <div class="art-picks" role="group" aria-label="다른 화면 보기">
+          <button type="button" class="art-pick is-on" data-pick="0" aria-current="true">
+            <b>筆跡 · 붓의 자취</b><span>1:1</span>
+          </button>
+          <button type="button" class="art-pick" data-pick="1">
+            <b>EYEWALL · 눈의 벽</b><span>32:9</span>
+          </button>
+          <button type="button" class="art-pick" data-pick="2">
+            <b>流帶 · 결결</b><span>16:9</span>
+          </button>
+          <button type="button" class="art-pick" data-pick="3">
+            <b>靑流 · 담김 II</b><span>1:6</span>
+          </button>
+        </div>
         <p class="art-strip-note">
-          모두 저희가 코드로 만든 작품입니다. 눌러보시면 실제로 돌아갑니다.
+          <span data-stage-note>매시 정각에 다음 화면으로 넘어갑니다.</span>
+          모두 저희가 코드로 만든 작품입니다.
           현장 화면 비율과 해상도에 맞춰 다시 출력해 드립니다.
         </p>
       </section>
@@ -1048,6 +1071,7 @@
       <script src="./inquiry.js?v=20260821-clean"></script>
       <script src="./auth.js?v=20260831-ax"></script>
     <script src="./art-embed.js?v=20260823-art" defer></script>
+    <script src="./art-stage.js?v=20260904-stage" defer></script>
     <script src="./panels.js?v=20260831-ax" defer></script>
     <script src="./quote-cta.js?v=20260803-cta"></script>
   </body>

@@ -4986,7 +4986,7 @@ main > .section > .section-head .section-kicker {
 .live-clock {
   position: relative;
   z-index: 1;
-  width: min(100%, 880px);
+  width: min(100%, 1040px);
   margin: 0 auto;
   padding: clamp(90px, 10vw, 118px) clamp(16px, 4vw, 32px) 0;
   text-align: center;
@@ -5013,15 +5013,89 @@ main > .section > .section-head .section-kicker {
   box-shadow: 0 0 0 3px rgba(53, 208, 127, 0.18);
 }
 
-.art-strip {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(10px, 1.4vw, 16px);
+/* 한 번에 한 화면. 안 보이는 칸은 자리를 차지하지 않는다.
+   자바스크립트가 없으면 첫 칸에 붙은 is-on 하나만 보인다. */
+.art-stage {
+  display: block;
 }
 
-.art-tile {
+.art-slide {
+  display: none;
   margin: 0;
+}
+
+.art-slide.is-on {
+  display: block;
+}
+
+/* 작품마다 화면 비율이 다르다. 그 차이가 이 자리의 내용이기도 하다.
+   세로로 긴 기둥형이 화면을 뚫고 나가지 않게 높이로 먼저 묶고,
+   거기서 폭을 구한다. */
+.art-slide .art-stage-screen {
+  --stage-h: min(58vh, 520px);
+  width: min(100%, calc(var(--stage-h) * var(--arw) / var(--arh)));
+  aspect-ratio: var(--arw) / var(--arh);
+  margin-inline: auto;
+  border-radius: 12px;
+}
+
+/* 다른 화면 고르기 */
+.art-picks {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.art-pick {
+  display: grid;
+  gap: 1px;
+  padding: 9px 8px;
+  border: 0;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
+  color: inherit;
+  font: inherit;
   text-align: left;
+  cursor: pointer;
+  transition:
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.art-pick b {
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--sky-ink);
+  text-shadow: 0 0 2px var(--sky-halo), 0 1px 8px var(--sky-halo);
+  transition: color var(--sky-ink-fade), text-shadow var(--sky-ink-fade);
+}
+
+.art-pick span {
+  font-size: 10.5px;
+  color: var(--sky-ink-accent);
+  text-shadow: 0 0 2px var(--sky-halo), 0 1px 8px var(--sky-halo);
+  transition: color var(--sky-ink-fade), text-shadow var(--sky-ink-fade);
+}
+
+.art-pick:hover {
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.art-pick.is-on {
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.24);
+}
+
+@media (max-width: 680px) {
+  .art-picks {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .art-slide .art-stage-screen {
+    --stage-h: min(52vh, 420px);
+  }
 }
 
 .art-tile-screen {
@@ -5074,13 +5148,13 @@ main > .section > .section-head .section-kicker {
   white-space: nowrap;
 }
 
-.art-tile figcaption {
+.art-slide figcaption {
   display: grid;
   gap: 1px;
   padding: 8px 2px 0;
 }
 
-.art-tile figcaption b {
+.art-slide figcaption b {
   font-size: 12.5px;
   font-weight: 800;
   letter-spacing: -0.01em;
@@ -5089,11 +5163,21 @@ main > .section > .section-head .section-kicker {
   transition: color var(--sky-ink-fade), text-shadow var(--sky-ink-fade);
 }
 
-.art-tile figcaption span {
+.art-slide figcaption span {
   font-size: 11px;
   color: var(--sky-ink-accent);
   text-shadow: 0 0 2px var(--sky-halo), 0 1px 8px var(--sky-halo);
   transition: color var(--sky-ink-fade), text-shadow var(--sky-ink-fade);
+}
+
+/* 자동 교대 안내는 줄을 따로 쓴다. 소개 문장에 붙여 놓으면
+   시각 안내인지 회사 소개인지 구분이 안 된다. */
+[data-stage-note] {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--sky-ink-accent);
+  font-weight: 700;
+  transition: color var(--sky-ink-fade);
 }
 
 .art-strip-note {
@@ -5117,28 +5201,16 @@ main > .section > .section-head .section-kicker {
     padding-left: 0;
   }
 
-  /* 2열로 쌓았더니 블록이 두 배로 높아져 회사 이름이 또 첫 화면 밖으로
-     밀렸다. 가로로 밀어 보는 띠로 바꿔 높이를 한 줄로 유지한다. */
-  .art-strip {
-    grid-template-columns: none;
-    grid-auto-flow: column;
-    grid-auto-columns: 132px;
-    gap: 10px;
-    overflow-x: auto;
-    scroll-snap-type: x proximity;
-    scroll-padding-inline: 16px;
-    /* 스크롤 컨테이너의 padding은 첫 항목 앞 여백으로 잡히지 않는다.
-       첫·마지막 타일에 직접 여백을 준다. */
-    padding: 0 0 4px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
+  /* 섹션 좌우 여백을 0으로 두어 하늘이 끝까지 보이게 했으므로,
+     안쪽 요소가 화면 끝에 붙지 않게 여기서 다시 넣는다. */
+  .art-stage,
+  .art-picks {
+    padding-inline: 16px;
   }
 
-  .art-strip::-webkit-scrollbar { display: none; }
-
-  .art-tile { scroll-snap-align: start; }
-  .art-tile:first-child { margin-left: 16px; }
-  .art-tile:last-child { margin-right: 16px; }
+  .art-slide figcaption {
+    padding-inline: 16px;
+  }
 
   .art-strip-note {
     padding: 0 16px;
@@ -5223,6 +5295,18 @@ main > .section > .section-head .section-kicker {
   letter-spacing: 0.02em;
   cursor: pointer;
   transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+/* 작은 화면용 버튼은 구석에 붙인다. 위의 .art-play가 left: 50%를 주는데
+   .art-play-sm의 right와 겹쳐 버튼이 화면 폭만큼 늘어나 있었다.
+   워터마크가 오른쪽 아래에 있으니 버튼은 왼쪽 아래로 보낸다. */
+.art-play-sm {
+  left: 10px;
+  right: auto;
+  bottom: 10px;
+  transform: none;
+  padding: 6px 12px;
+  font-size: 11.5px;
 }
 
 .art-play::before {
