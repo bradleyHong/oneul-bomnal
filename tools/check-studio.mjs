@@ -2,10 +2,13 @@
 /**
  * 스튜디오 목록 검증기.
  *
- * 스타일·색 목록이 두 곳에 있다. 엔진(works/studio-art.html)과
+ * 스타일·색 목록이 두 곳에 있다. 엔진(studio-engine.js)과
  * 조작판(studio.js)이다. 둘이 어긋나면 버튼은 있는데 눌러도 그림이
  * 안 바뀌거나, 만든 작품이 다른 그림으로 렌더된다. 화면에는 아무 표시도
  * 나지 않아 한참 뒤에야 알게 된다.
+ *
+ * 프리셋(studio-presets.js)도 같이 본다. 프리셋이 엔진에 없는 스타일이나
+ * 색을 가리키면 고객이 고른 번호가 빈 화면으로 렌더된다.
  *
  *   node tools/check-studio.mjs
  *
@@ -16,8 +19,10 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const art = readFileSync(join(root, "works/studio-art.html"), "utf8");
+const art = readFileSync(join(root, "studio-engine.js"), "utf8");
 const ui = readFileSync(join(root, "studio.js"), "utf8");
+const pre = readFileSync(join(root, "studio-presets.js"), "utf8");
+const wrap = readFileSync(join(root, "works/studio-art.html"), "utf8");
 const fails = [];
 
 /** 배열 리터럴에서 각 항목의 첫 문자열(=id)만 뽑는다. */
@@ -29,13 +34,13 @@ function ids(src, marker, endMarker) {
 }
 
 /* 엔진이 실제로 그릴 줄 아는 것 — STYLES 객체의 메서드 이름 */
-const bodyStart = art.indexOf("const STYLES = {");
-const bodyEnd = art.indexOf("\n};", bodyStart);
+const bodyStart = art.indexOf("  const STYLES = {");
+const bodyEnd = art.indexOf("\n  };", bodyStart);
 const drawable = new Set(
-  [...art.slice(bodyStart, bodyEnd).matchAll(/^  ([a-z][a-zA-Z0-9]*)\(t\) \{/gm)].map((m) => m[1])
+  [...art.slice(bodyStart, bodyEnd).matchAll(/^    ([a-z][a-zA-Z0-9]*)\(t\) \{/gm)].map((m) => m[1])
 );
 
-const artStyles = ids(art, "window.STUDIO_STYLES = [", "];");
+const artStyles = ids(art, "const STYLE_LABELS = [", "\n];");
 const uiStyles = ids(ui, "var STYLES = [", "\n  ];");
 const uiPals = ids(ui, "var PALETTES = [", "\n  ];");
 
@@ -51,7 +56,7 @@ const cmp = (what, a, b, aName, bName) => {
   if (onlyB.length) fails.push(`${what}: ${bName}에만 있다 — ${onlyB.join(", ")}`);
 };
 
-if (!artStyles || !uiStyles || !uiPals) {
+if (!artStyles || !uiStyles || !uiPals || !drawable.size || !artPals.length) {
   fails.push("목록을 찾지 못했다. 배열 이름이 바뀌었는지 확인할 것");
 } else {
   cmp("스타일", artStyles, uiStyles, "엔진 목록", "조작판");
@@ -65,10 +70,28 @@ if (!artStyles || !uiStyles || !uiPals) {
   }
 }
 
+/* 렌더 화면이 엔진을 실제로 불러오는지. 이 줄이 빠지면 납품 렌더가 통째로 멈춘다. */
+if (!wrap.includes("studio-engine.js")) fails.push("works/studio-art.html이 studio-engine.js를 불러오지 않는다");
+for (const need of ["window.renderFrame", "window.__READY__"]) {
+  if (!wrap.includes(need)) fails.push(`works/studio-art.html에 ${need}가 없다 (render-studio.mjs가 이걸 부른다)`);
+}
+
+/* 프리셋이 가리키는 스타일·색이 엔진에 다 있는지 */
+let presetCount = 0;
+if (!pre.includes("var PER_STYLE")) {
+  fails.push("studio-presets.js에서 PER_STYLE을 찾지 못했다");
+} else {
+  const perStyle = parseInt(pre.match(/var PER_STYLE\s*=\s*(\d+)/)[1], 10);
+  presetCount = perStyle * (artStyles ? artStyles.length : 0);
+  if (!pre.includes("StudioArt")) fails.push("studio-presets.js가 엔진 목록(StudioArt)을 읽지 않는다");
+}
+
 for (const f of fails) console.log(`  실패  ${f}`);
 console.log("");
 if (fails.length) {
   console.log(`스튜디오 목록 검증 실패: ${fails.length}건`);
   process.exit(1);
 }
-console.log(`스튜디오 목록 검증 통과. 스타일 ${artStyles.length}종 · 색 ${artPals.length}종`);
+console.log(
+  `스튜디오 목록 검증 통과. 스타일 ${artStyles.length}종 · 색 ${artPals.length}종 · 프리셋 ${presetCount}가지`
+);

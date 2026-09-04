@@ -132,7 +132,7 @@
     style: "aurora", palette: "ink",
     density: 50, scale: 50, speed: 50, contrast: 55, glow: 35, grain: 18, accent: 60,
     motion: "drift", symmetry: "1", invert: false,
-    ratio: "16:9", scene: "lobby", seed: 4821937,
+    ratio: "16:9", scene: "lobby", seed: 4821937, preset: null,
   };
   var st = Object.assign({}, DEFAULTS);
 
@@ -313,6 +313,7 @@
       inp.dataset.slider = s[0];
       inp.addEventListener("input", function () {
         st[s[0]] = +inp.value;
+        st.preset = null;
         val.textContent = inp.value;
         applyArt(); renderSpec(); save();
       });
@@ -352,6 +353,7 @@
       ["조절", "밀도 " + st.density + " · 크기 " + st.scale + " · 속도 " + st.speed + " · 대비 " + st.contrast + " · 번짐 " + st.glow + " · 그레인 " + st.grain + " · 포인트 " + st.accent],
       ["시드", String(st.seed) + (st.invert ? " · 밝은 바탕" : "")],
     ];
+    if (st.preset) rows.unshift(["프리셋", "#" + st.preset + " " + (window.StudioPresets.byNumber(st.preset) || {}).name]);
     var dl = $("[data-spec]");
     dl.textContent = "";
     rows.forEach(function (r) {
@@ -425,9 +427,183 @@
     st.symmetry = pick(SYMS)[0];
   }
   function shuffleAll() {
+    /* 절반은 프리셋에서 뽑는다. 순수 난수만 돌리면 극단값이 섞여
+       볼 것 없는 화면이 자주 나온다. 프리셋은 성격이 잡혀 있다. */
+    var all = presets();
+    if (all.length && Math.random() < 0.5) {
+      var p = all[Math.floor(Math.random() * all.length)];
+      st.style = p.style; st.palette = p.palette;
+      st.density = p.density; st.scale = p.scale; st.speed = p.speed;
+      st.contrast = p.contrast; st.glow = p.glow; st.grain = p.grain; st.accent = p.accent;
+      st.motion = p.motion; st.symmetry = String(p.symmetry); st.invert = !!p.invert;
+      st.seed = p.seed; st.preset = p.n;
+      return;
+    }
     shuffleStyle(); shufflePalette(); shuffleTune();
     st.seed = newSeed();
     st.invert = Math.random() < 0.22;
+    st.preset = null;
+  }
+
+
+  /* ── 프리셋 갤러리 ─────────────────────────────────────────
+     2,000개를 한 번에 그리면 브라우저가 죽는다. 보이는 줄만 만들고
+     스크롤하면 만들고 지운다(윈도잉). 화면에 실제로 존재하는 칸은
+     늘 서른 개 안팎이다.
+
+     썸네일은 iframe이 아니라 이 페이지에서 직접 그린다. 그래서 엔진을
+     studio-engine.js로 떼어냈다. iframe 2,000개는 애초에 불가능하다. */
+  var gal = $("[data-gal]");
+  var galBody, galGrid, galSpacer;
+  var GAL_CELL_W = 196, GAL_CELL_H = 110, GAL_BUF = 3;
+  var GAL_GAP = 12, GAL_CAP_H = 46;
+  /* 줄 높이를 상수로 박아 뒀더니 캡션이 잘리고 다음 줄이 그 위에 얹혔다.
+     썸네일은 칸 너비에 맞춰 늘어나므로, 실제 폭에서 매번 다시 잰다. */
+  var GAL_ROW_H = 148;
+  /* 열 수는 CSS의 미디어쿼리와 같은 경계를 쓴다. 둘이 어긋나면 줄이
+     겹치거나 빈 자리가 생긴다. */
+  var GAL_COLS = 5;
+  function galCols() {
+    var w = window.innerWidth;
+    return w <= 680 ? 2 : w <= 1080 ? 3 : 5;
+  }
+  var galItems = [];          // 지금 조건에 맞는 프리셋
+  var galDrawn = new Map();   // 줄 번호 → DOM
+  var galReady = false;
+
+  function presets() {
+    return (window.StudioPresets && window.StudioPresets.list()) || [];
+  }
+
+  function galFilter() {
+    var q = ($("[data-gal-q]").value || "").trim().toLowerCase();
+    var fs = $("[data-gal-style]").value;
+    var fp = $("[data-gal-pal]").value;
+    var ff = $("[data-gal-fam]").value;
+    var num = parseInt(q.replace(/[^0-9]/g, ""), 10);
+    galItems = presets().filter(function (p) {
+      if (fs && p.style !== fs) return false;
+      if (fp && p.palette !== fp) return false;
+      if (ff && p.family !== ff) return false;
+      if (!q) return true;
+      if (Number.isFinite(num) && String(p.n) === String(num)) return true;
+      return (p.name + " " + p.styleName + " " + p.paletteName + " " + p.family + " " + p.id)
+        .toLowerCase().indexOf(q) !== -1;
+    });
+    $("[data-gal-count]").textContent = galItems.length.toLocaleString("ko-KR") + "가지";
+    $("[data-gal-empty]").hidden = galItems.length > 0;
+    galDrawn.forEach(function (el) { el.remove(); });
+    galDrawn.clear();
+    GAL_COLS = galCols();
+    var inner = galBody.clientWidth - 24;
+    var colW = (inner - GAL_GAP * (GAL_COLS - 1)) / GAL_COLS;
+    GAL_ROW_H = Math.round(colW * (GAL_CELL_H / GAL_CELL_W) + GAL_CAP_H + GAL_GAP);
+    galSpacer.style.height = Math.ceil(galItems.length / GAL_COLS) * GAL_ROW_H + "px";
+    galBody.scrollTop = 0;
+    galPaint();
+  }
+
+  /* 칸 하나. 만들 때 한 번만 그리고, 화면 밖으로 나가면 통째로 지운다. */
+  function galCell(p) {
+    var b = el("button", "gal-cell");
+    b.type = "button";
+    b.title = p.name + " · " + p.paletteName + " · " + p.family + " · #" + p.n;
+    var cv = document.createElement("canvas");
+    cv.width = GAL_CELL_W; cv.height = GAL_CELL_H;
+    cv.className = "gal-cell-art";
+    b.appendChild(cv);
+    var cap = el("span", "gal-cell-cap");
+    cap.appendChild(el("b", null, p.name));
+    cap.appendChild(el("small", null, p.paletteName + " · " + p.family));
+    b.appendChild(cap);
+    b.appendChild(el("span", "gal-cell-n", "#" + p.n));
+
+    try {
+      var inst = window.StudioArt.create(cv, {
+        w: GAL_CELL_W, h: GAL_CELL_H, fps: 30, dur: 20,
+        style: p.style, palette: p.palette, seed: p.seed,
+        density: p.density, scale: p.scale, speed: p.speed,
+        contrast: p.contrast, glow: p.glow, grain: p.grain, accent: p.accent,
+        motion: p.motion, symmetry: p.symmetry, invert: p.invert,
+      });
+      /* 한 장만 그린다. 2,000칸이 동시에 움직이면 아무것도 볼 수 없다. */
+      inst.renderFrame(37);
+    } catch (e) {
+      /* 한 칸이 실패해도 갤러리 전체를 세우지는 않는다. */
+    }
+
+    b.addEventListener("click", function () { applyPreset(p); });
+    return b;
+  }
+
+  function galPaint() {
+    if (!galReady) return;
+    var top = galBody.scrollTop;
+    var vis = galBody.clientHeight;
+    var first = Math.max(0, Math.floor(top / GAL_ROW_H) - GAL_BUF);
+    var last = Math.min(
+      Math.ceil(galItems.length / GAL_COLS) - 1,
+      Math.floor((top + vis) / GAL_ROW_H) + GAL_BUF
+    );
+
+    galDrawn.forEach(function (row, i) {
+      if (i < first || i > last) { row.remove(); galDrawn.delete(i); }
+    });
+    for (var i = first; i <= last; i++) {
+      if (galDrawn.has(i)) continue;
+      var row = el("div", "gal-row");
+      row.style.top = i * GAL_ROW_H + "px";
+      for (var c = 0; c < GAL_COLS; c++) {
+        var p = galItems[i * GAL_COLS + c];
+        if (!p) break;
+        row.appendChild(galCell(p));
+      }
+      galGrid.appendChild(row);
+      galDrawn.set(i, row);
+    }
+  }
+
+  function applyPreset(p) {
+    st.style = p.style; st.palette = p.palette;
+    st.density = p.density; st.scale = p.scale; st.speed = p.speed;
+    st.contrast = p.contrast; st.glow = p.glow; st.grain = p.grain; st.accent = p.accent;
+    st.motion = p.motion; st.symmetry = String(p.symmetry); st.invert = !!p.invert;
+    st.seed = p.seed; st.preset = p.n;
+    galClose();
+    sync(true);
+  }
+
+  function galOpen() {
+    if (!galReady) {
+      galBody = $("[data-gal-body]");
+      galGrid = $("[data-gal-grid]");
+      galSpacer = $("[data-gal-spacer]");
+
+      var sSel = $("[data-gal-style]");
+      sSel.appendChild(new Option("스타일 전체", ""));
+      STYLES.forEach(function (x) { sSel.appendChild(new Option(x[1], x[0])); });
+      var pSel = $("[data-gal-pal]");
+      pSel.appendChild(new Option("색 전체", ""));
+      PALETTES.forEach(function (x) { pSel.appendChild(new Option(x[1], x[0])); });
+      var fSel = $("[data-gal-fam]");
+      fSel.appendChild(new Option("성격 전체", ""));
+      (window.StudioPresets.families || []).forEach(function (f) { fSel.appendChild(new Option(f, f)); });
+
+      galBody.addEventListener("scroll", galPaint, { passive: true });
+      window.addEventListener("resize", function () {
+        if (GAL_COLS !== galCols() && gal.open) galFilter();
+      });
+      ["input", "change"].forEach(function (ev) {
+        $("[data-gal-q]").addEventListener(ev, galFilter);
+      });
+      [sSel, pSel, fSel].forEach(function (x) { x.addEventListener("change", galFilter); });
+      galReady = true;
+    }
+    if (gal.showModal) gal.showModal(); else gal.setAttribute("open", "");
+    galFilter();
+  }
+  function galClose() {
+    if (gal.close) gal.close(); else gal.removeAttribute("open");
   }
 
   /* ── 의뢰 ─────────────────────────────────────────────────── */
@@ -448,6 +624,7 @@
         + " / 대비 " + st.contrast + " / 번짐 " + st.glow + " / 그레인 " + st.grain
         + " / 포인트 " + st.accent,
       "· 시드: " + st.seed,
+      st.preset ? "· 프리셋: #" + st.preset : "· 프리셋: 직접 조절",
       "",
       "재현용 파라미터 (그대로 렌더에 넣으면 같은 그림이 나옵니다)",
       artQuery(d),
@@ -520,6 +697,12 @@
     var t = e.target.closest("[data-act]");
     if (!t) return;
     var act = t.dataset.act;
+    if (act === "open-presets") { galOpen(); return; }
+    if (act === "gal-close") { galClose(); return; }
+    if (act === "gal-random") {
+      if (galItems.length) applyPreset(galItems[Math.floor(Math.random() * galItems.length)]);
+      return;
+    }
     if (act === "shuffle-all") { shuffleAll(); sync(true); }
     else if (act === "shuffle-style") { shuffleStyle(); sync(true); }
     else if (act === "shuffle-palette") { shufflePalette(); sync(true); }

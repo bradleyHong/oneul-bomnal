@@ -22,7 +22,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="https://publicbloom.art/assets/og-cover.jpg" />
     <link rel="stylesheet" href="./styles.css?v=20260831-ax" />
-    <link rel="stylesheet" href="./studio.css?v=20260831-studio" />
+    <link rel="stylesheet" href="./studio.css?v=20260904-presets" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="./assets/favicon-180.png" />
     <script type="application/ld+json">
@@ -88,6 +88,12 @@
         </p>
 
         <!-- 스타일 -->
+        <button type="button" class="preset-open" data-act="open-presets">
+          <span class="preset-open-main">프리셋 둘러보기</span>
+          <span class="preset-open-sub" data-preset-count>2,000가지 생김새 중에서 고르기</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+
         <section class="sgroup" aria-labelledby="g-style">
           <div class="sgroup-head">
             <h2 id="g-style">스타일<span class="sgroup-count" data-count="style">20</span></h2>
@@ -194,6 +200,32 @@
       </section>
     </main>
 
+    <!-- 프리셋 갤러리 -->
+    <dialog class="gal" data-gal aria-labelledby="galTitle">
+      <div class="gal-head">
+        <div class="gal-head-left">
+          <h2 id="galTitle">프리셋</h2>
+          <p data-gal-count>2,000가지</p>
+        </div>
+        <div class="gal-tools">
+          <label class="gal-search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <input type="search" data-gal-q placeholder="이름 · 스타일 · 색 · 번호로 찾기" aria-label="프리셋 찾기" />
+          </label>
+          <select data-gal-style aria-label="스타일로 거르기"></select>
+          <select data-gal-pal aria-label="색으로 거르기"></select>
+          <select data-gal-fam aria-label="성격으로 거르기"></select>
+          <button type="button" class="sbtn" data-act="gal-random">랜덤으로 하나</button>
+          <button type="button" class="sbtn ghost" data-act="gal-close" aria-label="닫기">닫기</button>
+        </div>
+      </div>
+      <div class="gal-body" data-gal-body tabindex="0">
+        <div class="gal-spacer" data-gal-spacer></div>
+        <div class="gal-grid" data-gal-grid></div>
+      </div>
+      <p class="gal-empty" data-gal-empty hidden>조건에 맞는 프리셋이 없습니다.</p>
+    </dialog>
+
     <!-- 의뢰 보내기 -->
     <dialog class="order-dialog" data-order-dialog aria-labelledby="orderTitle">
       <form method="dialog" class="order-form" data-order-form>
@@ -228,6 +260,8 @@
       <span class="footer-stamp">사이트 최종 업데이트 2026-08-31</span>
     </footer>
 
-    <script src="./studio.js?v=20260831-studio" defer></script>
+    <script src="./studio-engine.js?v=20260904-presets" defer></script>
+    <script src="./studio-presets.js?v=20260904-presets" defer></script>
+    <script src="./studio.js?v=20260904-presets" defer></script>
   </body>
 </html>
