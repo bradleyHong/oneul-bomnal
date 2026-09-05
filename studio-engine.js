@@ -103,7 +103,12 @@ function create(canvas, opts) {
   const ctx = canvas.getContext("2d", { alpha: false });
 
   const S = Math.min(W, H) / 1080;          // 4K에서도 FHD에서도 같은 비례로 그린다
-  const pal = PALETTES[P.palette] || PALETTES.ink;
+  /* 팔레트는 이름으로도, 색을 직접 담은 객체로도 받는다.
+     봄날 스튜디오는 고객이 적은 문장에서 색을 고른다. "바다"라고 적었는데
+     엔진이 제 목록의 단청으로 갈아치우면 문장을 읽은 뜻이 없어진다. */
+  const pal = (P.palette && typeof P.palette === "object" && P.palette.tones)
+    ? P.palette
+    : (PALETTES[P.palette] || PALETTES.ink);
   const BG  = P.invert ? pal.ink : pal.bg;
   const INK = P.invert ? pal.bg : pal.ink;
 
