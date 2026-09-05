@@ -10,7 +10,7 @@
     />
     <link rel="canonical" href="https://publicbloom.art/studio" />
 <link rel="stylesheet" href="./styles.css?v=20260905-craft" />
-    <link rel="stylesheet" href="./studio.css?v=20260905-heart" />
+    <link rel="stylesheet" href="./studio.css?v=20260905-mobile" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
   </head>
   <body class="st-page">
@@ -107,6 +107,17 @@
             <div class="st-chips" data-st-chips></div>
             <p class="st-cuts-title">이 화면의 작품 번호</p>
             <div class="st-code" data-st-cuts></div>
+
+            <!-- 덮개에서 나가면 견적까지 또 한참 내려가야 한다. 고른
+                 화면에서 바로 다음 걸음으로 갈 수 있게 둔다. -->
+            <a class="st-next" href="#quote" data-st-to-quote>이 화면으로 견적 받기</a>
+
+            <!-- 방금 만든 것들은 고른 화면에 딸린 이야기다. 밖에 두면
+                 좁은 화면에서 본문에 그대로 쌓인다. -->
+            <div class="st-hist-wrap" data-st-hist-wrap hidden>
+              <p class="st-cuts-title">방금 만든 화면들 · 눌러서 되돌아가기</p>
+              <div class="st-hist" data-st-hist></div>
+            </div>
           </div>
 
           <div class="st-load">
@@ -118,14 +129,10 @@
             <p class="st-load-msg" data-st-load-msg role="status" aria-live="polite"></p>
           </div>
 
-          <div class="st-hist-wrap" data-st-hist-wrap hidden>
-            <p class="st-cuts-title">방금 만든 화면들 · 눌러서 되돌아가기</p>
-            <div class="st-hist" data-st-hist></div>
-          </div>
         </div>
       </section>
 
-      <section class="st-bottom">
+      <section class="st-bottom" id="quote">
         <div class="st-quote" data-st-quote></div>
         <div class="st-order">
           <h2>이 견적서를 이메일로 받아 보세요</h2>
@@ -198,6 +205,6 @@
 
     <script src="./studio-engine.js?v=20260905-56" defer></script>
     <script src="./studio-gen.js?v=20260905-56" defer></script>
-<script src="./studio.js?v=20260905-heart" defer></script>
+<script src="./studio.js?v=20260905-mobile" defer></script>
   </body>
 </html>

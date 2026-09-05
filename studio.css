@@ -481,3 +481,39 @@
      손가락으로도 안 눌렸다. 덮개가 열린 동안만 층째로 올린다. */
   body.st-sheet-open .st-main { z-index: 70; }
 }
+
+/* 고른 화면에서 다음 걸음으로. 덮개 안에서 제일 눈에 띄어야 한다. */
+.st-next {
+  display: block;
+  margin: 14px 0 4px;
+  padding: 14px 18px;
+  border-radius: 10px;
+  background: var(--st-blue);
+  color: #fff;
+  font-weight: 800;
+  font-size: 15px;
+  text-align: center;
+  text-decoration: none;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.st-next:hover { background: #0a55aa; }
+.st-next:active { transform: scale(0.985); }
+
+/* 좁은 화면에서 작품 번호가 "BN2-" / "5FBF67" 로 쪼개졌다.
+   번호는 고객이 적어 두고 다시 부르는 값이라 한 덩어리로 읽혀야 한다.
+   글자를 줄이고, 그래도 모자라면 복사 단추를 아래로 내린다. */
+@media (max-width: 560px) {
+  .st-code-head {
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+  .st-code-num {
+    font-size: 1.55rem;
+    letter-spacing: .04em;
+    white-space: nowrap;
+  }
+  .st-copy {
+    flex: none;
+  }
+}
