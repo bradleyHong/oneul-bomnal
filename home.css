@@ -49,7 +49,32 @@ body.home-2026 { background: #fff; color: #16233a; }
   inset: 0;
   z-index: 0;
   overflow: hidden;
-  background: var(--h-ink);
+  /* 영상이 붙기 전에도 화면이 완성되어 보여야 한다. 검은 판만 두면
+     "아직 안 뜬 자리"로 읽힌다. */
+  background:
+    radial-gradient(120% 90% at 50% 18%, #16203a 0%, #0a0e17 62%, var(--h-ink) 100%);
+}
+
+/* 남의 집 재생기는 iframe이라 object-fit: cover 가 안 먹는다.
+   16:9 를 화면보다 크게 잡고 가운데를 보여 주는 방식으로 덮는다. */
+.home2-vimeo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100vw;
+  height: 56.25vw;            /* 가로가 길 때 — 100vw 의 9/16 */
+  min-width: 177.78vh;        /* 세로가 길 때 — 100vh 의 16/9 */
+  min-height: 100vh;
+  transform: translate(-50%, -50%);
+  border: 0;
+  pointer-events: none;       /* 첫 화면은 읽는 자리다. 눌러도 재생기가 반응하지 않게 */
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+
+/* 다 불러온 뒤에 켠다. 반쯤 그려진 재생기가 깜빡이며 나타나지 않게. */
+.home2-art.is-playing .home2-vimeo {
+  opacity: 1;
 }
 .home2-art img,
 .home2-art iframe {
@@ -419,25 +444,12 @@ body.home-2026 main > .section { background: #fff; }
    같은 작품을 라이브로 돌리면 4K 캔버스라 페이지가 5fps가 된다.
    미리 뽑은 완전 루프 영상을 포스터 위에 겹친다. 재생이 안 되면
    포스터가 그대로 보이므로 어떤 경우에도 빈 화면은 나오지 않는다. */
-.home2-art-video {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  pointer-events: none;
-}
-
 /* 움직임을 줄이라고 한 사용자에게는 정지 화면을 준다 */
 @media (prefers-reduced-motion: reduce) {
-  .home2-art-video { display: none; }
 }
 
 /* 좁은 화면에서는 데이터를 쓰지 않는다. 첫 화면도 짧아 정지 화면으로 충분하다. */
 @media (max-width: 640px) {
-  .home2-art-video { display: none; }
 }
 
 /* 어두운 면 위의 12px 안팎 글씨는 자간을 조금 벌려 읽히게 한다 */
