@@ -170,8 +170,11 @@
    * 3D 뼈대 세 종(와이어프레임·점군·홀로그램)은 가운데에 물체 하나를
    * 세우는 그림이라 1:6 기둥과 32:9 띠에는 넣지 않았다. 걸면 가운데만
    * 차고 나머지가 통째로 빈다. 터널·만화경을 뺀 것과 같은 이유다. */
-  var ART_TALL = ART_TALL_V2.concat([]);
-  var ART_WIDE = ART_WIDE_V2.concat([]);
+  /* 글자·격자 계열. 격자로 채우는 것들은 기둥에도 띠에도 잘 맞는다.
+     자모는 가운데 글자 한 자라 어느 쪽에도 넣지 않는다. 활자판과 신호는
+     가로로 늘어서는 그림이라 띠에만 넣는다. */
+  var ART_TALL = ART_TALL_V2.concat(["segment", "asciiart", "desordre"]);
+  var ART_WIDE = ART_WIDE_V2.concat(["pdu", "barcode", "segment", "asciiart", "desordre"]);
 
   function withPrefix(list, have) {
     have = have || artIds();

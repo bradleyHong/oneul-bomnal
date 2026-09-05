@@ -106,6 +106,14 @@ const page = await browser.newPage({ viewport: { width: W, height: H } });
 await page.goto("file://" + artPath + "?" + q.toString());
 await page.waitForFunction("window.__READY__ === true", { timeout: 30000 });
 
+/* 첫 프레임을 한 번 버린다.
+   크로미움은 캔버스에 처음 그릴 때 래스터라이저를 데운다. 그래서 같은
+   renderFrame(0)이라도 페이지를 연 직후의 첫 장만 채널당 최대 6/255
+   어긋난다. 로직 문제가 아니라 브라우저 사정이다. 그런데 우리 납품본은
+   완전 루프라 첫 장과 마지막 장이 정확히 같아야 한다. 한 장을 미리
+   그려 버리고 시작하면 0번 프레임도 나머지와 같은 조건에서 나온다. */
+await page.evaluate(() => window.renderFrame(0));
+
 const t0 = Date.now();
 for (let n = 0; n < TOTAL; n++) {
   await page.evaluate((i) => window.renderFrame(i), n);

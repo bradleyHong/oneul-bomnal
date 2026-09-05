@@ -52,6 +52,136 @@ const PALETTES = {
 };
 PALETTES.ink.tones[2] = "#8a8a8a";
 
+/* ── 글자를 코드로 긋는다 ──────────────────────────────────────
+ *
+ * fillText 를 쓰지 않는다. 웹폰트도 시스템 폰트도 쓰지 않는다.
+ * 고객이 미리보기를 띄운 브라우저와 우리가 납품본을 뽑는 브라우저의
+ * 글꼴이 다르면, 고른 화면과 받는 파일이 어긋난다. 글자만 그런 게
+ * 아니라 자간·힌팅까지 달라진다. 그래서 획을 전부 우리가 긋는다.
+ *
+ * 5×7 점판. 활자를 격자에서 잘라 쓰는 방식은 1876년 Plaque Découpée
+ * Universelle 까지 거슬러 올라간다. 칠분할 표시기(7-segment)도 같은
+ * 생각이다. 여기서는 가장 단순한 형태를 쓴다. */
+const FONT57_SRC = {
+  "0": "01110,10001,10011,10101,11001,10001,01110",
+  "1": "00100,01100,00100,00100,00100,00100,01110",
+  "2": "01110,10001,00001,00010,00100,01000,11111",
+  "3": "11111,00010,00100,00010,00001,10001,01110",
+  "4": "00010,00110,01010,10010,11111,00010,00010",
+  "5": "11111,10000,11110,00001,00001,10001,01110",
+  "6": "00110,01000,10000,11110,10001,10001,01110",
+  "7": "11111,00001,00010,00100,01000,01000,01000",
+  "8": "01110,10001,10001,01110,10001,10001,01110",
+  "9": "01110,10001,10001,01111,00001,00010,01100",
+  "A": "01110,10001,10001,11111,10001,10001,10001",
+  "B": "11110,10001,10001,11110,10001,10001,11110",
+  "C": "01110,10001,10000,10000,10000,10001,01110",
+  "D": "11100,10010,10001,10001,10001,10010,11100",
+  "E": "11111,10000,10000,11110,10000,10000,11111",
+  "F": "11111,10000,10000,11110,10000,10000,10000",
+  "G": "01110,10001,10000,10111,10001,10001,01111",
+  "H": "10001,10001,10001,11111,10001,10001,10001",
+  "I": "01110,00100,00100,00100,00100,00100,01110",
+  "J": "00111,00010,00010,00010,00010,10010,01100",
+  "K": "10001,10010,10100,11000,10100,10010,10001",
+  "L": "10000,10000,10000,10000,10000,10000,11111",
+  "M": "10001,11011,10101,10101,10001,10001,10001",
+  "N": "10001,10001,11001,10101,10011,10001,10001",
+  "O": "01110,10001,10001,10001,10001,10001,01110",
+  "P": "11110,10001,10001,11110,10000,10000,10000",
+  "Q": "01110,10001,10001,10001,10101,10010,01101",
+  "R": "11110,10001,10001,11110,10100,10010,10001",
+  "S": "01111,10000,10000,01110,00001,00001,11110",
+  "T": "11111,00100,00100,00100,00100,00100,00100",
+  "U": "10001,10001,10001,10001,10001,10001,01110",
+  "V": "10001,10001,10001,10001,10001,01010,00100",
+  "W": "10001,10001,10001,10101,10101,11011,10001",
+  "X": "10001,10001,01010,00100,01010,10001,10001",
+  "Y": "10001,10001,01010,00100,00100,00100,00100",
+  "Z": "11111,00001,00010,00100,01000,10000,11111",
+  /* 옅은 자리를 메울 가벼운 글자들. 문자 명암의 사다리에 쓴다. */
+  " ": "00000,00000,00000,00000,00000,00000,00000",
+  ".": "00000,00000,00000,00000,00000,00100,00000",
+  ":": "00000,00100,00000,00000,00000,00100,00000",
+  "-": "00000,00000,00000,11111,00000,00000,00000",
+  "=": "00000,00000,11111,00000,11111,00000,00000",
+  "/": "00001,00010,00010,00100,01000,01000,10000",
+  "+": "00000,00100,00100,11111,00100,00100,00000",
+};
+
+const FONT57 = {};        /* 글자 → 일곱 줄, 줄마다 5비트 */
+const FONT57_INK = {};    /* 글자 → 칠해진 칸의 비율 0~1 */
+for (const ch in FONT57_SRC) {
+  const rows = FONT57_SRC[ch].split(",");
+  let on = 0;
+  for (let i = 0; i < rows.length; i++) for (let j = 0; j < 5; j++) if (rows[i][j] === "1") on++;
+  FONT57[ch] = rows.map((r) => parseInt(r, 2));
+  FONT57_INK[ch] = on / 35;
+}
+/* 옅은 것부터 짙은 것 순. 명암을 글자로 바꿀 때 쓴다. */
+const FONT57_RAMP = Object.keys(FONT57).sort((a, b) => FONT57_INK[a] - FONT57_INK[b]);
+const FONT57_DIGITS = "0123456789".split("");
+const FONT57_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+/* ── 한글 자모 ─────────────────────────────────────────────────
+ *
+ * 자모는 획이다. 획은 좌표다. 그래서 코드로 그리기에 라틴 알파벳보다
+ * 오히려 낫다. 0~1 상자 안의 점 목록으로 적는다(y는 아래로).
+ *   ["l", x,y, x,y, ...]  이어 긋는 선
+ *   ["o", cx,cy, r]       원
+ *
+ * 초성 14 · 중성 10 · 종성 15(없음 포함) = 실제로 쓰이는 음절 2,100자.
+ * 아무 획이나 붙여 만든 가짜 글자가 아니라 전부 읽히는 글자다. */
+const CHO = {
+  "ㄱ": [["l", 0.06,0.08, 0.94,0.08, 0.70,0.95]],
+  "ㄴ": [["l", 0.18,0.05, 0.18,0.92, 0.95,0.92]],
+  "ㄷ": [["l", 0.95,0.08, 0.12,0.08, 0.12,0.92, 0.95,0.92]],
+  "ㄹ": [["l", 0.10,0.08, 0.90,0.08, 0.90,0.48, 0.10,0.48, 0.10,0.92, 0.92,0.92]],
+  "ㅁ": [["l", 0.12,0.08, 0.88,0.08, 0.88,0.92, 0.12,0.92, 0.12,0.08]],
+  "ㅂ": [["l", 0.14,0.05, 0.14,0.92, 0.86,0.92, 0.86,0.05], ["l", 0.14,0.50, 0.86,0.50]],
+  "ㅅ": [["l", 0.48,0.05, 0.06,0.95], ["l", 0.44,0.30, 0.94,0.95]],
+  "ㅇ": [["o", 0.50,0.50, 0.41]],
+  "ㅈ": [["l", 0.06,0.10, 0.94,0.10], ["l", 0.50,0.10, 0.08,0.95], ["l", 0.46,0.34, 0.94,0.95]],
+  "ㅊ": [["l", 0.50,0.00, 0.50,0.13], ["l", 0.06,0.26, 0.94,0.26],
+         ["l", 0.50,0.26, 0.10,0.96], ["l", 0.46,0.46, 0.94,0.96]],
+  "ㅋ": [["l", 0.06,0.08, 0.94,0.08, 0.70,0.95], ["l", 0.26,0.52, 0.85,0.46]],
+  "ㅌ": [["l", 0.95,0.08, 0.12,0.08, 0.12,0.92, 0.95,0.92], ["l", 0.12,0.50, 0.88,0.50]],
+  "ㅍ": [["l", 0.04,0.16, 0.96,0.16], ["l", 0.28,0.16, 0.24,0.84],
+         ["l", 0.72,0.16, 0.76,0.84], ["l", 0.04,0.84, 0.96,0.84]],
+  "ㅎ": [["l", 0.50,0.00, 0.50,0.11], ["l", 0.10,0.24, 0.90,0.24], ["o", 0.50,0.66, 0.29]],
+};
+const JUNG = {
+  /* 세로형 — 초성은 왼쪽, 중성은 오른쪽에 선다 */
+  "ㅏ": { v: 1, s: [["l", 0.42,0.02, 0.42,0.98], ["l", 0.42,0.52, 0.92,0.52]] },
+  "ㅑ": { v: 1, s: [["l", 0.42,0.02, 0.42,0.98], ["l", 0.42,0.34, 0.92,0.34], ["l", 0.42,0.68, 0.92,0.68]] },
+  "ㅓ": { v: 1, s: [["l", 0.62,0.02, 0.62,0.98], ["l", 0.12,0.48, 0.62,0.48]] },
+  "ㅕ": { v: 1, s: [["l", 0.62,0.02, 0.62,0.98], ["l", 0.12,0.32, 0.62,0.32], ["l", 0.12,0.66, 0.62,0.66]] },
+  "ㅣ": { v: 1, s: [["l", 0.50,0.02, 0.50,0.98]] },
+  /* 가로형 — 초성은 위, 중성은 아래에 눕는다 */
+  "ㅗ": { v: 0, s: [["l", 0.02,0.80, 0.98,0.80], ["l", 0.50,0.32, 0.50,0.80]] },
+  "ㅛ": { v: 0, s: [["l", 0.02,0.80, 0.98,0.80], ["l", 0.32,0.36, 0.32,0.80], ["l", 0.68,0.36, 0.68,0.80]] },
+  "ㅜ": { v: 0, s: [["l", 0.02,0.26, 0.98,0.26], ["l", 0.50,0.26, 0.50,0.74]] },
+  "ㅠ": { v: 0, s: [["l", 0.02,0.26, 0.98,0.26], ["l", 0.32,0.26, 0.32,0.70], ["l", 0.68,0.26, 0.68,0.70]] },
+  "ㅡ": { v: 0, s: [["l", 0.02,0.52, 0.98,0.52]] },
+};
+const CHO_IDS = Object.keys(CHO);
+const JUNG_IDS = Object.keys(JUNG);
+/* 종성 — 없는 경우가 첫 칸이다. 받침 없는 글자가 더 흔하다. */
+const JONG_IDS = [null].concat(CHO_IDS);
+
+/* 한 글자를 놓는 자리. 세로형·가로형·받침 유무로 넷이다.
+   실제 한글 조판 규칙 그대로다. 이걸 어기면 글자가 글자로 안 읽힌다. */
+function syllableBoxes(vertical, hasJong) {
+  if (vertical) {
+    return hasJong
+      ? [[0.00,0.00,0.56,0.72], [0.54,0.00,0.46,0.72], [0.06,0.70,0.88,0.30]]
+      : [[0.00,0.00,0.56,1.00], [0.54,0.00,0.46,1.00], null];
+  }
+  return hasJong
+    ? [[0.18,0.00,0.64,0.40], [0.02,0.36,0.96,0.30], [0.16,0.66,0.68,0.34]]
+    : [[0.14,0.00,0.72,0.56], [0.00,0.50,1.00,0.50], null];
+}
+
 /* 값잡음 격자는 시드마다 하나면 된다. 갤러리에서 썸네일 수백 장을 그릴 때
    매번 65,536칸을 새로 채우면 그것만으로 화면이 버벅인다. */
 const NG = 256;
@@ -320,6 +450,76 @@ function create(canvas, opts) {
       p[i * 3 + 2] = clamp(Z * 1.6 + 0.5, 0, 1);
     }
     return p;
+  }
+
+  /* ── 글자를 긋는 손 ────────────────────────────────────────
+     상자 [bx,by,bw,bh] 안에 자모 획을 긋는다. reveal 0~1 은 "여기까지만
+     그었다"는 뜻이다. 글자가 한 획씩 쓰이는 것처럼 보인다. */
+  function jamoDraw(strokes, bx, by, bw, bh, reveal) {
+    const n = strokes.length;
+    const per = 1 / n;
+    for (let i = 0; i < n; i++) {
+      const r = clamp((reveal - i * per) / per, 0, 1);
+      if (r <= 0) break;
+      const st = strokes[i];
+      ctx.beginPath();
+      if (st[0] === "o") {
+        /* ㅇ·ㅎ의 동그라미. 상자가 납작하면 같이 납작해진다.
+           한글에서 ㅇ은 원이 아니라 자리에 맞춰 눌리는 획이다. */
+        ctx.ellipse(bx + st[1] * bw, by + st[2] * bh, st[3] * bw, st[3] * bh,
+                    0, -Math.PI / 2, -Math.PI / 2 + TAU * r);
+      } else {
+        /* 마디 길이를 재서 r 만큼만 긋는다 */
+        let tot = 0;
+        const pt = [];
+        for (let j = 1; j < st.length; j += 2) pt.push([bx + st[j] * bw, by + st[j + 1] * bh]);
+        for (let j = 1; j < pt.length; j++) tot += Math.hypot(pt[j][0] - pt[j - 1][0], pt[j][1] - pt[j - 1][1]);
+        let want = tot * r;
+        ctx.moveTo(pt[0][0], pt[0][1]);
+        for (let j = 1; j < pt.length && want > 0; j++) {
+          const L = Math.hypot(pt[j][0] - pt[j - 1][0], pt[j][1] - pt[j - 1][1]);
+          const f = Math.min(1, want / Math.max(1e-6, L));
+          ctx.lineTo(pt[j - 1][0] + (pt[j][0] - pt[j - 1][0]) * f,
+                     pt[j - 1][1] + (pt[j][1] - pt[j - 1][1]) * f);
+          want -= L;
+        }
+      }
+      ctx.stroke();
+    }
+  }
+
+  /** 음절 하나. 초성·중성·종성을 실제 조판 자리에 놓는다. */
+  function syllable(ci, ji, ki, bx, by, bw, bh, reveal) {
+    const cho = CHO_IDS[ci % CHO_IDS.length];
+    const jid = JUNG_IDS[ji % JUNG_IDS.length];
+    const jong = JONG_IDS[ki % JONG_IDS.length];
+    const B = syllableBoxes(JUNG[jid].v === 1, !!jong);
+    const put = (strokes, box, r) => {
+      if (!box || r <= 0) return;
+      jamoDraw(strokes, bx + box[0] * bw, by + box[1] * bh, box[2] * bw, box[3] * bh, r);
+    };
+    /* 쓰는 차례대로 드러난다. 초성 → 중성 → 종성. */
+    put(CHO[cho],    B[0], clamp(reveal * 3,       0, 1));
+    put(JUNG[jid].s, B[1], clamp(reveal * 3 - 1,   0, 1));
+    if (jong) put(CHO[jong], B[2], clamp(reveal * 3 - 2, 0, 1));
+  }
+
+  /** 5×7 점판 글자. 켜진 칸마다 cb(열, 행)을 부른다. */
+  function glyph57(ch, cb) {
+    const g = FONT57[ch];
+    if (!g) return;
+    for (let r = 0; r < 7; r++) {
+      const row = g[r];
+      for (let c = 0; c < 5; c++) if (row & (1 << (4 - c))) cb(c, r);
+    }
+  }
+
+  /* 켜졌다 꺼지는 한 바퀴. 0에서 시작해 1에서 다시 0으로 돌아온다.
+     그래야 마지막 프레임이 첫 프레임과 이어진다. */
+  function breathe(ph) {
+    if (ph < 0.32) return ph / 0.32;
+    if (ph < 0.80) return 1;
+    return 1 - (ph - 0.80) / 0.20;
   }
 
   const STYLES = {
@@ -1050,7 +1250,14 @@ function create(canvas, opts) {
         }
         ctx.strokeStyle = tone(1, 0.16 + 0.4 * k.contrast);
         ctx.lineWidth = 1.6 * S; ctx.stroke();
-        /* 접점. 신호가 지나가는 것처럼 밝기가 돈다. */
+        /* 접점. 신호가 지나가는 것처럼 밝기가 돈다.
+
+           이 스타일은 프레임 사이 변화가 채널당 0.01/255 다. 320×180에서
+           재 봤다. 눈에는 정지 화면이다. 고칠까 하다가 두었다. 이유는
+           둘이다. 첫째, 이미 나간 BN2- 번호가 이 그림을 쓴다. 그리는
+           방식을 바꾸면 그 번호가 다른 그림이 된다. 둘째, 멈춰 있는 것이
+           흠이 아니다. 벽에 오래 걸어 두는 화면은 오히려 이쪽이 낫다.
+           움직임이 필요하면 신호(barcode)나 칠획(segment)이 있다. */
         const on = (Math.sin(ph * 2 + s.a * TAU) + 1) / 2;
         ctx.beginPath(); ctx.arc(x, y, 3 * S * k.scale, 0, TAU);
         ctx.fillStyle = tone(0, 0.25 + 0.7 * on * k.contrast); ctx.fill();
@@ -2288,6 +2495,285 @@ function create(canvas, opts) {
       ctx.globalCompositeOperation = "source-over";
     },
 
+    /* 68 자모 — 한글 한 글자가 획 순서대로 쓰인다.
+       뒤에는 활자 견본판처럼 작은 글자들이 움직이지 않고 깔린다.
+       자모는 획이라서 좌표로 적을 수 있다. 라틴 알파벳보다 오히려
+       코드로 긋기 좋다. 우리가 대구에서 만드는 물건에 이만한 재료가
+       따로 없다. */
+    jamo(t) {
+      const ph = t / DUR;
+      const pick = (i, n) => Math.floor(seeds[700 + i].a * n);
+
+      /* 뒤판 — 견본지. 정지해 있다. */
+      const gx = 3 + Math.round(k.density * 5);
+      const gy = Math.max(2, Math.round(gx * H / W));
+      const bw = W / gx, bh = H / gy;
+      const pad = Math.min(bw, bh) * 0.22;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.lineWidth = Math.max(0.8, Math.min(bw, bh) * 0.035);
+      ctx.strokeStyle = tone(2, 0.05 + 0.10 * k.contrast);
+      for (let j = 0; j < gy; j++) {
+        for (let i = 0; i < gx; i++) {
+          const s = seeds[((j * gx + i) * 3 + 40) % seeds.length];
+          const side = Math.min(bw, bh) - pad * 2;
+          syllable(Math.floor(s.a * 14), Math.floor(s.b * 10), Math.floor(s.c * 15),
+                   i * bw + (bw - side) / 2, j * bh + (bh - side) / 2, side, side, 1);
+        }
+      }
+
+      /* 앞 글자 — 한 획씩 쓰인다.
+         번짐을 먼저 깔고 획을 그 위에 올린다. 순서를 바꾸면 옅은 번짐이
+         본 획을 덮어 흐려진다. 붓도 먹이 번진 자리 위에 획이 남는다. */
+      const side = Math.min(W, H) * 0.52 * clamp(k.scale, 0.6, 1.4);
+      const cx = (W - side) / 2, cy = (H - side) / 2;
+      const ci = pick(0, 14), ji = pick(1, 10), ki = pick(2, 15);
+      const rev = breathe(ph);
+      ctx.lineWidth = Math.max(2.4, side * 0.10 * k.contrast);
+      ctx.strokeStyle = tone(2, 0.10 * k.accent + 0.05);
+      syllable(ci, ji, ki, cx, cy, side, side, rev);
+      ctx.lineWidth = Math.max(1.6, side * 0.055 * k.contrast);
+      ctx.strokeStyle = tone(0, Math.min(0.95, 0.45 + 0.40 * k.contrast));
+      syllable(ci, ji, ki, cx, cy, side, side, rev);
+    },
+
+    /* 69 활자판 — 1876년 Plaque Découpée Universelle.
+       글자를 통째로 새기지 않고, 격자에서 잘라낸 조각을 이어 붙여 만든다.
+       처음에는 켜진 칸마다 아무 조각이나 놓았는데 글자가 하나도 안 읽혔다.
+       조각은 이웃을 보고 골라야 한다. 좌우가 이어지면 가로 막대, 꺾이면
+       사분원, 끝이면 짧은 획에 둥근 마무리. 그래야 획이 이어진다.
+       판을 가로지르는 빛줄기가 지나간 자리만 밝아진다. */
+    pdu(t) {
+      const ph = t / DUR;
+      const n = 3 + Math.floor(seeds[720].a * 3);
+      const cols = n * 6 - 1, rows = 7;
+      const cw = Math.min(W * 0.76 / cols, H * 0.52 / rows) * clamp(k.scale, 0.7, 1.2);
+      const ox = (W - cols * cw) / 2, oy = (H - rows * cw) / 2;
+      const band = ph * (cols + rows + 8) - 4;
+      const R = cw / 2, LW = Math.max(1.2, cw * 0.30);
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.lineWidth = LW;
+      for (let li = 0; li < n; li++) {
+        const g = FONT57[FONT57_LETTERS[Math.floor(seeds[721 + li].b * 26)]];
+        const on = (c, r) => (r >= 0 && r < 7 && c >= 0 && c < 5) ? !!(g[r] & (1 << (4 - c))) : false;
+        for (let r = 0; r < 7; r++) {
+          for (let c = 0; c < 5; c++) {
+            if (!on(c, r)) continue;
+            const cx = li * 6 + c;
+            const x = ox + cx * cw, y = oy + r * cw;
+            const mx = x + R, my = y + R;
+            const lit = Math.abs(cx + r - band) < 2.2;
+            ctx.strokeStyle = ctx.fillStyle = lit
+              ? tone(0, 0.55 + 0.45 * k.accent)
+              : tone(2, 0.20 + 0.42 * k.contrast);
+            const L = on(c - 1, r), Rt = on(c + 1, r), U = on(c, r - 1), D = on(c, r + 1);
+            const cnt = (L ? 1 : 0) + (Rt ? 1 : 0) + (U ? 1 : 0) + (D ? 1 : 0);
+            ctx.beginPath();
+            if (cnt === 0) {                       /* 외딴 칸 — 점 */
+              ctx.arc(mx, my, LW * 0.42, 0, TAU); ctx.fill(); continue;
+            }
+            if (cnt === 2 && ((L && Rt) || (U && D))) {          /* 곧은 획 */
+              if (L && Rt) { ctx.moveTo(x, my); ctx.lineTo(x + cw, my); }
+              else { ctx.moveTo(mx, y); ctx.lineTo(mx, y + cw); }
+            } else if (cnt === 2) {                              /* 꺾임 — 사분원 */
+              const px = Rt ? x + cw : x, py = D ? y + cw : y;
+              const a0 = Rt ? (D ? Math.PI : Math.PI * 0.5) : (D ? Math.PI * 1.5 : 0);
+              ctx.arc(px, py, R, a0, a0 + Math.PI * 0.5);
+            } else {                                             /* 갈래·끝 — 가운데서 뻗는다 */
+              if (L)  { ctx.moveTo(mx, my); ctx.lineTo(x, my); }
+              if (Rt) { ctx.moveTo(mx, my); ctx.lineTo(x + cw, my); }
+              if (U)  { ctx.moveTo(mx, my); ctx.lineTo(mx, y); }
+              if (D)  { ctx.moveTo(mx, my); ctx.lineTo(mx, y + cw); }
+            }
+            ctx.stroke();
+          }
+        }
+      }
+    },
+
+    /* 70 신호 — 데이터를 막대로 바꾼 판.
+       류지 이케다의 test pattern 이 하는 일이 이것이다. 무엇이든 0과 1로
+       바꾸고, 그 줄무늬 자체를 화면에 세운다. 부드럽게 흐르지 않는다.
+       한 바퀴에 여섯 번 딱딱 끊어 바뀐다. */
+    barcode(t) {
+      const ph = t / DUR;
+      const STEPS = 6;
+      const step = Math.floor(ph * STEPS) % STEPS;
+      /* 띠는 얇게. 처음에 화면 높이의 40%를 흰 막대로 채웠더니 여백이
+         하나도 안 남아 그림이 아니라 무늬가 됐다. 아래위를 비운다. */
+      const y0 = H * 0.37, bh = H * 0.26;
+      let x = 0, i = 0;
+      const unit = Math.max(1.2, W / (60 + k.density * 260));
+      ctx.beginPath();
+      ctx.fillStyle = tone(0, 0.58 + 0.36 * k.contrast);
+      while (x < W && i < 900) {
+        const s = seeds[(step * 149 + i * 7) % seeds.length];
+        const w = unit * (1 + Math.floor(s.a * 4));
+        /* 셋에 하나쯤만 세운다. 막대가 빽빽하면 줄무늬가 아니라 판이 된다. */
+        if (s.b > 0.66) {
+          /* 키가 다른 막대가 섞여야 신호처럼 읽힌다 */
+          const hh = s.c > 0.72 ? bh : bh * (0.28 + 0.34 * s.d);
+          ctx.rect(x, s.d > 0.5 ? y0 : y0 + bh - hh, w, hh);
+        }
+        x += w; i++;
+      }
+      ctx.fill();
+      /* 아래에 0과 1 한 줄. 막대와 같은 값에서 나온다. */
+      const dh = Math.max(4, H * 0.030), dw = dh * 5 / 7;
+      const gap = dw * 1.5;
+      const cnt = Math.min(160, Math.floor(W * 0.86 / gap));
+      const sx = (W - cnt * gap) / 2, sy = y0 + bh + H * 0.07;
+      ctx.fillStyle = tone(1, 0.34 + 0.34 * k.contrast);
+      ctx.beginPath();
+      for (let c = 0; c < cnt; c++) {
+        const s = seeds[(step * 149 + c * 7) % seeds.length];
+        glyph57(s.b > 0.66 ? "1" : "0", (gc, gr) => {
+          ctx.rect(sx + c * gap + gc * dw / 5, sy + gr * dh / 7, dw / 5 * 0.85, dh / 7 * 0.85);
+        });
+      }
+      ctx.fill();
+      /* 위아래 기준선. 시험 신호에는 늘 자가 붙어 있다. */
+      ctx.strokeStyle = tone(2, 0.30);
+      ctx.lineWidth = Math.max(1, S);
+      ctx.beginPath();
+      for (const yy of [y0 - H * 0.045, y0 + bh + H * 0.045]) {
+        ctx.moveTo(W * 0.06, yy); ctx.lineTo(W * 0.94, yy);
+      }
+      ctx.stroke();
+    },
+
+    /* 71 칠획 — 일곱 획으로 숫자를 만드는 표시기.
+       꺼진 획도 옅게 남긴다. 꺼진 자리가 보여야 표시기로 읽힌다. */
+    segment(t) {
+      const ph = t / DUR;
+      const STEPS = 10;
+      const step = Math.floor(ph * STEPS) % STEPS;
+      /* 줄 수를 먼저 정하고 거기서 글자 크기를 뽑는다.
+         칸 너비부터 정했더니 16:9 에서 늘 한 줄만 나왔다. 표시기는
+         여러 줄이 늘어서야 계기판으로 읽힌다. */
+      const rows = 2 + Math.round(k.density * 4);
+      const chh = H * 0.74 / (rows * 1.34);
+      const cw = chh / 1.62;
+      const cols = Math.max(3, Math.floor(W * 0.84 / cw));
+      const ox = (W - cols * cw) / 2, oy = (H - rows * chh * 1.34) / 2 + chh * 0.17;
+      const SEG = [[0.12,0.05,0.88,0.05],[0.92,0.09,0.92,0.46],[0.92,0.54,0.92,0.91],
+                   [0.12,0.95,0.88,0.95],[0.08,0.54,0.08,0.91],[0.08,0.09,0.08,0.46],
+                   [0.12,0.50,0.88,0.50]];
+      const ON = [0b0111111,0b0000110,0b1011011,0b1001111,0b1100110,
+                  0b1101101,0b1111101,0b0000111,0b1111111,0b1101111];
+      ctx.lineCap = "round";
+      ctx.lineWidth = Math.max(1.1, cw * 0.11);
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const s = seeds[((r * cols + c) * 5 + 300) % seeds.length];
+          const d = (Math.floor(s.a * 10) + step * (1 + Math.floor(s.b * 3))) % 10;
+          const bright = s.c < 0.18 + 0.3 * k.accent;
+          const x = ox + c * cw, y = oy + r * chh * 1.34;
+          const gw = cw * 0.70, gh = chh;
+          for (let g = 0; g < 7; g++) {
+            const on = (ON[d] >> g) & 1;
+            ctx.strokeStyle = on
+              ? tone(bright ? 0 : 1, (bright ? 0.55 : 0.24) + 0.4 * k.contrast * (bright ? 1 : 0.5))
+              : tone(3, 0.10 + 0.10 * k.contrast);
+            ctx.beginPath();
+            ctx.moveTo(x + SEG[g][0] * gw, y + SEG[g][1] * gh);
+            ctx.lineTo(x + SEG[g][2] * gw, y + SEG[g][3] * gh);
+            ctx.stroke();
+          }
+        }
+      }
+    },
+
+    /* 72 문자 명암 — 밝기를 글자로 바꾼다.
+       옅은 자리에는 획이 적은 글자, 짙은 자리에는 획이 많은 글자.
+       그림이 글자로 되어 있다는 것이 가까이 가야 보인다. */
+    asciiart(t) {
+      const ph = motionPhase(t);
+      /* 칸을 키우고 빈칸을 늘린다.
+         처음엔 화면을 글자로 가득 채웠더니 그림이 아니라 잡음이 됐다.
+         멀리서 형태가 보이고 가까이 가야 글자인 걸 알아채야 한다.
+         그러려면 칠하지 않은 자리가 넉넉해야 한다. */
+      const cols = 10 + Math.round(k.density * 14);
+      const cw = W / cols;
+      const rows = Math.max(4, Math.round(H / (cw * 1.42)));
+      const rh = H / rows;
+      const dw = cw / 5 * 0.90, dh = rh / 7 * 0.90;
+      const zoom = 1.1 / clamp(k.scale, 0.5, 2);
+      const R = FONT57_RAMP, RN = R.length;
+      /* 덩어리를 먼저 세우고 잡음은 그 위에 얹는다.
+         잡음만으로 명암을 내면 글자가 부스러기처럼 흩어져 형태가 안
+         생긴다. 한 번 그렇게 나왔다. 멀리서 형태가 보이고, 가까이 가야
+         글자인 걸 알아채는 순서여야 한다. */
+      const ex = 0.30 + seeds[760].a * 0.40, ey = 0.32 + seeds[760].b * 0.36;
+      const mass = (c, r) => {
+        const u = (c + 0.5) / cols - ex, v = (r + 0.5) / rows - ey;
+        return clamp(1.22 - Math.hypot(u * 1.7, v * 2.0) * 1.65, 0, 1);
+      };
+      /* 톤을 넷으로 나눠, 색이 같은 것끼리 한 번에 칠한다.
+         글자마다 fillStyle 을 바꾸면 그것만으로 값이 든다. */
+      for (let b = 0; b < 4; b++) {
+        ctx.fillStyle = tone(3 - b, (0.18 + 0.60 * ((b + 0.5) / 4)) * k.contrast);
+        ctx.beginPath();
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            const v = fbm(c * zoom * 0.12 + Math.cos(ph) * 0.5,
+                          r * zoom * 0.18 + Math.sin(ph) * 0.5, 3);
+            const l = clamp(mass(c, r) * (0.74 + 0.62 * v), 0, 0.999);
+            if (l < 0.14) continue;                    /* 빈칸으로 둔다 */
+            if (Math.floor(l * 4) !== b) continue;
+            const ch = R[Math.min(RN - 1, Math.floor(l * RN))];
+            const x = c * cw, y = r * rh;
+            glyph57(ch, (gc, gr) => ctx.rect(x + gc * cw / 5, y + gr * rh / 7, dw, dh));
+          }
+        }
+        ctx.fill();
+      }
+    },
+
+    /* 73 무질서 — 같은 네모를 줄지어 놓고, 조금씩 흐트러뜨린다.
+       베라 몰나르가 1968년부터 하던 일이다. 규칙을 세우고 그 규칙을
+       아주 조금씩 어긴다. 어긋남이 왼쪽 위에서 오른쪽 아래로 커진다. */
+    desordre(t) {
+      const ph = t / DUR;
+      const gx = 4 + Math.round(k.density * 12);
+      /* 가로세로 여백을 따로 잡는다. min(W,H) 하나로 잡았더니 16:9 에서
+         좌우가 6% 밖에 안 남아 격자가 화면에 꽉 찼다. */
+      const mx = W * 0.11, my = H * 0.13;
+      const cw = (W - mx * 2) / gx;
+      const gy = Math.max(2, Math.floor((H - my * 2) / cw));
+      const oy = (H - gy * cw) / 2;
+      const side = cw * 0.72 * clamp(k.scale, 0.6, 1.3);
+      /* 흐트러짐이 한 바퀴 동안 커졌다 돌아온다 */
+      const amp = 0.30 + 0.70 * (0.5 - 0.5 * Math.cos(ph * TAU));
+      ctx.lineJoin = "miter";
+      ctx.lineCap = "butt";
+      ctx.lineWidth = Math.max(0.9, cw * 0.055 * k.contrast);
+      for (let b = 0; b < 3; b++) {
+        ctx.strokeStyle = tone(b, 0.24 + 0.5 * k.contrast * (1 - b * 0.22));
+        ctx.beginPath();
+        for (let r = 0; r < gy; r++) {
+          for (let c = 0; c < gx; c++) {
+            if ((r * gx + c) % 3 !== b) continue;
+            /* 어긋남은 왼쪽 위에서 오른쪽 아래로 커진다.
+               제곱을 걸어야 앞쪽이 충분히 반듯하게 남는다. */
+            const grow = ((c + 1) / gx + (r + 1) / gy) * 0.5;
+            const d = grow * grow * amp * side * 0.42;
+            const x = mx + c * cw + (cw - side) / 2, y = oy + r * cw + (cw - side) / 2;
+            const P = [[x, y], [x + side, y], [x + side, y + side], [x, y + side]];
+            for (let i = 0; i < 4; i++) {
+              /* 모서리마다 다른 씨앗. 네 귀가 따로 놀아야 손으로 그은 것처럼 보인다. */
+              const q = seeds[(r * gx + c + i * 200 + 11) % seeds.length];
+              const px = P[i][0] + (q.a - 0.5) * 2 * d, py = P[i][1] + (q.b - 0.5) * 2 * d;
+              if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+            }
+            ctx.closePath();
+          }
+        }
+        ctx.stroke();
+      }
+    },
+
   };
 
   /* ── 마감 처리 ────────────────────────────────────────────────
@@ -2396,6 +2882,9 @@ const STYLE_LABELS = [
   ["flythrough", "지형 비행"], ["burst", "비트 폭발"], ["plasma", "플라스마"], ["chevron", "셰브론"],
 
   ["wire", "와이어프레임"], ["pointcloud", "점군"], ["hologram", "홀로그램"],
+
+  ["jamo", "자모"], ["pdu", "활자판"], ["barcode", "신호"],
+  ["segment", "칠획"], ["asciiart", "문자 명암"], ["desordre", "무질서"],
 ];
 
 global.StudioArt = {

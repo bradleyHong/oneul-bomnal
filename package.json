@@ -5,5 +5,11 @@
   "description": "오늘은 봄날 — 맥미니·라즈베리파이 미디어아트 하드웨어 공급 사이트",
   "dependencies": {
     "@vercel/functions": "^2.0.0"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.49.0"
+  },
+  "scripts": {
+    "check": "node tools/check-canon.mjs && node tools/check-studio.mjs && node tools/check-artwork.mjs"
   }
 }
