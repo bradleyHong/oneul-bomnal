@@ -10,7 +10,7 @@
     />
     <link rel="canonical" href="https://publicbloom.art/studio" />
     <link rel="stylesheet" href="./styles.css?v=20260824-hero" />
-    <link rel="stylesheet" href="./studio.css?v=20260905-pick" />
+    <link rel="stylesheet" href="./studio.css?v=20260905-heart" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
   </head>
   <body class="st-page">
@@ -81,12 +81,26 @@
               </span>
             </div>
             <div class="st-wall" data-st-wall></div>
-            <p class="st-help">누르면 크게 보입니다. 없으면 “다른 화면 보기”를 누르세요. 몇 번이든 됩니다.</p>
+            <p class="st-help">누르면 크게 보입니다. 없으면 “다른 화면 보기”를 누르세요. 몇 번이든 됩니다.
+              마음에 드는 것은 <b>♥</b> 를 눌러 담아 두세요.</p>
+          </div>
+
+          <!-- 담아 둔 화면. 이 브라우저에만 남는다. -->
+          <div class="st-hearts-wrap" data-st-hearts-wrap hidden>
+            <p class="st-cuts-title st-pick-title">
+              담아 두신 화면 <span class="st-heart-count" data-st-heart-count></span>
+            </p>
+            <div class="st-wall st-hearts" data-st-hearts></div>
+            <p class="st-help">이 브라우저에만 남습니다. 다른 기기에서는 보이지 않으니
+              마음이 정해지면 작품 번호를 적어 두세요.</p>
           </div>
 
           <!-- 고르기 전에는 감춰 둔다. 빈 검은 칸이 화면 절반을 차지하면
                무엇을 해야 하는 자리인지 알 수 없다. -->
           <div class="st-picked" data-st-picked hidden>
+            <button type="button" class="st-sheet-close" data-st-sheet-close aria-label="닫고 다시 고르기">
+              <span aria-hidden="true">←</span> 다시 고르기
+            </button>
             <div class="st-stage">
               <canvas data-st-canvas width="720" height="405" aria-label="시연본 미리보기"></canvas>
             </div>
@@ -184,6 +198,6 @@
 
     <script src="./studio-engine.js?v=20260905-56" defer></script>
     <script src="./studio-gen.js?v=20260905-56" defer></script>
-    <script src="./studio.js?v=20260905-pick" defer></script>
+    <script src="./studio.js?v=20260905-heart" defer></script>
   </body>
 </html>
