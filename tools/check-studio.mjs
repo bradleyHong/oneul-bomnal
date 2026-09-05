@@ -59,7 +59,7 @@ if (!gen.includes("STYLE_IDS = BASE_IDS.concat(artIds())")) {
 
 /* 화면 비율별 목록에 적은 이름이 엔진에 실제로 있는가.
    오타 하나면 그 스타일만 조용히 후보에서 빠진다. */
-for (const key of ["ART_TALL", "ART_WIDE"]) {
+for (const key of ["ART_TALL_V2", "ART_WIDE_V2"]) {
   const i = gen.indexOf(`var ${key} = [`);
   if (i < 0) { fails.push(`studio-gen.js에 ${key}가 없다`); continue; }
   const ids = [...gen.slice(i, gen.indexOf("];", i)).matchAll(/"([a-z0-9-]+)"/g)].map((m) => m[1]);
@@ -67,15 +67,89 @@ for (const key of ["ART_TALL", "ART_WIDE"]) {
     if (!listed.includes(id)) fails.push(`${key}의 "${id}"가 엔진에 없다 (오타면 조용히 빠진다)`);
   }
 }
+/* 3판에서 더한 것들 — ART_TALL = ART_TALL_V2.concat([ ... ]) 안쪽 */
+for (const key of ["ART_TALL", "ART_WIDE"]) {
+  const i = gen.indexOf(`var ${key} = ${key}_V2.concat([`);
+  if (i < 0) { fails.push(`studio-gen.js의 ${key}가 ${key}_V2에서 이어지지 않는다`); continue; }
+  const ids = [...gen.slice(i, gen.indexOf("]);", i)).matchAll(/"([a-z0-9-]+)"/g)].map((m) => m[1]);
+  for (const id of ids) {
+    if (!listed.includes(id)) fails.push(`${key}의 "${id}"가 엔진에 없다 (오타면 조용히 빠진다)`);
+  }
+}
+
+/* 씨앗 배열을 넘어서 집는 곳.
+   seeds 는 900칸이다. seeds[980] 처럼 넘겨 집으면 undefined 가 나와
+   그 스타일이 통째로 터진다. 숫자로 박힌 자리는 여기서 막는다.
+   계산해서 집는 자리(seeds[i * 7 + 200] 같은 것)는 밀도와 화면 규격에
+   따라 넘어가므로 여기서는 알 수 없다. 그건 tools/check-sizes.mjs 가
+   실제로 그려 보며 잡는다 — 칠획 32:9, 자모 1:6 을 거기서 잡았다. */
+{
+  const SEEDS = 900;
+  for (const m of art.matchAll(/seeds\[\s*(\d+)\s*\]/g)) {
+    if (+m[1] >= SEEDS) fails.push(`seeds[${m[1]}] — 씨앗은 ${SEEDS}칸뿐이다 (그 스타일이 터진다)`);
+  }
+}
+
+/* 이미 나간 작품 번호를 지키는 표지.
+   BN2- 번호는 엔진 목록의 앞 64종만 본다(studio-gen.js의 ART_V2_COUNT).
+   중간에 하나 끼워 넣으면 그 뒤가 통째로 밀려 팔린 번호가 다른 그림이
+   된다. 목록은 뒤에만 붙일 수 있다. 표지 하나로 그걸 확인한다. */
+const V2_COUNT = 64, V2_LAST = "chevron";
+if (listed.length < V2_COUNT) {
+  fails.push(`엔진 스타일이 ${listed.length}종이다. 2판이 쓰는 ${V2_COUNT}종보다 적다 (지운 것이 있다)`);
+} else if (listed[V2_COUNT - 1] !== V2_LAST) {
+  fails.push(`엔진 목록 ${V2_COUNT}번째가 "${listed[V2_COUNT - 1]}"다. "${V2_LAST}"여야 한다`
+           + " — 중간에 끼워 넣었다면 이미 팔린 BN2- 번호가 다른 그림이 된다");
+}
+if (!gen.includes("ART_V2_COUNT = 64")) fails.push("studio-gen.js의 ART_V2_COUNT가 64가 아니다");
+for (const need of ["FIT_V1", "FIT_V2", "FITS"]) {
+  if (!gen.includes(need)) fails.push(`studio-gen.js에 ${need}가 없다 (판별 목록이 끊겼다)`);
+}
+
+/* 3D 뼈대. studio-meshes.js는 tools/build-meshes.mjs가 만든다.
+   이게 없으면 와이어프레임·점군·홀로그램이 다른 스타일로 조용히
+   대체된다. 화면은 멀쩡해 보이는데 고른 것과 다른 그림이 나온다. */
+const MESH_STYLES = ["wire", "pointcloud", "hologram"];
+let meshes = null;
+try { meshes = read("studio-meshes.js"); } catch { /* 아래에서 잡는다 */ }
+if (!meshes) {
+  fails.push("studio-meshes.js가 없다 — node tools/build-meshes.mjs 를 돌릴 것");
+} else {
+  for (const need of ["window.StudioMeshes", "window.StudioMeshIds"]) {
+    if (!meshes.includes(need)) fails.push(`studio-meshes.js에 ${need}가 없다`);
+  }
+  const ids = JSON.parse(meshes.slice(meshes.indexOf("window.StudioMeshIds = ") + 23,
+                                      meshes.lastIndexOf("]") + 1));
+  if (!ids.length) fails.push("studio-meshes.js에 모델이 하나도 없다");
+  /* 받은 것은 전부 라이선스 표에 적혀 있어야 한다. 적히지 않은 것은
+     배포하지 않는다는 규칙이 assets/mesh/LICENSE.md 에 있다. */
+  let lic = "";
+  try { lic = read("assets/mesh/LICENSE.md"); } catch { /* 아래에서 잡는다 */ }
+  if (!lic) fails.push("assets/mesh/LICENSE.md가 없다 (출처를 적지 않은 것은 배포하지 않는다)");
+  else for (const id of ids) {
+    if (!lic.includes(`\`${id}.json\``)) fails.push(`${id} 가 assets/mesh/LICENSE.md 표에 없다`);
+    if (!lic.includes("CC0")) fails.push("assets/mesh/LICENSE.md에 CC0 표기가 없다");
+  }
+  for (const id of MESH_STYLES) {
+    if (!listed.includes(id)) fails.push(`3D 스타일 "${id}"가 엔진 목록에 없다`);
+  }
+}
 
 /* 페이지가 엔진을 먼저 불러오는가. 순서가 뒤집히면 목록이 비어 나온다. */
 const iEngine = html.indexOf("studio-engine.js");
 const iGen = html.indexOf("studio-gen.js");
+const iMesh = html.indexOf("studio-meshes.js");
 if (iEngine < 0) fails.push("studio.html이 studio-engine.js를 불러오지 않는다");
 else if (iGen >= 0 && iEngine > iGen) fails.push("studio.html에서 studio-engine.js가 studio-gen.js보다 뒤에 있다");
+if (iMesh < 0) fails.push("studio.html이 studio-meshes.js를 불러오지 않는다 (3D 스타일이 빈다)");
+else if (iEngine >= 0 && iMesh > iEngine) fails.push("studio.html에서 studio-meshes.js가 studio-engine.js보다 뒤에 있다");
 
 /* 납품 렌더 화면. 이 둘이 없으면 render-studio.mjs가 멈춘다. */
 if (!wrap.includes("studio-engine.js")) fails.push("works/studio-art.html이 studio-engine.js를 불러오지 않는다");
+if (!wrap.includes("studio-meshes.js")) fails.push("works/studio-art.html이 studio-meshes.js를 불러오지 않는다 (납품본에서 3D가 빈다)");
+else if (wrap.indexOf("studio-meshes.js") > wrap.indexOf("studio-engine.js")) {
+  fails.push("works/studio-art.html에서 studio-meshes.js가 studio-engine.js보다 뒤에 있다");
+}
 for (const need of ["window.renderFrame", "window.__READY__"]) {
   if (!wrap.includes(need)) fails.push(`works/studio-art.html에 ${need}가 없다`);
 }
