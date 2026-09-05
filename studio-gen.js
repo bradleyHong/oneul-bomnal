@@ -184,10 +184,12 @@
     if (!mood) mood = pick(r, MOODS);
 
     // 색 — 낱말이 고른 것 55%, 어울리는 이웃 30%, 나머지는 자유
+    /* 색은 고객이 고른 느낌을 따른다. "수묵 여백"을 눌렀는데 금색이 나오면
+     * 고른 의미가 없다. 변화는 스타일과 씨앗에서 낸다.
+     * 이웃 색은 결이 같은 것들이라 25%까지만 섞는다. */
     var palId;
     var d = r();
-    if (palHint && d < 0.55) palId = palHint;
-    else if (palHint && d < 0.85 && KIN[palHint]) palId = pick(r, KIN[palHint]);
+    if (palHint) palId = (d < 0.75 || !KIN[palHint]) ? palHint : pick(r, KIN[palHint]);
     else palId = pick(r, PALETTES).id;
     var palette = PALETTES.filter(function (p) { return p.id === palId; })[0] || PALETTES[0];
 
@@ -315,7 +317,7 @@
     var ctx = this.ctx, W = this.cv.width, H = this.cv.height;
 
     /* 엔진이 맡는 스타일은 한 장을 통째로 그린다. 물기(워터마크)만 얹는다. */
-    if (isArt(s.style) && this.artDraw(t)) { this.watermark(ctx, W, H); return; }
+    if (isArt(s.style) && this.artDraw(t)) { this.post(ctx, W, H, s); this.watermark(ctx, W, H); return; }
 
     ctx.globalCompositeOperation = "source-over";
     ctx.globalAlpha = 1;
@@ -332,7 +334,48 @@
     ctx.globalCompositeOperation = "source-over";
     ctx.globalAlpha = 1;
 
+    this.post(ctx, W, H, s);
     this.watermark(ctx, W, H);
+  };
+
+
+  /* ── 마감 ───────────────────────────────────────────────────
+   * 선을 그린 채로 끝내면 코드 스케치처럼 보인다. 실제 미디어아트는
+   * 빛이 번지고 가장자리가 가라앉아야 화면으로 읽힌다.
+   * 작게 줄여 흐린 뒤 더하는 방식이라 큰 화면에서도 값이 싸다. */
+  Gen.prototype.post = function (ctx, W, H, s) {
+    var bw = Math.max(48, Math.round(W / 4)), bh = Math.max(27, Math.round(H / 4));
+    if (!this.bc || this.bc.width !== bw || this.bc.height !== bh) {
+      this.bc = document.createElement("canvas");
+      this.bc.width = bw; this.bc.height = bh;
+      this.bx = this.bc.getContext("2d");
+    }
+    var bx = this.bx, glow = s.glow || 1;
+    bx.globalCompositeOperation = "copy";
+    bx.filter = "blur(" + Math.max(2, Math.round(bw / 44)) + "px) brightness(1.3) saturate(1.2)";
+    bx.drawImage(this.cv, 0, 0, bw, bh);
+    bx.filter = "none";
+    bx.globalCompositeOperation = "source-over";
+
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.globalAlpha = Math.min(0.7, 0.42 * glow);
+    ctx.drawImage(this.bc, 0, 0, W, H);
+    ctx.globalAlpha = Math.min(0.38, 0.18 * glow);      // 한 겹 더 얹어 번짐을 넓힌다
+    ctx.drawImage(this.bc, -W * 0.01, -H * 0.01, W * 1.02, H * 1.02);
+    ctx.restore();
+
+    // 가장자리를 가라앉혀 눈이 가운데로 모이게 한다
+    var v = ctx.createRadialGradient(W * 0.5, H * 0.5, Math.min(W, H) * 0.22,
+                                     W * 0.5, H * 0.5, Math.max(W, H) * 0.74);
+    v.addColorStop(0, "rgba(0,0,0,0)");
+    v.addColorStop(0.65, "rgba(0,0,0,0.18)");
+    v.addColorStop(1, "rgba(0,0,0,0.5)");
+    ctx.save();
+    ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = v;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
   };
 
   Gen.prototype.watermark = function (ctx, W, H) {
@@ -372,7 +415,7 @@
         var wv = 1 + Math.floor(r() * 3);
         var off = r() * TAU;
         ctx.strokeStyle = hexA(col, 0.22 + r() * 0.4);
-        ctx.lineWidth = (0.6 + r() * 3.4) * (W / 900);
+        ctx.lineWidth = (1.6 + r() * 5.2) * (W / 900) * (s.weight || 1);
         ctx.beginPath();
         for (var x = 0; x <= W; x += 6) {
           var u = x / W;
@@ -395,7 +438,7 @@
         var wv = 1 + Math.floor(r() * 3);
         var k = 1 + Math.floor(r() * 2);
         var off = r() * TAU;
-        ctx.fillStyle = hexA(col, 0.13 + 0.2 * (1 - i / n));
+        ctx.fillStyle = hexA(col, 0.05 + 0.09 * (1 - i / n));
         ctx.beginPath();
         ctx.moveTo(0, H);
         for (var x = 0; x <= W; x += 5) {
@@ -448,7 +491,7 @@
       var n = Math.round(26 * s.density), r = rng(s.seed);
       var cx = W * (0.35 + r() * 0.3), cy = H * (0.35 + r() * 0.3);
       var maxR = Math.max(W, H) * 0.62;
-      ctx.lineWidth = Math.max(1, 1.2 * (W / 900));
+      ctx.lineWidth = Math.max(1.6, 2.6 * (W / 900) * (s.weight || 1));
       for (var i = 0; i < n; i++) {
         var f = (i + 1) / n;
         var col = s.palette.ink[i % s.palette.ink.length];
@@ -535,7 +578,7 @@
         var y0 = r() * H, th = (0.04 + r() * 0.16) * H * s.weight;
         var wv = 1 + Math.floor(r() * 3), k = 1 + Math.floor(r() * 2);
         var off = r() * TAU, amp = (0.04 + r() * 0.14) * H;
-        ctx.fillStyle = hexA(col, (0.1 + r() * 0.18) * s.glow);
+        ctx.fillStyle = hexA(col, (0.05 + r() * 0.1) * s.glow);
         ctx.beginPath();
         for (var x = 0; x <= W; x += 6) {
           var u = x / W;
@@ -561,7 +604,7 @@
         var k = 1 + Math.floor(r() * 3), span = 0.5 + r() * 2.2;
         var a0 = r() * TAU + ph(t, k) * s.dir;
         ctx.strokeStyle = hexA(col, (0.18 + r() * 0.3) * s.glow);
-        ctx.lineWidth = (0.8 + r() * 3.2) * s.weight * (Math.max(W, H) / 900);
+        ctx.lineWidth = (1.8 + r() * 4.6) * s.weight * (Math.max(W, H) / 900);
         ctx.beginPath();
         ctx.ellipse(cx, cy, rr, rr * (H / W < 0.5 ? 2.2 : 0.82), s.rot, a0, a0 + span);
         ctx.stroke();
@@ -585,7 +628,7 @@
       }
       var lim = Math.min(W, H) * 0.26;
       var ink = s.palette.ink;
-      ctx.lineWidth = 0.8 * s.weight * (Math.max(W, H) / 900);
+      ctx.lineWidth = 1.6 * s.weight * (Math.max(W, H) / 900);
       for (var i2 = 0; i2 < pos.length; i2++) {
         for (var j2 = i2 + 1; j2 < pos.length; j2++) {
           var dx = pos[i2][0] - pos[j2][0], dy = pos[i2][1] - pos[j2][1];
@@ -635,7 +678,7 @@
         var k = 1 + Math.floor(r() * 2);
         var turns = 2 + Math.floor(r() * 3);
         ctx.strokeStyle = hexA(col, (0.2 + r() * 0.3) * s.glow);
-        ctx.lineWidth = (1 + r() * 3) * s.weight * (Math.max(W, H) / 900);
+        ctx.lineWidth = (2 + r() * 4.5) * s.weight * (Math.max(W, H) / 900);
         ctx.beginPath();
         for (var u = 0; u <= 1; u += 0.008) {
           var ang = u * TAU * turns + (a2 / arms) * TAU + ph(t, k) * s.dir + s.rot;
