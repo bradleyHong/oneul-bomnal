@@ -210,7 +210,9 @@
           ? '<p class="st-code-sub">직접 적으신 문장으로 만든 번호입니다. 나중에 부르실 때는 문장도 함께 적어 주세요.</p>'
           : '<p class="st-code-sub">번호를 복사해 두시면 언제든 이 화면으로 돌아옵니다.</p>');
 
-      elGo.textContent = "다시 만들기";
+      elGo.textContent = "고른 화면 다시 그리기";
+      var picked = $("[data-st-picked]", root);
+      if (picked) picked.hidden = false;      /* 고른 뒤에야 큰 화면이 나온다 */
       updateQuote();
     }
 
@@ -253,6 +255,7 @@
     elPanel.addEventListener("change", function () {
       syncPanel();
       if (spec) make();          // 비율이 바뀌면 어울리는 그림도 달라진다
+      wallDraw();                // 보여 주는 열두 장도 그 비율로 다시 그린다
     });
     [elW, elH, elSec].forEach(function (n) { n.addEventListener("input", updateQuote); });
     Array.prototype.forEach.call(root.querySelectorAll("[data-st-opt]"), function (n) {
@@ -275,9 +278,13 @@
       elScenes.appendChild(b);
     });
 
-    $("[data-st-random]", root).addEventListener("click", function () {
+    /* 표식 하나가 없어졌다고 나머지 화면이 통째로 죽으면 안 된다.
+       실제로 버튼을 옮기다가 여기서 멈춰 고르는 자리가 빈 채로 떴다. */
+    var elRandom = $("[data-st-random]", root);
+    if (elRandom) elRandom.addEventListener("click", function () {
       elStory.value = "";
       make(Math.floor(Math.random() * SCENES.length));
+      if (typeof wallMark === "function") wallMark();
     });
 
     // 숫자키로도 고를 수 있다. 1~9 그리고 0.
@@ -396,8 +403,78 @@
       });
     }
 
+    /* ── 골라 보는 자리 ───────────────────────────────────────
+     *
+     * 문장을 적게 하는 것은 "무엇을 원하는지 당신이 정하라"는 뜻이다.
+     * 담당자는 미디어아트를 어떻게 만들지 정하려고 우리를 부른 것이지,
+     * 그걸 글로 설명하려고 부른 게 아니다. 잘못 적었다고 탓할 수도 없다.
+     * 그래서 기본 경로를 "적기"에서 "고르기"로 바꿨다.
+     *
+     * 열두 장을 한 번에 그린다. 열두 장을 다 움직이면 노트북 팬이 도니
+     * 한 장씩 정지 화면으로만 그린다. 고른 것만 움직인다. */
+    var WALL_N = 12;
+    var elWall = $("[data-st-wall]", root);
+    var wallItems = [];
+
+    function wallDraw() {
+      if (!elWall) return;
+      var pn = currentPanel();
+      var ar = pn.w / pn.h;
+      elWall.innerHTML = "";
+      wallItems = [];
+      /* 느낌을 골고루 돌린다. 같은 느낌 열둘을 보여 주면 "다 비슷하다"가
+         된다. 시작 자리를 매번 옮겨 다시 눌러도 같은 열둘이 안 나온다. */
+      var off = Math.floor(Math.random() * SCENES.length);
+      for (var i = 0; i < WALL_N; i++) {
+        var idx = (off + i) % SCENES.length;
+        var seed = newSeed();
+        wallItems.push({ idx: idx, seed: seed });
+
+        var b = el("button", "st-wall-item");
+        b.type = "button";
+        /* 실제 비율 그대로 그린다. 높이만 잘라 맞추면 1:6 기둥이 0.71로
+           뭉개져, 현장에서 어떻게 보일지 알 수 없는 그림이 된다.
+           세로로 길면 높이를 먼저 묶고 거기서 폭을 구한다. */
+        var c = document.createElement("canvas");
+        var tw = 300, th = Math.round(tw / ar);
+        if (th > 260) { th = 260; tw = Math.max(24, Math.round(th * ar)); }
+        c.width = tw;
+        c.height = th;
+        b.appendChild(c);
+        b.appendChild(el("span", null, SCENES[idx].ko));
+        b.title = SCENES[idx].ko + " · 눌러서 크게 보기";
+        elWall.appendChild(b);
+
+        var one = new GEN.Gen(c);
+        one.set(GEN.compose(SCENES[idx].text, seed, ar));
+        one.draw(1.7);                 /* 한 장만. 열두 칸이 다 움직이면 아무것도 못 본다 */
+
+        (function (it) {
+          b.addEventListener("click", function () {
+            elStory.value = "";
+            make(it.idx, it.seed);
+            wallMark();
+            var stage = root.querySelector(".st-stage");
+            if (stage && stage.scrollIntoView) stage.scrollIntoView({ behavior: "smooth", block: "center" });
+          });
+        })(wallItems[i]);
+      }
+      wallMark();
+    }
+
+    function wallMark() {
+      Array.prototype.forEach.call(elWall ? elWall.children : [], function (b, i) {
+        var it = wallItems[i];
+        b.classList.toggle("is-on", !!(spec && it && spec.seed === it.seed && spec.idx === it.idx));
+      });
+    }
+
+    var elWallMore = $("[data-st-wall-more]", root);
+    if (elWallMore) elWallMore.addEventListener("click", wallDraw);
+
     elStat.textContent =
-      "누를 때마다 새 화면이 나옵니다. 같은 문장이라도 매번 다르게 그립니다.";
+      "고르신 화면은 누를 때마다 다시 그립니다. 같은 느낌이라도 매번 다르게 나옵니다.";
     syncPanel();
+    wallDraw();
   });
 })();

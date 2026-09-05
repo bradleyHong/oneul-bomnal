@@ -10,7 +10,7 @@
     />
     <link rel="canonical" href="https://publicbloom.art/studio" />
     <link rel="stylesheet" href="./styles.css?v=20260824-hero" />
-    <link rel="stylesheet" href="./studio.css?v=20260904d" />
+    <link rel="stylesheet" href="./studio.css?v=20260905-pick" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
   </head>
   <body class="st-page">
@@ -27,29 +27,19 @@
     </header>
 
     <main class="st-main" id="studio">
-      <h1 class="st-h1">만들고 싶은 화면을 적어 보세요</h1>
+      <h1 class="st-h1">마음에 드는 화면을 고르세요</h1>
       <p class="st-lead">
-        전문 기업의 기술로 <b>나만의 미디어아트</b>를 만듭니다.
-        문장을 적으면 저희 엔진이 <b>화면을 코드로 그려</b> 5초짜리 시연본을 보여 드립니다.
-        <b>로그인도 가입도 필요 없습니다.</b> 마음에 드시면 그대로 의뢰하세요.
-        화면 규격에 맞춰 고화질로 렌더링해 <b>평일 24시간 이내</b>에 보내드립니다. (휴일·공휴일 제외)
+        <b>적어 주실 필요 없습니다.</b> 저희가 만들어 둔 화면을 보여 드리니
+        마음에 드는 것을 고르시면 됩니다. 어떻게 만들지 정하는 일은 저희 일입니다.
+        <b>로그인도 가입도 필요 없습니다.</b> 고르신 화면은 규격에 맞춰 고화질로
+        렌더링해 <b>평일 24시간 이내</b>에 보내드립니다. (휴일·공휴일 제외)
       </p>
 
       <section class="st-grid">
         <!-- 좌: 입력 -->
         <div class="st-panelbox">
-          <label class="st-label">① 어떤 느낌으로 만들까요</label>
-          <p class="st-help">누르면 바로 만들어집니다. 같은 것을 다시 눌러도 매번 다르게 나옵니다.</p>
-          <div class="st-scenes" data-st-scenes></div>
-          <button type="button" class="st-random" data-st-random>
-            <b>아무거나 만들어 주세요</b><span>느낌도 화면도 알아서 고릅니다</span>
-          </button>
-
-          <label class="st-label" for="stStory">직접 적으셔도 됩니다 <span class="st-opt-tag">선택</span></label>
-          <textarea id="stStory" data-st-story rows="2"
-            placeholder="예) 로비 미디어월에 걸 봄바람 빛 리본, 따뜻하고 화사하게"></textarea>
-
-          <label class="st-label" for="stPanel">② 어느 화면에 트시나요</label>
+          <label class="st-label" for="stPanel">어느 화면에 트시나요</label>
+          <p class="st-help">규격을 바꾸면 그 비율에 어울리는 화면으로 다시 보여 드립니다.</p>
           <select id="stPanel" data-st-panel></select>
           <div class="st-size">
             <label>가로 <input type="number" data-st-w value="3840" min="64" step="1" /> px</label>
@@ -57,25 +47,53 @@
             <label>길이 <input type="number" data-st-sec value="30" min="5" max="600" step="1" /> 초</label>
           </div>
 
-          <label class="st-label">③ 추가 요청</label>
+          <label class="st-label">추가 요청</label>
           <div class="st-opts">
             <label><input type="checkbox" data-st-opt="asset" /> 기관 로고·이미지 반영 <span>×1.2</span></label>
             <label><input type="checkbox" data-st-opt="custom" /> 커스텀 스타일 요청 <span>×1.6</span></label>
             <label><input type="checkbox" data-st-opt="rush" /> 당일 급행 <span>×1.5</span></label>
           </div>
 
-          <button type="button" class="st-go" data-st-go>시연본 만들기</button>
+          <button type="button" class="st-go" data-st-go>고른 화면 다시 그리기</button>
           <p class="st-stat" data-st-stat>라이브러리를 불러오는 중…</p>
+
+          <!-- 적는 일은 선택으로 내린다.
+               맨 앞에 두면 "무엇을 원하는지 당신이 정하라"는 뜻이 되고,
+               결과가 마음에 안 들 때 잘못 적은 사람 탓이 된다. 그건 우리가
+               할 일을 고객에게 떠넘기는 것이다. 원하시는 분만 쓰시면 된다. -->
+          <details class="st-more">
+            <summary>원하는 장면이 따로 있으시면 적어 주세요 <span class="st-opt-tag">선택</span></summary>
+            <p class="st-help">안 적으셔도 됩니다. 위에서 고르시는 것이 기본입니다.</p>
+            <textarea id="stStory" data-st-story rows="2"
+              placeholder="예) 로비 미디어월에 걸 봄바람 빛 리본, 따뜻하고 화사하게"></textarea>
+            <div class="st-scenes" data-st-scenes></div>
+          </details>
         </div>
 
         <!-- 우: 결과 -->
         <div class="st-result">
-          <div class="st-stage">
-            <canvas data-st-canvas width="720" height="405" aria-label="시연본 미리보기"></canvas>
+          <div class="st-pick">
+            <div class="st-pick-head">
+              <p class="st-cuts-title st-pick-title">이 중에 마음에 드는 것이 있으신가요</p>
+              <span class="st-pick-acts">
+                <button type="button" class="st-pick-more" data-st-wall-more>다른 화면 보기</button>
+                <button type="button" class="st-pick-more is-primary" data-st-random>저희가 골라 드릴까요</button>
+              </span>
+            </div>
+            <div class="st-wall" data-st-wall></div>
+            <p class="st-help">누르면 크게 보입니다. 없으면 “다른 화면 보기”를 누르세요. 몇 번이든 됩니다.</p>
           </div>
-          <div class="st-chips" data-st-chips></div>
-          <p class="st-cuts-title">이 화면의 작품 번호</p>
-          <div class="st-code" data-st-cuts></div>
+
+          <!-- 고르기 전에는 감춰 둔다. 빈 검은 칸이 화면 절반을 차지하면
+               무엇을 해야 하는 자리인지 알 수 없다. -->
+          <div class="st-picked" data-st-picked hidden>
+            <div class="st-stage">
+              <canvas data-st-canvas width="720" height="405" aria-label="시연본 미리보기"></canvas>
+            </div>
+            <div class="st-chips" data-st-chips></div>
+            <p class="st-cuts-title">이 화면의 작품 번호</p>
+            <div class="st-code" data-st-cuts></div>
+          </div>
 
           <div class="st-load">
             <label for="stLoad">가지고 계신 작품 번호로 불러오기</label>
@@ -166,6 +184,6 @@
 
     <script src="./studio-engine.js?v=20260905-56" defer></script>
     <script src="./studio-gen.js?v=20260905-56" defer></script>
-    <script src="./studio.js?v=20260904g" defer></script>
+    <script src="./studio.js?v=20260905-pick" defer></script>
   </body>
 </html>

@@ -33,7 +33,12 @@
 .st-lead b { color: var(--st-ink); }
 
 .st-grid { display: grid; grid-template-columns: 400px 1fr; gap: 26px; align-items: start; }
-@media (max-width: 940px) { .st-grid { grid-template-columns: 1fr; } }
+@media (max-width: 940px) {
+  .st-grid { grid-template-columns: 1fr; }
+  /* 한 줄로 쌓이면 규격 고르는 폼이 먼저 나온다. 보여 주는 것이 본론인데
+     폼부터 내밀면 다시 "당신이 정하세요"가 된다. 고를 것을 먼저 올린다. */
+  .st-result { order: -1; }
+}
 
 .st-panelbox { background: var(--st-pale); border-radius: 12px; padding: 22px; }
 .st-label { display: block; font-weight: 700; font-size: .93rem; margin: 18px 0 8px; }
@@ -220,3 +225,155 @@
 }
 .st-load-row button:hover { background: #0a55aa; }
 .st-load-msg { margin: 7px 0 0; font-size: .78rem; color: #c0392b; min-height: 1em; }
+
+/* ── 골라 보는 자리 ─────────────────────────────────────────
+   적는 대신 고른다. 열두 장을 한눈에 놓고, 고른 것만 크게 움직인다. */
+.st-pick {
+  margin: 0 0 18px;
+}
+
+.st-pick-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.st-pick-head .st-cuts-title {
+  margin: 0;
+}
+
+.st-pick-more {
+  flex: none;
+  padding: 7px 14px;
+  border: 1px solid rgba(16, 54, 125, 0.28);
+  border-radius: 999px;
+  background: #fff;
+  color: #10367d;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+
+.st-pick-more:hover {
+  background: #eef3ff;
+  border-color: rgba(16, 54, 125, 0.5);
+}
+
+.st-wall {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.st-wall-item {
+  display: block;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #0b0f18;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+
+/* 폭을 100%로 늘리면 세로로 긴 화면이 옆으로 퍼진다.
+   제 비율을 지키면서 칸을 넘지만 않게 한다. */
+.st-wall-item canvas {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+.st-wall-item span {
+  display: block;
+  padding: 6px 8px 7px;
+  background: #101725;
+  color: #dbe4f6;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.st-wall-item:hover {
+  border-color: rgba(16, 54, 125, 0.55);
+  transform: translateY(-1px);
+}
+
+.st-wall-item.is-on {
+  border-color: #2f6ad8;
+}
+
+.st-wall-item.is-on span {
+  background: #2f6ad8;
+  color: #fff;
+}
+
+/* 적는 자리는 접어 둔다. 열어야 보이는 것이 곧 "안 하셔도 됩니다"라는 뜻이다. */
+.st-more {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(16, 54, 125, 0.12);
+}
+
+.st-more > summary {
+  cursor: pointer;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #44506a;
+  list-style: none;
+}
+
+.st-more > summary::-webkit-details-marker { display: none; }
+
+.st-more > summary::before {
+  content: "+ ";
+  color: #2f6ad8;
+  font-weight: 800;
+}
+
+.st-more[open] > summary::before { content: "− "; }
+
+.st-more > summary:hover { color: #10367d; }
+
+@media (max-width: 900px) {
+  .st-wall { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 560px) {
+  .st-wall { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .st-pick-head { flex-wrap: wrap; }
+}
+
+.st-pick-acts {
+  display: inline-flex;
+  gap: 8px;
+  flex: none;
+}
+
+.st-pick-more.is-primary {
+  background: #10367d;
+  border-color: #10367d;
+  color: #fff;
+}
+
+.st-pick-more.is-primary:hover {
+  background: #14418f;
+  border-color: #14418f;
+}
+
+/* 고르는 자리가 이 화면의 본론이다. 제목을 그만큼 키운다. */
+.st-pick-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #14203a;
+}
+
+/* 고르기 전에는 큰 화면을 내보내지 않는다 */
+.st-picked[hidden] { display: none; }

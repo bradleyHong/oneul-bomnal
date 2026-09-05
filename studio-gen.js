@@ -336,6 +336,10 @@
   };
 
   Gen.prototype.watermark = function (ctx, W, H) {
+    /* 1:6 기둥 미리보기처럼 칸이 좁으면 글자가 들어갈 자리가 없어
+       "…픽아트"로 잘린다. 잘린 이름을 보이느니 안 보이는 편이 낫다.
+       이 크기에서는 가져가 봐야 쓸 데도 없다. */
+    if (W < 130) return;
     var fs = Math.max(9, Math.round(Math.min(W / 22, H / 22, 26)));
     ctx.font = "700 " + fs + "px Pretendard, sans-serif";
     while (fs > 8 && ctx.measureText(this.mark).width > W * 0.82) {
