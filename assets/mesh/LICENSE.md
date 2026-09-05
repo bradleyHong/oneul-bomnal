@@ -17,8 +17,8 @@
 ## 받아 둔 것
 
 출처: [KhronosGroup/glTF-Sample-Assets](https://github.com/KhronosGroup/glTF-Sample-Assets)
-꽃 하나만 [mrdoob/three.js](https://github.com/mrdoob/three.js/tree/dev/examples/models/gltf/Flower) 에서 받았다.
-그 폴더의 README 가 "Model by Kenney, from Nature Pack. CC0 1.0." 이라고 적고 있다.
+꽃과 로봇은 [mrdoob/three.js](https://github.com/mrdoob/three.js/tree/dev/examples/models/gltf/Flower) 에서 받았다.
+각 폴더의 README 가 CC0 1.0 을 적고 있다(꽃: Kenney Nature Pack · 로봇: Tomás Laulhé, "consider supporting the creator's Patreon").
 Kenney 의 Nature Pack 은 원래 CC0 로 배포되는 묶음이다. 다른 에셋 사이트(kenney.nl,
 polyhaven, quaternius, sketchfab)는 이 작업 환경에서 막혀 있어 받지 못했다.
 
@@ -36,6 +36,8 @@ polyhaven, quaternius, sketchfab)는 이 작업 환경에서 막혀 있어 받�
 | `SheenChair.json` | 의자 | © 2020, Wayfair, LLC | CC0 1.0 Universal | 2026-09-05 | 540 · 572 |
 | `Suzanne.json` | 원숭이 두상 | © 2017, UX3D | CC0 1.0 Universal | 2026-09-05 | 551 · 572 |
 | `WaterBottle.json` | 물병 | © 2017, Public (Microsoft) | CC0 1.0 Universal | 2026-09-05 | 502 · 480 |
+| `SheenCloth.json` | 천 | © 2020, Microsoft | CC0 1.0 Universal | 2026-09-05 | 481 · 527 |
+| `RobotExpressive.json` | 로봇 | © Tomás Laulhé (Quaternius) · three.js 에 실린 판, Don McCurdy 가 손봄 | CC0 1.0 Universal | 2026-09-05 | 548 · 563 |
 
 CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/legalcode
 

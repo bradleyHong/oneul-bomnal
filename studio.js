@@ -432,7 +432,10 @@
      * 한 장씩 정지 화면으로만 그린다. 고른 것만 움직인다. */
     /* 좁은 화면에서 열두 칸은 여섯 줄이 되어 그것만으로 화면 세 개
        분량이다. 절반만 내놓고 "다른 화면 보기"로 넘기게 한다. */
-    function wallCount() { return window.innerWidth <= 640 ? 6 : 12; }
+    /* 손전화도 열두 장. 여섯 장으로 줄였던 것은 칸이 비율대로라 길게
+       쌓였기 때문인데, 이제 칸이 정사각이라 두 줄 여섯 칸이면 된다.
+       뽑을 것이 적으면 하트 누를 것도 적다. */
+    function wallCount() { return 12; }
     var elWall = $("[data-st-wall]", root);
     var wallItems = [];
 
@@ -539,6 +542,11 @@
     /** 칸 하나. 그림 한 장 · 이름 · 하트. */
     function wallCell(it) {
       var wrap = el("div", "st-wall-cell");
+      /* 손전화의 정사각 칸에서: 16:9 나 4:3 처럼 정사각에 가까운 그림은
+         칸을 가득 채우고(가장자리가 조금 잘린다), 1:6 기둥이나 32:9 띠는
+         통째로 보인다. 띠를 가득 채우면 한가운데 한 토막만 남아 무슨
+         그림인지 알 수 없다. */
+      wrap.dataset.fit = (it.ar > 0.6 && it.ar < 2.2) ? "cover" : "contain";
       var b = el("button", "st-wall-item");
       b.type = "button";
       /* 실제 비율 그대로 그린다. 높이만 잘라 맞추면 1:6 기둥이 0.71로
