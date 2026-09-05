@@ -173,12 +173,15 @@
   /* 글자·격자 계열. 격자로 채우는 것들은 기둥에도 띠에도 잘 맞는다.
      자모는 가운데 글자 한 자라 어느 쪽에도 넣지 않는다. 활자판과 신호는
      가로로 늘어서는 그림이라 띠에만 넣는다. */
-  var ART_TALL = ART_TALL_V2.concat(["segment", "asciiart", "desordre"]);
+  var ART_TALL = ART_TALL_V2.concat(["segment", "asciiart", "desordre",
+                                   /* 낙화는 위에 줄 하나, 아래로 쏟아지는 그림이라
+                                      기둥에 그대로 맞는다 */
+                                   "nakhwa"]);
   var ART_WIDE = ART_WIDE_V2.concat(["pdu", "barcode", "segment", "asciiart", "desordre",
                                    /* 액자는 넓은 어둠에 작은 빛 하나라 띠에서 오히려 산다 */
                                    "frame",
                                    /* 띠그림은 애초에 가로로 흐르는 그림이다. 32:9 가 제 자리다. */
-                                   "frieze", "hardedge"]);
+                                   "frieze", "hardedge", "nakhwa"]);
 
   function withPrefix(list, have) {
     have = have || artIds();

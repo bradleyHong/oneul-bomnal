@@ -382,7 +382,9 @@ function create(canvas, opts) {
                        pointcloud: 1,
                        /* 명암은 삼각형 수백 개를 하나씩 채운다. 같은 병이다.
                           번짐을 한 번에 얹는 편이 촛불빛에도 맞는다. */
-                       chiaroscuro: 1 };
+                       chiaroscuro: 1,
+                       /* 낙화는 불티를 천 개 넘게 찍는다. 같은 병이다. */
+                       nakhwa: 1 };
 
   let bloomBuf = null;
   function applyBloom(strength) {
@@ -3196,6 +3198,88 @@ function create(canvas, opts) {
       }
     },
 
+    /* 78 낙화 — 줄에 매단 불씨가 아래로 쏟아진다.
+       함안 무진정, 안동 하회의 줄불놀이가 하는 일이다. 가로로 걸린 줄
+       하나에서 불티가 끝없이 떨어지고, 위쪽 하늘은 통째로 비어 있다.
+       검은 바탕에 빛 하나로 그린다는 우리 규칙과 처음부터 같은 자리다.
+
+       처음에는 곧은 그라데이션 막대로 흘러내림을 그렸는데 너무 깨끗해서
+       빗줄기처럼 보였다. 낙화의 질감은 선이 아니라 알갱이다. 불티를
+       수천 개 찍고, 그 알갱이가 모여 줄기로 보이게 한다.
+
+       불티는 저마다 제 주기로 떨어진다. 주기를 한 바퀴의 정수분의 일로
+       두면 마지막 장이 첫 장과 그대로 맞는다. */
+    nakhwa(t) {
+      const ph = t / DUR;
+      const lineY = H * (0.19 + seeds[880].a * 0.12);
+      /* 매단 자리 수는 화면 폭에 따라 늘린다. 32:9 띠에 16:9 만큼만
+         걸었더니 줄 사이가 너무 벌어져 성기게 보였다. */
+      const em = Math.round((12 + k.density * 34) * clamp(W / H / (16 / 9), 0.7, 2.6));
+      const per = 44 + Math.round(k.density * 96);      /* 줄 하나가 뿌리는 불티 */
+      const gap = W / em;
+      ctx.globalCompositeOperation = ADD;
+
+      /* 불티. 앞뒤로 겹쳐 보이게 밝기별로 나눠 칠한다. */
+      const BUCK = 6;
+      for (let b = 0; b < BUCK; b++) {
+        const lo = b / BUCK, hi = (b + 1) / BUCK;
+        const mid = (b + 0.5) / BUCK;
+        ctx.fillStyle = tone(mid > 0.80 ? 0 : mid > 0.46 ? 1 : 2,
+                             Math.min(0.96, (0.08 + 0.92 * mid) * k.contrast));
+        for (let i = 0; i < em; i++) {
+          const es = seeds[(i * 3 + 601) % seeds.length];
+          if (es.c < 0.24) continue;                    /* 줄에도 성긴 데가 있다 */
+          const sway = Math.sin(ph * TAU + es.a * TAU) * gap * 0.30;
+          const x0 = (i + 0.5) * gap + (es.b - 0.5) * gap * 0.7 + sway;
+          const reach = H * (0.14 + es.d * 0.62);        /* 이 줄기가 닿는 깊이 */
+          for (let j = 0; j < per; j++) {
+            const s = seeds[(i * 37 + j * 7 + 20) % seeds.length];
+            const s2 = seeds[(i * 37 + j * 7 + 21) % seeds.length];
+            /* 한 바퀴에 정수 번 떨어진다. 정수라야 이음매가 맞는다. */
+            const cyc = 1 + Math.floor(s.a * 3);
+            const u = (ph * cyc + s.b) % 1;
+            /* 식는 정도. 갓 떨어진 것이 가장 밝고, 알갱이마다 다르다.
+               제곱으로 식혔더니 절반쯤 내려가기도 전에 다 꺼져서 불티가
+               줄 밑에만 뭉쳤다. 실제 낙화는 바닥 가까이까지 살아 있다. */
+            const heat = Math.pow(1 - u, 1.15) * (0.42 + 0.58 * s2.a);
+            if (Math.floor(clamp(heat, 0, 0.999) * BUCK) !== b) continue;
+            /* 아래로 갈수록 빨라지고, 옆으로도 조금씩 벌어진다 */
+            const y = lineY + Math.pow(u, 1.25) * reach * (0.6 + s.c * 1.1);
+            const x = x0 + (s.d - 0.5) * gap * 0.55 + (s2.b - 0.5) * gap * 0.9 * u;
+            const r = Math.max(1.1, S * (1.3 + s2.c * 2.6) * (1 - u * 0.35));
+            /* 네모가 아니라 세로로 늘인 막대로 찍는다. 빠를수록 길어져
+               저절로 흐른 자국이 된다. 점만 찍었을 때는 눈발처럼 보였다. */
+            const len = r * (1 + u * 7);
+            ctx.fillRect(x - r * 0.5, y - len * 0.5, r, len);
+          }
+        }
+      }
+
+      /* 줄 — 불씨가 매달린 자리.
+         곧은 밝은 막대 하나로 그었더니 형광등처럼 보였다. 실제로는
+         타는 봉지 하나하나가 따로 빛난다. 매단 자리마다 점을 찍고,
+         줄 자체는 아주 옅게만 남긴다. */
+      ctx.fillStyle = tone(2, 0.06 + 0.10 * k.glow);
+      ctx.fillRect(0, lineY - Math.max(1, S * 1.2), W, Math.max(1.5, S * 2.4));
+      for (let i = 0; i < em; i++) {
+        const es = seeds[(i * 3 + 601) % seeds.length];
+        if (es.c < 0.24) continue;
+        const sway = Math.sin(ph * TAU + es.a * TAU) * gap * 0.30;
+        const x0 = (i + 0.5) * gap + (es.b - 0.5) * gap * 0.7 + sway;
+        /* 봉지마다 제 박자로 타오른다 */
+        const fl = 0.55 + 0.45 * Math.sin(ph * TAU * (2 + Math.floor(es.d * 3)) + es.b * TAU);
+        const R = Math.max(2, S * (3 + es.d * 5));
+        const g2 = ctx.createRadialGradient(x0, lineY, 0, x0, lineY, R * 2.6);
+        g2.addColorStop(0, tone(0, Math.min(0.95, (0.45 + 0.45 * k.glow) * k.contrast * fl)));
+        g2.addColorStop(0.45, tone(1, 0.22 * k.contrast * fl));
+        g2.addColorStop(1, tone(1, 0));
+        ctx.fillStyle = g2;
+        ctx.fillRect(x0 - R * 2.6, lineY - R * 2.6, R * 5.2, R * 5.2);
+      }
+
+      ctx.globalCompositeOperation = "source-over";
+    },
+
   };
 
   /* ── 마감 처리 ────────────────────────────────────────────────
@@ -3310,7 +3394,7 @@ const STYLE_LABELS = [
 
   ["chiaroscuro", "명암"], ["frame", "액자"],
 
-  ["frieze", "띠그림"], ["hardedge", "색면"],
+  ["frieze", "띠그림"], ["hardedge", "색면"], ["nakhwa", "낙화"],
 ];
 
 global.StudioArt = {

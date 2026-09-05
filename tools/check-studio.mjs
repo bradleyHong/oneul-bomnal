@@ -77,6 +77,19 @@ for (const key of ["ART_TALL", "ART_WIDE"]) {
   }
 }
 
+/* 씨앗 배열을 넘어서 집는 곳.
+   seeds 는 900칸이다. seeds[980] 처럼 넘겨 집으면 undefined 가 나와
+   그 스타일이 통째로 터진다. 숫자로 박힌 자리는 여기서 막는다.
+   계산해서 집는 자리(seeds[i * 7 + 200] 같은 것)는 밀도와 화면 규격에
+   따라 넘어가므로 여기서는 알 수 없다. 그건 tools/check-sizes.mjs 가
+   실제로 그려 보며 잡는다 — 칠획 32:9, 자모 1:6 을 거기서 잡았다. */
+{
+  const SEEDS = 900;
+  for (const m of art.matchAll(/seeds\[\s*(\d+)\s*\]/g)) {
+    if (+m[1] >= SEEDS) fails.push(`seeds[${m[1]}] — 씨앗은 ${SEEDS}칸뿐이다 (그 스타일이 터진다)`);
+  }
+}
+
 /* 이미 나간 작품 번호를 지키는 표지.
    BN2- 번호는 엔진 목록의 앞 64종만 본다(studio-gen.js의 ART_V2_COUNT).
    중간에 하나 끼워 넣으면 그 뒤가 통째로 밀려 팔린 번호가 다른 그림이
