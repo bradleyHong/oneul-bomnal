@@ -150,9 +150,14 @@
    * 가운데로 모이는 그림(만다라·궤도·리사주)을 1:6 기둥에 걸면 위아래가
    * 통째로 빈다. 실제로 그렇게 나왔다. */
   var ART_TALL = ["hanji", "smoke", "dotmatrix", "weave", "terrace", "stripe", "branch",
-                  "rain", "bamboo", "flock", "bloom", "inkwash", "thread", "paper"];
+                  "rain", "bamboo", "flock", "bloom", "inkwash", "thread", "paper",
+                  /* VJ 풍 중 세로로 흐르거나 줄로 서는 것 */
+                  "bars", "chevron", "strobe", "plasma"];
   var ART_WIDE = ["moire", "oscillo", "slitscan", "dotmatrix", "weave", "terrace", "blinds",
-                  "stripe", "lowpoly", "hanji", "wave", "warp", "topo", "magnet", "isocity"];
+                  "stripe", "lowpoly", "hanji", "wave", "warp", "topo", "magnet", "isocity",
+                  /* 가운데로 모이는 터널·만화경·폭발은 넣지 않는다.
+                     32:9 에 걸면 가운데만 차고 좌우가 통째로 빈다. */
+                  "bars", "chevron", "strobe", "plasma", "flythrough"];
   function withPrefix(list) {
     var have = artIds();
     return list.map(function (id) { return ART_PREFIX + id; })
