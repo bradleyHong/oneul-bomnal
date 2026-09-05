@@ -96,7 +96,12 @@
       elW.disabled = elH.disabled = !custom;
       if (!custom) { elW.value = p.w; elH.value = p.h; }
       var box = elCanvas.parentNode;
-      var maxW = box.clientWidth || 720;
+      /* clientWidth 는 안쪽 여백까지 센다. 담는 칸이 좌우 18px씩 물고
+         있어서 36px 더 넓게 잡았고, max-width: 100% 가 폭만 눌러
+         16:9 가 1.60 으로 찌그러졌다. 여백을 빼고 잰다. */
+      var cs = window.getComputedStyle(box);
+      var pad = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+      var maxW = Math.max(80, (box.clientWidth || 720) - pad);
       var maxH = 420;
       var sc = Math.min(maxW / p.w, maxH / p.h, 1);
       elCanvas.width = Math.round(p.w * sc * 2) / 2;
@@ -210,7 +215,7 @@
           ? '<p class="st-code-sub">직접 적으신 문장으로 만든 번호입니다. 나중에 부르실 때는 문장도 함께 적어 주세요.</p>'
           : '<p class="st-code-sub">번호를 복사해 두시면 언제든 이 화면으로 돌아옵니다.</p>');
 
-      elGo.textContent = "다시 만들기";
+      elGo.textContent = "고른 화면 다시 그리기";
       updateQuote();
     }
 
@@ -253,6 +258,7 @@
     elPanel.addEventListener("change", function () {
       syncPanel();
       if (spec) make();          // 비율이 바뀌면 어울리는 그림도 달라진다
+      wallDraw();                // 보여 주는 열두 장도 그 비율로 다시 그린다
     });
     [elW, elH, elSec].forEach(function (n) { n.addEventListener("input", updateQuote); });
     Array.prototype.forEach.call(root.querySelectorAll("[data-st-opt]"), function (n) {
@@ -275,9 +281,13 @@
       elScenes.appendChild(b);
     });
 
-    $("[data-st-random]", root).addEventListener("click", function () {
+    /* 표식 하나가 없어졌다고 나머지 화면이 통째로 죽으면 안 된다.
+       실제로 버튼을 옮기다가 여기서 멈춰 고르는 자리가 빈 채로 떴다. */
+    var elRandom = $("[data-st-random]", root);
+    if (elRandom) elRandom.addEventListener("click", function () {
       elStory.value = "";
       make(Math.floor(Math.random() * SCENES.length));
+      if (typeof wallMark === "function") wallMark();
     });
 
     // 숫자키로도 고를 수 있다. 1~9 그리고 0.
@@ -314,6 +324,11 @@
       }
       if (p2.idx !== CUSTOM && p2.idx >= SCENES.length) {
         elLoadMsg.textContent = "확인되지 않는 번호입니다. 다시 확인해 주세요.";
+        return;
+      }
+      if (isSold(p2.idx, p2.seed, p2.v)) {
+        elLoadMsg.textContent =
+          "이미 다른 곳에 납품된 화면입니다. 같은 화면은 두 곳에 드리지 않습니다. 다른 화면을 골라 주세요.";
         return;
       }
       elLoadMsg.textContent = "";
@@ -396,8 +411,253 @@
       });
     }
 
+    /* ── 골라 보는 자리 ───────────────────────────────────────
+     *
+     * 문장을 적게 하는 것은 "무엇을 원하는지 당신이 정하라"는 뜻이다.
+     * 담당자는 미디어아트를 어떻게 만들지 정하려고 우리를 부른 것이지,
+     * 그걸 글로 설명하려고 부른 게 아니다. 잘못 적었다고 탓할 수도 없다.
+     * 그래서 기본 경로를 "적기"에서 "고르기"로 바꿨다.
+     *
+     * 열두 장을 한 번에 그린다. 열두 장을 다 움직이면 노트북 팬이 도니
+     * 한 장씩 정지 화면으로만 그린다. 고른 것만 움직인다. */
+    var WALL_N = 12;
+    var elWall = $("[data-st-wall]", root);
+    var wallItems = [];
+
+    /* ── 이미 팔린 번호 ───────────────────────────────────────
+     *
+     * 한 화면을 두 곳에 팔면 안 된다. 기관 A의 로비에 걸린 화면이 기관 B의
+     * 외벽에도 걸려 있으면, 우리가 판 것이 "그 화면"이 아니었다는 뜻이 된다.
+     *
+     * 목록은 sold-codes.json 이고 결제가 확정되면 tools/mark-sold.mjs 로
+     * 채운다. 못 읽어도 화면은 그냥 돈다. 목록을 못 읽었다고 스튜디오가
+     * 멈추면 팔 수 있는 것까지 못 판다. */
+    var soldSet = null;                 /* null = 아직 못 읽음 */
+    function isSold(idx, seed, v) {
+      if (!soldSet) return false;
+      return soldSet[code(idx, seed, v)] === true;
+    }
+    fetch("./sold-codes.json", { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (!d || !Array.isArray(d.codes)) return;
+        soldSet = {};
+        d.codes.forEach(function (c) {
+          var k = typeof c === "string" ? c : (c && c.code);
+          if (k) soldSet[String(k).trim().toUpperCase()] = true;
+        });
+        wallDraw();                     /* 목록이 늦게 와도 팔린 것은 걷어낸다 */
+      })
+      .catch(function () { /* 목록이 없어도 그냥 판다 */ });
+
+    /* ── 담아 둔 화면 (하트) ──────────────────────────────────
+     *
+     * 열두 장을 넘기다 보면 앞서 본 마음에 드는 것을 잃어버린다. 씨앗이
+     * 매번 새로 나오기 때문에 뒤로 가기로도 못 돌아온다. 하트를 누르면
+     * 이 브라우저에 남겨 두었다가 다시 보여 준다.
+     *
+     * 서버에 두지 않는다. 로그인 없이 쓰는 화면이라 누구 것인지 알 수
+     * 없고, 알 필요도 없다. */
+    var HEART_KEY = "bomnal.hearts.v1";
+    var HEART_MAX = 60;
+    var hearts = [];
+    try {
+      var raw = localStorage.getItem(HEART_KEY);
+      if (raw) hearts = JSON.parse(raw) || [];
+      if (!Array.isArray(hearts)) hearts = [];
+    } catch (e) { hearts = []; }
+
+    function heartSave() {
+      try { localStorage.setItem(HEART_KEY, JSON.stringify(hearts.slice(0, HEART_MAX))); }
+      catch (e) { /* 사생활 보호 모드면 저장이 막힌다. 이번 방문에만 남는다 */ }
+    }
+    function heartKey(it) { return it.idx + ":" + it.seed + ":" + (it.v || CODE_V); }
+    function heartHas(it) {
+      var k = heartKey(it);
+      return hearts.some(function (h) { return heartKey(h) === k; });
+    }
+    function heartToggle(it) {
+      var k = heartKey(it);
+      var was = hearts.length;
+      hearts = hearts.filter(function (h) { return heartKey(h) !== k; });
+      if (hearts.length === was) {
+        hearts.unshift({ idx: it.idx, seed: it.seed, v: it.v || CODE_V, ar: it.ar, ko: SCENES[it.idx] ? SCENES[it.idx].ko : "" });
+        if (hearts.length > HEART_MAX) hearts.pop();
+      }
+      heartSave();
+      heartDraw();
+      return heartHas(it);
+    }
+
+    function wallDraw() {
+      if (!elWall) return;
+      var pn = currentPanel();
+      var ar = pn.w / pn.h;
+      elWall.innerHTML = "";
+      wallItems = [];
+      /* 느낌을 골고루 돌린다. 같은 느낌 열둘을 보여 주면 "다 비슷하다"가
+         된다. 시작 자리를 매번 옮겨 다시 눌러도 같은 열둘이 안 나온다. */
+      var off = Math.floor(Math.random() * SCENES.length);
+      for (var i = 0; i < WALL_N; i++) {
+        var idx = (off + i) % SCENES.length;
+        /* 이미 팔린 번호는 내놓지 않는다. 씨앗이 52만 개라 부딪히는 일이
+           드물지만, 부딪히면 다른 씨앗으로 옮긴다.
+           끝내 못 피하면 그 칸을 비운다. 처음에는 몇 번 해 보고 그냥
+           내놓게 두었는데, 그러면 이미 판 화면을 다시 내미는 셈이다.
+           열한 칸을 보여 주는 편이 낫다. 여기서 무한히 돌면 화면이 멈춘다. */
+        var seed = newSeed();
+        var tries = 0;
+        while (tries < 12 && isSold(idx, seed, CODE_V)) { seed = newSeed(); tries++; }
+        if (isSold(idx, seed, CODE_V)) continue;
+        var it = { idx: idx, seed: seed, ar: ar, v: CODE_V };
+        wallItems.push(it);
+        elWall.appendChild(wallCell(it));
+      }
+      /* 열두 칸이 모두 팔린 번호에 걸리는 일은 씨앗이 52만 개라 거의 없다.
+         그래도 빈 자리만 덩그러니 두면 고장 난 화면으로 보인다. */
+      if (!wallItems.length) {
+        var none = el("p", "st-help");
+        none.textContent = "지금은 보여 드릴 화면을 찾지 못했습니다. “다른 화면 보기”를 한 번 더 눌러 주세요.";
+        elWall.appendChild(none);
+      }
+      wallMark();
+    }
+
+    /** 칸 하나. 그림 한 장 · 이름 · 하트. */
+    function wallCell(it) {
+      var wrap = el("div", "st-wall-cell");
+      var b = el("button", "st-wall-item");
+      b.type = "button";
+      /* 실제 비율 그대로 그린다. 높이만 잘라 맞추면 1:6 기둥이 0.71로
+         뭉개져, 현장에서 어떻게 보일지 알 수 없는 그림이 된다.
+         세로로 길면 높이를 먼저 묶고 거기서 폭을 구한다. */
+      var c = document.createElement("canvas");
+      var tw = 300, th = Math.round(tw / it.ar);
+      if (th > 260) { th = 260; tw = Math.max(24, Math.round(th * it.ar)); }
+      c.width = tw;
+      c.height = th;
+      b.appendChild(c);
+      b.appendChild(el("span", null, SCENES[it.idx].ko));
+      b.title = SCENES[it.idx].ko + " · 눌러서 크게 보기";
+      wrap.appendChild(b);
+
+      var one = new GEN.Gen(c);
+      one.set(GEN.compose(SCENES[it.idx].text, it.seed, it.ar, it.v));
+      one.draw(1.7);                 /* 한 장만. 열두 칸이 다 움직이면 아무것도 못 본다 */
+
+      b.addEventListener("click", function () {
+        elStory.value = "";
+        make(it.idx, it.seed, false, it.v);
+        wallMark();
+        showPicked();
+      });
+
+      /* 하트는 칸을 고르는 것과 다른 일이다. 버튼 안에 버튼을 넣을 수
+         없어 형제로 띄운다. */
+      var hb = el("button", "st-heart");
+      hb.type = "button";
+      hb.setAttribute("aria-label", "이 화면 담아두기");
+      hb.textContent = "♥";
+      hb.classList.toggle("is-on", heartHas(it));
+      hb.setAttribute("aria-pressed", heartHas(it) ? "true" : "false");
+      hb.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var on = heartToggle(it);
+        hb.classList.toggle("is-on", on);
+        hb.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+      wrap.appendChild(hb);
+      return wrap;
+    }
+
+    /* ── 담아 둔 화면 다시 보기 ─────────────────────────────── */
+    var elHeartWrap = $("[data-st-hearts-wrap]", root);
+    var elHearts = $("[data-st-hearts]", root);
+    var elHeartCount = $("[data-st-heart-count]", root);
+
+    function heartDraw() {
+      if (!elHearts) return;
+      if (elHeartCount) elHeartCount.textContent = hearts.length ? String(hearts.length) : "";
+      if (elHeartWrap) elHeartWrap.hidden = hearts.length === 0;
+      elHearts.innerHTML = "";
+      hearts.forEach(function (h) {
+        var it = { idx: h.idx, seed: h.seed, v: h.v || CODE_V, ar: h.ar || 16 / 9 };
+        var cell = wallCell(it);
+        /* 담아 둔 뒤에 팔렸을 수 있다. 그대로 두면 살 수 없는 화면을
+           계속 보여 주게 된다. */
+        if (isSold(it.idx, it.seed, it.v)) {
+          cell.classList.add("is-sold");
+          cell.appendChild(el("span", "st-sold-tag", "판매 완료"));
+        }
+        elHearts.appendChild(cell);
+      });
+    }
+
+    function wallMark() {
+      Array.prototype.forEach.call(elWall ? elWall.children : [], function (cell, i) {
+        var it = wallItems[i];
+        var on = !!(spec && it && spec.seed === it.seed && spec.idx === it.idx);
+        var b = cell.querySelector(".st-wall-item");
+        if (b) b.classList.toggle("is-on", on);
+      });
+    }
+
+    /* ── 고른 화면 크게 보기 ──────────────────────────────────
+     *
+     * 좁은 화면에서는 큰 미리보기를 아래에 붙여 두면 고르는 자리가 저 위로
+     * 밀려난다. 한 장 보고 다시 고르러 올라가는 데 두 번 스크롤한다.
+     * 그래서 좁을 때는 덮어서 띄우고, 닫으면 고르던 자리에 그대로 있다. */
+    var NARROW = 940;
+    function isNarrow() { return window.innerWidth <= NARROW; }
+
+    function showPicked() {
+      var picked = $("[data-st-picked]", root);
+      if (!picked) return;
+      picked.hidden = false;
+      if (isNarrow()) {
+        document.body.classList.add("st-sheet-open");
+        picked.classList.add("is-sheet");
+        picked.scrollTop = 0;
+      } else {
+        picked.classList.remove("is-sheet");
+        var stage = root.querySelector(".st-stage");
+        if (stage && stage.scrollIntoView) stage.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      /* 감춰져 있는 동안에는 담는 칸의 폭이 0이라 720px로 잡아 두었다가,
+         보이는 순간 폭에 눌려 16:9가 0.80으로 찌그러졌다. 자리가 잡힌
+         뒤에 다시 잰다. */
+      requestAnimationFrame(syncPanel);
+    }
+
+    function hidePicked() {
+      var picked = $("[data-st-picked]", root);
+      if (!picked) return;
+      picked.classList.remove("is-sheet");
+      document.body.classList.remove("st-sheet-open");
+      if (isNarrow()) picked.hidden = true;
+    }
+
+    var elSheetClose = $("[data-st-sheet-close]", root);
+    if (elSheetClose) elSheetClose.addEventListener("click", hidePicked);
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") hidePicked();
+    });
+    /* 넓혀 놓고 보면 덮개가 남아 있으면 안 된다 */
+    window.addEventListener("resize", function () {
+      if (!isNarrow()) {
+        var picked = $("[data-st-picked]", root);
+        if (picked) picked.classList.remove("is-sheet");
+        document.body.classList.remove("st-sheet-open");
+      }
+    });
+
+    var elWallMore = $("[data-st-wall-more]", root);
+    if (elWallMore) elWallMore.addEventListener("click", wallDraw);
+
     elStat.textContent =
-      "누를 때마다 새 화면이 나옵니다. 같은 문장이라도 매번 다르게 그립니다.";
+      "고르신 화면은 누를 때마다 다시 그립니다. 같은 느낌이라도 매번 다르게 나옵니다.";
     syncPanel();
+    wallDraw();
+    heartDraw();
   });
 })();
