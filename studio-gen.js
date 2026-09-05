@@ -210,10 +210,14 @@ var SCENES = [
    * 않는다. 걸면 가운데만 차고 나머지가 통째로 빈다. */
   var ART_TALL = ART_TALL_V3.concat([
     /* 잎맥과 갈대는 아래에서 올라오는 그림이라 기둥에 맞는다 */
-    "leafvein", "reed"]);
+    "leafvein", "reed",
+    /* 꽃눈은 위에서 내리고, 유화는 밭이라 어디든 찬다 */
+    "petalfall", "impasto"]);
   var ART_WIDE = ART_WIDE_V3.concat([
     /* 갈대밭은 옆으로 넓을수록 살고, 민들레는 홀씨가 옆으로 날아간다 */
-    "reed", "dandelion"]);
+    "reed", "dandelion",
+    /* 파도와 회랑은 수평선이 있는 그림이라 띠에 산다. 꽃눈·유화는 밭 */
+    "petalfall", "ocean", "impasto", "renaissance"]);
 
   function withPrefix(list, have) {
     have = have || artIds();

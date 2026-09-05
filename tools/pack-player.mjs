@@ -26,7 +26,9 @@ const read = (f) => readFileSync(join(root, f), "utf8");
 let html = read("play.html");
 for (const f of ["studio-meshes.js", "studio-engine.js", "studio-gen.js"]) {
   const src = read(f).replace(/<\/script>/gi, "<\\/script>");
-  html = html.replace(`<script src="./${f}"></script>`, `<script>/* ${f} */\n${src}\n</script>`);
+  /* 주소 뒤의 ?v= 캐시 표지는 무시한다 */
+  html = html.replace(new RegExp(`<script src="\\./${f.replace(".", "\\.")}(\\?[^"]*)?"></script>`),
+                      () => `<script>/* ${f} */\n${src}\n</script>`);
 }
 
 /* 계약된 번호면 목록을 안에 박는다. fetch 가 file:// 에서 막히므로 미리 넣는다. */
