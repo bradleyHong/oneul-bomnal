@@ -166,9 +166,10 @@
        결제하면 같은 번호로 그려 준다고 화면에 적어 놨으므로, 늘릴 때마다
        판을 올리고 옛 번호는 옛 목록으로 그린다.
          BN-  1판  기본 14종
-         BN2- 2판  + 엔진 64종
-         BN3- 3판  + 3D 뼈대 3종 */
-    var CODE_V = 3;
+         BN2- 2판  + 엔진 56종
+         BN3- 3판  + 엔진 78종 (3D·글자·액자·띠그림·색면·낙화까지)
+         BN4- 4판  + 식물 5종 */
+    var CODE_V = 4;
     function code(idx, seed, v) {
       var n = (((idx & 31) << 19) | (seed & 0x7FFFF)) >>> 0;
       var vv = v || CODE_V;
@@ -190,7 +191,7 @@
       return idx === CUSTOM ? (elStory.value || "").trim() : SCENES[idx].text;
     }
 
-    function make(idx, seed, fromHistory, v) {
+    function make(idx, seed, fromHistory, v, style) {
       if (idx == null) idx = sceneIdx;
       if (v == null) v = CODE_V;          /* 새로 만드는 것은 늘 최신 판 */
       var story = storyOf(idx);
@@ -199,6 +200,9 @@
       var pn = currentPanel();
       var sd = seed == null ? newSeed() : seed;
       spec = GEN.compose(story, sd, pn.w / pn.h, v);
+      /* 담아 둔 화면에서 왔으면 그때 그린 스타일로. 판 목록이 밀려도
+         고객이 본 그림이 그대로 열린다. */
+      if (style && GEN.hasStyle(style)) spec.style = style;
       spec.idx = idx;
       spec.v = v;
       gen.set(spec).start();
@@ -327,7 +331,7 @@
     var elLoadMsg = $("[data-st-load-msg]", root);
     function loadCode() {
       var p2 = parseCode(elLoad.value);
-      if (!p2) { elLoadMsg.textContent = "BN3- 또는 BN2-, BN- 으로 시작하는 번호를 넣어 주세요."; return; }
+      if (!p2) { elLoadMsg.textContent = "BN4-, BN3-, BN2-, BN- 으로 시작하는 번호를 넣어 주세요."; return; }
       if (p2.idx === CUSTOM && !(elStory.value || "").trim()) {
         elLoadMsg.textContent = "직접 적으신 문장으로 만든 번호입니다. 그 문장을 아래에 적어 주세요.";
         return;
@@ -496,7 +500,10 @@
       var was = hearts.length;
       hearts = hearts.filter(function (h) { return heartKey(h) !== k; });
       if (hearts.length === was) {
-        hearts.unshift({ idx: it.idx, seed: it.seed, v: it.v || CODE_V, ar: it.ar, ko: SCENES[it.idx] ? SCENES[it.idx].ko : "" });
+        /* 그린 스타일 이름도 같이 남긴다. 판 목록이 밀려도(한 번 그랬다)
+           담아 둔 그림은 그 이름으로 다시 그려 그대로 나온다. */
+        hearts.unshift({ idx: it.idx, seed: it.seed, v: it.v || CODE_V, ar: it.ar,
+                         style: it.style || "", ko: SCENES[it.idx] ? SCENES[it.idx].ko : "" });
         if (hearts.length > HEART_MAX) hearts.pop();
       }
       heartSave();
@@ -563,12 +570,18 @@
       wrap.appendChild(b);
 
       var one = new GEN.Gen(c);
-      one.set(GEN.compose(SCENES[it.idx].text, it.seed, it.ar, it.v));
+      var sp = GEN.compose(SCENES[it.idx].text, it.seed, it.ar, it.v);
+      /* 담아 둘 때 적어 둔 스타일이 있고 지금도 그릴 줄 알면 그걸 쓴다.
+         compose 는 스타일을 고를 때 난수를 딱 한 번 쓰므로, 스타일만
+         바꿔 끼워도 색·느낌·나머지 값은 그대로다. */
+      if (it.style && GEN.hasStyle(it.style)) sp.style = it.style;
+      it.style = sp.style;
+      one.set(sp);
       one.draw(1.7);                 /* 한 장만. 열두 칸이 다 움직이면 아무것도 못 본다 */
 
       b.addEventListener("click", function () {
         elStory.value = "";
-        make(it.idx, it.seed, false, it.v);
+        make(it.idx, it.seed, false, it.v, it.style);
         wallMark();
       });
 
@@ -601,7 +614,7 @@
       if (elHeartWrap) elHeartWrap.hidden = hearts.length === 0;
       elHearts.innerHTML = "";
       hearts.forEach(function (h) {
-        var it = { idx: h.idx, seed: h.seed, v: h.v || CODE_V, ar: h.ar || 16 / 9 };
+        var it = { idx: h.idx, seed: h.seed, v: h.v || CODE_V, ar: h.ar || 16 / 9, style: h.style || "" };
         var cell = wallCell(it);
         /* 담아 둔 뒤에 팔렸을 수 있다. 그대로 두면 살 수 없는 화면을
            계속 보여 주게 된다. */

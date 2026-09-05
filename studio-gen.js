@@ -154,54 +154,53 @@
   /* 세로 기둥에 어울리는 것과 가로 띠에 어울리는 것을 갈라 적는다.
    * 가운데로 모이는 그림(만다라·궤도·리사주)을 1:6 기둥에 걸면 위아래가
    * 통째로 빈다. 실제로 그렇게 나왔다. */
-  /* 2판 목록. 이미 나간 BN2- 번호가 이걸 쓴다. 한 칸도 바꾸거나
-   * 끼워 넣지 않는다. 새로 더할 것은 아래 3판 쪽에만 적는다. */
+  /* ── 판별 목록 ──────────────────────────────────────────────
+   * 스타일이 늘면 pick 이 다른 칸을 집어, 이미 나간 번호가 다른 그림이
+   * 된다. 그래서 판이 나갈 때마다 그때의 목록을 얼려 둔다.
+   *
+   * 한 번 뚫렸다. 하트(#17)가 나갈 때 2판은 엔진 56종이었는데, #25 가
+   * VJ 8종을 넣으면서 판을 안 올렸다. 그 뒤 2판을 64종으로 잘못 얼렸고,
+   * 고객이 담아 둔 화면이 다른 그림으로 다시 그려졌다. 여기 적힌 수는
+   * "그 판이 처음 나간 날의 목록"이다. 한 칸도 바꾸지 않는다.
+   *
+   *   2판  엔진 56종  (BN2-, #11 ~ #25 사이)
+   *   3판  엔진 78종  (BN3-, #26 이 나간 상태)
+   *   4판  전부      (BN4-, 지금 나가는 것)
+   *
+   * #25 가 나가 있던 몇 시간 동안 BN2- 로 나간 번호는 64종 목록으로
+   * 뽑힌 것이라 56종으로는 못 되살린다. 그 창은 짧았고 팔린 번호는
+   * 없다. 하트는 그린 스타일 이름을 같이 저장해 이 문제를 비켜 간다. */
+  var ART_V2_COUNT = 56, ART_V3_COUNT = 78;
+  function artIdsN(n) { return artIds().slice(0, n); }
+
+  /* 2판·3판 목록. 이미 나간 번호가 쓴다. 한 칸도 바꾸거나 끼워 넣지 않는다.
+   * VJ 넷("bars" "chevron" "strobe" "plasma")은 2판 엔진 56종 밖이라
+   * withPrefix 가 2판에서는 저절로 걸러 낸다. */
   var ART_TALL_V2 = ["hanji", "smoke", "dotmatrix", "weave", "terrace", "stripe", "branch",
                   "rain", "bamboo", "flock", "bloom", "inkwash", "thread", "paper",
-                  /* VJ 풍 중 세로로 흐르거나 줄로 서는 것 */
                   "bars", "chevron", "strobe", "plasma"];
   var ART_WIDE_V2 = ["moire", "oscillo", "slitscan", "dotmatrix", "weave", "terrace", "blinds",
                   "stripe", "lowpoly", "hanji", "wave", "warp", "topo", "magnet", "isocity",
-                  /* 가운데로 모이는 터널·만화경·폭발은 넣지 않는다.
-                     32:9 에 걸면 가운데만 차고 좌우가 통째로 빈다. */
                   "bars", "chevron", "strobe", "plasma", "flythrough"];
+  var ART_TALL_V3 = ART_TALL_V2.concat(["segment", "asciiart", "desordre", "nakhwa"]);
+  var ART_WIDE_V3 = ART_WIDE_V2.concat(["pdu", "barcode", "segment", "asciiart", "desordre",
+                                        "frame", "frieze", "hardedge", "nakhwa"]);
 
-  /* 3판 — 여기에만 더한다.
-   * 3D 뼈대 세 종(와이어프레임·점군·홀로그램)은 가운데에 물체 하나를
-   * 세우는 그림이라 1:6 기둥과 32:9 띠에는 넣지 않았다. 걸면 가운데만
-   * 차고 나머지가 통째로 빈다. 터널·만화경을 뺀 것과 같은 이유다. */
-  /* 글자·격자 계열. 격자로 채우는 것들은 기둥에도 띠에도 잘 맞는다.
-     자모는 가운데 글자 한 자라 어느 쪽에도 넣지 않는다. 활자판과 신호는
-     가로로 늘어서는 그림이라 띠에만 넣는다. */
-  var ART_TALL = ART_TALL_V2.concat(["segment", "asciiart", "desordre",
-                                   /* 낙화는 위에 줄 하나, 아래로 쏟아지는 그림이라
-                                      기둥에 그대로 맞는다 */
-                                   "nakhwa",
-                                   /* 잎맥과 갈대는 아래에서 올라오는 그림이라 기둥에 맞는다 */
-                                   "leafvein", "reed"]);
-  var ART_WIDE = ART_WIDE_V2.concat(["pdu", "barcode", "segment", "asciiart", "desordre",
-                                   /* 액자는 넓은 어둠에 작은 빛 하나라 띠에서 오히려 산다 */
-                                   "frame",
-                                   /* 띠그림은 애초에 가로로 흐르는 그림이다. 32:9 가 제 자리다. */
-                                   "frieze", "hardedge", "nakhwa",
-                                   /* 갈대밭은 옆으로 넓을수록 살고, 민들레는 홀씨가 옆으로 날아간다 */
-                                   "reed", "dandelion"]);
+  /* 4판 — 여기에만 더한다.
+   * 가운데로 모이는 그림(3D 뼈대·자모·씨앗나선·꽃)은 기둥과 띠에 넣지
+   * 않는다. 걸면 가운데만 차고 나머지가 통째로 빈다. */
+  var ART_TALL = ART_TALL_V3.concat([
+    /* 잎맥과 갈대는 아래에서 올라오는 그림이라 기둥에 맞는다 */
+    "leafvein", "reed"]);
+  var ART_WIDE = ART_WIDE_V3.concat([
+    /* 갈대밭은 옆으로 넓을수록 살고, 민들레는 홀씨가 옆으로 날아간다 */
+    "reed", "dandelion"]);
 
   function withPrefix(list, have) {
     have = have || artIds();
     return list.map(function (id) { return ART_PREFIX + id; })
                .filter(function (id) { return have.indexOf(id) >= 0; });
   }
-
-  /* 2판이 쓰던 엔진 스타일은 앞에서부터 64종이다.
-   *
-   * 엔진에 스타일을 더하면 studio-engine.js 의 목록이 길어진다. 그러면
-   * 고르는 자리가 밀려서, 이미 팔린 BN2- 번호가 다른 그림으로 렌더된다.
-   * 결제하면 같은 번호로 그려 준다고 화면에 적어 놨으므로 그럴 수 없다.
-   * 그래서 2판은 앞 64종만 본다. 목록이 append 로만 늘어나는지는
-   * tools/check-studio.mjs 가 표지(chevron)로 확인한다. */
-  var ART_V2_COUNT = 64;
-  function artIdsV2() { return artIds().slice(0, ART_V2_COUNT); }
 
   /* 1판 — 엔진을 붙이기 전 목록. 이미 나간 BN- 번호가 이걸 쓴다.
      한 칸도 바꾸거나 끼워 넣지 않는다. */
@@ -211,20 +210,23 @@
     even:  BASE_IDS
   };
 
-  /* 2판 — 엔진 64종까지. 이미 나간 BN2- 번호가 이걸 쓴다. */
   var FIT_V2 = {
-    tall:  FIT_V1.tall.concat(withPrefix(ART_TALL_V2, artIdsV2())),
-    wide:  FIT_V1.wide.concat(withPrefix(ART_WIDE_V2, artIdsV2())),
-    even:  BASE_IDS.concat(artIdsV2())
+    tall:  FIT_V1.tall.concat(withPrefix(ART_TALL_V2, artIdsN(ART_V2_COUNT))),
+    wide:  FIT_V1.wide.concat(withPrefix(ART_WIDE_V2, artIdsN(ART_V2_COUNT))),
+    even:  BASE_IDS.concat(artIdsN(ART_V2_COUNT))
   };
-
-  /* 3판 — 지금 나가는 번호(BN3-). */
+  var FIT_V3 = {
+    tall:  FIT_V1.tall.concat(withPrefix(ART_TALL_V3, artIdsN(ART_V3_COUNT))),
+    wide:  FIT_V1.wide.concat(withPrefix(ART_WIDE_V3, artIdsN(ART_V3_COUNT))),
+    even:  BASE_IDS.concat(artIdsN(ART_V3_COUNT))
+  };
+  /* 4판 — 지금 나가는 번호(BN4-). */
   var FIT = {
     tall:  FIT_V1.tall.concat(withPrefix(ART_TALL)),
     wide:  FIT_V1.wide.concat(withPrefix(ART_WIDE)),
     even:  STYLE_IDS
   };
-  var FITS = { 1: FIT_V1, 2: FIT_V2, 3: FIT };
+  var FITS = { 1: FIT_V1, 2: FIT_V2, 3: FIT_V3, 4: FIT };
 
   /* ── 문장 읽기 ────────────────────────────────────────────
    * 낱말은 방향만 잡는다. 고정하지 않는다.
@@ -240,9 +242,10 @@
    * 이미 나간 번호가 다른 그림이 된다. 화면에는 "같은 번호로 렌더링해
    * 드립니다"라고 적혀 있으므로 그렇게 두면 안 된다.
    *
-   *   v=1  기존 14종만.            BN- 번호가 쓴다.
-   *   v=2  + 엔진 64종 = 78종.     BN2- 번호가 쓴다.
-   *   v=3  + 3D 뼈대 3종 = 81종.   BN3- 번호가 쓴다(지금 나가는 것).
+   *   v=1  기존 14종만.          BN- 번호가 쓴다.
+   *   v=2  + 엔진 56종 = 70종.   BN2- 번호가 쓴다.
+   *   v=3  + 엔진 78종 = 92종.   BN3- 번호가 쓴다.
+   *   v=4  전부.                 BN4- 번호가 쓴다(지금 나가는 것).
    *
    * 색·느낌·나머지 값은 두 판이 같다. r()을 부르는 횟수가 같기 때문이다. */
   function compose(text, seed, aspect, v) {
@@ -1030,6 +1033,8 @@
 
   global.BomnalGen = {
     compose: compose, Gen: Gen,
+    /* 담아 둔 화면이 적어 둔 스타일을 지금도 그릴 줄 아는가 */
+    hasStyle: function (id) { return STYLE_IDS.indexOf(id) >= 0; },
     counts: { styles: STYLE_IDS.length, palettes: PALETTES.length, moods: MOODS.length }
   };
 })(window);
