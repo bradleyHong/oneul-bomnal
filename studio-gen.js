@@ -131,6 +131,25 @@
     { id: "묵직", re: /묵직|깊|무겁|진중/,     speed: 1, density: 1.3, weight: 1.5, glow: 0.9 }
   ];
 
+  /* 느낌 열둘. 순서는 작품 번호(위 5비트)에 박히므로 바꾸거나 중간에
+   * 끼워 넣지 않는다. 새로 만들면 뒤에 붙인다.
+   * studio.js(고르는 화면)와 play.html(전용 플레이어)이 같은 목록을 본다.
+   * 둘이 어긋나면 같은 번호가 다른 그림이 된다. */
+var SCENES = [
+    { ko: "봄빛 리본",   text: "로비 미디어월에 걸 봄바람 빛 리본, 따뜻하고 화사하게" },
+    { ko: "바다 물결",   text: "바다와 파도, 잔잔하게 흐르는 로비 화면" },
+    { ko: "겨울 눈",     text: "겨울 밤 도심 전광판, 눈송이 내리는 화면, 차분하게" },
+    { ko: "전통 단청",   text: "고분군 야간 포토존, 전통 색감으로 웅장하게" },
+    { ko: "도시 야경",   text: "도시 야경 네온 전광판, 경쾌하게" },
+    { ko: "우주 별빛",   text: "우주와 별빛, 고요하게 흐르는 밤하늘" },
+    { ko: "숲 초록",     text: "숲과 나무, 초록빛으로 산뜻하게" },
+    { ko: "노을",        text: "노을 지는 저녁, 은은하게" },
+    { ko: "수묵 여백",   text: "수묵 담백한 여백, 묵직하게" },
+    { ko: "형광 사이버", text: "형광 사이버 글리치, 강렬하게" },
+    { ko: "안개 하늘",   text: "안개 낀 하늘과 바람결, 몽환적으로" },
+    { ko: "빛 번짐",     text: "빛줄기 번짐, 은은하고 잔잔하게" }
+    ];
+
   var BASE_IDS = ["flow", "wave", "particle", "contour", "grid", "bloom", "column",
                   "snow", "ribbon", "orbit", "mesh", "bar", "spiral", "drift"];
 
@@ -154,50 +173,57 @@
   /* 세로 기둥에 어울리는 것과 가로 띠에 어울리는 것을 갈라 적는다.
    * 가운데로 모이는 그림(만다라·궤도·리사주)을 1:6 기둥에 걸면 위아래가
    * 통째로 빈다. 실제로 그렇게 나왔다. */
-  /* 2판 목록. 이미 나간 BN2- 번호가 이걸 쓴다. 한 칸도 바꾸거나
-   * 끼워 넣지 않는다. 새로 더할 것은 아래 3판 쪽에만 적는다. */
+  /* ── 판별 목록 ──────────────────────────────────────────────
+   * 스타일이 늘면 pick 이 다른 칸을 집어, 이미 나간 번호가 다른 그림이
+   * 된다. 그래서 판이 나갈 때마다 그때의 목록을 얼려 둔다.
+   *
+   * 한 번 뚫렸다. 하트(#17)가 나갈 때 2판은 엔진 56종이었는데, #25 가
+   * VJ 8종을 넣으면서 판을 안 올렸다. 그 뒤 2판을 64종으로 잘못 얼렸고,
+   * 고객이 담아 둔 화면이 다른 그림으로 다시 그려졌다. 여기 적힌 수는
+   * "그 판이 처음 나간 날의 목록"이다. 한 칸도 바꾸지 않는다.
+   *
+   *   2판  엔진 56종  (BN2-, #11 ~ #25 사이)
+   *   3판  엔진 78종  (BN3-, #26 이 나간 상태)
+   *   4판  전부      (BN4-, 지금 나가는 것)
+   *
+   * #25 가 나가 있던 몇 시간 동안 BN2- 로 나간 번호는 64종 목록으로
+   * 뽑힌 것이라 56종으로는 못 되살린다. 그 창은 짧았고 팔린 번호는
+   * 없다. 하트는 그린 스타일 이름을 같이 저장해 이 문제를 비켜 간다. */
+  var ART_V2_COUNT = 56, ART_V3_COUNT = 78;
+  function artIdsN(n) { return artIds().slice(0, n); }
+
+  /* 2판·3판 목록. 이미 나간 번호가 쓴다. 한 칸도 바꾸거나 끼워 넣지 않는다.
+   * VJ 넷("bars" "chevron" "strobe" "plasma")은 2판 엔진 56종 밖이라
+   * withPrefix 가 2판에서는 저절로 걸러 낸다. */
   var ART_TALL_V2 = ["hanji", "smoke", "dotmatrix", "weave", "terrace", "stripe", "branch",
                   "rain", "bamboo", "flock", "bloom", "inkwash", "thread", "paper",
-                  /* VJ 풍 중 세로로 흐르거나 줄로 서는 것 */
                   "bars", "chevron", "strobe", "plasma"];
   var ART_WIDE_V2 = ["moire", "oscillo", "slitscan", "dotmatrix", "weave", "terrace", "blinds",
                   "stripe", "lowpoly", "hanji", "wave", "warp", "topo", "magnet", "isocity",
-                  /* 가운데로 모이는 터널·만화경·폭발은 넣지 않는다.
-                     32:9 에 걸면 가운데만 차고 좌우가 통째로 빈다. */
                   "bars", "chevron", "strobe", "plasma", "flythrough"];
+  var ART_TALL_V3 = ART_TALL_V2.concat(["segment", "asciiart", "desordre", "nakhwa"]);
+  var ART_WIDE_V3 = ART_WIDE_V2.concat(["pdu", "barcode", "segment", "asciiart", "desordre",
+                                        "frame", "frieze", "hardedge", "nakhwa"]);
 
-  /* 3판 — 여기에만 더한다.
-   * 3D 뼈대 세 종(와이어프레임·점군·홀로그램)은 가운데에 물체 하나를
-   * 세우는 그림이라 1:6 기둥과 32:9 띠에는 넣지 않았다. 걸면 가운데만
-   * 차고 나머지가 통째로 빈다. 터널·만화경을 뺀 것과 같은 이유다. */
-  /* 글자·격자 계열. 격자로 채우는 것들은 기둥에도 띠에도 잘 맞는다.
-     자모는 가운데 글자 한 자라 어느 쪽에도 넣지 않는다. 활자판과 신호는
-     가로로 늘어서는 그림이라 띠에만 넣는다. */
-  var ART_TALL = ART_TALL_V2.concat(["segment", "asciiart", "desordre",
-                                   /* 낙화는 위에 줄 하나, 아래로 쏟아지는 그림이라
-                                      기둥에 그대로 맞는다 */
-                                   "nakhwa"]);
-  var ART_WIDE = ART_WIDE_V2.concat(["pdu", "barcode", "segment", "asciiart", "desordre",
-                                   /* 액자는 넓은 어둠에 작은 빛 하나라 띠에서 오히려 산다 */
-                                   "frame",
-                                   /* 띠그림은 애초에 가로로 흐르는 그림이다. 32:9 가 제 자리다. */
-                                   "frieze", "hardedge", "nakhwa"]);
+  /* 4판 — 여기에만 더한다.
+   * 가운데로 모이는 그림(3D 뼈대·자모·씨앗나선·꽃)은 기둥과 띠에 넣지
+   * 않는다. 걸면 가운데만 차고 나머지가 통째로 빈다. */
+  var ART_TALL = ART_TALL_V3.concat([
+    /* 잎맥과 갈대는 아래에서 올라오는 그림이라 기둥에 맞는다 */
+    "leafvein", "reed",
+    /* 꽃눈은 위에서 내리고, 유화는 밭이라 어디든 찬다 */
+    "petalfall", "impasto"]);
+  var ART_WIDE = ART_WIDE_V3.concat([
+    /* 갈대밭은 옆으로 넓을수록 살고, 민들레는 홀씨가 옆으로 날아간다 */
+    "reed", "dandelion",
+    /* 파도와 회랑은 수평선이 있는 그림이라 띠에 산다. 꽃눈·유화는 밭 */
+    "petalfall", "ocean", "impasto", "renaissance"]);
 
   function withPrefix(list, have) {
     have = have || artIds();
     return list.map(function (id) { return ART_PREFIX + id; })
                .filter(function (id) { return have.indexOf(id) >= 0; });
   }
-
-  /* 2판이 쓰던 엔진 스타일은 앞에서부터 64종이다.
-   *
-   * 엔진에 스타일을 더하면 studio-engine.js 의 목록이 길어진다. 그러면
-   * 고르는 자리가 밀려서, 이미 팔린 BN2- 번호가 다른 그림으로 렌더된다.
-   * 결제하면 같은 번호로 그려 준다고 화면에 적어 놨으므로 그럴 수 없다.
-   * 그래서 2판은 앞 64종만 본다. 목록이 append 로만 늘어나는지는
-   * tools/check-studio.mjs 가 표지(chevron)로 확인한다. */
-  var ART_V2_COUNT = 64;
-  function artIdsV2() { return artIds().slice(0, ART_V2_COUNT); }
 
   /* 1판 — 엔진을 붙이기 전 목록. 이미 나간 BN- 번호가 이걸 쓴다.
      한 칸도 바꾸거나 끼워 넣지 않는다. */
@@ -207,20 +233,23 @@
     even:  BASE_IDS
   };
 
-  /* 2판 — 엔진 64종까지. 이미 나간 BN2- 번호가 이걸 쓴다. */
   var FIT_V2 = {
-    tall:  FIT_V1.tall.concat(withPrefix(ART_TALL_V2, artIdsV2())),
-    wide:  FIT_V1.wide.concat(withPrefix(ART_WIDE_V2, artIdsV2())),
-    even:  BASE_IDS.concat(artIdsV2())
+    tall:  FIT_V1.tall.concat(withPrefix(ART_TALL_V2, artIdsN(ART_V2_COUNT))),
+    wide:  FIT_V1.wide.concat(withPrefix(ART_WIDE_V2, artIdsN(ART_V2_COUNT))),
+    even:  BASE_IDS.concat(artIdsN(ART_V2_COUNT))
   };
-
-  /* 3판 — 지금 나가는 번호(BN3-). */
+  var FIT_V3 = {
+    tall:  FIT_V1.tall.concat(withPrefix(ART_TALL_V3, artIdsN(ART_V3_COUNT))),
+    wide:  FIT_V1.wide.concat(withPrefix(ART_WIDE_V3, artIdsN(ART_V3_COUNT))),
+    even:  BASE_IDS.concat(artIdsN(ART_V3_COUNT))
+  };
+  /* 4판 — 지금 나가는 번호(BN4-). */
   var FIT = {
     tall:  FIT_V1.tall.concat(withPrefix(ART_TALL)),
     wide:  FIT_V1.wide.concat(withPrefix(ART_WIDE)),
     even:  STYLE_IDS
   };
-  var FITS = { 1: FIT_V1, 2: FIT_V2, 3: FIT };
+  var FITS = { 1: FIT_V1, 2: FIT_V2, 3: FIT_V3, 4: FIT };
 
   /* ── 문장 읽기 ────────────────────────────────────────────
    * 낱말은 방향만 잡는다. 고정하지 않는다.
@@ -236,9 +265,10 @@
    * 이미 나간 번호가 다른 그림이 된다. 화면에는 "같은 번호로 렌더링해
    * 드립니다"라고 적혀 있으므로 그렇게 두면 안 된다.
    *
-   *   v=1  기존 14종만.            BN- 번호가 쓴다.
-   *   v=2  + 엔진 64종 = 78종.     BN2- 번호가 쓴다.
-   *   v=3  + 3D 뼈대 3종 = 81종.   BN3- 번호가 쓴다(지금 나가는 것).
+   *   v=1  기존 14종만.          BN- 번호가 쓴다.
+   *   v=2  + 엔진 56종 = 70종.   BN2- 번호가 쓴다.
+   *   v=3  + 엔진 78종 = 92종.   BN3- 번호가 쓴다.
+   *   v=4  전부.                 BN4- 번호가 쓴다(지금 나가는 것).
    *
    * 색·느낌·나머지 값은 두 판이 같다. r()을 부르는 횟수가 같기 때문이다. */
   function compose(text, seed, aspect, v) {
@@ -643,6 +673,8 @@
   };
 
   Gen.prototype.watermark = function (ctx, W, H) {
+    /* 계약된 작품을 전용 플레이어에서 틀 때는 도장을 안 찍는다. mark 를 비운다. */
+    if (!this.mark) return;
     /* 1:6 기둥 미리보기처럼 칸이 좁으면 글자가 들어갈 자리가 없어
        "…픽아트"로 잘린다. 잘린 이름을 보이느니 안 보이는 편이 낫다.
        이 크기에서는 가져가 봐야 쓸 데도 없다. */
@@ -1025,7 +1057,9 @@
   };
 
   global.BomnalGen = {
-    compose: compose, Gen: Gen,
+    compose: compose, Gen: Gen, SCENES: SCENES,
+    /* 담아 둔 화면이 적어 둔 스타일을 지금도 그릴 줄 아는가 */
+    hasStyle: function (id) { return STYLE_IDS.indexOf(id) >= 0; },
     counts: { styles: STYLE_IDS.length, palettes: PALETTES.length, moods: MOODS.length }
   };
 })(window);
