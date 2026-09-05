@@ -3050,6 +3050,152 @@ function create(canvas, opts) {
       }
     },
 
+    /* 76 띠그림 — 대각 줄무늬 위로 형상이 옆으로 끝없이 흐른다.
+       미술관 천장에 걸린 가로 띠 화면이 하는 일이 이것이다. 색은 두 가지,
+       형상은 흑백, 그라데이션 없이 전부 납작하다. 우리가 파는 32:9 패널에
+       그대로 맞는 구도라 오래 걸어 두기 좋다.
+
+       한 폭짜리 판을 두 벌 이어 흘린다. 한 바퀴에 정확히 한 폭을 지나가서
+       마지막 장이 첫 장으로 그대로 이어진다. */
+    frieze(t) {
+      const ph = t / DUR;
+      const bandH = H * 0.62;
+      const y0 = (H - bandH) / 2;
+      const WHITE = tone(0, 1), BLACK = shade(3, 0.06);
+      ctx.save();
+      ctx.beginPath(); ctx.rect(0, y0, W, bandH); ctx.clip();
+
+      /* 대각 줄무늬. 형상보다 느리게 흘러 앞뒤가 갈린다. */
+      const sw = Math.max(6, Math.min(W, H) * 0.055 * clamp(k.scale, 0.6, 1.6));
+      const soff = (ph * sw * 4) % (sw * 2);
+      ctx.fillStyle = tone(1, 0.92);
+      ctx.fillRect(0, y0, W, bandH);
+      ctx.fillStyle = tone(2, 0.95);
+      for (let x = -bandH - sw * 2; x < W + bandH; x += sw * 2) {
+        ctx.beginPath();
+        ctx.moveTo(x + soff, y0);
+        ctx.lineTo(x + soff + sw, y0);
+        ctx.lineTo(x + soff + sw + bandH, y0 + bandH);
+        ctx.lineTo(x + soff + bandH, y0 + bandH);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      /* 형상 — 검은 것과 흰 것만. 오려 붙인 것처럼 테두리가 딱 떨어진다. */
+      const n = 18 + Math.round(k.density * 64);
+      const off = -(ph % 1) * W;
+      for (let rep = 0; rep < 2; rep++) {
+        const base = off + rep * W;
+        for (let i = 0; i < n; i++) {
+          const s = seeds[(i * 7 + 850) % seeds.length];
+          const s2 = seeds[(i * 7 + 851) % seeds.length];
+          const x = base + s.a * W;
+          if (x < -W * 0.2 || x > W * 1.2) continue;
+          const y = y0 + bandH * (0.10 + s.b * 0.80);
+          const r = bandH * (0.045 + s.c * 0.20) * clamp(k.scale, 0.6, 1.5);
+          ctx.fillStyle = s.d > 0.42 ? BLACK : WHITE;
+          ctx.strokeStyle = s.d > 0.42 ? WHITE : BLACK;
+          ctx.lineWidth = Math.max(1, r * 0.09);
+          const kind = Math.floor(s2.a * 7);
+          ctx.beginPath();
+          if (kind === 0) {                       /* 겹둥근 고리 — 소용돌이 */
+            for (let g = 0; g < 4; g++) {
+              ctx.moveTo(x + r * (1 - g * 0.24), y);
+              ctx.arc(x, y, r * (1 - g * 0.24), 0, TAU);
+            }
+            ctx.fill("evenodd");
+          } else if (kind === 1) {                /* 구멍 뚫린 원 — 바퀴 */
+            ctx.arc(x, y, r, 0, TAU);
+            ctx.moveTo(x + r * 0.34, y);
+            ctx.arc(x, y, r * 0.34, 0, TAU);
+            ctx.fill("evenodd");
+          } else if (kind === 2) {                /* 뭉친 덩어리 */
+            for (let g = 0; g < 4; g++) {
+              const q = seeds[(i * 7 + g + 860) % seeds.length];
+              ctx.moveTo(x + (q.a - 0.5) * r * 1.5 + r * 0.6, y + (q.b - 0.5) * r * 1.2);
+              ctx.arc(x + (q.a - 0.5) * r * 1.5, y + (q.b - 0.5) * r * 1.2, r * (0.35 + q.c * 0.4), 0, TAU);
+            }
+            ctx.fill();
+          } else if (kind === 3) {                /* 세로 기둥 */
+            ctx.rect(x - r * 0.28, y - r * 1.3, r * 0.56, r * 2.6);
+            ctx.fill();
+          } else if (kind === 4) {                /* 쐐기 */
+            ctx.moveTo(x, y - r);
+            ctx.lineTo(x + r * 0.9, y + r * 0.8);
+            ctx.lineTo(x - r * 0.9, y + r * 0.8);
+            ctx.closePath();
+            ctx.fill();
+          } else if (kind === 5) {                /* 바둑판 조각 */
+            const c4 = 4, u = r * 2 / c4;
+            for (let a = 0; a < c4; a++) for (let b2 = 0; b2 < c4; b2++) {
+              if ((a + b2) % 2) continue;
+              ctx.rect(x - r + a * u, y - r + b2 * u, u, u);
+            }
+            ctx.fill();
+          } else {                                /* 반달 */
+            ctx.arc(x, y, r, -Math.PI / 2 + s2.b * TAU, Math.PI / 2 + s2.b * TAU);
+            ctx.closePath();
+            ctx.fill();
+          }
+          if (kind !== 0 && kind !== 1) ctx.stroke();
+        }
+      }
+      ctx.restore();
+    },
+
+    /* 77 색면 — 납작한 색 덩어리를 딱 떨어지는 테두리로 놓는다.
+       그라데이션도, 번짐도, 그림자도 없다. 값이 다른 면이 서로 맞닿는
+       것만으로 그림이 선다. 엘즈워스 켈리가 평생 한 일이 그것이다.
+
+       처음에는 원색을 겹쳐 새 색을 내는 초창기 컴퓨터 그래픽 쪽으로
+       갔는데, 우리 팔레트는 한 색조를 네 단계로 쓰는 구성이라 겹쳐도
+       색이 안 생기고 screen 합성으로 전부 흰색으로 날아갔다. 겹치지
+       않고 덮는다. 색조 대비가 없어도 명도 대비만으로 충분히 선다. */
+    hardedge(t) {
+      const ph = t / DUR;
+      const n = 3 + Math.round(k.density * 6);
+      /* 화면을 다 채우지 않는다. 비운 자리가 면을 면으로 보이게 한다. */
+      for (let i = 0; i < n; i++) {
+        const s = seeds[(i * 11 + 899) % seeds.length];
+        const s2 = seeds[(i * 11 + 900) % seeds.length];
+        /* 한 바퀴에 정수 번 지나간다. 그래야 이음매가 맞는다. */
+        const steps = 1 + Math.floor(s.d * 2);
+        const u = (s.a + ph * steps) % 1;
+        const R = Math.min(W, H) * (0.13 + s.b * 0.26) * clamp(k.scale, 0.7, 1.3);
+        const cx = u * (W + R * 2.4) - R * 1.2;
+        const cy = H * (0.16 + s.c * 0.68);
+        const kind = Math.floor(s2.a * 5);
+        /* 가장 어두운 색조는 바탕과 붙어 버려 면으로 안 보인다. 셋만 쓴다. */
+        ctx.fillStyle = shade(i % 3, 0.72 + 0.26 * k.contrast);
+        ctx.beginPath();
+        if (kind === 0) ctx.arc(cx, cy, R, 0, TAU);
+        else if (kind === 1) { ctx.arc(cx, cy, R, s2.b * TAU, s2.b * TAU + Math.PI); ctx.closePath(); }
+        else if (kind === 2) ctx.rect(cx - R * 0.38, cy - R * 1.5, R * 0.76, R * 3);
+        else if (kind === 3) ctx.rect(cx - R * 1.6, cy - R * 0.34, R * 3.2, R * 0.68);
+        else {                                   /* 부채꼴 — 한 귀퉁이가 잘린 원 */
+          ctx.moveTo(cx, cy);
+          ctx.arc(cx, cy, R, s2.b * TAU, s2.b * TAU + Math.PI * (0.5 + s2.c * 0.7));
+          ctx.closePath();
+        }
+        ctx.fill();
+        /* 몇 개에는 굵은 점을 얹는다. 인쇄 망점처럼 보여야 하므로
+           선이 아니라 눈에 보이는 점으로 찍는다. */
+        if (s2.d > 0.72) {
+          ctx.save();
+          ctx.clip();
+          ctx.fillStyle = shade(3, 0.35);
+          const g = Math.max(6, Math.round(Math.min(W, H) * 0.028));
+          const d = g * 0.46;
+          for (let y = 0; y < H; y += g) {
+            for (let x = ((y / g) & 1) * g * 0.5; x < W; x += g) {
+              ctx.beginPath(); ctx.arc(x, y, d, 0, TAU); ctx.fill();
+            }
+          }
+          ctx.restore();
+        }
+      }
+    },
+
   };
 
   /* ── 마감 처리 ────────────────────────────────────────────────
@@ -3163,6 +3309,8 @@ const STYLE_LABELS = [
   ["segment", "칠획"], ["asciiart", "문자 명암"], ["desordre", "무질서"],
 
   ["chiaroscuro", "명암"], ["frame", "액자"],
+
+  ["frieze", "띠그림"], ["hardedge", "색면"],
 ];
 
 global.StudioArt = {

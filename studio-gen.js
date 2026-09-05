@@ -176,7 +176,9 @@
   var ART_TALL = ART_TALL_V2.concat(["segment", "asciiart", "desordre"]);
   var ART_WIDE = ART_WIDE_V2.concat(["pdu", "barcode", "segment", "asciiart", "desordre",
                                    /* 액자는 넓은 어둠에 작은 빛 하나라 띠에서 오히려 산다 */
-                                   "frame"]);
+                                   "frame",
+                                   /* 띠그림은 애초에 가로로 흐르는 그림이다. 32:9 가 제 자리다. */
+                                   "frieze", "hardedge"]);
 
   function withPrefix(list, have) {
     have = have || artIds();
