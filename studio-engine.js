@@ -72,7 +72,7 @@ const DEFAULTS = {
   w: 1280, h: 720, fps: 30, seed: 4821937, dur: 20,
   style: "aurora", palette: "ink",
   density: 50, speed: 50, scale: 50, contrast: 50, glow: 35, grain: 18,
-  motion: "drift", symmetry: 1, invert: false, accent: 60,
+  motion: "drift", symmetry: 1, invert: false, accent: 60, bare: false,
 };
 
 /** 캔버스 하나에 그림 한 벌을 만든다. 반환값의 renderFrame(n)만 부르면 된다. */
@@ -100,7 +100,9 @@ function create(canvas, opts) {
 
   /* ── 캔버스 ─────────────────────────────────────────────────── */
   canvas.width = W; canvas.height = H;
-  const ctx = canvas.getContext("2d", { alpha: false });
+  /* bare 모드는 투명한 그림을 내놓아야 하므로 알파가 있는 컨텍스트를 쓴다.
+     alpha:false 는 지워도 검게 남는다. */
+  const ctx = canvas.getContext("2d", { alpha: !!P.bare });
 
   const S = Math.min(W, H) / 1080;          // 4K에서도 FHD에서도 같은 비례로 그린다
   /* 팔레트는 이름으로도, 색을 직접 담은 객체로도 받는다.
@@ -211,6 +213,39 @@ function create(canvas, opts) {
   /* ── 스타일 20종 ─────────────────────────────────────────────
      전부 t(초)의 함수로 그린다. 프레임을 건너뛰어도, 되감아도 같은 그림이
      나와야 에디터에서 슬라이더를 움직일 때 그림이 어긋나지 않는다. */
+
+  /* 획을 수백 개 긋는 스타일들.
+   *
+   * 번짐(glow)은 ctx.shadowBlur 로 낸다. 그런데 이건 획 하나하나마다
+   * 그림자를 다시 그린다. 선 200개짜리 스타일에서는 그 값이 감당이 안 된다.
+   * 실측: 실 6.9ms → 344ms(50배), 파문 8 → 355(44배), 연기 5.5 → 195(35배).
+   * 초당 세 장이다. 미리보기가 정지 화면처럼 보인다.
+   *
+   * 이 스타일들은 획마다 그림자를 달지 않고, 다 그린 뒤 번짐을 한 번만
+   * 얹는다. 4분의 1 크기로 흐리게 떠서 더하는 방식이라 값이 거의 안 든다.
+   * 그림은 거의 같고 속도는 수십 배 빨라진다. */
+  const HEAVY_GLOW = { ripple: 1, thread: 1, smoke: 1, magnet: 1, neonsign: 1,
+                       constellation: 1, flock: 1, rain: 1, oscillo: 1, moire: 1 };
+
+  let bloomBuf = null;
+  function applyBloom(strength) {
+    const bw = Math.max(32, Math.round(W / 4)), bh = Math.max(18, Math.round(H / 4));
+    if (!bloomBuf || bloomBuf.width !== bw || bloomBuf.height !== bh) {
+      bloomBuf = document.createElement("canvas");
+      bloomBuf.width = bw; bloomBuf.height = bh;
+    }
+    const bx = bloomBuf.getContext("2d");
+    bx.globalCompositeOperation = "copy";
+    bx.filter = "blur(" + Math.max(1, Math.round(bw / 52)) + "px)";
+    bx.drawImage(canvas, 0, 0, bw, bh);
+    bx.filter = "none";
+    bx.globalCompositeOperation = "source-over";
+    ctx.save();
+    ctx.globalCompositeOperation = P.invert ? "multiply" : "lighter";
+    ctx.globalAlpha = Math.min(0.55, strength);
+    ctx.drawImage(bloomBuf, 0, 0, W, H);
+    ctx.restore();
+  }
 
   /* 끌개는 점을 캔버스에 바로 찍지 않고 밀도를 쌓아 정규화한다.
      버퍼는 크기가 같으면 다시 쓴다. 프레임마다 새로 잡으면 4K에서
@@ -1865,11 +1900,20 @@ function create(canvas, opts) {
     ctx.setLineDash([]);
     ctx.shadowColor = "rgba(0,0,0,0)";
     ctx.shadowBlur = 0;
-    ctx.fillStyle = BG;
-    ctx.fillRect(0, 0, W, H);
+    /* bare 모드에서는 바탕을 칠하지 않는다.
+       같은 그림을 여러 겹 겹쳐 깊이를 내려면 겹마다 배경이 딸려 오면
+       안 된다. 뒤 겹이 앞 겹의 배경에 가려 하나도 안 보인다.
+       바탕·비네팅·알갱이는 겹을 다 합친 뒤 한 번만 얹는다. */
+    if (P.bare) {
+      ctx.clearRect(0, 0, W, H);
+    } else {
+      ctx.fillStyle = BG;
+      ctx.fillRect(0, 0, W, H);
+    }
 
     const draw = STYLES[P.style] || STYLES.aurora;
-    if (k.glow > 0.02) {
+    const heavy = HEAVY_GLOW[P.style] === 1;
+    if (k.glow > 0.02 && !heavy) {
       ctx.shadowColor = tone(1, 0.6);
       ctx.shadowBlur = Math.min(W, H) * 0.012 * k.glow;
     } else {
@@ -1877,9 +1921,13 @@ function create(canvas, opts) {
     }
     withSymmetry(() => draw(t));
     ctx.shadowBlur = 0;
+    /* 획이 많은 스타일은 여기서 한 번만 번지게 한다 */
+    if (k.glow > 0.02 && heavy) applyBloom(0.22 + k.glow * 0.5);
 
-    applyVignette();
-    applyGrain();
+    if (!P.bare) {
+      applyVignette();
+      applyGrain();
+    }
   }
 
   return { renderFrame: renderFrame, totalFrames: TOTAL_FRAMES, width: W, height: H };

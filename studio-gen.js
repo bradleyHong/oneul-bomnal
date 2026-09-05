@@ -257,6 +257,7 @@
     this.spec = spec;
     this.pts = null;
     this.art = null;                   /* 사양이 바뀌면 엔진 인스턴스를 새로 만든다 */
+    this.artL = null;
     return this;
   };
 
@@ -286,37 +287,113 @@
 
   var ART_MOTIONS = ["drift", "pulse", "orbit", "still"];
 
+  /* 엔진 스타일도 겹쳐서 깊이를 낸다.
+   *
+   * 기본 열네 종은 layer() 로 세 겹을 그리는데, 엔진 스타일은 artDraw 가
+   * 그 앞에서 빠져나가 한 겹만 그렸다. 같은 화면인데 하나는 촬영본처럼
+   * 깊고 하나는 종이에 그린 것처럼 평평했다.
+   *
+   * 겹은 둘만 준다. 엔진 쉰여섯 종에는 면을 가득 채우는 것이 많아
+   * 세 겹을 더하면 바닥이 하얗게 탄다. 먼 겹 하나를 흐리게 깔고 그 위에
+   * 주 화면을 덮는다. */
+  var ART_LAYERS = [
+    /* 먼 곳은 어차피 흐리게 보일 것이므로 절반 크기로 그린다. 그리는 넓이가
+       4분의 1이 되고 블러도 그만큼 싸진다. 흐린 그림을 온전한 해상도로
+       그리는 것은 버리려고 만드는 셈이다. */
+    { scale: 1.10, blur: 3, alpha: 0.34, k: 1, dens: 0.62, add: true, half: true },
+    { scale: 1.00, blur: 0, alpha: 1.00, k: 1, dens: 1.00, add: false, half: false }
+  ];
+
+  /* 작은 칸에서는 겹치지 않는다. 300px 썸네일에서 흐린 겹은 보이지도
+     않는데 캔버스만 세 배로 든다. 벽에 열두 칸이면 그대로 느려진다. */
+  var ART_DEPTH_MIN = 480;
+
+  /** 사양 하나를 엔진이 알아듣는 값으로 옮긴다. */
+  function artOpts(s, W, H, seed, densMul, bare) {
+    var r = rng(seed ^ 0x5eed1);
+    var cl = function (v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; };
+    return {
+      w: W, h: H, fps: ART_FPS, dur: PERIOD,
+      seed: seed,
+      style: s.style.slice(ART_PREFIX.length),
+      palette: artPalette(s.palette),
+      /* 분위기(느낌)가 정한 값을 엔진의 0~100 눈금으로 옮긴다 */
+      density:  cl(Math.round(s.density * densMul * 42), 8, 96),
+      speed:    cl(Math.round(s.speed * 46), 8, 95),
+      scale:    cl(Math.round(s.warp * 36), 15, 90),
+      contrast: cl(Math.round(s.weight * 46), 25, 95),
+      glow:     cl(Math.round(s.glow * 36), 5, 85),
+      grain:    bare ? 0 : 14,     /* 알갱이는 겹을 합친 뒤 grade 가 한 번만 얹는다 */
+      accent:   cl(Math.round(40 + r() * 45), 28, 92),
+      motion:   ART_MOTIONS[Math.floor(r() * ART_MOTIONS.length)],
+      symmetry: 1,
+      invert:   false,
+      bare:     !!bare
+    };
+  }
+
   Gen.prototype.artDraw = function (t) {
     var A = global.StudioArt;
     var s = this.spec;
     if (!A) return false;
-    var W = this.cv.width, H = this.cv.height;
-    if (!this.art || this.art.w !== W || this.art.h !== H) {
-      var r = rng(s.seed ^ 0x5eed1);
-      var cl = function (v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; };
-      this.art = {
-        w: W, h: H,
-        inst: A.create(this.cv, {
-          w: W, h: H, fps: ART_FPS, dur: PERIOD,
-          seed: s.seed,
-          style: s.style.slice(ART_PREFIX.length),
-          palette: artPalette(s.palette),
-          /* 분위기(느낌)가 정한 값을 엔진의 0~100 눈금으로 옮긴다 */
-          density:  cl(Math.round(s.density * 42), 8, 96),
-          speed:    cl(Math.round(s.speed * 46), 8, 95),
-          scale:    cl(Math.round(s.warp * 36), 15, 90),
-          contrast: cl(Math.round(s.weight * 46), 25, 95),
-          glow:     cl(Math.round(s.glow * 36), 5, 85),
-          grain:    14,
-          accent:   cl(Math.round(40 + r() * 45), 28, 92),
-          motion:   ART_MOTIONS[Math.floor(r() * ART_MOTIONS.length)],
-          symmetry: 1,
-          invert:   false
-        })
-      };
+    var ctx = this.ctx, W = this.cv.width, H = this.cv.height;
+
+    /* 작은 칸은 예전처럼 한 겹으로. 엔진이 제 바탕까지 칠한다. */
+    if (W < ART_DEPTH_MIN) {
+      if (!this.art || this.art.w !== W || this.art.h !== H) {
+        this.art = { w: W, h: H, inst: A.create(this.cv, artOpts(s, W, H, s.seed, 1, false)) };
+      }
+      var tot = this.art.inst.totalFrames;
+      this.art.inst.renderFrame(Math.round((t / PERIOD) * tot) % tot);
+      return true;
     }
-    var total = this.art.inst.totalFrames;
-    this.art.inst.renderFrame(Math.round((t / PERIOD) * total) % total);
+
+    /* 큰 화면은 겹쳐 그린다. 바탕은 여기서 한 번만 칠한다. */
+    if (!this.artL || this.artL.w !== W || this.artL.h !== H || this.artL.seed !== s.seed || this.artL.style !== s.style) {
+      this.artL = { w: W, h: H, seed: s.seed, style: s.style, cv: [], inst: [] };
+      for (var i = 0; i < ART_LAYERS.length; i++) {
+        var L = ART_LAYERS[i];
+        var lw = L.half ? Math.max(2, Math.round(W / 2)) : W;
+        var lh = L.half ? Math.max(2, Math.round(H / 2)) : H;
+        var c = document.createElement("canvas");
+        c.width = lw; c.height = lh;
+        this.artL.cv.push(c);
+        /* 겹마다 씨앗을 조금 달리해 같은 그림이 두 번 겹치지 않게 한다 */
+        this.artL.inst.push(A.create(c, artOpts(s, lw, lh, (s.seed + i * 104729) >>> 0, L.dens, true)));
+      }
+    }
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = s.palette.bg;
+    ctx.fillRect(0, 0, W, H);
+    var bgg = ctx.createRadialGradient(W * 0.5, H * 0.55, 0, W * 0.5, H * 0.55, Math.max(W, H) * 0.75);
+    bgg.addColorStop(0, hexA(s.palette.ink[1], 0.16));
+    bgg.addColorStop(1, hexA(s.palette.ink[1], 0));
+    ctx.fillStyle = bgg;
+    ctx.fillRect(0, 0, W, H);
+
+    for (var j = 0; j < ART_LAYERS.length; j++) {
+      var LL = ART_LAYERS[j];
+      var inst = this.artL.inst[j];
+      var total = inst.totalFrames;
+      /* 겹의 시간은 정수 배수로만 어긋나게 한다. 5초 한 바퀴가 깨지면
+         현장 패널에서 이어 붙였을 때 끊긴다. */
+      var lt = (t * LL.k) % PERIOD;
+      inst.renderFrame(Math.round((lt / PERIOD) * total) % total);
+
+      ctx.save();
+      ctx.globalCompositeOperation = LL.add ? "lighter" : "source-over";
+      ctx.globalAlpha = LL.alpha;
+      if (LL.blur) ctx.filter = "blur(" + (LL.blur * (Math.max(W, H) / 1200)).toFixed(1) + "px)";
+      ctx.translate(W / 2, H / 2);
+      ctx.scale(LL.scale, LL.scale);
+      ctx.translate(-W / 2, -H / 2);
+      ctx.drawImage(this.artL.cv[j], 0, 0, W, H);   /* 절반 크기 겹은 늘려 덮는다 */
+      ctx.filter = "none";
+      ctx.restore();
+    }
     return true;
   };
 
