@@ -461,20 +461,16 @@
            코드이고, 글자는 그 위에 한 줄만 얹는다. 자격과 실적은
            아래로 내렸다. 만드는 회사로 보이는 것이 먼저다. -->
       <section class="home2-hero" id="top">
-        <!-- 히어로 배경. 예전에는 작품 코드를 iframe으로 띄워 놓고 data-keep으로
-             영원히 돌렸는데, 이 작품은 4K로 렌더하도록 만든 것이라 페이지 전체가
-             5fps로 떨어졌다. 같은 작품을 완전 루프 영상으로 미리 뽑아 건다.
-             재생을 못 하거나 움직임을 줄인 사용자에게는 포스터가 그대로 남는다. -->
-        <div class="home2-art" aria-hidden="true">
-          <img src="./assets/art/flowribbons.webp" alt="" width="1200" height="1200"
-               fetchpriority="high" decoding="async" />
-          <video class="home2-art-video" autoplay muted loop playsinline
-                 preload="metadata" tabindex="-1">
-            <!-- 좁은 화면과 움직임을 줄인 설정에서는 아예 내려받지 않는다.
-                 CSS로 숨기기만 하면 파일은 그대로 받아 간다. -->
-            <source src="./assets/video/hero-flowribbons.webm" type="video/webm"
-                    media="(min-width: 641px) and (prefers-reduced-motion: no-preference)" />
-          </video>
+        <!-- 히어로 배경. 지금까지는 저희가 코드로 만든 작품을 걸어 두었는데,
+             처음 오신 분이 보아야 할 것은 도구가 아니라 실제로 걸린 화면이다.
+             최신 작업물 영상으로 바꾼다.
+
+             영상은 페이지가 한숨 돌린 뒤에 붙인다(hero-video.js). 남의 집
+             재생기를 첫 화면에 바로 끼워 넣으면 제목 글자가 그만큼 늦게 뜬다.
+             움직임을 줄인 설정에서는 아예 붙이지 않는다. -->
+        <div class="home2-art" aria-hidden="true"
+             data-hero-video="1222907160"
+             data-hero-title="오늘은 봄날 최신 작업">
         </div>
 
         <div class="home2-body">
@@ -951,6 +947,7 @@
     </script>
     <script src="./sky.js?v=20260821-clean"></script>
     <script src="./air-art.js?v=20260821-clean"></script>
+    <script src="./hero-video.js?v=20260905-work" defer></script>
     <script src="./type-wall.js?v=20260821-clean"></script>
     <script src="./regional-live-data.js?v=20260823-perf"></script>
     <script>
