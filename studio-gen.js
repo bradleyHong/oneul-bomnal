@@ -32,6 +32,29 @@
 
   /* ── 색 팔레트 ────────────────────────────────────────────
    * 낱말에서 고르고, 없으면 씨앗으로 고른다. */
+  /* 라이브러리 2,234편에서 배운 색.
+   * 사람이 고른 조합이 아니라 실제로 같이 찍힌 조합이다. 프레임마다
+   * 대표색 다섯을 세고 비슷한 것끼리 묶어, 무리의 한가운데에 있는
+   * 실제 화면 하나를 대표로 삼았다. n은 그 색으로 찍힌 편수다. */
+  var MINED = [
+    { id: "먹빛", bg: "#020203", ink: ["#161718", "#2C2D2E", "#494B4D", "#6D7073", "#9B9FA2"], n: 319 },
+    { id: "하늘빛", bg: "#070A0C", ink: ["#374E5E", "#638196", "#97B1CA", "#D6E7F3", "#202A2F"], n: 248 },
+    { id: "쪽빛", bg: "#080913", ink: ["#424794", "#641C5E", "#260D34", "#9B4A81", "#558EBF"], n: 196 },
+    { id: "안개", bg: "#181818", ink: ["#BBBBBD", "#B0B1B2", "#A3A3A4", "#959494", "#C9CACB"], n: 181 },
+    { id: "짙은 금빛", bg: "#1E1600", ink: ["#F9AA00", "#995400", "#351800", "#D07A00", "#6A3400"], n: 163 },
+    { id: "밝은 하늘빛", bg: "#0C171D", ink: ["#63B5E6", "#2290D9", "#8D5DA9", "#B39BCC", "#54358C"], n: 147 },
+    { id: "하늘빛 2", bg: "#05090C", ink: ["#2C4C5E", "#0C3044", "#526B73", "#7C8E8D", "#ABB3A2"], n: 145 },
+    { id: "홍빛", bg: "#070202", ink: ["#3B1610", "#883D25", "#E7251C", "#E19523", "#E45C65"], n: 132 },
+    { id: "밝은 주홍빛", bg: "#0E0D0B", ink: ["#716555", "#B59A7B", "#8C7D6C", "#CFB796", "#3E3E2B"], n: 125 },
+    { id: "자줏빛", bg: "#060304", ink: ["#341C23", "#84393A", "#E42847", "#EA8460", "#4E2363"], n: 92 },
+    { id: "금빛", bg: "#0C0B06", ink: ["#5D5632", "#393B20", "#7E6D45", "#CED5DC", "#A3985E"], n: 92 },
+    { id: "먹빛 2", bg: "#120F0F", ink: ["#8B7875", "#A38F8B", "#BFAAA5", "#4A3E3E", "#221B1E"], n: 90 },
+    { id: "안개 2", bg: "#0F0D0F", ink: ["#796877", "#594656", "#47112C", "#94184E", "#ECB7BE"], n: 81 },
+    { id: "쪽빛 2", bg: "#030206", ink: ["#1C1330", "#322158", "#3D3C90", "#723A78", "#9069C5"], n: 78 },
+    { id: "짙은 쪽빛", bg: "#010205", ink: ["#0D102A", "#1C2353", "#2B3C88", "#4460BF", "#83A3F9"], n: 75 },
+    { id: "연둣빛", bg: "#0B0D08", ink: ["#566841", "#425431", "#687950", "#2D3F23", "#7F8F64"], n: 70 },
+  ];
+
   var PALETTES = [
     { id: "봄빛",   bg: "#0d1420", ink: ["#ffd6e7", "#ffb3d1", "#c9f0d8", "#fff2b8", "#ffffff"] },
     { id: "바다",   bg: "#04121c", ink: ["#7fe3e0", "#3aa8c9", "#bff2ff", "#1f6f8b", "#ffffff"] },
@@ -50,6 +73,8 @@
     { id: "라벤더", bg: "#0d0a16", ink: ["#c3b0ff", "#8f7ae0", "#e8dfff", "#5a4a9a", "#ffffff"] },
     { id: "심해",   bg: "#03080f", ink: ["#2f7fa8", "#1b4f70", "#7fd0e8", "#0f3550", "#cfeaf5"] }
   ];
+
+  PALETTES = MINED.concat(PALETTES);
 
   /* 낱말이 고른 색과 잘 어울리는 이웃들. 같은 문장이라도 여기서 돌려 쓴다. */
   var KIN = {
@@ -184,10 +209,12 @@
     if (!mood) mood = pick(r, MOODS);
 
     // 색 — 낱말이 고른 것 55%, 어울리는 이웃 30%, 나머지는 자유
+    /* 색은 고객이 고른 느낌을 따른다. "수묵 여백"을 눌렀는데 금색이 나오면
+     * 고른 의미가 없다. 변화는 스타일과 씨앗에서 낸다.
+     * 이웃 색은 결이 같은 것들이라 25%까지만 섞는다. */
     var palId;
     var d = r();
-    if (palHint && d < 0.55) palId = palHint;
-    else if (palHint && d < 0.85 && KIN[palHint]) palId = pick(r, KIN[palHint]);
+    if (palHint) palId = (d < 0.75 || !KIN[palHint]) ? palHint : pick(r, KIN[palHint]);
     else palId = pick(r, PALETTES).id;
     var palette = PALETTES.filter(function (p) { return p.id === palId; })[0] || PALETTES[0];
 
@@ -309,13 +336,73 @@
   /** 한 바퀴를 0~1로 정규화한 위상. 정수 배수만 곱해 쓴다. */
   function ph(t, k) { return TAU * k * (t / PERIOD); }
 
+
+  /* ── 깊이 ────────────────────────────────────────────────
+   * 한 겹만 그리면 종이에 그린 그림처럼 평평하다. 촬영본이 깊어 보이는
+   * 까닭은 먼 것이 흐리고 느리게, 가까운 것이 또렷하고 빠르게 움직여서다.
+   * 그래서 같은 그림을 세 겹으로 그린다. 겹마다 크기·속도·흐림이 다르다.
+   * 시간축은 정수 배수만 쓰므로 5초 한 바퀴는 그대로 지켜진다. */
+  var LAYERS = [
+    { scale: 1.22, blur: 7, alpha: 0.42, k: 1, dim: 0.75 },   // 먼 곳
+    { scale: 1.00, blur: 0, alpha: 1.00, k: 1, dim: 1.00 },   // 주 화면
+    { scale: 0.84, blur: 2, alpha: 0.55, k: 2, dim: 1.15 }    // 가까운 곳
+  ];
+
+  /* 면을 채우는 스타일은 겹치면 빛이 포화돼 하얗게 탄다.
+   * 선으로 그리는 것만 세 겹을 준다. */
+  var FILLING = ["wave", "ribbon", "bar", "drift", "grid", "bloom"];
+
+  Gen.prototype.layer = function (ctx, W, H, t, s, draw) {
+    var fills = FILLING.indexOf(s.style) >= 0;
+    var stack = fills ? [{ scale: 1.06, blur: 5, alpha: 0.3, k: 1, dim: 0.8 },
+                         { scale: 1.00, blur: 0, alpha: 1.0, k: 1, dim: 1.0 }]
+                      : LAYERS;
+    if (!this.lc) {
+      this.lc = document.createElement("canvas");
+      this.lx = this.lc.getContext("2d");
+    }
+    if (this.lc.width !== W || this.lc.height !== H) {
+      this.lc.width = W; this.lc.height = H;
+    }
+    var lx = this.lx;
+    for (var i = 0; i < stack.length; i++) {
+      var L = stack[i];
+      lx.setTransform(1, 0, 0, 1, 0, 0);
+      lx.clearRect(0, 0, W, H);
+      // 채우는 스타일은 더하면 바닥이 하얗게 탄다. 덮어써야 물의 층이 보인다.
+      lx.globalCompositeOperation = fills ? "source-over" : "lighter";
+      lx.globalAlpha = 1;
+      // 겹마다 조금 다른 씨앗을 주어 같은 그림이 세 번 겹치지 않게 한다
+      var sub = Object.create(s);
+      sub.seed = (s.seed + i * 104729) >>> 0;
+      sub.density = s.density * (L.scale === 1 ? 1 : (fills ? 0.75 : 0.6));
+      sub.weight = s.weight * L.dim;
+      // 겹의 시간은 정수 배수로만 어긋나게 한다
+      var lt = ((t * L.k) % PERIOD);
+      lx.save();
+      lx.translate(W / 2, H / 2);
+      lx.scale(L.scale, L.scale);
+      lx.translate(-W / 2, -H / 2);
+      draw.call(this, lx, W, H, lt, sub);
+      lx.restore();
+
+      ctx.save();
+      ctx.globalCompositeOperation = fills && L.scale === 1 ? "source-over" : "lighter";
+      ctx.globalAlpha = L.alpha;
+      if (L.blur) ctx.filter = "blur(" + (L.blur * (Math.max(W, H) / 1200)).toFixed(1) + "px)";
+      ctx.drawImage(this.lc, 0, 0);
+      ctx.filter = "none";
+      ctx.restore();
+    }
+  };
+
   Gen.prototype.draw = function (t) {
     var s = this.spec;
     if (!s) return;
     var ctx = this.ctx, W = this.cv.width, H = this.cv.height;
 
     /* 엔진이 맡는 스타일은 한 장을 통째로 그린다. 물기(워터마크)만 얹는다. */
-    if (isArt(s.style) && this.artDraw(t)) { this.watermark(ctx, W, H); return; }
+    if (isArt(s.style) && this.artDraw(t)) { this.post(ctx, W, H, s); this.grade(ctx, W, H, t, s); this.watermark(ctx, W, H); return; }
 
     ctx.globalCompositeOperation = "source-over";
     ctx.globalAlpha = 1;
@@ -327,12 +414,106 @@
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, W, H);
 
-    ctx.globalCompositeOperation = "lighter";
-    (STYLES[s.style] || STYLES.flow).call(this, ctx, W, H, t, s);
+    this.layer(ctx, W, H, t, s, STYLES[s.style] || STYLES.flow);
     ctx.globalCompositeOperation = "source-over";
     ctx.globalAlpha = 1;
 
+    this.post(ctx, W, H, s);
+    this.grade(ctx, W, H, t, s);
     this.watermark(ctx, W, H);
+  };
+
+
+  /* ── 마감 ───────────────────────────────────────────────────
+   * 선을 그린 채로 끝내면 코드 스케치처럼 보인다. 실제 미디어아트는
+   * 빛이 번지고 가장자리가 가라앉아야 화면으로 읽힌다.
+   * 작게 줄여 흐린 뒤 더하는 방식이라 큰 화면에서도 값이 싸다. */
+  Gen.prototype.post = function (ctx, W, H, s) {
+    var bw = Math.max(48, Math.round(W / 4)), bh = Math.max(27, Math.round(H / 4));
+    if (!this.bc || this.bc.width !== bw || this.bc.height !== bh) {
+      this.bc = document.createElement("canvas");
+      this.bc.width = bw; this.bc.height = bh;
+      this.bx = this.bc.getContext("2d");
+    }
+    var bx = this.bx, glow = s.glow || 1;
+    bx.globalCompositeOperation = "copy";
+    bx.filter = "blur(" + Math.max(2, Math.round(bw / 44)) + "px) brightness(1.3) saturate(1.2)";
+    bx.drawImage(this.cv, 0, 0, bw, bh);
+    bx.filter = "none";
+    bx.globalCompositeOperation = "source-over";
+
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.globalAlpha = Math.min(0.7, 0.42 * glow);
+    ctx.drawImage(this.bc, 0, 0, W, H);
+    ctx.globalAlpha = Math.min(0.38, 0.18 * glow);      // 한 겹 더 얹어 번짐을 넓힌다
+    ctx.drawImage(this.bc, -W * 0.01, -H * 0.01, W * 1.02, H * 1.02);
+    ctx.restore();
+
+    // 가장자리를 가라앉혀 눈이 가운데로 모이게 한다
+    var v = ctx.createRadialGradient(W * 0.5, H * 0.5, Math.min(W, H) * 0.22,
+                                     W * 0.5, H * 0.5, Math.max(W, H) * 0.74);
+    v.addColorStop(0, "rgba(0,0,0,0)");
+    v.addColorStop(0.65, "rgba(0,0,0,0.18)");
+    v.addColorStop(1, "rgba(0,0,0,0.5)");
+    ctx.save();
+    ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = v;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+  };
+
+
+  /* ── 그레이드 ────────────────────────────────────────────
+   * 색 보정과 입자. 촬영본과 CG를 가르는 마지막 한 겹이다.
+   * 그림자에 찬 색, 하이라이트에 따뜻한 색을 물리면 화면이 한 덩어리로
+   * 묶이고, 아주 옅은 입자를 얹으면 매끈함이 깨져 눈이 편해진다.
+   * 입자는 매 프레임 새로 그리지 않는다. 미리 만든 한 장을 위치만 바꿔
+   * 얹는다. 5초 한 바퀴에 정확히 맞아떨어지는 자리로만 옮긴다. */
+  Gen.prototype.grade = function (ctx, W, H, t, s) {
+    var ink = s.palette.ink;
+    var warm = ink[0], cool = ink[ink.length - 2] || ink[1];
+
+    // 하이라이트에 따뜻한 색
+    ctx.save();
+    ctx.globalCompositeOperation = "overlay";
+    ctx.globalAlpha = 0.16;
+    ctx.fillStyle = warm;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+
+    // 그림자에 찬 색
+    ctx.save();
+    ctx.globalCompositeOperation = "soft-light";
+    ctx.globalAlpha = 0.2;
+    ctx.fillStyle = cool;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+
+    // 입자
+    if (!this.gr) {
+      var g = document.createElement("canvas");
+      g.width = g.height = 256;
+      var gx = g.getContext("2d");
+      var im = gx.createImageData(256, 256);
+      var r = rng(20260905);
+      for (var i = 0; i < im.data.length; i += 4) {
+        var v = 118 + Math.round((r() - 0.5) * 90);
+        im.data[i] = im.data[i + 1] = im.data[i + 2] = v;
+        im.data[i + 3] = 255;
+      }
+      gx.putImageData(im, 0, 0);
+      this.gr = g;
+    }
+    var step = Math.floor((t / PERIOD) * 5) * 53;      // 다섯 자리만 오간다
+    ctx.save();
+    ctx.globalCompositeOperation = "overlay";
+    ctx.globalAlpha = 0.085;
+    var pat = ctx.createPattern(this.gr, "repeat");
+    ctx.translate(step % 256, (step * 2) % 256);
+    ctx.fillStyle = pat;
+    ctx.fillRect(-256, -256, W + 512, H + 512);
+    ctx.restore();
   };
 
   Gen.prototype.watermark = function (ctx, W, H) {
@@ -357,6 +538,11 @@
     if (W > 260) ctx.fillText("시연본 · 5초 반복", 14, H - 14);
   };
 
+  function hex2rgb(hex) {
+    var n = parseInt(String(hex).slice(1), 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+
   function hexA(hex, a) {
     var n = parseInt(hex.slice(1), 16);
     return "rgba(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + a + ")";
@@ -376,7 +562,7 @@
         var wv = 1 + Math.floor(r() * 3);
         var off = r() * TAU;
         ctx.strokeStyle = hexA(col, 0.22 + r() * 0.4);
-        ctx.lineWidth = (0.6 + r() * 3.4) * (W / 900);
+        ctx.lineWidth = (1.6 + r() * 5.2) * (W / 900) * (s.weight || 1);
         ctx.beginPath();
         for (var x = 0; x <= W; x += 6) {
           var u = x / W;
@@ -390,21 +576,31 @@
     },
 
     /* 파동 — 아래에서 위로 겹치는 물결 면 */
+    /* 파동 — 종이를 오려 겹친 물결. 뒤에서 앞으로 덮어 칠한다.
+     * 반투명으로 겹치면 몇 겹 만에 흰색에 닿아 바닥이 타버린다. */
     wave: function (ctx, W, H, t, s) {
-      var n = Math.round(7 * s.density) + 3, r = rng(s.seed);
+      var n = Math.round(6 * s.density) + 4, r = rng(s.seed);
+      var ink = s.palette.ink, bgc = hex2rgb(s.palette.bg);
       for (var i = 0; i < n; i++) {
-        var col = s.palette.ink[i % s.palette.ink.length];
-        var base = H * (0.25 + 0.85 * (i / n));
+        var f = i / (n - 1 || 1);
+        var c = hex2rgb(ink[i % ink.length]);
+        // 뒤쪽은 배경에 가깝게, 앞쪽은 제 색으로. 그래야 깊이가 생긴다.
+        var mix = 0.2 + 0.75 * f;
+        var col = "rgb(" + Math.round(bgc[0] + (c[0] - bgc[0]) * mix) + ","
+                         + Math.round(bgc[1] + (c[1] - bgc[1]) * mix) + ","
+                         + Math.round(bgc[2] + (c[2] - bgc[2]) * mix) + ")";
+        var base = H * (0.3 + 0.78 * f);
         var amp = (0.03 + r() * 0.07) * H;
         var wv = 1 + Math.floor(r() * 3);
         var k = 1 + Math.floor(r() * 2);
         var off = r() * TAU;
-        ctx.fillStyle = hexA(col, 0.13 + 0.2 * (1 - i / n));
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = col;
         ctx.beginPath();
         ctx.moveTo(0, H);
         for (var x = 0; x <= W; x += 5) {
           var u = x / W;
-          ctx.lineTo(x, base + Math.sin(u * TAU * wv + ph(t, k) + off) * amp
+          ctx.lineTo(x, base + Math.sin(u * TAU * wv + ph(t, k) * s.dir + off) * amp
                           + Math.sin(u * TAU * (wv + 2) - ph(t, k)) * amp * 0.35);
         }
         ctx.lineTo(W, H);
@@ -413,7 +609,6 @@
       }
     },
 
-    /* 입자 — 제자리에서 타원을 도는 점. 한 바퀴가 곧 5초다 */
     particle: function (ctx, W, H, t, s) {
       if (!this.pts) {
         var r0 = rng(s.seed), m = Math.round(280 * s.density), a = [];
@@ -452,7 +647,7 @@
       var n = Math.round(26 * s.density), r = rng(s.seed);
       var cx = W * (0.35 + r() * 0.3), cy = H * (0.35 + r() * 0.3);
       var maxR = Math.max(W, H) * 0.62;
-      ctx.lineWidth = Math.max(1, 1.2 * (W / 900));
+      ctx.lineWidth = Math.max(1.6, 2.6 * (W / 900) * (s.weight || 1));
       for (var i = 0; i < n; i++) {
         var f = (i + 1) / n;
         var col = s.palette.ink[i % s.palette.ink.length];
@@ -539,7 +734,7 @@
         var y0 = r() * H, th = (0.04 + r() * 0.16) * H * s.weight;
         var wv = 1 + Math.floor(r() * 3), k = 1 + Math.floor(r() * 2);
         var off = r() * TAU, amp = (0.04 + r() * 0.14) * H;
-        ctx.fillStyle = hexA(col, (0.1 + r() * 0.18) * s.glow);
+        ctx.fillStyle = hexA(col, (0.2 + r() * 0.22) * s.glow);
         ctx.beginPath();
         for (var x = 0; x <= W; x += 6) {
           var u = x / W;
@@ -565,7 +760,7 @@
         var k = 1 + Math.floor(r() * 3), span = 0.5 + r() * 2.2;
         var a0 = r() * TAU + ph(t, k) * s.dir;
         ctx.strokeStyle = hexA(col, (0.18 + r() * 0.3) * s.glow);
-        ctx.lineWidth = (0.8 + r() * 3.2) * s.weight * (Math.max(W, H) / 900);
+        ctx.lineWidth = (1.8 + r() * 4.6) * s.weight * (Math.max(W, H) / 900);
         ctx.beginPath();
         ctx.ellipse(cx, cy, rr, rr * (H / W < 0.5 ? 2.2 : 0.82), s.rot, a0, a0 + span);
         ctx.stroke();
@@ -589,7 +784,7 @@
       }
       var lim = Math.min(W, H) * 0.26;
       var ink = s.palette.ink;
-      ctx.lineWidth = 0.8 * s.weight * (Math.max(W, H) / 900);
+      ctx.lineWidth = 1.6 * s.weight * (Math.max(W, H) / 900);
       for (var i2 = 0; i2 < pos.length; i2++) {
         for (var j2 = i2 + 1; j2 < pos.length; j2++) {
           var dx = pos[i2][0] - pos[j2][0], dy = pos[i2][1] - pos[j2][1];
@@ -639,7 +834,7 @@
         var k = 1 + Math.floor(r() * 2);
         var turns = 2 + Math.floor(r() * 3);
         ctx.strokeStyle = hexA(col, (0.2 + r() * 0.3) * s.glow);
-        ctx.lineWidth = (1 + r() * 3) * s.weight * (Math.max(W, H) / 900);
+        ctx.lineWidth = (2 + r() * 4.5) * s.weight * (Math.max(W, H) / 900);
         ctx.beginPath();
         for (var u = 0; u <= 1; u += 0.008) {
           var ang = u * TAU * turns + (a2 / arms) * TAU + ph(t, k) * s.dir + s.rot;

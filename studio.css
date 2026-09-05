@@ -1,4 +1,4 @@
-/* 미디어아트 제작기 — 고객 화면 */
+/* 미디어아트 제작기 · 고객 화면 */
 :root {
   --st-ink: #16233a;
   --st-body: #41505f;
@@ -118,7 +118,7 @@
 
 .st-legal { margin: 26px 0 0; font-size: .78rem; color: var(--st-gray); line-height: 1.7; }
 
-/* 견적서 받기 — 가입 없이 이메일만 남기는 자리 */
+/* 견적서 받기 · 가입 없이 이메일만 남기는 자리 */
 .st-form { margin: 4px 0 18px; }
 .st-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
 @media (max-width: 520px) { .st-form-row { grid-template-columns: 1fr; } }
@@ -145,7 +145,7 @@
 .st-form-alt { margin: 14px 0 0; font-size: .82rem; color: var(--st-gray); line-height: 1.65; }
 .st-form-alt a { color: var(--st-blue); font-weight: 600; }
 
-/* 작품 번호 — 시연본과 납품본을 잇는 유일한 값 */
+/* 작품 번호 · 시연본과 납품본을 잇는 유일한 값 */
 .st-code { background: var(--st-pale); border-radius: 12px; padding: 18px 20px; }
 .st-code-num {
   margin: 0; font-size: 1.9rem; font-weight: 800; letter-spacing: .06em;
@@ -155,7 +155,7 @@
 .st-code-note b { color: var(--st-ink); }
 .st-code-sub { margin: 8px 0 0; font-size: .78rem; color: var(--st-gray); }
 
-/* 방금 만든 화면들 — 좋은 것이 지나가 버리지 않게 */
+/* 방금 만든 화면들 · 좋은 것이 지나가 버리지 않게 */
 .st-hist-wrap { margin-top: 20px; }
 .st-hist { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
 .st-hist-item {
@@ -173,7 +173,7 @@
 .st-hist-item.is-on { border-color: var(--st-blue); }
 .st-hist-item.is-on span { color: var(--st-blue); font-weight: 700; }
 
-/* 느낌 고르기 — 문장을 치지 않아도 계속 만들 수 있어야 한다 */
+/* 느낌 고르기 · 문장을 치지 않아도 계속 만들 수 있어야 한다 */
 .st-help { margin: 0 0 10px; font-size: .8rem; color: var(--st-gray); line-height: 1.55; }
 .st-opt-tag {
   font-size: .68rem; font-weight: 600; color: var(--st-gray);
