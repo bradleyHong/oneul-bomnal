@@ -8,6 +8,11 @@
  *   2. 구매한 스톡의 원본 프레임을 공개 화면에 늘어놓는 것은 라이선스의
  *      취지에서 벗어난다. 에셋은 사내 최종 렌더의 입력으로만 쓴다.
  *
+ * 3D 뼈대(assets/mesh)는 이 규칙 안에 있다. 저작권이 풀린 CC0 모형에서
+ * 꼭짓점과 모서리 좌표만 받고 재질·텍스처·색은 버린다. 화면에 나가는 것은
+ * 그 좌표를 받아 우리 코드가 매 프레임 다시 그린 선과 점이다. 남이 만든
+ * 이미지가 그대로 나가는 자리는 한 군데도 없다.
+ *
  * 모든 움직임은 5초를 한 바퀴로 도는 주기 함수다. sin/cos 안의 계수를
  * 정수로만 두면 0초와 5초의 화면이 정확히 같아진다. 현장 패널에서
  * 이어 붙였을 때 끊기지 않아야 하므로 이것은 타협하지 않는다.
@@ -149,20 +154,40 @@
   /* 세로 기둥에 어울리는 것과 가로 띠에 어울리는 것을 갈라 적는다.
    * 가운데로 모이는 그림(만다라·궤도·리사주)을 1:6 기둥에 걸면 위아래가
    * 통째로 빈다. 실제로 그렇게 나왔다. */
-  var ART_TALL = ["hanji", "smoke", "dotmatrix", "weave", "terrace", "stripe", "branch",
+  /* 2판 목록. 이미 나간 BN2- 번호가 이걸 쓴다. 한 칸도 바꾸거나
+   * 끼워 넣지 않는다. 새로 더할 것은 아래 3판 쪽에만 적는다. */
+  var ART_TALL_V2 = ["hanji", "smoke", "dotmatrix", "weave", "terrace", "stripe", "branch",
                   "rain", "bamboo", "flock", "bloom", "inkwash", "thread", "paper",
                   /* VJ 풍 중 세로로 흐르거나 줄로 서는 것 */
                   "bars", "chevron", "strobe", "plasma"];
-  var ART_WIDE = ["moire", "oscillo", "slitscan", "dotmatrix", "weave", "terrace", "blinds",
+  var ART_WIDE_V2 = ["moire", "oscillo", "slitscan", "dotmatrix", "weave", "terrace", "blinds",
                   "stripe", "lowpoly", "hanji", "wave", "warp", "topo", "magnet", "isocity",
                   /* 가운데로 모이는 터널·만화경·폭발은 넣지 않는다.
                      32:9 에 걸면 가운데만 차고 좌우가 통째로 빈다. */
                   "bars", "chevron", "strobe", "plasma", "flythrough"];
-  function withPrefix(list) {
-    var have = artIds();
+
+  /* 3판 — 여기에만 더한다.
+   * 3D 뼈대 세 종(와이어프레임·점군·홀로그램)은 가운데에 물체 하나를
+   * 세우는 그림이라 1:6 기둥과 32:9 띠에는 넣지 않았다. 걸면 가운데만
+   * 차고 나머지가 통째로 빈다. 터널·만화경을 뺀 것과 같은 이유다. */
+  var ART_TALL = ART_TALL_V2.concat([]);
+  var ART_WIDE = ART_WIDE_V2.concat([]);
+
+  function withPrefix(list, have) {
+    have = have || artIds();
     return list.map(function (id) { return ART_PREFIX + id; })
                .filter(function (id) { return have.indexOf(id) >= 0; });
   }
+
+  /* 2판이 쓰던 엔진 스타일은 앞에서부터 64종이다.
+   *
+   * 엔진에 스타일을 더하면 studio-engine.js 의 목록이 길어진다. 그러면
+   * 고르는 자리가 밀려서, 이미 팔린 BN2- 번호가 다른 그림으로 렌더된다.
+   * 결제하면 같은 번호로 그려 준다고 화면에 적어 놨으므로 그럴 수 없다.
+   * 그래서 2판은 앞 64종만 본다. 목록이 append 로만 늘어나는지는
+   * tools/check-studio.mjs 가 표지(chevron)로 확인한다. */
+  var ART_V2_COUNT = 64;
+  function artIdsV2() { return artIds().slice(0, ART_V2_COUNT); }
 
   /* 1판 — 엔진을 붙이기 전 목록. 이미 나간 BN- 번호가 이걸 쓴다.
      한 칸도 바꾸거나 끼워 넣지 않는다. */
@@ -172,11 +197,20 @@
     even:  BASE_IDS
   };
 
+  /* 2판 — 엔진 64종까지. 이미 나간 BN2- 번호가 이걸 쓴다. */
+  var FIT_V2 = {
+    tall:  FIT_V1.tall.concat(withPrefix(ART_TALL_V2, artIdsV2())),
+    wide:  FIT_V1.wide.concat(withPrefix(ART_WIDE_V2, artIdsV2())),
+    even:  BASE_IDS.concat(artIdsV2())
+  };
+
+  /* 3판 — 지금 나가는 번호(BN3-). */
   var FIT = {
     tall:  FIT_V1.tall.concat(withPrefix(ART_TALL)),
     wide:  FIT_V1.wide.concat(withPrefix(ART_WIDE)),
     even:  STYLE_IDS
   };
+  var FITS = { 1: FIT_V1, 2: FIT_V2, 3: FIT };
 
   /* ── 문장 읽기 ────────────────────────────────────────────
    * 낱말은 방향만 잡는다. 고정하지 않는다.
@@ -192,13 +226,13 @@
    * 이미 나간 번호가 다른 그림이 된다. 화면에는 "같은 번호로 렌더링해
    * 드립니다"라고 적혀 있으므로 그렇게 두면 안 된다.
    *
-   *   v=1  기존 14종만. BN- 번호가 예전 그대로 나온다.
-   *   v=2  엔진 56종까지 70종. BN2- 번호가 쓴다.
+   *   v=1  기존 14종만.            BN- 번호가 쓴다.
+   *   v=2  + 엔진 64종 = 78종.     BN2- 번호가 쓴다.
+   *   v=3  + 3D 뼈대 3종 = 81종.   BN3- 번호가 쓴다(지금 나가는 것).
    *
    * 색·느낌·나머지 값은 두 판이 같다. r()을 부르는 횟수가 같기 때문이다. */
   function compose(text, seed, aspect, v) {
     var r = rng(seed);
-    var v2 = v !== 1;
     var palHint = null, styleHint = null, tags = [];
 
     LEX.forEach(function (e) {
@@ -225,7 +259,7 @@
 
     // 스타일 — 화면 비율에 맞는 것들 중에서 고른다
     var ar = aspect || 16 / 9;
-    var F = v2 ? FIT : FIT_V1;
+    var F = FITS[v] || FIT;      /* 판을 모르면 최신 판. 옛 번호는 옛 목록으로 */
     var fit = ar >= 2.2 ? F.wide : (ar <= 0.62 ? F.tall : F.even);
     var style;
     if (styleHint && fit.indexOf(styleHint) >= 0 && r() < 0.45) style = styleHint;

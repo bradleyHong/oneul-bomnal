@@ -160,24 +160,29 @@
     /* 작품 번호 = 느낌 번호(위 5비트) + 씨앗(아래 19비트).
      * 문장 정보가 번호 안에 들어 있어야 붙여넣기로 같은 화면이 나온다.
      *
-     * 앞의 BN / BN2는 그림을 어느 목록에서 뽑았는지를 가리킨다.
-     * 스타일이 14종에서 70종으로 늘어난 순간, 같은 씨앗이라도 pick이
-     * 다른 칸을 집어 예전 번호가 다른 그림이 된다. 이미 나간 BN- 번호는
-     * 예전 목록으로 그대로 되살리고, 새로 만드는 것만 BN2-로 낸다. */
-    var CODE_V = 2;
+     * 앞의 BN / BN2 / BN3은 그림을 어느 목록에서 뽑았는지를 가리킨다. */
+    /* 작품 번호의 판.
+       그림 종류가 늘면 고르는 자리가 밀려서 같은 번호가 다른 그림이 된다.
+       결제하면 같은 번호로 그려 준다고 화면에 적어 놨으므로, 늘릴 때마다
+       판을 올리고 옛 번호는 옛 목록으로 그린다.
+         BN-  1판  기본 14종
+         BN2- 2판  + 엔진 64종
+         BN3- 3판  + 3D 뼈대 3종 */
+    var CODE_V = 3;
     function code(idx, seed, v) {
       var n = (((idx & 31) << 19) | (seed & 0x7FFFF)) >>> 0;
-      return ((v || CODE_V) === 1 ? "BN-" : "BN2-") + n.toString(16).toUpperCase().padStart(6, "0");
+      var vv = v || CODE_V;
+      return "BN" + (vv === 1 ? "" : String(vv)) + "-" + n.toString(16).toUpperCase().padStart(6, "0");
     }
     function parseCode(txt) {
       var t = String(txt || "").trim();
       var m = /([0-9A-Fa-f]{6})\s*$/.exec(t);
       if (!m) return null;
       var n = parseInt(m[1], 16) >>> 0;
-      /* BN2가 아니면 예전 번호로 본다. 접두어 없이 여섯 자리만 적어 온
-         경우도 예전 번호로 친다. 새 번호는 늘 BN2를 달고 나가기 때문이다. */
-      var v = /BN2/i.test(t) ? 2 : 1;
-      return { idx: (n >> 19) & 31, seed: n & 0x7FFFF, v: v };
+      /* 판 번호가 없으면 1판으로 본다. 접두어 없이 여섯 자리만 적어 온
+         경우도 마찬가지다. 2판부터는 늘 숫자를 달고 나가기 때문이다. */
+      var vm = /BN([0-9]+)/i.exec(t);
+      return { idx: (n >> 19) & 31, seed: n & 0x7FFFF, v: vm ? parseInt(vm[1], 10) : 1 };
     }
     function newSeed() { return Math.floor(Math.random() * 0x7FFFF); }
 
@@ -322,7 +327,7 @@
     var elLoadMsg = $("[data-st-load-msg]", root);
     function loadCode() {
       var p2 = parseCode(elLoad.value);
-      if (!p2) { elLoadMsg.textContent = "BN2- 또는 BN- 으로 시작하는 번호를 넣어 주세요."; return; }
+      if (!p2) { elLoadMsg.textContent = "BN3- 또는 BN2-, BN- 으로 시작하는 번호를 넣어 주세요."; return; }
       if (p2.idx === CUSTOM && !(elStory.value || "").trim()) {
         elLoadMsg.textContent = "직접 적으신 문장으로 만든 번호입니다. 그 문장을 아래에 적어 주세요.";
         return;

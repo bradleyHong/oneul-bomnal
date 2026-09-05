@@ -229,7 +229,10 @@ function create(canvas, opts) {
                        /* VJ 풍도 같은 병에 걸렸다. 만화경 353→4.4ms(80배),
                           폭발 118→3.3(36배), 터널 69→4.3(16배),
                           지형 비행 47→4.4(11배). */
-                       kaleido: 1, burst: 1, tunnel: 1, flythrough: 1 };
+                       kaleido: 1, burst: 1, tunnel: 1, flythrough: 1,
+                       /* 점군은 꼭짓점 900개를 하나씩 찍는다. 찍을 때마다
+                          그림자가 따라붙어 379→3.6ms 였다. 같은 병이다. */
+                       pointcloud: 1 };
 
   let bloomBuf = null;
   function applyBloom(strength) {
@@ -255,6 +258,69 @@ function create(canvas, opts) {
      버퍼는 크기가 같으면 다시 쓴다. 프레임마다 새로 잡으면 4K에서
      메모리가 출렁인다. */
   let attBuf = null;
+
+  /* ── 3D 뼈대 ──────────────────────────────────────────────────
+     studio-meshes.js 가 실어 온 좌표를 쓴다. 남의 원본 파일도, 원본이
+     렌더된 그림도 화면에 나가지 않는다. 남은 것은 꼭짓점과 모서리 번호
+     뿐이고, 선과 점은 아래 코드가 매 프레임 다시 긋는다. 그래야
+     "전부 코드로 그린다"는 말이 그대로 남는다.
+     출처와 라이선스는 assets/mesh/LICENSE.md 에 있다(전부 CC0).
+
+     한 바퀴가 정확히 DUR 이다. 그래야 마지막 프레임이 첫 프레임으로
+     이어진다. */
+  const MESH_TABLE = global.StudioMeshes || null;
+  const MESH_IDS = (global.StudioMeshIds || []).filter((id) => MESH_TABLE && MESH_TABLE[id]);
+  let meshPos = null;
+
+  /** 시드마다 다른 모델을 고른다. 뼈대가 안 실렸으면 null. */
+  function meshOf() {
+    if (!MESH_IDS.length) return null;
+    return MESH_TABLE[MESH_IDS[Math.floor(seeds[880].a * MESH_IDS.length) % MESH_IDS.length]];
+  }
+
+  /** 회전·기울임·원근을 한 번에.
+      결과는 꼭짓점마다 [화면x, 화면y, 앞뒤(0 멀다 ~ 1 가깝다)] 세 값. */
+  function meshProject(m, t, wobble) {
+    const v = m.v, n = (v.length / 3) | 0;
+    /* 좌표는 0~2047 정수로 담겨 있다. -0.5~0.5 로 편다. */
+    const Q = m.q || 2048, QH = Q * 0.5;
+    if (!meshPos || meshPos.length < n * 3) meshPos = new Float32Array(n * 3);
+    const p = meshPos;
+    const ph = (t / DUR) * TAU;
+    const spin = P.motion === "still" ? 0 : ph;
+    const cy = Math.cos(spin), sy = Math.sin(spin);
+    /* 기울기는 시드에서 한 번 정해지고 그대로 간다. 매 프레임 흔들면
+       같은 작품 번호가 늘 같은 구도로 안 나온다. */
+    const tilt = (seeds[881].b - 0.5) * 0.9 + 0.18;
+    const ct = Math.cos(tilt), st = Math.sin(tilt);
+    /* 크기와 자리는 시드마다 조금씩 다르다. 전부 한가운데 같은 크기로
+       세우면 열여섯 모델이 다 제품 사진처럼 보인다. 화면 밖으로 나가지
+       않는 선에서만 흔든다(반지름 0.43 + 치우침 0.07 < 0.5). */
+    const R = Math.min(W, H) * (0.72 + (seeds[882].c - 0.5) * 0.26) * clamp(k.scale, 0.5, 1.4);
+    const OX = W * (seeds[883].d - 0.5) * 0.26;
+    const OY = H * (seeds[884].a - 0.5) * 0.13;
+    const DIST = 2.6;
+    const bob = Math.sin(ph) * 0.03;         /* 주기가 DUR 이라 루프가 맞는다 */
+    for (let i = 0; i < n; i++) {
+      let x = (v[i * 3] - QH) / Q, y = (v[i * 3 + 1] - QH) / Q + bob, z = (v[i * 3 + 2] - QH) / Q;
+      if (wobble) {
+        const s = seeds[i % seeds.length];
+        const a = ph + s.a * TAU;            /* 주기 DUR, 배수도 정수라 루프 유지 */
+        x += Math.sin(a) * wobble * (0.4 + s.b * 0.6);
+        y += Math.cos(a * 2) * wobble * (0.4 + s.c * 0.6);
+        z += Math.sin(a * 2) * wobble * (0.4 + s.d * 0.6);
+      }
+      const X = x * cy + z * sy;
+      let Z = z * cy - x * sy;
+      const Y = y * ct - Z * st;
+      Z = y * st + Z * ct;
+      const w = DIST / (DIST - Z);
+      p[i * 3]     = W / 2 + OX + X * R * w;
+      p[i * 3 + 1] = H / 2 + OY - Y * R * w;
+      p[i * 3 + 2] = clamp(Z * 1.6 + 0.5, 0, 1);
+    }
+    return p;
+  }
 
   const STYLES = {
 
@@ -2110,6 +2176,118 @@ function create(canvas, opts) {
       }
     },
 
+    /* 65 와이어프레임 — CC0 3D 뼈대를 선으로만 다시 긋는다.
+       모서리 1,400개를 하나씩 stroke() 하면 값이 감당이 안 된다.
+       앞뒤 다섯 칸으로 묶어 다섯 번만 긋는다. */
+    wire(t) {
+      const m = meshOf();
+      if (!m) { STYLES.lowpoly(t); return; }
+      const p = meshProject(m, t, 0);
+      const e = m.e, ne = (e.length / 2) | 0;
+      /* 밀도가 낮으면 모서리를 솎는다. 규칙적으로 건너뛰어야 프레임이
+         바뀌어도 같은 모서리가 빠져 그림이 깜빡이지 않는다. */
+      const keep = Math.max(1, Math.round(1 / clamp(0.28 + k.density * 0.9, 0.14, 1)));
+      const BUCK = 5;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      for (let b = 0; b < BUCK; b++) {
+        const d = (b + 0.5) / BUCK;
+        ctx.lineWidth = Math.max(0.7, S * (0.9 + d * 2.4));
+        ctx.strokeStyle = tone(3 - Math.min(3, b), (0.10 + 0.58 * d) * k.contrast);
+        ctx.beginPath();
+        for (let i = 0; i < ne; i += keep) {
+          const a = e[i * 2], c = e[i * 2 + 1];
+          const dm = (p[a * 3 + 2] + p[c * 3 + 2]) * 0.5;
+          if (Math.min(BUCK - 1, Math.floor(dm * BUCK)) !== b) continue;
+          ctx.moveTo(p[a * 3], p[a * 3 + 1]);
+          ctx.lineTo(p[c * 3], p[c * 3 + 1]);
+        }
+        ctx.stroke();
+      }
+    },
+
+    /* 66 점군 — 같은 뼈대에서 꼭짓점만 남겨 흩뿌린다.
+       arc() 는 느리고 moveTo 를 빠뜨리면 점끼리 선으로 이어진다.
+       도트매트릭스에서 한 번 당한 자리라 여기는 fillRect 로 찍는다. */
+    pointcloud(t) {
+      const m = meshOf();
+      if (!m) { STYLES.constellation(t); return; }
+      const p = meshProject(m, t, 0.008 + 0.026 * k.speed);
+      const n = (m.v.length / 3) | 0;
+      const e = m.e, ne = (e.length / 2) | 0;
+      /* 꼭짓점 500여 개만 찍으면 형태가 안 읽힌다. 뼈만 남은 별자리처럼
+         보인다. 모서리 위에도 점을 앉혀 윤곽을 메운다. 자리는 시드에서
+         한 번 정해지므로 프레임이 넘어가도 점이 떨리지 않는다. */
+      const PER = 2 + Math.round(k.density * 5);
+      const BUCK = 6;
+      ctx.globalCompositeOperation = ADD;
+      for (let b = 0; b < BUCK; b++) {
+        const d = (b + 0.5) / BUCK;
+        const rv = Math.max(1, S * (1.6 + d * 3.6));
+        const re = Math.max(1, S * (1.0 + d * 2.0));
+        ctx.fillStyle = tone(3 - Math.min(3, b), (0.20 + 0.62 * d) * k.contrast);
+        for (let i = 0; i < n; i++) {
+          if (Math.min(BUCK - 1, Math.floor(p[i * 3 + 2] * BUCK)) !== b) continue;
+          ctx.fillRect(p[i * 3] - rv * 0.5, p[i * 3 + 1] - rv * 0.5, rv, rv);
+        }
+        for (let i = 0; i < ne; i++) {
+          const a = e[i * 2], c = e[i * 2 + 1];
+          const da = p[a * 3 + 2], dc = p[c * 3 + 2];
+          if (Math.min(BUCK - 1, Math.floor((da + dc) * 0.5 * BUCK)) !== b) continue;
+          const ax = p[a * 3], ay = p[a * 3 + 1], bx = p[c * 3], by = p[c * 3 + 1];
+          const s = seeds[i % seeds.length];
+          for (let j = 0; j < PER; j++) {
+            const u = (j + 0.2 + s.b * 0.6) / PER;
+            ctx.fillRect(ax + (bx - ax) * u - re * 0.5, ay + (by - ay) * u - re * 0.5, re, re);
+          }
+        }
+      }
+      ctx.globalCompositeOperation = "source-over";
+    },
+
+    /* 67 홀로그램 — 뼈대를 빛으로 쌓고 주사선과 훑는 띠를 얹는다. */
+    hologram(t) {
+      const m = meshOf();
+      if (!m) { STYLES.neonsign(t); return; }
+      const p = meshProject(m, t, 0);
+      const e = m.e, ne = (e.length / 2) | 0;
+      const ph = t / DUR;
+      ctx.globalCompositeOperation = ADD;
+      ctx.lineCap = "round";
+      const BUCK = 4;
+      for (let b = 0; b < BUCK; b++) {
+        const d = (b + 0.5) / BUCK;
+        ctx.lineWidth = Math.max(0.8, S * (0.8 + d * 1.8));
+        ctx.strokeStyle = tone(b === BUCK - 1 ? 1 : 2, (0.08 + 0.36 * d) * k.contrast);
+        ctx.beginPath();
+        for (let i = 0; i < ne; i++) {
+          const a = e[i * 2], c = e[i * 2 + 1];
+          const dm = (p[a * 3 + 2] + p[c * 3 + 2]) * 0.5;
+          if (Math.min(BUCK - 1, Math.floor(dm * BUCK)) !== b) continue;
+          ctx.moveTo(p[a * 3], p[a * 3 + 1]);
+          ctx.lineTo(p[c * 3], p[c * 3 + 1]);
+        }
+        ctx.stroke();
+      }
+      /* 가로 주사선 한 벌. 한 번에 긋는다. */
+      const gap = Math.max(3, Math.round(6 * S * 1.4));
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = tone(0, 0.05 + 0.06 * k.contrast);
+      ctx.beginPath();
+      for (let y = 0.5; y < H; y += gap) { ctx.moveTo(0, y); ctx.lineTo(W, y); }
+      ctx.stroke();
+      /* 위로 훑고 지나가는 띠. 한 바퀴에 두 번이라 루프가 맞는다. */
+      const bandH = H * 0.16;
+      const by = (1 - ((ph * 2) % 1)) * (H + bandH) - bandH;
+      const g = ctx.createLinearGradient(0, by, 0, by + bandH);
+      g.addColorStop(0, tone(1, 0));
+      g.addColorStop(0.5, tone(1, 0.09 + 0.11 * k.glow));
+      g.addColorStop(1, tone(1, 0));
+      ctx.fillStyle = g;
+      ctx.fillRect(0, by, W, bandH);
+      ctx.globalCompositeOperation = "source-over";
+    },
+
   };
 
   /* ── 마감 처리 ────────────────────────────────────────────────
@@ -2216,6 +2394,8 @@ const STYLE_LABELS = [
   ["blinds", "블라인드"], ["magnet", "자기장"], ["terrace", "계단 지형"], ["weave", "직조"],
   ["strobe", "스트로브"], ["tunnel", "터널"], ["bars", "스펙트럼"], ["kaleido", "만화경"],
   ["flythrough", "지형 비행"], ["burst", "비트 폭발"], ["plasma", "플라스마"], ["chevron", "셰브론"],
+
+  ["wire", "와이어프레임"], ["pointcloud", "점군"], ["hologram", "홀로그램"],
 ];
 
 global.StudioArt = {

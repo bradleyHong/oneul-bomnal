@@ -5,9 +5,9 @@
  * 한 화면을 두 곳에 팔면 안 된다. 기관 A의 로비에 걸린 화면이 기관 B의
  * 외벽에도 걸려 있으면, 우리가 판 것이 "그 화면"이 아니었다는 뜻이 된다.
  *
- *   node tools/mark-sold.mjs BN2-0AC6F6 "구미시청"
+ *   node tools/mark-sold.mjs BN3-0AC6F6 "구미시청"
  *   node tools/mark-sold.mjs --list
- *   node tools/mark-sold.mjs --remove BN2-0AC6F6      (계약 취소 등)
+ *   node tools/mark-sold.mjs --remove BN3-0AC6F6      (계약 취소 등)
  *
  * 잠근 뒤 배포해야 실제로 막힌다. 이 파일은 사이트가 그대로 읽는다.
  */
@@ -23,7 +23,7 @@ db.codes = Array.isArray(db.codes) ? db.codes : [];
 const args = process.argv.slice(2);
 const norm = (s) => String(s || "").trim().toUpperCase();
 /** 화면이 내는 형식만 받는다. 손으로 적다 한 글자 틀리면 엉뚱한 번호가 잠긴다. */
-const VALID = /^BN2?-[0-9A-F]{6}$/;
+const VALID = /^BN[0-9]*-[0-9A-F]{6}$/;
 
 const save = () => {
   db.updated = new Date().toISOString().slice(0, 10);
@@ -49,7 +49,7 @@ if (args[0] === "--remove") {
 
 const code = norm(args[0]);
 if (!VALID.test(code)) {
-  console.log(`형식이 다릅니다: ${code}\n화면에 나오는 그대로 적어 주세요. 예) BN2-0AC6F6`);
+  console.log(`형식이 다릅니다: ${code}\n화면에 나오는 그대로 적어 주세요. 예) BN3-0AC6F6`);
   process.exit(1);
 }
 if (db.codes.some((c) => c.code === code)) {
