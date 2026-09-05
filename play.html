@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>봄날 플레이어</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+  canvas { display: block; width: 100vw; height: 100vh; }
+  body.is-playing { cursor: none; }
+  /* 번호가 없거나 틀렸을 때만 보이는 안내. 화면에 글자를 띄우는 건 이때뿐이다. */
+  #msg { position: fixed; inset: 0; display: grid; place-items: center; color: #9aa6b8;
+         font: 15px/1.7 -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+         text-align: center; padding: 24px; }
+  #msg b { color: #e8ecf3; font-size: 18px; }
+  #msg code { color: #cfe0ff; }
+  #msg[hidden] { display: none; }
+</style>
+<script src="./studio-meshes.js?v=20260905-mesh3"></script>
+<script src="./studio-engine.js?v=20260905-88"></script>
+<script src="./studio-gen.js?v=20260905-88"></script>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="msg" hidden></div>
+<script>
+/* 봄날 플레이어 — 작품 번호 하나로 작품이 돈다.
+ *
+ * 이 파일이 "HTML 로 전달되는 작품"이다. 영상 파일이 아니라 엔진이 그때그때
+ * 그린다. 그래서 어느 화면 크기에 꽂아도 그 크기로 그린다.
+ *
+ *   play.html?code=BN4-0AC6F6            화면 크기 그대로
+ *   play.html?code=BN4-0AC6F6&w=3840&h=1080   규격을 정해서 (띠·기둥)
+ *   play.html?code=BN4-0AC6F6&text=...   직접 적은 문장으로 만든 번호(느낌 31)
+ *
+ * 전용 플레이어(라즈베리파이 5)는 이 파일과 스크립트 석 장을 통째로 품고
+ * 켜질 때 이 주소를 연다. 인터넷이 없어도 돈다.
+ *
+ * 계약된 번호는 도장 없이, 아닌 번호는 "시연본" 도장을 찍는다.
+ * 목록은 sold-codes.json(웹) 또는 license.json(플레이어에 넣어 보낸 것)에서 본다. */
+(function () {
+  var q = new URLSearchParams(location.search);
+  var raw = (q.get("code") || "").trim().toUpperCase();
+  var m = /^(BN(\d*))-([0-9A-F]{6})$/.exec(raw);
+  var msg = document.getElementById("msg");
+  function show(html) { msg.innerHTML = html; msg.hidden = false; }
+  if (!m) {
+    show("<div><b>봄날 플레이어</b><br>주소 뒤에 작품 번호를 붙여 주세요.<br><code>play.html?code=BN4-0AC6F6</code></div>");
+    return;
+  }
+  var code = m[1] + "-" + m[3];
+  var v = m[2] ? parseInt(m[2], 10) : 1;
+  var n = parseInt(m[3], 16) >>> 0;
+  var idx = (n >> 19) & 31, seed = n & 0x7FFFF;
+  var GEN = window.BomnalGen;
+  var text;
+  if (idx === 31) {
+    text = (q.get("text") || "").trim();
+    if (!text) { show("<div><b>" + code + "</b><br>직접 적으신 문장으로 만든 번호입니다.<br>주소에 <code>&text=문장</code>을 함께 붙여 주세요.</div>"); return; }
+  } else if (idx >= GEN.SCENES.length) {
+    show("<div><b>" + code + "</b><br>이 플레이어가 모르는 느낌 번호입니다. 플레이어를 새 판으로 바꿔 주세요.</div>");
+    return;
+  } else {
+    text = GEN.SCENES[idx].text;
+  }
+
+  var cv = document.getElementById("c");
+  var gen = new GEN.Gen(cv);
+  var W = parseInt(q.get("w"), 10), H = parseInt(q.get("h"), 10);
+  var fixed = W > 0 && H > 0;
+
+  function fit() {
+    /* 규격을 정해 줬으면 그 비율로 그리고 화면에 맞춰 늘린다.
+       안 정했으면 꽂힌 화면 크기 그대로. 4K 는 그대로 4K 로 그린다. */
+    var dpr = Math.min(2, window.devicePixelRatio || 1);
+    var sw = Math.round(innerWidth * dpr), sh = Math.round(innerHeight * dpr);
+    if (fixed) {
+      var sc = Math.min(sw / W, sh / H);
+      cv.width = Math.max(64, Math.round(W * sc)); cv.height = Math.max(64, Math.round(H * sc));
+      cv.style.width = Math.round(cv.width / dpr) + "px"; cv.style.height = Math.round(cv.height / dpr) + "px";
+      cv.style.position = "fixed"; cv.style.left = "50%"; cv.style.top = "50%"; cv.style.transform = "translate(-50%,-50%)";
+    } else {
+      cv.width = sw; cv.height = sh;
+    }
+    var ar = fixed ? W / H : cv.width / cv.height;
+    var spec = GEN.compose(text, seed, ar, v);
+    spec.idx = idx; spec.v = v;
+    /* 담아 둔 화면에서 스타일 이름을 같이 넘겨 준 경우 — 판이 밀려도 그 그림 */
+    var st = q.get("style");
+    if (st && GEN.hasStyle(st)) spec.style = st;
+    gen.set(spec);
+  }
+
+  /* 계약된 번호면 도장을 뗀다. 목록을 못 읽으면 시연본으로 둔다. */
+  function licensed(done) {
+    var hit = false;
+    function check(list) {
+      return Array.isArray(list) && list.some(function (c) { return String(c.code || c).toUpperCase() === code; });
+    }
+    function tryUrl(u, next) {
+      fetch(u, { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) { if (d && check(d.codes)) hit = true; next(); })
+        .catch(function () { next(); });
+    }
+    /* 전용 플레이어(한 파일로 구운 것)는 계약 여부가 안에 박혀 있다. 파일에서 fetch 는 막힌다. */
+    if (window.BOMNAL_BAKED && "licensed" in window.BOMNAL_BAKED) return done(!!window.BOMNAL_BAKED.licensed);
+    tryUrl("./license.json", function () {
+      if (hit) return done(true);
+      tryUrl("./sold-codes.json", function () { done(hit); });
+    });
+  }
+
+  fit();
+  licensed(function (ok) {
+    gen.mark = ok ? "" : "시연본 · 봄날퍼블릭아트";
+    document.body.classList.add("is-playing");
+    gen.start();
+  });
+  var rt;
+  window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(function () { fit(); }, 200); });
+  /* 화면이 멈추면(그래픽 드라이버 사정) 다시 돈다. 전용 플레이어는 사람이 없다. */
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) gen.start(); });
+})();
+</script>
+</body>
+</html>

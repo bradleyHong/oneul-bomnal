@@ -59,18 +59,19 @@ if (!gen.includes("STYLE_IDS = BASE_IDS.concat(artIds())")) {
 
 /* 화면 비율별 목록에 적은 이름이 엔진에 실제로 있는가.
    오타 하나면 그 스타일만 조용히 후보에서 빠진다. */
-for (const key of ["ART_TALL_V2", "ART_WIDE_V2"]) {
-  const i = gen.indexOf(`var ${key} = [`);
+for (const key of ["ART_TALL_V2", "ART_WIDE_V2", "ART_TALL_V3", "ART_WIDE_V3"]) {
+  /* 2판은 배열 그대로, 3판은 2판에 concat 한 꼴이다. 둘 다 "]" 전까지 읽는다. */
+  const i = gen.indexOf(`var ${key} = `);
   if (i < 0) { fails.push(`studio-gen.js에 ${key}가 없다`); continue; }
-  const ids = [...gen.slice(i, gen.indexOf("];", i)).matchAll(/"([a-z0-9-]+)"/g)].map((m) => m[1]);
+  const ids = [...gen.slice(i, gen.indexOf("]", i)).matchAll(/"([a-z0-9-]+)"/g)].map((m) => m[1]);
   for (const id of ids) {
     if (!listed.includes(id)) fails.push(`${key}의 "${id}"가 엔진에 없다 (오타면 조용히 빠진다)`);
   }
 }
 /* 3판에서 더한 것들 — ART_TALL = ART_TALL_V2.concat([ ... ]) 안쪽 */
 for (const key of ["ART_TALL", "ART_WIDE"]) {
-  const i = gen.indexOf(`var ${key} = ${key}_V2.concat([`);
-  if (i < 0) { fails.push(`studio-gen.js의 ${key}가 ${key}_V2에서 이어지지 않는다`); continue; }
+  const i = gen.indexOf(`var ${key} = ${key}_V3.concat([`);
+  if (i < 0) { fails.push(`studio-gen.js의 ${key}가 ${key}_V3에서 이어지지 않는다`); continue; }
   const ids = [...gen.slice(i, gen.indexOf("]);", i)).matchAll(/"([a-z0-9-]+)"/g)].map((m) => m[1]);
   for (const id of ids) {
     if (!listed.includes(id)) fails.push(`${key}의 "${id}"가 엔진에 없다 (오타면 조용히 빠진다)`);
@@ -91,19 +92,34 @@ for (const key of ["ART_TALL", "ART_WIDE"]) {
 }
 
 /* 이미 나간 작품 번호를 지키는 표지.
-   BN2- 번호는 엔진 목록의 앞 64종만 본다(studio-gen.js의 ART_V2_COUNT).
+   판마다 엔진 목록의 앞 N종만 본다(studio-gen.js의 ART_V2_COUNT·ART_V3_COUNT).
    중간에 하나 끼워 넣으면 그 뒤가 통째로 밀려 팔린 번호가 다른 그림이
-   된다. 목록은 뒤에만 붙일 수 있다. 표지 하나로 그걸 확인한다. */
-const V2_COUNT = 64, V2_LAST = "chevron";
-if (listed.length < V2_COUNT) {
-  fails.push(`엔진 스타일이 ${listed.length}종이다. 2판이 쓰는 ${V2_COUNT}종보다 적다 (지운 것이 있다)`);
-} else if (listed[V2_COUNT - 1] !== V2_LAST) {
-  fails.push(`엔진 목록 ${V2_COUNT}번째가 "${listed[V2_COUNT - 1]}"다. "${V2_LAST}"여야 한다`
-           + " — 중간에 끼워 넣었다면 이미 팔린 BN2- 번호가 다른 그림이 된다");
+   된다. 목록은 뒤에만 붙일 수 있다. 판마다 표지 하나로 그걸 확인한다.
+   한 번 뚫렸다 — #25 가 판을 안 올리고 8종을 넣어 담아 둔 화면이 바뀌었다.
+   그래서 이제는 "지금 나가 있는 판의 수"도 같이 본다: 배포된 판에
+   스타일을 더하려면 판을 올려야 한다. */
+const ERAS = [[56, "weave"], [78, "nakhwa"]];
+for (const [count, last] of ERAS) {
+  if (listed.length < count) {
+    fails.push(`엔진 스타일이 ${listed.length}종이다. ${count}종 판보다 적다 (지운 것이 있다)`);
+  } else if (listed[count - 1] !== last) {
+    fails.push(`엔진 목록 ${count}번째가 "${listed[count - 1]}"다. "${last}"여야 한다`
+             + " — 중간에 끼워 넣었다면 이미 팔린 번호가 다른 그림이 된다");
+  }
 }
-if (!gen.includes("ART_V2_COUNT = 64")) fails.push("studio-gen.js의 ART_V2_COUNT가 64가 아니다");
-for (const need of ["FIT_V1", "FIT_V2", "FITS"]) {
+if (!gen.includes("ART_V2_COUNT = 56, ART_V3_COUNT = 78")) fails.push("studio-gen.js의 판별 수(56·78)가 다르다");
+for (const need of ["FIT_V1", "FIT_V2", "FIT_V3", "FITS"]) {
   if (!gen.includes(need)) fails.push(`studio-gen.js에 ${need}가 없다 (판별 목록이 끊겼다)`);
+}
+/* 지금 나가는 판(CODE_V)이 마지막으로 얼린 판보다 커야 한다.
+   같으면 얼린 목록 위에 스타일을 얹고 있다는 뜻이다 — #25 가 그랬다. */
+{
+  const js = read("studio.js");
+  const cv = +(js.match(/var CODE_V = (\d+)/) || [0, 0])[1];
+  const lastEra = ERAS[ERAS.length - 1][0];
+  if (listed.length > lastEra && cv <= ERAS.length + 1) {
+    fails.push(`엔진이 ${listed.length}종인데 CODE_V 가 ${cv}다. 얼린 판(${lastEra}종) 위에 더 얹었으면 판을 올려야 한다`);
+  }
 }
 
 /* 3D 뼈대. studio-meshes.js는 tools/build-meshes.mjs가 만든다.

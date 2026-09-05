@@ -351,6 +351,39 @@
   .st-pick-head { flex-wrap: wrap; }
 }
 
+/* ── 손전화 벽: 정사각 칸 ──────────────────────────────────────
+   칸을 그림 비율대로 두면 16:9 는 납작하고 1:6 은 길쭉해서, 두 줄로
+   놓아도 한 화면에 몇 장 안 들어온다. 고객이 뽑다가 지친다.
+   칸은 전부 정사각으로 고정하고 그림은 그 안에 통째로 들어간다
+   (object-fit: contain). 그림 비율은 그대로라 고른 뒤 보는 큰 화면과
+   어긋나지 않는다. 열두 장이 여섯 줄, 두어 화면이면 다 본다. */
+@media (max-width: 640px) {
+  .st-wall { gap: 6px; }
+  .st-wall-cell { aspect-ratio: 1 / 1; min-width: 0; }
+  .st-wall-item {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    border-radius: 8px;
+  }
+  .st-wall-item canvas {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: contain;
+    margin: 0;
+  }
+  /* 정사각에 가까운 그림은 칸을 가득 채운다. 큰 화면에서는 온전히 본다. */
+  .st-wall-cell[data-fit="cover"] .st-wall-item canvas {
+    object-fit: cover;
+    /* 잘라낼 때 오른쪽을 남긴다. 오른쪽 아래 도장(봄날퍼블릭아트)이
+       반 토막 나면 실수처럼 보인다. 왼쪽 아래 "시연본" 글씨는 잘려도 된다. */
+    object-position: 100% 50%;
+  }
+  .st-wall-item span { font-size: 11px; padding: 5px 7px 6px; }
+}
+
 .st-pick-acts {
   display: inline-flex;
   gap: 8px;
@@ -616,4 +649,12 @@
   .st-picked .st-code { max-width: none; margin-left: 0; }
   .st-picked > .st-cuts-title { text-align: left; }
   .st-picked .st-stage { padding: 14px 0 10px; }
+}
+
+/* ── 함께 받기: 값이 정해진 물건 ─────────────────────────────── */
+.st-opts-add label { display: grid; grid-template-columns: auto 1fr auto; column-gap: 8px; align-items: start; }
+.st-opts-add label > span { grid-column: 3; white-space: nowrap; }
+.st-opts-add label > small {
+  grid-column: 2 / 4; margin-top: 3px;
+  font-size: .76rem; line-height: 1.5; color: var(--st-gray);
 }

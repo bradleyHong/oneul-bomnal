@@ -384,7 +384,10 @@ function create(canvas, opts) {
                           번짐을 한 번에 얹는 편이 촛불빛에도 맞는다. */
                        chiaroscuro: 1,
                        /* 낙화는 불티를 천 개 넘게 찍는다. 같은 병이다. */
-                       nakhwa: 1 };
+                       nakhwa: 1,
+                       /* 꽃눈은 꽃잎 수백 장, 파도는 사각형 수천 개, 유화는
+                          획 수천 개, 회랑은 바닥 타일 수백 장. 다 같은 병이다. */
+                       petalfall: 1, ocean: 1, impasto: 1, renaissance: 1, anamorph: 1 };
 
   let bloomBuf = null;
   function applyBloom(strength) {
@@ -3280,6 +3283,802 @@ function create(canvas, opts) {
       ctx.globalCompositeOperation = "source-over";
     },
 
+    /* ── 식물 ────────────────────────────────────────────────────
+       에셋 사이트가 이 컨테이너에서 막혀 있어 꽃과 풀은 수식으로 키운다.
+       해바라기 씨앗의 나선, 꽃잎의 겹, 고사리의 되풀이, 바람에 눕는 갈대,
+       민들레 홀씨 — 전부 오래된 수학이고, 남의 이미지가 한 장도 안 들어간다.
+       그쪽이 오히려 "코드로 그린다"에 맞는다. */
+
+    /* 79 씨앗나선 — 해바라기 머리. 씨앗 하나하나가 137.5° 씩 돌아가며
+       앉는다(Vogel, 1979). 발산각이 아주 조금 숨을 쉬고, 빛의 고리가
+       가운데서 바깥으로 번져 나간다. */
+    phyllo(t) {
+      const ph = t / DUR;
+      const n = 260 + Math.round(k.density * 900);
+      const GA = Math.PI * (3 - Math.sqrt(5)) + Math.sin(ph * TAU) * 0.0015;   /* 주기 DUR */
+      const cx = W * (0.42 + seeds[700].a * 0.16), cy = H * (0.44 + seeds[700].b * 0.12);
+      const R = Math.min(W, H) * 0.40 * clamp(k.scale, 0.6, 1.4);
+      const c = R / Math.sqrt(n);
+      const ring = (ph * 2) % 1;                         /* 한 바퀴에 두 번, 정수 */
+      const rot = seeds[701].c * TAU;
+      const BUCK = 6;
+      ctx.globalCompositeOperation = ADD;
+      for (let b = 0; b < BUCK; b++) {
+        const lo = b / BUCK, hi = (b + 1) / BUCK, mid = (b + 0.5) / BUCK;
+        ctx.fillStyle = tone(mid > 0.7 ? 0 : mid > 0.35 ? 1 : 2, Math.min(0.95, (0.10 + 0.85 * mid) * k.contrast));
+        ctx.beginPath();
+        for (let i = 0; i < n; i++) {
+          const u = i / n;
+          const r = c * Math.sqrt(i);
+          /* 고리와의 거리는 원 위에서 잰다. 바깥으로 나간 고리가 그 순간
+             가운데서 다시 나오므로 이음매에서 끊기지 않는다. */
+          const dd = Math.abs(u - ring), dr = Math.min(dd, 1 - dd);
+          const pulse = Math.max(0, 1 - dr * 7);
+          const v = clamp(0.18 + 0.22 * u + 0.62 * pulse * pulse, 0, 0.999);
+          if (Math.floor(v * BUCK) !== b) continue;
+          const a = i * GA + rot;
+          const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+          const rad = Math.max(0.8, c * (0.16 + 0.30 * u) * (0.8 + 0.5 * pulse));
+          ctx.moveTo(x + rad, y);
+          ctx.arc(x, y, rad, 0, TAU);
+        }
+        ctx.fill();
+      }
+      ctx.globalCompositeOperation = "source-over";
+    },
+
+    /* 80 꽃 — 꽃잎 13·8·5장이 세 겹으로 겹친다. 피보나치 수다.
+       겹마다 반대로 돌고, 한 바퀴에 꽃잎 한 장 몫만 돌아 이음매가 맞는다.
+       벌어졌다 오므라들며 숨을 쉰다.
+
+       처음에는 꽃잎을 한 색으로 채웠더니 겹친 자리가 하얗게 날아가
+       아이콘이 됐다. 꽃잎은 밑동이 옅고 끝이 짙어야 한다. 겹마다 방사
+       그라데이션 하나로 채우니 겹친 데가 빛이 아니라 겹으로 읽힌다. */
+    blossom(t) {
+      const ph = t / DUR;
+      const open = 0.66 + 0.34 * breathe(ph);
+      const cx = W * (0.38 + seeds[710].a * 0.24), cy = H * (0.40 + seeds[710].b * 0.20);
+      const R = Math.min(W, H) * 0.31 * clamp(k.scale, 0.6, 1.4);
+      const rings = [[13, 1.00, 2, 0.34], [8, 0.72, 1, 0.38], [5, 0.46, 0, 0.42]];
+      ctx.globalCompositeOperation = ADD;
+      const petalRing = (x, y, np, rr, tn, al, rot, ri) => {
+        const g = ctx.createRadialGradient(x, y, rr * 0.10, x, y, rr);
+        g.addColorStop(0, tone(tn, 0));
+        g.addColorStop(0.55, tone(tn, al * 0.55 * k.contrast));
+        g.addColorStop(1, tone(tn, al * k.contrast));
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        for (let p2 = 0; p2 < np; p2++) {
+          const a = rot + (p2 / np) * TAU;
+          const w = rr * Math.PI / np * 0.60;           /* 꽃잎 반폭 — 겹이 촘촘할수록 좁다 */
+          const ca = Math.cos(a), sa = Math.sin(a);
+          /* 꽃잎 하나 = 밑동에서 끝까지 베지에 두 줄. 타원보다 끝이 뾰족하다. */
+          const tipx = x + ca * rr, tipy = y + sa * rr;
+          ctx.moveTo(x, y);
+          ctx.bezierCurveTo(x + ca * rr * 0.30 - sa * w * 1.4, y + sa * rr * 0.30 + ca * w * 1.4,
+                            x + ca * rr * 0.85 - sa * w, y + sa * rr * 0.85 + ca * w, tipx, tipy);
+          ctx.bezierCurveTo(x + ca * rr * 0.85 + sa * w, y + sa * rr * 0.85 - ca * w,
+                            x + ca * rr * 0.30 + sa * w * 1.4, y + sa * rr * 0.30 - ca * w * 1.4, x, y);
+        }
+        ctx.fill();
+      };
+      rings.forEach((rg, ri) => {
+        const np = rg[0], rr = R * rg[1] * open;
+        const dir = ri % 2 ? -1 : 1;
+        const rot = seeds[711 + ri].c * TAU + dir * ph * (TAU / np);     /* 꽃잎 한 장 몫 */
+        petalRing(cx, cy, np, rr, rg[2], rg[3], rot, ri);
+      });
+      /* 가운데 — 어두운 받침 위에 작은 씨앗나선. 하얗게 날리지 않는다. */
+      ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = shade(3, 0.35);
+      ctx.beginPath(); ctx.arc(cx, cy, R * 0.16 * open, 0, TAU); ctx.fill();
+      ctx.globalCompositeOperation = ADD;
+      const GA = Math.PI * (3 - Math.sqrt(5));
+      const m = 50 + Math.round(k.density * 90);
+      const cc = R * 0.15 * open / Math.sqrt(m);
+      ctx.fillStyle = tone(0, 0.40 * k.contrast);
+      ctx.beginPath();
+      for (let i = 0; i < m; i++) {
+        const r = cc * Math.sqrt(i), a = i * GA + seeds[712].d * TAU;
+        const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+        const rad = Math.max(0.6, cc * 0.36);
+        ctx.moveTo(x + rad, y); ctx.arc(x, y, rad, 0, TAU);
+      }
+      ctx.fill();
+      /* 봉오리 둘 — 구도를 잡아 준다. 큰 꽃과 겹치면 안 그린다. */
+      for (let q = 0; q < 2; q++) {
+        const s = seeds[720 + q];
+        const bx = W * (0.10 + s.a * 0.80), by = H * (0.10 + s.b * 0.80);
+        if (Math.hypot(bx - cx, by - cy) < R * 1.45) continue;
+        petalRing(bx, by, 5, R * 0.22 * (0.7 + s.c * 0.5), 1, 0.30, s.d * TAU - ph * TAU / 5, 0);
+      }
+      ctx.globalCompositeOperation = "source-over";
+    },
+
+    /* 81 잎맥 — 잎 하나를 맥만 남기고 삭힌 것.
+       고사리를 그리려다 나온 그림이다. 잔잎이 격자처럼 겹치니 고사리가
+       아니라 잎맥 표본으로 읽혔고, 그쪽이 더 나았다. 이름을 그쪽으로
+       바꿨다. 잎은 한둘만 크게, 서로 겹치지 않게 띄운다.
+       아래에서 올라오는 그림이라 기둥에 잘 맞는다. */
+    leafvein(t) {
+      const ph = t / DUR;
+      const nF = 1 + Math.round(k.density * 2.4);
+      const paths = [[], [], []];                          /* 주맥 · 측맥 · 잔맥 */
+      for (let f = 0; f < nF; f++) {
+        const s = seeds[(f * 5 + 730) % seeds.length];
+        const bx = W * ((f + 0.5) / nF + (s.a - 0.5) * 0.12 / nF), by = H * 1.03;
+        const L = H * (0.62 + s.b * 0.34) * clamp(k.scale, 0.6, 1.3);
+        /* 잎 반폭. 1:6 기둥에서는 잎이 화면보다 넓어져 격자 터널이 됐다.
+           화면 폭과 잎 사이 간격으로 묶는다. */
+        const halfW = Math.min(L * 0.24, W / nF * 0.38);
+        const lean = (s.c - 0.5) * 0.55;
+        const sw = Math.sin(ph * TAU + s.d * TAU) * 0.07;
+        const M = 26;
+        const pt = (i) => {                                 /* 줄기 위 i번째 점 */
+          const u = i / M;
+          const bend = lean * u + sw * u * u;
+          return [bx + Math.sin(bend) * L * u, by - Math.cos(bend) * L * u];
+        };
+        for (let i = 0; i <= M; i++) {
+          const [x, y] = pt(i);
+          i ? paths[0].push(["l", x, y]) : paths[0].push(["m", x, y]);
+        }
+        for (let i = 3; i < M; i++) {
+          const u = i / M;
+          const [x, y] = pt(i), [x2, y2] = pt(i + 1);
+          const dir = Math.atan2(y2 - y, x2 - x);
+          const pl = halfW * Math.pow(Math.sin(Math.PI * u), 0.85);
+          for (const side of [-1, 1]) {
+            const a = dir + side * (1.05 + 0.15 * (s.a - 0.5));
+            const ex = x + Math.cos(a) * pl, ey = y + Math.sin(a) * pl;
+            paths[1].push(["m", x, y], ["l", ex, ey]);
+            const nl = 7;
+            for (let j = 1; j <= nl; j++) {
+              const v = j / nl;
+              const px = x + (ex - x) * v, py = y + (ey - y) * v;
+              const ll = pl * 0.28 * (1 - v * 0.75);
+              for (const s2 of [-1, 1]) {
+                const a2 = a + s2 * 1.1;
+                paths[2].push(["m", px, py], ["l", px + Math.cos(a2) * ll, py + Math.sin(a2) * ll]);
+              }
+            }
+          }
+        }
+      }
+      ctx.lineCap = "round";
+      const draw = (P, w, tn, al) => {
+        ctx.lineWidth = Math.max(0.8, w);
+        ctx.strokeStyle = tone(tn, al);
+        ctx.beginPath();
+        for (const c of P) c[0] === "m" ? ctx.moveTo(c[1], c[2]) : ctx.lineTo(c[1], c[2]);
+        ctx.stroke();
+      };
+      draw(paths[2], S * 0.8, 2, 0.22 + 0.34 * k.contrast);
+      draw(paths[1], S * 1.3, 1, 0.34 + 0.40 * k.contrast);
+      draw(paths[0], S * 2.4, 0, 0.55 + 0.35 * k.contrast);
+    },
+
+    /* 82 갈대 — 바람에 눕는 줄기와 이삭. 멀리 있는 것은 가늘고 옅어
+       깊이가 생긴다. 32:9 띠에 그대로 맞는다. */
+    reed(t) {
+      const ph = t / DUR;
+      const n = 40 + Math.round(k.density * 220);
+      const BUCK = 3;
+      ctx.lineCap = "round";
+      for (let b = 0; b < BUCK; b++) {
+        const depth = (b + 0.5) / BUCK;                      /* 0 멀다 ~ 1 가깝다 */
+        ctx.lineWidth = Math.max(0.7, S * (0.6 + depth * 2.2));
+        ctx.strokeStyle = tone(b === 2 ? 0 : b === 1 ? 1 : 2, (0.18 + 0.55 * depth) * k.contrast);
+        ctx.beginPath();
+        for (let i = 0; i < n; i++) {
+          const s = seeds[(i * 3 + 740) % seeds.length];
+          if (Math.floor(s.d * BUCK) !== b) continue;
+          const x0 = W * (s.a * 1.1 - 0.05), y0 = H * 1.02;
+          const L = H * (0.34 + s.b * 0.42) * (0.55 + depth * 0.55) * clamp(k.scale, 0.6, 1.3);
+          /* 바람. 자리마다 위상이 조금씩 달라 물결처럼 지나간다. 주기 DUR. */
+          const wind = Math.sin(ph * TAU + x0 / W * 2.4 + s.c * 0.8) * (0.10 + 0.10 * s.c)
+                     + 0.06 * (seeds[750].a - 0.5);
+          /* 옆으로 눕는 폭은 화면 폭을 넘지 못한다. 1:6 기둥에서 키만큼
+             눕히면 줄기가 전부 한가운데로 모여 X 자가 됐다. */
+          const swayW = Math.min(L * 1.6, W * 0.55);
+          const tx = x0 + wind * swayW, ty = y0 - L * (1 - wind * wind * 0.5);
+          const mx = x0 + wind * swayW * 0.31, my = y0 - L * 0.55;
+          ctx.moveTo(x0, y0);
+          ctx.quadraticCurveTo(mx, my, tx, ty);
+        }
+        ctx.stroke();
+        /* 이삭 — 끝에 달린 도톰한 자국 */
+        ctx.lineWidth = Math.max(1.4, S * (1.8 + depth * 4.5));
+        ctx.strokeStyle = tone(b === 2 ? 0 : 1, (0.22 + 0.55 * depth) * k.contrast);
+        ctx.beginPath();
+        for (let i = 0; i < n; i++) {
+          const s = seeds[(i * 3 + 740) % seeds.length];
+          if (Math.floor(s.d * BUCK) !== b) continue;
+          const x0 = W * (s.a * 1.1 - 0.05), y0 = H * 1.02;
+          const L = H * (0.34 + s.b * 0.42) * (0.55 + depth * 0.55) * clamp(k.scale, 0.6, 1.3);
+          const wind = Math.sin(ph * TAU + x0 / W * 2.4 + s.c * 0.8) * (0.10 + 0.10 * s.c)
+                     + 0.06 * (seeds[750].a - 0.5);
+          const swayW = Math.min(L * 1.6, W * 0.55);
+          const tx = x0 + wind * swayW, ty = y0 - L * (1 - wind * wind * 0.5);
+          const hl = L * (0.10 + s.b * 0.06);
+          const dx = wind * 1.2, dy = -1;
+          const dl = Math.hypot(dx, dy);
+          ctx.moveTo(tx - dx / dl * hl, ty - dy / dl * hl);
+          ctx.lineTo(tx, ty);
+        }
+        ctx.stroke();
+      }
+    },
+
+    /* 83 민들레 — 홀씨 머리 하나와 날아가는 홀씨 몇.
+       가닥은 씨앗나선의 각도로 뻗어 고르게 퍼진다. 날아가는 것은 저마다
+       제 주기로 나갔다 다시 나온다. 나타나고 사라질 때 옅어져서 이음매가
+       안 보인다. */
+    dandelion(t) {
+      const ph = t / DUR;
+      const cx = W * (0.34 + seeds[760].a * 0.22), cy = H * (0.40 + seeds[760].b * 0.14);
+      const R = Math.min(W, H) * 0.24 * clamp(k.scale, 0.6, 1.4);
+      const rays = 90 + Math.round(k.density * 150);
+      const GA = Math.PI * (3 - Math.sqrt(5));
+      const bre = 1 + Math.sin(ph * TAU) * 0.012;
+      ctx.lineCap = "round";
+      /* 줄기 */
+      ctx.lineWidth = Math.max(1, S * 2.2);
+      ctx.strokeStyle = tone(1, 0.35 + 0.30 * k.contrast);
+      ctx.beginPath();
+      ctx.moveTo(cx, cy + R * 0.25);
+      ctx.quadraticCurveTo(cx - R * 0.6, cy + H * 0.5, cx - R * 1.4, H * 1.05);
+      ctx.stroke();
+      /* 가닥 */
+      ctx.lineWidth = Math.max(0.6, S * 0.8);
+      ctx.strokeStyle = tone(1, 0.18 + 0.28 * k.contrast);
+      ctx.beginPath();
+      const tufts = [];
+      for (let i = 0; i < rays; i++) {
+        const s = seeds[(i * 2 + 770) % seeds.length];
+        const a = i * GA;
+        const len = R * (0.80 + 0.22 * s.a) * bre;
+        const ex = cx + Math.cos(a) * len, ey = cy + Math.sin(a) * len;
+        ctx.moveTo(cx + Math.cos(a) * R * 0.14, cy + Math.sin(a) * R * 0.14);
+        ctx.lineTo(ex, ey);
+        tufts.push([ex, ey, a]);
+      }
+      ctx.stroke();
+      /* 갓 — 가닥 끝의 작은 부채 */
+      ctx.lineWidth = Math.max(0.6, S * 0.7);
+      ctx.strokeStyle = tone(0, 0.30 + 0.45 * k.contrast);
+      ctx.beginPath();
+      const tl = R * 0.13;
+      for (const [ex, ey, a] of tufts) {
+        for (let j = -2; j <= 2; j++) {
+          const a2 = a + j * 0.30;
+          ctx.moveTo(ex, ey);
+          ctx.lineTo(ex + Math.cos(a2) * tl, ey + Math.sin(a2) * tl);
+        }
+      }
+      ctx.stroke();
+      /* 날아가는 홀씨 */
+      const m = 5 + Math.round(k.density * 16);
+      for (let i = 0; i < m; i++) {
+        const s = seeds[(i * 3 + 800) % seeds.length];
+        const cyc = 1 + Math.floor(s.a * 2);
+        const u = (ph * cyc + s.b) % 1;
+        const fade = Math.sin(Math.PI * u);
+        const a0 = s.c * TAU;
+        const x = cx + Math.cos(a0) * R * 0.9 + u * W * (0.35 + s.d * 0.45)
+                + Math.sin(u * TAU * 2 + s.a * TAU) * W * 0.03;
+        const y = cy + Math.sin(a0) * R * 0.9 - u * H * (0.10 + s.c * 0.35)
+                + Math.cos(u * TAU * 1.5 + s.b * TAU) * H * 0.03;
+        const sc = R * 0.16 * (0.8 + s.d * 0.5);
+        ctx.strokeStyle = tone(0, (0.25 + 0.55 * fade) * fade * k.contrast);
+        ctx.lineWidth = Math.max(0.6, S * 0.8);
+        ctx.beginPath();
+        const tilt = 0.4 + Math.sin(u * TAU + s.a * TAU) * 0.35;
+        ctx.moveTo(x, y);
+        ctx.lineTo(x - Math.sin(tilt) * sc * 1.2, y + Math.cos(tilt) * sc * 1.2);
+        for (let j = -3; j <= 3; j++) {
+          const a2 = -Math.PI / 2 + tilt + j * 0.30;
+          ctx.moveTo(x, y);
+          ctx.lineTo(x + Math.cos(a2) * sc, y + Math.sin(a2) * sc);
+        }
+        ctx.stroke();
+      }
+    },
+
+    /* ── 무작위 현대미술 ─────────────────────────────────────────
+       84 꽃눈 · 85 파도 · 86 아나모픽 · 87 유화 · 88 르네상스.
+       3D 는 전부 손으로 짠 원근이다(점 하나를 f/(f+z) 로 줄인다).
+       WebGL 을 안 쓰는 이유: 라즈베리파이 전용 플레이어에서 2D 캔버스가
+       가장 안 멈춘다. 그리고 지금까지의 83종이 다 그렇게 그려졌다. */
+
+    /* 84 꽃눈 — 꽃잎이 눈처럼 내린다.
+       가까운 것은 크고 빠르고, 먼 것은 작고 느리다(시차). 꽃잎은 두 축으로
+       뒤집히며 떨어져 빛을 받는 면이 바뀐다. 한 바퀴에 정수 번 떨어지고
+       정수 번 돈다. 먼 것부터 덮어 그리므로 색은 불투명(shade)이다. */
+    petalfall(t) {
+      const ph = t / DUR;
+      const area = clamp((W / S) * (H / S) / (1920 * 1080), 0.5, 4);
+      const n = Math.round((200 + k.density * 360) * area);
+      const drift = (seeds[790].c - 0.5) * 0.5;                 /* 바람 */
+      /* 꽃잎 한 장. 끝이 뾰족한 물방울 */
+      const petal = (size) => {
+        ctx.moveTo(0, -size);
+        ctx.bezierCurveTo(size * 0.95, -size * 0.45, size * 0.72, size * 0.75, 0, size);
+        ctx.bezierCurveTo(-size * 0.72, size * 0.75, -size * 0.95, -size * 0.45, 0, -size);
+      };
+      /* 뒤에 옅은 빛 — 꽃잎이 어디서 오는지 */
+      const gx = W * (0.3 + seeds[791].a * 0.4), gy = H * 0.08;
+      const g = ctx.createRadialGradient(gx, gy, 0, gx, gy, Math.max(W, H) * 0.62);
+      g.addColorStop(0, tone(2, 0.10 + 0.24 * k.glow));
+      g.addColorStop(1, tone(2, 0));
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+
+      const LAY = 5;
+      const sc = clamp(k.scale, 0.6, 1.5);
+      for (let L = 0; L < LAY; L++) {
+        /* 가장 가까운 겹은 살짝 비쳐 초점이 나간 것처럼 보이게 */
+        ctx.globalAlpha = L === LAY - 1 ? 0.82 : 1;
+        for (let i = 0; i < n; i++) {
+          const s = seeds[(i * 5 + 300) % seeds.length];
+          if (Math.floor(s.a * LAY) !== L) continue;
+          const s2 = seeds[(i * 5 + 301) % seeds.length];
+          const d = s.a;                                        /* 0 멀다 ~ 1 가깝다 */
+          const persp = 0.32 + d * d * 1.35;
+          const cyc = 1 + Math.floor(d * 2.999);                /* 가까울수록 빨리 */
+          const u = (s.b + ph * cyc) % 1;
+          const sway = Math.sin(u * TAU * 2 + s.c * TAU) * W * 0.018 * persp;
+          const x = ((s.c + drift * u * persp + 2) % 1) * W + sway;
+          const y = (u * 1.18 - 0.09) * H;
+          const size = S * (11 + s2.a * 18) * persp * sc;
+          const dir = s2.d < 0.5 ? 1 : -1;
+          const rotA = s2.b * TAU + ph * TAU * (1 + Math.floor(s2.c * 2)) * dir;
+          const rotB = s2.c * TAU + ph * TAU * (1 + Math.floor(s2.a * 2));
+          const face = Math.cos(rotB);                          /* 빛을 받는 정도 */
+          const lit = 0.30 + 0.70 * Math.abs(face);
+          const amt = clamp((0.16 + 0.84 * d) * lit * k.contrast, 0.05, 1);
+          ctx.fillStyle = shade(s2.d < 0.70 ? 0 : (s2.d < 0.90 ? 1 : 2), amt);
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(rotA);
+          ctx.scale(1, Math.max(0.08, Math.abs(face)));
+          ctx.beginPath();
+          if (s2.b > 0.82) {
+            /* 여섯 중 하나는 통째로 떨어지는 꽃 — 꽃잎 다섯 장이 가운데를 두른다 */
+            const ps = size * 0.62;
+            for (let q = 0; q < 5; q++) {
+              ctx.save();
+              ctx.rotate(q * TAU / 5);
+              ctx.translate(0, -ps * 0.9);
+              petal(ps);
+              ctx.restore();
+            }
+            ctx.fill();
+            ctx.fillStyle = shade(1, amt);
+            ctx.beginPath(); ctx.arc(0, 0, ps * 0.32, 0, TAU); ctx.fill();
+          } else {
+            petal(size);
+            ctx.fill();
+          }
+          ctx.restore();
+        }
+      }
+      ctx.globalAlpha = 1;
+    },
+
+    /* 85 파도 — 높이밭을 원근으로 본다.
+       파도 넷이 겹치고(방향·파장·박자가 다 다르다), 잡음 밭 위를 원으로
+       돌아 잔물결을 얹는다. 시간 주기는 전부 DUR 의 정수분의 일이라
+       이음매가 맞는다. 먼 줄부터 가까운 줄로 사각형을 덮어 그리고,
+       법선으로 빛을 잰다. 수평선 위 달빛이 마루에서 반짝인다. */
+    ocean(t) {
+      const ph = t / DUR;
+      const hor = H * (0.30 + seeds[800].a * 0.12);
+      const wideK = clamp(W / H / (16 / 9), 0.8, 2.6);
+      const ROWS = 44 + Math.round(k.density * 36);
+      const COLS = Math.round((56 + k.density * 70) * wideK);
+      const K = H * 0.55, camH = 1.0, zNear = 0.42, zFar = 9;
+      const amp = 0.11 * clamp(k.scale, 0.6, 1.4);
+      const waves = [];
+      for (let i = 0; i < 4; i++) {
+        const s = seeds[(801 + i) % seeds.length];
+        const th = (s.a - 0.5) * 1.1;                                   /* z 축에서 벗어난 각 */
+        const lam = 0.9 + s.b * 2.4;
+        waves.push({ kx: Math.sin(th) * TAU / lam, kz: Math.cos(th) * TAU / lam,
+                     c: 1 + Math.floor(s.c * 3), f: s.d * TAU, a: amp * (i === 0 ? 1 : 0.55 / i) });
+      }
+      const nx = Math.cos(ph * TAU) * 0.6, nz = Math.sin(ph * TAU) * 0.6;
+      const hgt = (x, z) => {
+        let h = 0;
+        for (const w of waves) h += w.a * Math.sin(w.kx * x + w.kz * z + w.c * ph * TAU + w.f);
+        return h + fbm(x * 0.8 + nx, z * 0.8 + nz, 2) * amp * 0.45;
+      };
+      /* 하늘 */
+      const sky = ctx.createLinearGradient(0, 0, 0, hor);
+      sky.addColorStop(0, shade(3, 0.05)); sky.addColorStop(1, shade(3, 0.42));
+      ctx.fillStyle = sky; ctx.fillRect(0, 0, W, hor + 2);
+      const mx = W * (0.5 + (seeds[806].a - 0.5) * 0.5), my = hor - H * (0.06 + seeds[806].b * 0.08);
+      const mg = ctx.createRadialGradient(mx, my, 0, mx, my, H * 0.28);
+      mg.addColorStop(0, tone(0, 0.55 + 0.4 * k.glow)); mg.addColorStop(0.08, tone(0, 0.35));
+      mg.addColorStop(0.3, tone(1, 0.08)); mg.addColorStop(1, tone(1, 0));
+      ctx.fillStyle = mg; ctx.fillRect(0, 0, W, hor + 2);
+      /* 빛 방향(위 앞) */
+      const Lx = (mx - W / 2) / W * 0.5, Ly = 0.8, Lz = 0.55;
+      const Ll = Math.hypot(Lx, Ly, Lz);
+      /* 색은 바탕→깊은 색→가운데 색→밝은 색 네 단계를 잇는다.
+         세 색을 띠로 갈라 칠했더니 계단이 보였다. 열네 단으로 잇는다. */
+      const NB = 14;
+      const rgbOf = (hex) => { const v = parseInt(hex.slice(1), 16); return [(v >> 16) & 255, (v >> 8) & 255, v & 255]; };
+      const stops = [[0, BGRGB], [0.30, rgbOf(TONES[3 % TONES.length])], [0.62, rgbOf(TONES[2])], [0.86, rgbOf(TONES[1])], [1, rgbOf(TONES[0])]];
+      const col = (v) => {
+        v = clamp(v, 0, 1);
+        let i = 1; while (i < stops.length - 1 && stops[i][0] < v) i++;
+        const [a, ca] = stops[i - 1], [b, cb] = stops[i];
+        const u = (v - a) / (b - a);
+        return "rgb(" + Math.round(ca[0] + (cb[0] - ca[0]) * u) + "," + Math.round(ca[1] + (cb[1] - ca[1]) * u) + "," + Math.round(ca[2] + (cb[2] - ca[2]) * u) + ")";
+      };
+      /* 줄마다 점을 재고, 앞 줄과의 사이를 사각형으로 덮는다 */
+      const grid = [];
+      for (let r = 0; r <= ROWS; r++) {
+        const z = zFar * Math.pow(zNear / zFar, r / ROWS);
+        const half = (W / 2) / K * z * 1.06;
+        const row = new Float32Array((COLS + 1) * 4);            /* sx, sy, val, ci */
+        for (let j = 0; j <= COLS; j++) {
+          const x = (j / COLS - 0.5) * 2 * half;
+          const h = hgt(x, z);
+          const e = 0.05;
+          const dx = (hgt(x + e, z) - h) / e, dz = (hgt(x, z + e) - h) / e;
+          let nX = -dx, nY = 1, nZ = -dz;
+          const nl = Math.hypot(nX, nY, nZ); nX /= nl; nY /= nl; nZ /= nl;
+          const lit = Math.max(0, (nX * Lx + nY * Ly + nZ * Lz) / Ll);
+          /* 달빛 길: 달 아래 좁은 띠에서, 마루만 반짝인다.
+             평평한 물까지 빛나게 했더니 하얀 기둥이 섰다. */
+          const toMoon = clamp(1 - Math.abs(x - (mx - W / 2) / K * z) / (0.05 + z * 0.05), 0, 1);
+          const crest = clamp((h / amp - 0.15) * 1.6, 0, 1);
+          /* 발치에서는 길이 사그라든다. 안 그러면 흰 막대가 선다 */
+          const spec = toMoon * crest * (0.35 + 0.65 * lit) * 0.5 * clamp(z / 3, 0.25, 1);
+          const fog = clamp(1 - z / zFar, 0.12, 1);
+          const v = (0.18 + 0.62 * lit + 0.12 * crest) * fog * k.contrast * 0.9 + spec;
+          row[j * 4] = W / 2 + x * K / z;
+          row[j * 4 + 1] = hor + (camH - h) * K / z;
+          row[j * 4 + 2] = v;
+          row[j * 4 + 3] = 0;
+        }
+        grid.push(row);
+      }
+      /* 줄 하나를 띠 하나로 채운다. 칸마다 색을 정해 사각형으로 채웠더니
+         계단이 보였다. 띠는 가로로 한 그라데이션이라(칸마다 색 정지점)
+         옆으로는 매끄럽고, 앞뒤 줄의 경계는 물결 모양이라 눈에 안 띈다.
+         화면 x 는 칸 번호에 정비례하므로 정지점 자리가 그대로 맞는다. */
+      for (let r = 0; r < ROWS; r++) {
+        const A = grid[r], B = grid[r + 1];
+        const x0 = Math.min(A[0], B[0]), x1 = Math.max(A[COLS * 4], B[COLS * 4]);
+        const g4 = ctx.createLinearGradient(x0, 0, x1, 0);
+        for (let j = 0; j <= COLS; j++) {
+          const v = (A[j * 4 + 2] + B[j * 4 + 2]) * 0.5;
+          g4.addColorStop(clamp((A[j * 4] - x0) / (x1 - x0), 0, 1), col(Math.floor(clamp(v, 0, 0.999) * NB * 2) / (NB * 2)));
+        }
+        ctx.fillStyle = g4;
+        ctx.beginPath();
+        ctx.moveTo(A[0] - 1, A[1]);
+        for (let j = 1; j <= COLS; j++) ctx.lineTo(A[j * 4] + (j === COLS ? 1 : 0), A[j * 4 + 1]);
+        for (let j = COLS; j >= 0; j--) ctx.lineTo(B[j * 4] + (j === COLS ? 1 : j === 0 ? -1 : 0), B[j * 4 + 1] + 0.7);
+        ctx.closePath();
+        ctx.fill();
+      }
+      /* 줄의 마루에 옅은 선 — 물결이 디지털 밭으로도 읽히게 */
+      ctx.strokeStyle = tone(0, 0.05 + 0.12 * k.glow);
+      ctx.lineWidth = Math.max(0.6, S * 0.8);
+      ctx.beginPath();
+      for (let r = 0; r <= ROWS; r += 2) {
+        const A = grid[r];
+        ctx.moveTo(A[0], A[1]);
+        for (let j = 1; j <= COLS; j++) ctx.lineTo(A[j * 4], A[j * 4 + 1]);
+      }
+      ctx.stroke();
+      /* 수평선의 안개 */
+      const hz = ctx.createLinearGradient(0, hor - H * 0.02, 0, hor + H * 0.10);
+      hz.addColorStop(0, shade(3, 0.42)); hz.addColorStop(1, tone(3, 0));
+      ctx.fillStyle = hz; ctx.fillRect(0, hor - H * 0.02, W, H * 0.12);
+    },
+
+    /* 86 아나모픽 — 화면 안에 상자를 세우고, 공이 상자 밖으로 나온다.
+       d'strict 의 파도 LED 가 하는 일이다: 틀(베젤)을 그려 두고, 물체가
+       그 틀을 넘어오면 눈이 깊이를 믿는다. 상자는 한 점 원근, 물체는
+       z 가 0 보다 작아지면 틀 위에 그린다(그래서 틀 뒤·틀 앞 두 번에
+       나눠 그린다). 바닥 그림자가 공의 높이를 말해 준다. */
+    anamorph(t) {
+      const ph = t / DUR;
+      const m = Math.min(W, H) * 0.06;
+      const cx = W / 2, cy = H / 2;
+      const hw = W / 2 - m, hh = H / 2 - m;
+      const D = 3.4, f = 1.3;
+      const persp = (z) => f / (f + z);
+      const px = (x, z) => cx + x * hw * persp(z);
+      const py = (y, z) => cy + y * hh * persp(z);
+      const quad = (pts, fill) => {
+        ctx.beginPath();
+        ctx.moveTo(px(pts[0][0], pts[0][2]), py(pts[0][1], pts[0][2]));
+        for (let i = 1; i < pts.length; i++) ctx.lineTo(px(pts[i][0], pts[i][2]), py(pts[i][1], pts[i][2]));
+        ctx.closePath();
+        ctx.fillStyle = fill; ctx.fill();
+      };
+      /* 벽. 안쪽으로 갈수록 어둡다 */
+      const wallG = (a, b) => {
+        const g2 = ctx.createLinearGradient(0, py(-1, 0), 0, py(1, 0));
+        g2.addColorStop(0, shade(3, a)); g2.addColorStop(1, shade(3, b));
+        return g2;
+      };
+      quad([[-1, -1, 0], [1, -1, 0], [1, -1, D], [-1, -1, D]], shade(3, 0.22));    /* 천장 */
+      quad([[-1, 1, 0], [1, 1, 0], [1, 1, D], [-1, 1, D]], wallG(0.30, 0.62));      /* 바닥 */
+      quad([[-1, -1, 0], [-1, 1, 0], [-1, 1, D], [-1, -1, D]], wallG(0.28, 0.42));  /* 왼벽 */
+      quad([[1, -1, 0], [1, 1, 0], [1, 1, D], [1, -1, D]], wallG(0.20, 0.34));      /* 오른벽 */
+      quad([[-1, -1, D], [1, -1, D], [1, 1, D], [-1, 1, D]], shade(3, 0.18));       /* 뒷벽 */
+      /* 격자 */
+      ctx.strokeStyle = tone(1, 0.08 + 0.16 * k.contrast);
+      ctx.lineWidth = Math.max(0.8, S * 1.1);
+      ctx.beginPath();
+      const NZ = 9;
+      for (let i = 0; i <= NZ; i++) {
+        const z = D * i / NZ;
+        ctx.moveTo(px(-1, z), py(-1, z)); ctx.lineTo(px(1, z), py(-1, z));
+        ctx.lineTo(px(1, z), py(1, z)); ctx.lineTo(px(-1, z), py(1, z)); ctx.closePath();
+      }
+      for (let j = 0; j <= 8; j++) {
+        const u = -1 + 2 * j / 8;
+        ctx.moveTo(px(u, 0), py(1, 0)); ctx.lineTo(px(u, D), py(1, D));
+        ctx.moveTo(px(u, 0), py(-1, 0)); ctx.lineTo(px(u, D), py(-1, D));
+        ctx.moveTo(px(-1, 0), py(u, 0)); ctx.lineTo(px(-1, D), py(u, D));
+        ctx.moveTo(px(1, 0), py(u, 0)); ctx.lineTo(px(1, D), py(u, D));
+      }
+      ctx.stroke();
+      /* 뒷벽의 빛 */
+      const bg2 = ctx.createRadialGradient(px(0, D), py(0, D), 0, px(0, D), py(0, D), hw * persp(D) * 1.4);
+      bg2.addColorStop(0, tone(2, 0.18 + 0.3 * k.glow)); bg2.addColorStop(1, tone(2, 0));
+      ctx.fillStyle = bg2; ctx.fillRect(px(-1, D), py(-1, D), 2 * hw * persp(D), 2 * hh * persp(D));
+
+      /* 물체들. 큰 공 하나가 안팎을 오가고, 작은 것들이 그 둘레를 돈다 */
+      const sc = clamp(k.scale, 0.6, 1.4);
+      const r0 = 0.30 * sc;
+      const a0 = seeds[810].a * TAU;
+      const z0 = D * 0.55 + D * 0.66 * Math.cos(ph * TAU + a0);          /* -0.11D ~ 1.21D */
+      const x0 = Math.sin(ph * TAU + a0) * 0.32;
+      const y0 = 1 - r0 - 0.06 - 0.32 * Math.abs(Math.sin(ph * TAU * 2 + a0));
+      const objs = [{ x: x0, y: y0, z: z0, r: r0, c: 0 }];
+      const sat = 3 + Math.round(k.density * 5);
+      for (let i = 0; i < sat; i++) {
+        const s = seeds[(811 + i) % seeds.length];
+        const a = ph * TAU * (1 + Math.floor(s.a * 2)) + i * TAU / sat;
+        const rr = r0 * (1.8 + s.b * 0.9);
+        objs.push({ x: x0 + Math.cos(a) * rr * 0.9, y: y0 - 0.15 + Math.sin(a * 2 + s.c * TAU) * 0.18,
+                    z: z0 + Math.sin(a) * rr * 0.8, r: r0 * (0.16 + s.d * 0.22), c: s.c < 0.5 ? 1 : 2 });
+      }
+      /* 눈 뒤로 넘어간 것은 안 그린다. persp 가 음수가 되어 뒤집힌다 */
+      const near = -f * 0.5;
+      objs.sort((p, q) => q.z - p.z);
+      /* 그림자는 바닥에만 */
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(px(-1, 0), py(1, 0)); ctx.lineTo(px(1, 0), py(1, 0));
+      ctx.lineTo(px(1, D), py(1, D)); ctx.lineTo(px(-1, D), py(1, D)); ctx.closePath();
+      ctx.clip();
+      for (const o of objs) {
+        if (o.z < 0) continue;
+        const R = o.r * hh * persp(o.z);
+        const hgt2 = (1 - o.y - o.r) / (2 * o.r);                        /* 바닥에서 뜬 높이 */
+        ctx.beginPath();
+        ctx.ellipse(px(o.x, o.z), py(1, o.z), R * (0.95 + hgt2 * 0.3), R * 0.36 * (1 + hgt2 * 0.3), 0, 0, TAU);
+        ctx.fillStyle = "rgba(0,0,0," + (0.55 / (1 + hgt2 * 1.2)) + ")";
+        ctx.fill();
+      }
+      ctx.restore();
+      const ball = (o) => {
+        if (o.z < near) return;
+        const X = px(o.x, o.z), Y = py(o.y, o.z), R = o.r * hh * persp(o.z);
+        const g3 = ctx.createRadialGradient(X - R * 0.38, Y - R * 0.42, R * 0.05, X, Y, R);
+        g3.addColorStop(0, shade(0, 0.95));
+        g3.addColorStop(0.35, shade(o.c === 0 ? 1 : o.c, 0.85));
+        g3.addColorStop(0.85, shade(o.c === 0 ? 2 : 3, 0.55));
+        g3.addColorStop(1, shade(3, 0.20));
+        ctx.fillStyle = g3;
+        ctx.beginPath(); ctx.arc(X, Y, R, 0, TAU); ctx.fill();
+      };
+      for (const o of objs) if (o.z >= 0) ball(o);
+      /* 틀(베젤). 이 뒤에 그리는 것만 "밖으로 나온" 것이다 */
+      ctx.fillStyle = shade(3, 0.16);
+      ctx.fillRect(0, 0, W, m); ctx.fillRect(0, H - m, W, m);
+      ctx.fillRect(0, 0, m, H); ctx.fillRect(W - m, 0, m, H);
+      ctx.strokeStyle = tone(0, 0.20 + 0.25 * k.contrast);
+      ctx.lineWidth = Math.max(1, S * 1.6);
+      ctx.strokeRect(m, m, W - 2 * m, H - 2 * m);
+      for (const o of objs) if (o.z < 0) ball(o);
+    },
+
+    /* 87 유화 — 붓자국을 흐름을 따라 얹는다.
+       가운데 소용돌이(반 고흐의 밤하늘이 그렇다)를 중심으로 흐름밭을
+       잡고, 붓 하나마다 몸통·그늘·마루 세 획을 긋는다. 마루는 빛을
+       더해 두툼하게 올린 물감(임파스토)처럼 도드라진다. 흐름밭은 잡음
+       밭 위를 원으로 돌아 한 바퀴에 제자리로 온다. */
+    impasto(t) {
+      const ph = t / DUR;
+      const area = clamp((W / S) * (H / S) / (1920 * 1080), 0.5, 4);
+      const n = Math.round((2400 + k.density * 2600) * area);
+      const cx = W * (0.32 + seeds[820].a * 0.36), cy = H * (0.34 + seeds[820].b * 0.32);
+      const R = Math.min(W, H) * 0.34 * clamp(k.scale, 0.6, 1.4);
+      const sc = 2.2 / Math.min(W, H);
+      const ox = Math.cos(ph * TAU) * 0.7, oy = Math.sin(ph * TAU) * 0.7;
+      const m2x = W * (0.55 + seeds[821].c * 0.35), m2y = H * (0.15 + seeds[821].d * 0.3);
+      /* 바탕칠 — 붓이 닿지 않은 데도 캔버스가 비지 않게 */
+      ctx.fillStyle = shade(3, 0.32); ctx.fillRect(0, 0, W, H);
+      const ug = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 1.6);
+      ug.addColorStop(0, shade(2, 0.55)); ug.addColorStop(1, shade(3, 0.32));
+      ctx.fillStyle = ug; ctx.fillRect(0, 0, W, H);
+      /* 붓을 색·굵기별 묶음으로 나눈다. 획 하나하나 stroke 하면 4K 에서 감당이 안 된다 */
+      const WG = 3, AB = 3;
+      const body = {}, hi = [[], [], []], sh = [[], [], []];
+      const wOf = (g2) => S * (6 + g2 * 5);
+      for (let i = 0; i < n; i++) {
+        /* 씨앗은 900칸뿐이라 붓 수천 개의 자리를 씨앗에서만 뽑으면
+           같은 자리에 겹쳐 앉는다. 황금비 수열로 자리를 벌린다 —
+           결정적이고, 고르게 퍼지고, 격자로 안 보인다. */
+        const s = seeds[i % seeds.length];
+        const s2 = seeds[(i * 7 + 101) % seeds.length];
+        const x = ((s.a + i * 0.6180339887) % 1) * W, y = ((s.b + i * 0.7548776662) % 1) * H;
+        const dx = x - cx, dy = y - cy;
+        const dist = Math.hypot(dx, dy);
+        const nz = fbm(x * sc + ox, y * sc + oy, 3);
+        const ang = Math.atan2(dy, dx) + Math.PI * 0.5 + nz * 2.4 * clamp(dist / R, 0.3, 1);
+        const d2 = Math.hypot(x - m2x, y - m2y);
+        let v = 0.92 - dist / R * 0.62 + nz * 0.7 + Math.max(0, 1 - d2 / (R * 0.5)) * 0.9;
+        v = clamp(v, 0, 1);
+        const ci = v > 0.80 ? 0 : v > 0.52 ? 1 : v > 0.26 ? 2 : 3;
+        const lv = ci === 0 ? (v - 0.8) / 0.2 : ci === 1 ? (v - 0.52) / 0.28 : ci === 2 ? (v - 0.26) / 0.26 : v / 0.26;
+        const ab = Math.floor(clamp(lv, 0, 0.999) * AB);
+        const wg = Math.floor(s2.a * WG);
+        const L = S * (22 + s2.b * 40) * (0.85 + 0.15 * Math.sin(ph * TAU + s2.c * TAU));
+        const ex = Math.cos(ang) * L * 0.5, ey = Math.sin(ang) * L * 0.5;
+        const key = ci * 9 + ab * 3 + wg;
+        (body[key] || (body[key] = [])).push(x - ex, y - ey, x + ex, y + ey);
+        const off = wOf(wg) * 0.26;
+        sh[wg].push(x - ex + off, y - ey + off, x + ex + off, y + ey + off);
+        if (v > 0.35) hi[wg].push(x - ex - off, y - ey - off, x + ex - off, y + ey - off);
+      }
+      ctx.lineCap = "round";
+      const run = (arr) => {
+        ctx.beginPath();
+        for (let i = 0; i < arr.length; i += 4) { ctx.moveTo(arr[i], arr[i + 1]); ctx.lineTo(arr[i + 2], arr[i + 3]); }
+        ctx.stroke();
+      };
+      for (const key in body) {
+        const ci = Math.floor(key / 9), ab = Math.floor(key / 3) % 3, wg = key % 3;
+        const lv = (ab + 0.5) / AB;
+        ctx.lineWidth = wOf(wg);
+        ctx.strokeStyle = ci === 3 ? shade(3, 0.35 + 0.45 * lv) : shade(ci, (0.45 + 0.55 * lv) * k.contrast);
+        run(body[key]);
+      }
+      /* 그늘 — 붓 아래쪽 */
+      ctx.strokeStyle = "rgba(" + BGRGB[0] + "," + BGRGB[1] + "," + BGRGB[2] + ",0.40)";
+      for (let g2 = 0; g2 < WG; g2++) { ctx.lineWidth = wOf(g2) * 0.32; run(sh[g2]); }
+      /* 마루 — 물감이 올라온 데가 빛을 받는다 */
+      ctx.globalCompositeOperation = ADD;
+      ctx.strokeStyle = tone(0, 0.10 + 0.16 * k.glow);
+      for (let g2 = 0; g2 < WG; g2++) { ctx.lineWidth = wOf(g2) * 0.30; run(hi[g2]); }
+      ctx.globalCompositeOperation = "source-over";
+    },
+
+    /* 88 르네상스 — 한 점 원근의 회랑.
+       브루넬레스키가 거울로 증명한 그 원근이다. 바둑판 바닥, 양쪽으로
+       물러나는 기둥과 아치, 끝에 빛이 드는 문. 그 안에 공 하나가 떠 있다
+       (피에로 델라 프란체스카의 달걀 자리). 빛이 숨을 쉬고 먼지가 떠돈다.
+       카메라가 아주 조금 옆으로 흔들려 원근이 살아 있는 것처럼 보인다. */
+    renaissance(t) {
+      const ph = t / DUR;
+      const wideK = clamp(W / H / (16 / 9), 1, 2.6);
+      const vx = W * 0.5 + Math.sin(ph * TAU) * W * 0.010;
+      const vy = H * (0.40 + seeds[830].a * 0.08);
+      const K = H * 0.62, f = 1.2;
+      const persp = (z) => f / (f + z);
+      const px = (x, z) => vx + x * K * persp(z);
+      const py = (y, z) => vy + y * K * persp(z);
+      const FLOOR = 0.5, TOP = -0.55, CEIL = -1.65, ARCH = 1.0;
+      const CX = 1.15 * wideK;                         /* 기둥의 x */
+      const zs = [];
+      for (let i = 0; i < 7; i++) zs.push(0.6 + i * 2.1);
+      const zEnd = zs[zs.length - 1] + 1.2;
+      const fade = (z) => clamp(1 - z / (zEnd * 1.35), 0.12, 1);
+      const breath = 0.75 + 0.25 * Math.sin(ph * TAU);
+      const poly = (pts, fill) => {
+        ctx.beginPath();
+        ctx.moveTo(px(pts[0][0], pts[0][2]), py(pts[0][1], pts[0][2]));
+        for (let i = 1; i < pts.length; i++) ctx.lineTo(px(pts[i][0], pts[i][2]), py(pts[i][1], pts[i][2]));
+        ctx.closePath(); ctx.fillStyle = fill; ctx.fill();
+      };
+      /* 뒷벽과 문 */
+      ctx.fillStyle = shade(3, 0.20);
+      ctx.fillRect(px(-CX * 3, zEnd), py(CEIL, zEnd), (px(CX * 3, zEnd) - px(-CX * 3, zEnd)), py(FLOOR, zEnd) - py(CEIL, zEnd));
+      const dg = ctx.createRadialGradient(px(0, zEnd), py(-0.4, zEnd), 0, px(0, zEnd), py(-0.4, zEnd), K * persp(zEnd) * 3.2);
+      dg.addColorStop(0, tone(0, 0.85 * breath)); dg.addColorStop(0.18, tone(1, 0.45 * breath));
+      dg.addColorStop(1, tone(1, 0));
+      ctx.fillStyle = dg;
+      ctx.fillRect(px(-CX * 3, zEnd), py(CEIL, zEnd), (px(CX * 3, zEnd) - px(-CX * 3, zEnd)), py(FLOOR, zEnd) - py(CEIL, zEnd));
+      poly([[-0.55, TOP, zEnd], [0.55, TOP, zEnd], [0.55, FLOOR, zEnd], [-0.55, FLOOR, zEnd]], shade(0, 0.75 * breath));
+      /* 천장 — 우물반자 */
+      const Z0 = -0.6;                                 /* 눈보다 조금 뒤에서 시작해 아래가 비지 않게 */
+      poly([[-CX * 3, CEIL, Z0], [CX * 3, CEIL, Z0], [CX * 3, CEIL, zEnd], [-CX * 3, CEIL, zEnd]], shade(3, 0.14));
+      ctx.strokeStyle = tone(1, 0.10 + 0.12 * k.contrast); ctx.lineWidth = Math.max(0.8, S);
+      ctx.beginPath();
+      for (let j = -6; j <= 6; j++) { ctx.moveTo(px(j * 0.55, Z0), py(CEIL, Z0)); ctx.lineTo(px(j * 0.55, zEnd), py(CEIL, zEnd)); }
+      for (const z of zs) { ctx.moveTo(px(-CX * 3, z), py(CEIL, z)); ctx.lineTo(px(CX * 3, z), py(CEIL, z)); }
+      ctx.stroke();
+      /* 바닥 — 바둑판. 먼 줄부터 */
+      const NZ = 26, cell = 0.5;
+      const cols = Math.ceil(CX * 3 / cell);
+      for (let i = NZ - 1; i >= 0; i--) {
+        const z0 = Z0 + (zEnd - Z0) * Math.pow(i / NZ, 1.7), z1 = Z0 + (zEnd - Z0) * Math.pow((i + 1) / NZ, 1.7);
+        const fd = fade((z0 + z1) / 2);
+        for (let j = -cols; j < cols; j++) {
+          const dark = ((i + j) & 1) === 0;
+          poly([[j * cell, FLOOR, z0], [(j + 1) * cell, FLOOR, z0], [(j + 1) * cell, FLOOR, z1], [j * cell, FLOOR, z1]],
+               dark ? shade(3, 0.30 * fd + 0.1) : shade(1, (0.22 + 0.16 * breath) * fd * k.contrast));
+        }
+      }
+      /* 빛줄기 — 왼쪽 아치에서 바닥으로 */
+      ctx.globalCompositeOperation = ADD;
+      for (let i = 0; i < zs.length - 1; i++) {
+        const za = zs[i] + 0.3, zb = zs[i + 1] - 0.3;
+        poly([[-CX, TOP - ARCH * 0.9, za], [-CX, TOP - ARCH * 0.9, zb], [CX * 0.9, FLOOR, zb + 1.2], [CX * 0.9, FLOOR, za + 1.2]],
+             tone(0, (0.02 + 0.045 * k.glow) * breath * fade(za)));
+      }
+      ctx.globalCompositeOperation = "source-over";
+      /* 기둥과 아치 — 먼 것부터 */
+      for (let i = zs.length - 1; i >= 0; i--) {
+        const z = zs[i], fd = fade(z), cw = 0.24;
+        for (const sgn of [1, -1]) {
+          const X = sgn * CX;
+          /* 옆면(깊이로 들어가는 면)은 어둡고, 앞면은 빛을 받는다 */
+          poly([[X, TOP - 0.06, z], [X, FLOOR, z], [X, FLOOR, z + cw], [X, TOP - 0.06, z + cw]], shade(3, 0.42 * fd + 0.06));
+          poly([[X - sgn * cw, TOP, z], [X, TOP, z], [X, FLOOR, z], [X - sgn * cw, FLOOR, z]],
+               shade(sgn < 0 ? 0 : 1, (0.30 + 0.40 * breath) * fd * k.contrast));
+          /* 주두 */
+          poly([[X - sgn * cw * 1.3, TOP - 0.06, z], [X + sgn * cw * 0.3, TOP - 0.06, z], [X + sgn * cw * 0.3, TOP + 0.08, z], [X - sgn * cw * 1.3, TOP + 0.08, z]],
+               shade(0, 0.5 * fd * k.contrast));
+          /* 아치 — 다음 기둥까지 */
+          if (i < zs.length - 1) {
+            const zc = (z + zs[i + 1]) / 2, r = (zs[i + 1] - z) / 2;
+            ctx.strokeStyle = shade(sgn < 0 ? 0 : 1, (0.28 + 0.35 * breath) * fd * k.contrast);
+            ctx.lineWidth = Math.max(1, 0.12 * K * persp(zc));
+            ctx.beginPath();
+            for (let a = 0; a <= 16; a++) {
+              const th = Math.PI * a / 16;
+              const zz = zc + Math.cos(th) * r, yy = TOP - Math.sin(th) * ARCH;
+              if (a === 0) ctx.moveTo(px(X, zz), py(yy, zz)); else ctx.lineTo(px(X, zz), py(yy, zz));
+            }
+            ctx.stroke();
+          }
+        }
+      }
+      /* 떠 있는 공 */
+      const bz = 4.2 + seeds[831].b * 2, by = -0.35 + Math.sin(ph * TAU) * 0.06, br = 0.24 * clamp(k.scale, 0.6, 1.4);
+      const BX = px(0, bz), BY = py(by, bz), BR = br * K * persp(bz);
+      const sg = ctx.createRadialGradient(BX - BR * 0.4, BY - BR * 0.4, BR * 0.05, BX, BY, BR);
+      sg.addColorStop(0, shade(0, 0.98)); sg.addColorStop(0.5, shade(1, 0.8)); sg.addColorStop(1, shade(3, 0.35));
+      ctx.fillStyle = sg; ctx.beginPath(); ctx.arc(BX, BY, BR, 0, TAU); ctx.fill();
+      ctx.strokeStyle = tone(1, 0.35); ctx.lineWidth = Math.max(0.8, S * 0.8);
+      ctx.beginPath(); ctx.moveTo(BX, py(CEIL, bz)); ctx.lineTo(BX, BY - BR); ctx.stroke();
+      /* 먼지 */
+      const dust = 40 + Math.round(k.density * 80);
+      ctx.fillStyle = tone(0, 0.35 + 0.3 * k.glow);
+      ctx.beginPath();
+      for (let i = 0; i < dust; i++) {
+        const s = seeds[(i * 2 + 840) % seeds.length];
+        const c = 1 + Math.floor(s.c * 2);
+        const x = s.a * W + Math.sin(ph * TAU * c + s.d * TAU) * W * 0.02;
+        const y = s.b * H + Math.cos(ph * TAU * c + s.a * TAU) * H * 0.03;
+        const r = Math.max(0.6, S * (0.6 + s.d * 1.4)) * (0.6 + 0.4 * Math.sin(ph * TAU * 2 + s.b * TAU));
+        ctx.moveTo(x + r, y); ctx.arc(x, y, r, 0, TAU);
+      }
+      ctx.fill();
+    },
+
   };
 
   /* ── 마감 처리 ────────────────────────────────────────────────
@@ -3395,6 +4194,12 @@ const STYLE_LABELS = [
   ["chiaroscuro", "명암"], ["frame", "액자"],
 
   ["frieze", "띠그림"], ["hardedge", "색면"], ["nakhwa", "낙화"],
+
+  ["phyllo", "씨앗나선"], ["blossom", "꽃"], ["leafvein", "잎맥"],
+  ["reed", "갈대"], ["dandelion", "민들레"],
+
+  ["petalfall", "꽃눈"], ["ocean", "파도"], ["anamorph", "아나모픽"],
+  ["impasto", "유화"], ["renaissance", "르네상스"],
 ];
 
 global.StudioArt = {

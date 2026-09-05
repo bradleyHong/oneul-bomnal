@@ -37,6 +37,9 @@
   /* ── 견적 ─────────────────────────────────────────── */
   var BASE_PIXELSEC = 3840 * 2160 * 30;     // 4K 30초 = 1크레딧
   var CREDIT_WON = 1000000;
+  /* 전용 플레이어 한 대. 라즈베리파이 5 · 16GB, 작품을 넣고 HDMI 만 꽂으면
+     도는 상태로 보낸다. 값이 정해진 물건이라 배수를 안 탄다. */
+  var PLAYER_WON = 1500000;
 
   function quote(panel, seconds, opts) {
     var credits = (panel.w * panel.h * seconds) / BASE_PIXELSEC;
@@ -45,8 +48,11 @@
     if (opts.asset) mult *= 1.2;
     if (opts.custom) mult *= 1.6;
     if (opts.rush) mult *= 1.5;
-    var won = Math.round(credits * mult * CREDIT_WON / 10000) * 10000;
-    return { credits: credits, mult: Math.round(mult * 100) / 100, won: won };
+    var render = Math.round(credits * mult * CREDIT_WON / 10000) * 10000;
+    /* 물건은 배수가 아니라 값이 정해져 있다. 렌더 값과 따로 더한다. */
+    var player = opts.player ? PLAYER_WON : 0;
+    return { credits: credits, mult: Math.round(mult * 100) / 100, render: render,
+             player: player, won: render + player };
   }
 
   function comma(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
@@ -115,7 +121,9 @@
       return {
         asset: $("[data-st-opt='asset']", root).checked,
         custom: $("[data-st-opt='custom']", root).checked,
-        rush: $("[data-st-opt='rush']", root).checked
+        rush: $("[data-st-opt='rush']", root).checked,
+        player: $("[data-st-opt='player']", root).checked,
+        api: $("[data-st-opt='api']", root).checked
       };
     }
 
@@ -129,6 +137,8 @@
         '<div class="st-q-row"><span>재생 길이</span><b>' + sec + '초</b></div>' +
         '<div class="st-q-row"><span>렌더 크레딧</span><b>' + q.credits + ' 크레딧</b></div>' +
         '<div class="st-q-row"><span>옵션 배수</span><b>×' + q.mult + '</b></div>' +
+        (q.player ? '<div class="st-q-row"><span>전용 플레이어 1대</span><b>' + comma(q.player) + '원</b></div>' : '') +
+        (LAST.o.api ? '<div class="st-q-row"><span>API 연결</span><b>담당자 협의</b></div>' : '') +
         '<div class="st-q-total"><span>예상 금액</span><b>' + comma(q.won) + '원</b></div>' +
         '<p class="st-q-note">1크레딧 = 4K 30초 기준입니다. 렌더 원가가 화면 넓이와 길이에 비례하므로 금액도 같은 기준으로 계산합니다. 부가세 별도이며, 확정 견적은 담당자 확인 후 발행합니다.</p>';
     }
@@ -139,22 +149,9 @@
     var history = [];              // 방금 만든 화면들. 좋은 것이 지나가 버리면 안 된다.
     var HISTORY_MAX = 8;
 
-    /* 느낌 열둘. 순서는 작품 번호에 박히므로 바꾸거나 중간에 끼워 넣지 않는다.
-     * 새로 만들면 뒤에 붙인다. */
-    var SCENES = [
-      { ko: "봄빛 리본",   text: "로비 미디어월에 걸 봄바람 빛 리본, 따뜻하고 화사하게" },
-      { ko: "바다 물결",   text: "바다와 파도, 잔잔하게 흐르는 로비 화면" },
-      { ko: "겨울 눈",     text: "겨울 밤 도심 전광판, 눈송이 내리는 화면, 차분하게" },
-      { ko: "전통 단청",   text: "고분군 야간 포토존, 전통 색감으로 웅장하게" },
-      { ko: "도시 야경",   text: "도시 야경 네온 전광판, 경쾌하게" },
-      { ko: "우주 별빛",   text: "우주와 별빛, 고요하게 흐르는 밤하늘" },
-      { ko: "숲 초록",     text: "숲과 나무, 초록빛으로 산뜻하게" },
-      { ko: "노을",        text: "노을 지는 저녁, 은은하게" },
-      { ko: "수묵 여백",   text: "수묵 담백한 여백, 묵직하게" },
-      { ko: "형광 사이버", text: "형광 사이버 글리치, 강렬하게" },
-      { ko: "안개 하늘",   text: "안개 낀 하늘과 바람결, 몽환적으로" },
-      { ko: "빛 번짐",     text: "빛줄기 번짐, 은은하고 잔잔하게" }
-    ];
+    /* 느낌 열둘은 studio-gen.js 로 옮겼다. 순서가 작품 번호에 박히므로
+       play.html(전용 플레이어)도 같은 목록을 봐야 한다. */
+    var SCENES = GEN.SCENES;
     var CUSTOM = 31;               // 직접 적은 문장. 번호만으로는 되살릴 수 없다.
 
     /* 작품 번호 = 느낌 번호(위 5비트) + 씨앗(아래 19비트).
@@ -166,9 +163,10 @@
        결제하면 같은 번호로 그려 준다고 화면에 적어 놨으므로, 늘릴 때마다
        판을 올리고 옛 번호는 옛 목록으로 그린다.
          BN-  1판  기본 14종
-         BN2- 2판  + 엔진 64종
-         BN3- 3판  + 3D 뼈대 3종 */
-    var CODE_V = 3;
+         BN2- 2판  + 엔진 56종
+         BN3- 3판  + 엔진 78종 (3D·글자·액자·띠그림·색면·낙화까지)
+         BN4- 4판  + 식물 5종 */
+    var CODE_V = 4;
     function code(idx, seed, v) {
       var n = (((idx & 31) << 19) | (seed & 0x7FFFF)) >>> 0;
       var vv = v || CODE_V;
@@ -190,7 +188,7 @@
       return idx === CUSTOM ? (elStory.value || "").trim() : SCENES[idx].text;
     }
 
-    function make(idx, seed, fromHistory, v) {
+    function make(idx, seed, fromHistory, v, style) {
       if (idx == null) idx = sceneIdx;
       if (v == null) v = CODE_V;          /* 새로 만드는 것은 늘 최신 판 */
       var story = storyOf(idx);
@@ -199,6 +197,9 @@
       var pn = currentPanel();
       var sd = seed == null ? newSeed() : seed;
       spec = GEN.compose(story, sd, pn.w / pn.h, v);
+      /* 담아 둔 화면에서 왔으면 그때 그린 스타일로. 판 목록이 밀려도
+         고객이 본 그림이 그대로 열린다. */
+      if (style && GEN.hasStyle(style)) spec.style = style;
       spec.idx = idx;
       spec.v = v;
       gen.set(spec).start();
@@ -327,7 +328,7 @@
     var elLoadMsg = $("[data-st-load-msg]", root);
     function loadCode() {
       var p2 = parseCode(elLoad.value);
-      if (!p2) { elLoadMsg.textContent = "BN3- 또는 BN2-, BN- 으로 시작하는 번호를 넣어 주세요."; return; }
+      if (!p2) { elLoadMsg.textContent = "BN4-, BN3-, BN2-, BN- 으로 시작하는 번호를 넣어 주세요."; return; }
       if (p2.idx === CUSTOM && !(elStory.value || "").trim()) {
         elLoadMsg.textContent = "직접 적으신 문장으로 만든 번호입니다. 그 문장을 아래에 적어 주세요.";
         return;
@@ -361,15 +362,17 @@
       if (LAST.o.asset) picked.push("기관 로고·이미지 반영");
       if (LAST.o.custom) picked.push("커스텀 스타일 요청");
       if (LAST.o.rush) picked.push("당일 급행");
+      if (LAST.o.player) picked.push("전용 플레이어 1대 (라즈베리파이 5 · 16GB, 작품 설치 후 배송, " + comma(PLAYER_WON) + "원)");
+      if (LAST.o.api) picked.push("API 연결 (작품을 주소로 불러오기 · HTML 전달, 협의)");
       return [
         "작품 번호: " + (art || "(만들기 전)"),
         "원하시는 화면: " + (story || "(적지 않으심)"),
         "엔진 설정(사내 확인용): " + (spec ? spec.style + " / " + spec.palette.id : "-"),
         "화면 규격: " + LAST.panel.name + " " + LAST.panel.w + "×" + LAST.panel.h,
         "재생 길이: " + LAST.sec + "초",
-        "렌더 크레딧: " + LAST.q.credits + " 크레딧 (옵션 배수 ×" + LAST.q.mult + ")",
+        "렌더 크레딧: " + LAST.q.credits + " 크레딧 (옵션 배수 ×" + LAST.q.mult + ") = " + comma(LAST.q.render) + "원",
         "추가 요청: " + (picked.join(", ") || "없음"),
-        "예상 금액: " + comma(LAST.q.won) + "원 (부가세 별도)"
+        "예상 금액: " + comma(LAST.q.won) + "원 (부가세 별도" + (LAST.o.api ? " · API 연결은 별도 협의" : "") + ")"
       ].join("\n");
     }
 
@@ -432,7 +435,10 @@
      * 한 장씩 정지 화면으로만 그린다. 고른 것만 움직인다. */
     /* 좁은 화면에서 열두 칸은 여섯 줄이 되어 그것만으로 화면 세 개
        분량이다. 절반만 내놓고 "다른 화면 보기"로 넘기게 한다. */
-    function wallCount() { return window.innerWidth <= 640 ? 6 : 12; }
+    /* 손전화도 열두 장. 여섯 장으로 줄였던 것은 칸이 비율대로라 길게
+       쌓였기 때문인데, 이제 칸이 정사각이라 두 줄 여섯 칸이면 된다.
+       뽑을 것이 적으면 하트 누를 것도 적다. */
+    function wallCount() { return 12; }
     var elWall = $("[data-st-wall]", root);
     var wallItems = [];
 
@@ -493,7 +499,10 @@
       var was = hearts.length;
       hearts = hearts.filter(function (h) { return heartKey(h) !== k; });
       if (hearts.length === was) {
-        hearts.unshift({ idx: it.idx, seed: it.seed, v: it.v || CODE_V, ar: it.ar, ko: SCENES[it.idx] ? SCENES[it.idx].ko : "" });
+        /* 그린 스타일 이름도 같이 남긴다. 판 목록이 밀려도(한 번 그랬다)
+           담아 둔 그림은 그 이름으로 다시 그려 그대로 나온다. */
+        hearts.unshift({ idx: it.idx, seed: it.seed, v: it.v || CODE_V, ar: it.ar,
+                         style: it.style || "", ko: SCENES[it.idx] ? SCENES[it.idx].ko : "" });
         if (hearts.length > HEART_MAX) hearts.pop();
       }
       heartSave();
@@ -539,6 +548,11 @@
     /** 칸 하나. 그림 한 장 · 이름 · 하트. */
     function wallCell(it) {
       var wrap = el("div", "st-wall-cell");
+      /* 손전화의 정사각 칸에서: 16:9 나 4:3 처럼 정사각에 가까운 그림은
+         칸을 가득 채우고(가장자리가 조금 잘린다), 1:6 기둥이나 32:9 띠는
+         통째로 보인다. 띠를 가득 채우면 한가운데 한 토막만 남아 무슨
+         그림인지 알 수 없다. */
+      wrap.dataset.fit = (it.ar > 0.6 && it.ar < 2.2) ? "cover" : "contain";
       var b = el("button", "st-wall-item");
       b.type = "button";
       /* 실제 비율 그대로 그린다. 높이만 잘라 맞추면 1:6 기둥이 0.71로
@@ -555,12 +569,18 @@
       wrap.appendChild(b);
 
       var one = new GEN.Gen(c);
-      one.set(GEN.compose(SCENES[it.idx].text, it.seed, it.ar, it.v));
+      var sp = GEN.compose(SCENES[it.idx].text, it.seed, it.ar, it.v);
+      /* 담아 둘 때 적어 둔 스타일이 있고 지금도 그릴 줄 알면 그걸 쓴다.
+         compose 는 스타일을 고를 때 난수를 딱 한 번 쓰므로, 스타일만
+         바꿔 끼워도 색·느낌·나머지 값은 그대로다. */
+      if (it.style && GEN.hasStyle(it.style)) sp.style = it.style;
+      it.style = sp.style;
+      one.set(sp);
       one.draw(1.7);                 /* 한 장만. 열두 칸이 다 움직이면 아무것도 못 본다 */
 
       b.addEventListener("click", function () {
         elStory.value = "";
-        make(it.idx, it.seed, false, it.v);
+        make(it.idx, it.seed, false, it.v, it.style);
         wallMark();
       });
 
@@ -593,7 +613,7 @@
       if (elHeartWrap) elHeartWrap.hidden = hearts.length === 0;
       elHearts.innerHTML = "";
       hearts.forEach(function (h) {
-        var it = { idx: h.idx, seed: h.seed, v: h.v || CODE_V, ar: h.ar || 16 / 9 };
+        var it = { idx: h.idx, seed: h.seed, v: h.v || CODE_V, ar: h.ar || 16 / 9, style: h.style || "" };
         var cell = wallCell(it);
         /* 담아 둔 뒤에 팔렸을 수 있다. 그대로 두면 살 수 없는 화면을
            계속 보여 주게 된다. */
