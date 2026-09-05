@@ -24,7 +24,7 @@
       ]
     },
     {
-      "source": "/(|ai|studio|media-facade|led-install|media-facade-content|showcase|company|quote|data-media-art|landing)",
+      "source": "/(|media-facade|led-install|media-facade-content|showcase|company|quote|data-media-art|landing)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -33,7 +33,7 @@
       ]
     },
     {
-      "source": "/(admin|client|login|ax-studio)",
+      "source": "/(admin|client|login|studio)",
       "headers": [
         {
           "key": "Cache-Control",

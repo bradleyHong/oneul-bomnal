@@ -1,799 +1,391 @@
-/* 온 미디어아트 에디트 — 조작판
+/**
+ * 오늘은 봄날 · 봄날 스튜디오 (고객 화면)
  *
- * 고객이 만지는 값은 전부 URL 쿼리 하나로 모인다. 그 쿼리를 iframe에 넘기면
- * 미리보기가 되고, 같은 쿼리를 tools/render-studio.mjs에 넘기면 4K 납품본이 된다.
- * 고객이 화면에서 본 그림과 우리가 뽑는 그림이 어긋날 자리를 아예 없앤 것이다.
+ * 흐름
+ *   ① 만들고 싶은 장면을 한국어로 적는다
+ *   ② 화면 규격을 고른다 (프리셋 또는 직접 입력)
+ *   ③ 엔진이 문장을 읽어 5초짜리 시연본을 코드로 그린다
+ *   ④ 견적을 확인하고 의뢰한다
  *
- * 미리보기는 작게 돌린다. 고객 노트북에서 팬이 도는 순간 "무거운 서비스"라는
- * 인상이 남고, 그건 렌더 품질로 만회되지 않는다.
+ * 시연본은 전부 코드로 그립니다. 사진을 합성하지 않습니다.
+ * 라이선스를 확보한 에셋은 사내 최종 렌더의 입력으로만 쓰고,
+ * 이 화면에는 올리지 않습니다.
+ * 화면에 워터마크가 항상 찍히며 저장 기능은 두지 않습니다.
  */
 (function () {
   "use strict";
 
-  var ART = "./works/studio-art.html";
-  var STORE = "bomnal.studio.v1";
+  var GEN = window.BomnalGen;
 
-  /* ── 목록 ─────────────────────────────────────────────────
-     스타일·색 이름은 엔진(works/studio-art.html)과 같은 순서를 쓴다.
-     엔진이 window.STUDIO_STYLES로 내보내지만 iframe 안이라 여기서 한 번 더 적는다.
-     둘이 어긋나면 버튼은 있는데 그림이 안 바뀌므로, 아래 배열이 정본이다. */
-  var STYLES = [
-    ["minimal", "미니멀", "여백이 주인공. 선 몇 개와 원 하나"],
-    ["maximal", "맥시멀", "층층이 쌓는다. 밀도가 성격"],
-    ["futuristic", "퓨처리스틱", "궤도와 계측선. 재고 있는 화면"],
-    ["vector", "벡터 아트", "면으로 자른 도형. 평평하게"],
-    ["collage", "콜라주", "오려 붙인 종이. 결이 겹친다"],
-    ["retro", "레트로", "수평선과 해. 실크스크린의 층"],
-    ["cyber", "사이버펑크", "원근 격자와 글리치"],
-    ["pop", "팝아트", "하프톤 점과 굵은 면"],
-    ["glass", "글래스", "반투명 판이 겹치며 흐려진다"],
-    ["clay", "클레이", "말랑한 덩어리와 부드러운 그림자"],
-    ["pixel", "픽셀아트", "저해상도 격자로 계단화"],
-    ["editorial", "에디토리얼", "잡지 지면. 규칙선과 여백"],
-    ["y2k", "Y2K", "크롬 방울과 별 스파클"],
-    ["swiss", "스위스", "격자·대각·굵은 바. 장식 없음"],
-    ["surreal", "초현실", "떠 있는 구체와 긴 그림자"],
-    ["bohemian", "보헤미안", "아치와 점묘. 흙빛의 반복"],
-    ["victorian", "빅토리안", "대칭 아라베스크와 액자"],
-    ["graffiti", "그래피티", "스프레이 궤적과 튀는 입자"],
-    ["aurora", "오로라", "흐르는 빛의 커튼"],
-    ["hand", "손글씨", "압력이 살아 있는 자유곡선"],
-    ["inkwash", "수묵", "먹이 종이에 번진 자국"],
-    ["wave", "파동", "두 물결이 겹치며 간섭한다"],
-    ["flock", "군집", "새떼. 같이 가되 조금씩 어긋난다"],
-    ["crystal", "결정", "가장 가까운 씨앗으로 갈린 면"],
-    ["thread", "실", "선을 이어 만든 곡선. 스트링아트"],
-    ["rain", "비", "빗줄기와 바닥의 파문"],
-    ["bloom", "개화", "가운데에서 꽃잎이 열린다"],
-    ["circuit", "회로", "직각으로 꺾이는 배선과 접점"],
-    ["topo", "등고선", "같은 높이를 잇는 선. 지형이 뜬다"],
-    ["mosaic", "모자이크", "조각 타일. 줄눈이 그림을 만든다"],
-    ["smoke", "연기", "위로 오르며 흩어진다"],
-    ["warp", "격자 왜곡", "반듯한 격자가 힘에 눌린다"],
-    ["constellation", "별자리", "가까운 점끼리만 잇는다"],
-    ["stripe", "옵아트", "굵기가 변하는 줄무늬"],
-    ["spiral", "나선", "한 점에서 풀려 나오는 궤적"],
-    ["fracture", "균열", "갈라질수록 가늘어진다"],
-    ["neonsign", "네온사인", "유리관에 갇힌 빛"],
-    ["paper", "종이", "접힌 면. 각도가 밝기를 가른다"],
-    ["bamboo", "대나무", "수직의 마디. 획과 여백"],
-    ["orbit", "궤도", "타원을 도는 점과 그 자취"],
-    ["ripple", "파문", "떨어진 자리마다 동심원. 겹치면 밝아진다"],
-    ["moire", "간섭무늬", "결이 다른 두 격자가 없던 무늬를 만든다"],
-    ["lissajous", "리사주", "가로세로 진동수의 비가 곧 모양"],
-    ["attractor", "끌개", "같은 식을 수만 번. 점이 모이는 자리"],
-    ["slitscan", "슬릿스캔", "띠마다 시간이 다르다. 한 장에 여러 순간"],
-    ["dotmatrix", "도트매트릭스", "LED 패널 그 자체. 점 하나가 화소 하나"],
-    ["oscillo", "파형", "오실로스코프. 겹쳐 흐르는 신호"],
-    ["lowpoly", "로우폴리", "삼각형 면만으로 이룬 지형"],
-    ["isocity", "아이소 도시", "비스듬히 내려다본 블록의 높낮이"],
-    ["branch", "가지", "하나의 획이 둘로 갈라지기를 되풀이"],
-    ["mandala", "만다라", "하나의 결을 원 둘레로 되풀이"],
-    ["hanji", "한지", "젖은 종이에 번지는 먹. 경계가 없다"],
-    ["blinds", "블라인드", "날개가 물결처럼 돌아간다"],
-    ["magnet", "자기장", "두 극 사이를 흐르는 선"],
-    ["terrace", "계단 지형", "등고선 사이를 칠해 층으로 세운다"],
-    ["weave", "직조", "씨줄과 날줄. 위아래가 번갈아 지나간다"],
+  /* ── 화면 규격 프리셋 ─────────────────────────────── */
+  var PANELS = [
+    { id: "wide169", name: "가로형 · 로비 미디어월", w: 3840, h: 2160, note: "16:9" },
+    { id: "vert916", name: "세로형 · 안내 사이니지", w: 1080, h: 1920, note: "9:16" },
+    { id: "ultra329", name: "와이드형 · 외벽 전광판", w: 3840, h: 960, note: "32:9" },
+    { id: "column16", name: "기둥형 · 세로 긴 화면", w: 340, h: 2040, note: "1:6" },
+    { id: "square", name: "정사각 · 포토존", w: 2048, h: 2048, note: "1:1" }
   ];
 
-  /* 색. 명화에서 온 것은 출처를 적는다. 전부 저작권이 만료된 작품이고,
-     색만 참고했다는 것을 고객에게도 분명히 보여준다. */
-  var PALETTES = [
-    ["ink", "수묵", "", ["#f5f2ea", "#c9c4b8", "#8a8a8a", "#050505"]],
-    ["bomnal", "봄날", "오늘은 봄날 기본색", ["#e8eefc", "#a9c4ff", "#2f6ad8", "#10367d"]],
-    ["hokusai", "가나가와 파도", "호쿠사이 · 1831 · 퍼블릭 도메인", ["#eef2f0", "#a9c6d6", "#1b4c78", "#0d2740"]],
-    ["gogh", "별이 빛나는 밤", "반 고흐 · 1889 · 퍼블릭 도메인", ["#f2d98a", "#e8b64c", "#2a5fa8", "#12224d"]],
-    ["klimt", "황금", "클림트 · 1908 · 퍼블릭 도메인", ["#f0d98a", "#c9a234", "#8a6a1f", "#3a2c10"]],
-    ["munch", "절규의 하늘", "뭉크 · 1893 · 퍼블릭 도메인", ["#f2c07a", "#e8934a", "#c4452c", "#3a4a6a"]],
-    ["monet", "수련", "모네 · 1906 · 퍼블릭 도메인", ["#dfe8d8", "#a9c4a0", "#5a8f7b", "#7a6a9a"]],
-    ["vermeer", "진주", "베르메르 · 1665 · 퍼블릭 도메인", ["#f0e6d2", "#d8b46a", "#2a4a8f", "#14213d"]],
-    ["hiroshige", "명소백경", "히로시게 · 1857 · 퍼블릭 도메인", ["#f2ece0", "#b83c2c", "#2a4a7a", "#1a2a44"]],
-    ["turner", "노을", "터너 · 1839 · 퍼블릭 도메인", ["#f5e2c0", "#e8a95a", "#d87a3c", "#6a4a3a"]],
-    ["dancheong", "단청", "한국 전통 채색", ["#f0ede4", "#e0b23c", "#c8482f", "#1f7a6e"]],
-    ["baekja", "백자", "조선 백자의 따뜻한 흰빛", ["#f2ede3", "#d9d2c4", "#a89c88", "#6a6152"]],
-    ["cheonghwa", "청화백자", "백자에 코발트 청", ["#f2ede3", "#7a9ccc", "#2b4a8c", "#16233f"]],
-    ["seurat", "점묘", "쇠라 · 1886 · 퍼블릭 도메인", ["#f0e4b8", "#7aa8c4", "#c4805a", "#4a6a4a"]],
-    ["kandinsky", "구성", "칸딘스키 · 1923 · 퍼블릭 도메인", ["#f2ece0", "#e8c34a", "#c4452c", "#2a5fa8"]],
-    ["mondrian", "삼원색", "몬드리안 · 1930 · 퍼블릭 도메인", ["#f7f7f2", "#f2d22c", "#d82c2c", "#2c4ad8"]],
-    ["schiele", "마른 흙", "실레 · 1912 · 퍼블릭 도메인", ["#e8dcc4", "#d8a05a", "#b85c4a", "#6a7a5a"]],
-    ["mono", "흑백", "", ["#ffffff", "#c0c0c0", "#7a7a7a", "#000000"]],
-    ["neon", "네온", "", ["#e6faff", "#00e5c0", "#3d6bff", "#ff3d8a"]],
-  ];
-
-  var SLIDERS = [
-    ["density", "밀도", "화면을 얼마나 채울지", 0, 100],
-    ["scale", "크기", "요소 하나의 크기", 0, 100],
-    ["speed", "속도", "얼마나 빨리 움직일지", 0, 100],
-    ["contrast", "대비", "밝고 어두움의 차이", 0, 100],
-    ["glow", "번짐", "빛이 퍼지는 정도", 0, 100],
-    ["grain", "그레인", "필름 같은 입자. LED 밴딩을 덮는다", 0, 100],
-    ["accent", "포인트 색", "강조색을 얼마나 쓸지", 0, 100],
-  ];
-
-  var MOTIONS = [["drift", "흐름"], ["pulse", "맥박"], ["orbit", "회전"], ["still", "정지"]];
-  var SYMS = [["1", "없음"], ["2", "2겹"], ["4", "4겹"], ["6", "6겹"]];
-
-  /* 화면 규격. 실제 현장에서 나오는 비율만 넣는다. */
-  var RATIOS = [
-    ["16:9", 16 / 9, "로비 미디어월 · 일반 사이니지"],
-    ["32:9", 32 / 9, "건물 외벽 와이드 전광판"],
-    ["21:9", 21 / 9, "가로형 벽면"],
-    ["9:16", 9 / 16, "세로형 사이니지"],
-    ["1:6", 1 / 6, "기둥형 세로 화면"],
-    ["1:1", 1, "정사각 화면"],
-  ];
-
-  /* 미리보기 장면. 사진 원판 위의 화면 영역은 실제 픽셀을 재서 넣었다.
-     원판이 없는 장면은 CSS로 그린다. 목업 사진이 생기면 plate만 갈아 끼우면 된다. */
-  var SCENES = [
-    { id: "lobby", label: "실내 로비", plate: "./assets/lobby-blank.webp",
-      screen: { left: 30.25, top: 29.45, width: 39.5, height: 36.51 },
-      caption: "실내 로비 LED 미디어월" },
-    { id: "plaza", label: "야외 전광판", plate: "./assets/led-panel-plaza.webp",
-      screen: { left: 22.88, top: 17.25, width: 54.56, height: 63.72 },
-      caption: "광장 대형 LED 전광판" },
-    { id: "facade", label: "건물 외벽", plate: "", drawn: "facade",
-      screen: { left: 21, top: 26, width: 58, height: 44 },
-      caption: "건물 외벽 미디어파사드 (야간)" },
-    { id: "frame", label: "디지털 액자", plate: "", drawn: "frame",
-      screen: { left: 26, top: 18, width: 48, height: 56 },
-      caption: "실내 디지털 액자" },
-    { id: "raw", label: "화면만", plate: "", drawn: "raw",
-      screen: { left: 4, top: 4, width: 92, height: 92 },
-      caption: "목업 없이 화면만" },
-  ];
-
-  /* ── 상태 ─────────────────────────────────────────────────── */
-  var DEFAULTS = {
-    style: "aurora", palette: "ink",
-    density: 50, scale: 50, speed: 50, contrast: 55, glow: 35, grain: 18, accent: 60,
-    motion: "drift", symmetry: "1", invert: false,
-    ratio: "16:9", scene: "lobby", seed: 4821937, preset: null,
-  };
-  var st = Object.assign({}, DEFAULTS);
-
-  var $ = function (s, r) { return (r || document).querySelector(s); };
-  var el = function (tag, cls, txt) {
-    var e = document.createElement(tag);
-    if (cls) e.className = cls;
-    if (txt != null) e.textContent = txt;
-    return e;
-  };
-
-  /* 시드 난수 — 랜덤 버튼용. 여기서는 Math.random을 써도 된다.
-     뽑힌 시드가 정해지는 순간부터 그림은 완전히 결정론적이기 때문이다. */
-  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-  function newSeed() { return 1000000 + Math.floor(Math.random() * 8999999); }
-
-  /* ── 저장 ─────────────────────────────────────────────────── */
-  function save() {
-    try { localStorage.setItem(STORE, JSON.stringify(st)); } catch (e) { /* 무시 */ }
-  }
-  function load() {
-    try {
-      var v = JSON.parse(localStorage.getItem(STORE) || "null");
-      if (v && typeof v === "object") Object.assign(st, DEFAULTS, v);
-    } catch (e) { /* 무시 */ }
+  function $(q, r) { return (r || document).querySelector(q); }
+  function el(tag, cls, txt) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (txt != null) n.textContent = txt;
+    return n;
   }
 
-  /* ── 미리보기 크기 ────────────────────────────────────────────
-     실제 렌더 해상도가 아니라 "화면에 보이는 크기"만 정한다.
-     4K로 미리보기를 돌리면 브라우저가 버티지 못한다. */
-  function previewSize() {
-    var ar = ratioValue();
-    var base = 620;                      // 긴 변 기준 픽셀
-    if (ar >= 1) return { w: Math.round(base), h: Math.round(base / ar) };
-    return { w: Math.round(base * ar), h: Math.round(base) };
-  }
-  function ratioValue() {
-    for (var i = 0; i < RATIOS.length; i++) if (RATIOS[i][0] === st.ratio) return RATIOS[i][1];
-    return 16 / 9;
-  }
+  /* ── 견적 ─────────────────────────────────────────── */
+  var BASE_PIXELSEC = 3840 * 2160 * 30;     // 4K 30초 = 1크레딧
+  var CREDIT_WON = 1000000;
 
-  /* ── 아트 주소 만들기 ─────────────────────────────────────────
-     이 문자열이 곧 작품의 정의다. 의뢰서에도 그대로 실린다. */
-  function artQuery(size) {
-    var s = size || previewSize();
-    return "w=" + s.w + "&h=" + s.h +
-      "&style=" + encodeURIComponent(st.style) +
-      "&palette=" + encodeURIComponent(st.palette) +
-      "&density=" + st.density + "&scale=" + st.scale + "&speed=" + st.speed +
-      "&contrast=" + st.contrast + "&glow=" + st.glow + "&grain=" + st.grain +
-      "&accent=" + st.accent +
-      "&motion=" + encodeURIComponent(st.motion) +
-      "&symmetry=" + st.symmetry +
-      (st.invert ? "&invert=1" : "") +
-      "&seed=" + st.seed;
-  }
-  /* 납품 규격. 우리가 실제로 뽑을 때 쓰는 값이다. */
-  function deliverSize() {
-    var ar = ratioValue();
-    if (ar >= 1) return { w: 3840, h: Math.round(3840 / ar / 2) * 2 };
-    return { w: Math.round(2160 * ar / 2) * 2, h: 3840 };
+  function quote(panel, seconds, opts) {
+    var credits = (panel.w * panel.h * seconds) / BASE_PIXELSEC;
+    credits = Math.max(0.5, Math.round(credits * 10) / 10);
+    var mult = 1;
+    if (opts.asset) mult *= 1.2;
+    if (opts.custom) mult *= 1.6;
+    if (opts.rush) mult *= 1.5;
+    var won = Math.round(credits * mult * CREDIT_WON / 10000) * 10000;
+    return { credits: credits, mult: Math.round(mult * 100) / 100, won: won };
   }
 
-  /* ── 그리기 ────────────────────────────────────────────────── */
-  var frame = $("[data-art-frame]");
-  var lastQuery = "";
-  var applyTimer = null;
-  var userPaused = false;
+  function comma(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
 
-  /* 미리보기를 재생·정지한다. iframe을 지우지 않고 루프만 세운다.
-     지우면 다시 켤 때 처음부터 시작해 고객이 보던 장면이 사라진다. */
-  function setPlaying(on) {
-    try {
-      var w = frame.contentWindow;
-      if (w) w.postMessage(on ? "bomnal:play" : "bomnal:pause", "*");
-    } catch (e) { /* 무시 */ }
-  }
+  /* ── 화면 조립 ────────────────────────────────────── */
+  document.addEventListener("DOMContentLoaded", function () {
+    var root = $("#studio");
+    if (!root) return;
 
-  function applyArt(immediate) {
-    var q = artQuery();
-    if (q === lastQuery) return;
-    clearTimeout(applyTimer);
-    /* 슬라이더를 끌면 초당 수십 번 바뀐다. iframe을 그때마다 다시 만들면
-       고객 화면이 깜빡이고 느려진다. 손을 멈춘 뒤에 한 번만 바꾼다. */
-    applyTimer = setTimeout(function () {
-      lastQuery = q;
-      frame.src = ART + "?" + q;
-    }, immediate ? 0 : 90);
-  }
+    var elStory = $("[data-st-story]", root);
+    var elPanel = $("[data-st-panel]", root);
+    var elW = $("[data-st-w]", root);
+    var elH = $("[data-st-h]", root);
+    var elSec = $("[data-st-sec]", root);
+    var elGo = $("[data-st-go]", root);
+    var elCanvas = $("[data-st-canvas]", root);
+    var elCuts = $("[data-st-cuts]", root);
+    var elQuote = $("[data-st-quote]", root);
+    var elStat = $("[data-st-stat]", root);
+    var elChips = $("[data-st-chips]", root);
+    var elForm = $("[data-st-form]", root);
+    var elSend = $("[data-st-send]", root);
+    var elMsg = $("[data-st-msg]", root);
+    var elHist = $("[data-st-hist]", root);
+    var elHistWrap = $("[data-st-hist-wrap]", root);
+    var LAST = null;
 
-  /* ── 장면 ─────────────────────────────────────────────────── */
-  function applyScene() {
-    var sc = null;
-    for (var i = 0; i < SCENES.length; i++) if (SCENES[i].id === st.scene) sc = SCENES[i];
-    if (!sc) sc = SCENES[0];
-
-    var scene = $("[data-scene]");
-    var plate = $("[data-plate]");
-    var screen = $("[data-screen]");
-
-    scene.dataset.drawn = sc.drawn || "";
-    if (sc.plate) {
-      plate.src = sc.plate;
-      plate.alt = sc.caption + " 목업";
-      plate.hidden = false;
-    } else {
-      plate.removeAttribute("src");
-      plate.hidden = true;
-    }
-    screen.style.left = sc.screen.left + "%";
-    screen.style.top = sc.screen.top + "%";
-    screen.style.width = sc.screen.width + "%";
-    screen.style.height = sc.screen.height + "%";
-    $("[data-scene-caption]").textContent = sc.caption;
-
-    /* 화면 영역 안에서 작품의 비율을 지킨다. 늘려 붙이면 현장에서 본
-       것과 다른 그림이 되고, 그건 고객을 속이는 미리보기다. */
-    var ar = ratioValue();
-    screen.style.setProperty("--art-ar", String(ar));
-  }
-
-  /* ── 조작판 만들기 ────────────────────────────────────────── */
-  function buildStyles() {
-    var wrap = $("[data-styles]");
-    wrap.textContent = "";
-    STYLES.forEach(function (s, i) {
-      var b = el("button", "style-card");
-      b.type = "button";
-      b.setAttribute("role", "radio");
-      b.dataset.style = s[0];
-      b.innerHTML =
-        '<span class="style-num">' + String(i + 1).padStart(2, "0") + "</span>" +
-        '<span class="style-name"></span><span class="style-desc"></span>';
-      b.querySelector(".style-name").textContent = s[1];
-      b.querySelector(".style-desc").textContent = s[2];
-      b.addEventListener("click", function () { st.style = s[0]; sync(); });
-      wrap.appendChild(b);
+    PANELS.forEach(function (p, i) {
+      var o = el("option", null, p.name + "  (" + p.note + " · " + p.w + "×" + p.h + ")");
+      o.value = i;
+      elPanel.appendChild(o);
     });
-  }
+    var oCustom = el("option", null, "직접 입력");
+    oCustom.value = "custom";
+    elPanel.appendChild(oCustom);
 
-  function buildPalettes() {
-    var wrap = $("[data-palettes]");
-    wrap.textContent = "";
-    PALETTES.forEach(function (p) {
-      var b = el("button", "pal-card");
-      b.type = "button";
-      b.setAttribute("role", "radio");
-      b.dataset.palette = p[0];
-      var sw = el("span", "pal-swatch");
-      p[3].forEach(function (c) {
-        var d = el("span");
-        d.style.background = c;
-        sw.appendChild(d);
-      });
-      b.appendChild(sw);
-      b.appendChild(el("span", "pal-name", p[1]));
-      if (p[2]) b.appendChild(el("span", "pal-src", p[2]));
-      b.title = p[2] || p[1];
-      b.addEventListener("click", function () { st.palette = p[0]; sync(); });
-      wrap.appendChild(b);
-    });
-  }
-
-  function buildSliders() {
-    var wrap = $("[data-sliders]");
-    wrap.textContent = "";
-    SLIDERS.forEach(function (s) {
-      var row = el("div", "slider-row");
-      var lab = el("label", "slider-label");
-      lab.setAttribute("for", "sl-" + s[0]);
-      lab.appendChild(el("b", null, s[1]));
-      lab.appendChild(el("small", null, s[2]));
-      var val = el("output", "slider-val");
-      val.dataset.for = s[0];
-      var inp = document.createElement("input");
-      inp.type = "range"; inp.min = s[3]; inp.max = s[4]; inp.step = 1;
-      inp.id = "sl-" + s[0];
-      inp.dataset.slider = s[0];
-      inp.addEventListener("input", function () {
-        st[s[0]] = +inp.value;
-        st.preset = null;
-        val.textContent = inp.value;
-        applyArt(); renderSpec(); save();
-      });
-      row.appendChild(lab); row.appendChild(val); row.appendChild(inp);
-      wrap.appendChild(row);
-    });
-  }
-
-  function buildSeg(name, items, onPick) {
-    var wrap = document.querySelector('[data-seg="' + name + '"]');
-    wrap.textContent = "";
-    items.forEach(function (it) {
-      var b = el("button", "seg-btn");
-      b.type = "button";
-      b.setAttribute("role", "radio");
-      b.dataset.val = it[0];
-      b.appendChild(el("b", null, it[1]));
-      if (it[2]) b.appendChild(el("small", null, it[2]));
-      b.addEventListener("click", function () { onPick(it[0]); });
-      wrap.appendChild(b);
-    });
-  }
-
-  /* ── 요약 ─────────────────────────────────────────────────── */
-  function labelOf(list, id, idx) {
-    for (var i = 0; i < list.length; i++) if (String(list[i][0]) === String(id)) return list[i][idx || 1];
-    return id;
-  }
-
-  function renderSpec() {
-    var d = deliverSize();
-    var rows = [
-      ["스타일", labelOf(STYLES, st.style)],
-      ["색", labelOf(PALETTES, st.palette) + (labelOf(PALETTES, st.palette, 2) ? " (" + labelOf(PALETTES, st.palette, 2) + ")" : "")],
-      ["화면 규격", st.ratio + " · 납품 " + d.w + "×" + d.h],
-      ["움직임", labelOf(MOTIONS, st.motion) + " · 대칭 " + labelOf(SYMS, st.symmetry)],
-      ["조절", "밀도 " + st.density + " · 크기 " + st.scale + " · 속도 " + st.speed + " · 대비 " + st.contrast + " · 번짐 " + st.glow + " · 그레인 " + st.grain + " · 포인트 " + st.accent],
-      ["시드", String(st.seed) + (st.invert ? " · 밝은 바탕" : "")],
-    ];
-    if (st.preset) rows.unshift(["프리셋", "#" + st.preset + " " + (window.StudioPresets.byNumber(st.preset) || {}).name]);
-    var dl = $("[data-spec]");
-    dl.textContent = "";
-    rows.forEach(function (r) {
-      var wrapEl = el("div");
-      wrapEl.appendChild(el("dt", null, r[0]));
-      wrapEl.appendChild(el("dd", null, r[1]));
-      dl.appendChild(wrapEl);
-    });
-
-    /* 조합 수는 지어내지 않고 실제 조작 범위에서 센다. */
-    var combos = STYLES.length * PALETTES.length * MOTIONS.length * SYMS.length *
-      RATIOS.length * 2 * Math.pow(101, SLIDERS.length);
-    $("[data-combo]").textContent =
-      "지금 조작판으로 만들 수 있는 조합은 " + fmtBig(combos) + "가지입니다. 시드까지 세면 그보다 900만 배 많습니다.";
-  }
-
-  function fmtBig(n) {
-    var units = [[1e16, "경"], [1e12, "조"], [1e8, "억"], [1e4, "만"]];
-    for (var i = 0; i < units.length; i++) {
-      if (n >= units[i][0]) return (n / units[i][0]).toFixed(1).replace(/\.0$/, "") + units[i][1];
-    }
-    return Math.round(n).toLocaleString("ko-KR");
-  }
-
-  /* ── 전체 반영 ────────────────────────────────────────────── */
-  function sync(immediate) {
-    document.querySelectorAll("[data-style]").forEach(function (b) {
-      var on = b.dataset.style === st.style;
-      b.classList.toggle("is-on", on);
-      b.setAttribute("aria-checked", String(on));
-    });
-    document.querySelectorAll("[data-palette]").forEach(function (b) {
-      var on = b.dataset.palette === st.palette;
-      b.classList.toggle("is-on", on);
-      b.setAttribute("aria-checked", String(on));
-    });
-    SLIDERS.forEach(function (s) {
-      var inp = document.querySelector('[data-slider="' + s[0] + '"]');
-      var out = document.querySelector('[data-for="' + s[0] + '"]');
-      if (inp) inp.value = st[s[0]];
-      if (out) out.textContent = st[s[0]];
-    });
-    [["motion", st.motion], ["symmetry", st.symmetry], ["ratio", st.ratio], ["scene", st.scene]]
-      .forEach(function (pair) {
-        document.querySelectorAll('[data-seg="' + pair[0] + '"] .seg-btn').forEach(function (b) {
-          var on = String(b.dataset.val) === String(pair[1]);
-          b.classList.toggle("is-on", on);
-          b.setAttribute("aria-checked", String(on));
-        });
-      });
-    var inv = $("[data-toggle='invert']");
-    if (inv) inv.checked = !!st.invert;
-    var seed = $("[data-seed]");
-    if (seed && seed.value !== String(st.seed)) seed.value = st.seed;
-
-    applyScene();
-    applyArt(immediate);
-    renderSpec();
-    save();
-  }
-
-  /* ── 랜덤 ─────────────────────────────────────────────────── */
-  function shuffleStyle() { st.style = pick(STYLES)[0]; }
-  function shufflePalette() { st.palette = pick(PALETTES)[0]; }
-  function shuffleTune() {
-    SLIDERS.forEach(function (s) {
-      /* 양 끝값은 대체로 볼 게 없다. 가운데 쪽에서 뽑는다. */
-      st[s[0]] = 12 + Math.floor(Math.random() * 76);
-    });
-    st.motion = pick(MOTIONS)[0];
-    st.symmetry = pick(SYMS)[0];
-  }
-  function shuffleAll() {
-    /* 절반은 프리셋에서 뽑는다. 순수 난수만 돌리면 극단값이 섞여
-       볼 것 없는 화면이 자주 나온다. 프리셋은 성격이 잡혀 있다. */
-    var all = presets();
-    if (all.length && Math.random() < 0.5) {
-      var p = all[Math.floor(Math.random() * all.length)];
-      st.style = p.style; st.palette = p.palette;
-      st.density = p.density; st.scale = p.scale; st.speed = p.speed;
-      st.contrast = p.contrast; st.glow = p.glow; st.grain = p.grain; st.accent = p.accent;
-      st.motion = p.motion; st.symmetry = String(p.symmetry); st.invert = !!p.invert;
-      st.seed = p.seed; st.preset = p.n;
-      return;
-    }
-    shuffleStyle(); shufflePalette(); shuffleTune();
-    st.seed = newSeed();
-    st.invert = Math.random() < 0.22;
-    st.preset = null;
-  }
-
-
-  /* ── 프리셋 갤러리 ─────────────────────────────────────────
-     2,000개를 한 번에 그리면 브라우저가 죽는다. 보이는 줄만 만들고
-     스크롤하면 만들고 지운다(윈도잉). 화면에 실제로 존재하는 칸은
-     늘 서른 개 안팎이다.
-
-     썸네일은 iframe이 아니라 이 페이지에서 직접 그린다. 그래서 엔진을
-     studio-engine.js로 떼어냈다. iframe 2,000개는 애초에 불가능하다. */
-  var gal = $("[data-gal]");
-  var galBody, galGrid, galSpacer;
-  var GAL_CELL_W = 196, GAL_CELL_H = 110, GAL_BUF = 3;
-  var GAL_GAP = 12, GAL_CAP_H = 46;
-  /* 줄 높이를 상수로 박아 뒀더니 캡션이 잘리고 다음 줄이 그 위에 얹혔다.
-     썸네일은 칸 너비에 맞춰 늘어나므로, 실제 폭에서 매번 다시 잰다. */
-  var GAL_ROW_H = 148;
-  /* 열 수는 CSS의 미디어쿼리와 같은 경계를 쓴다. 둘이 어긋나면 줄이
-     겹치거나 빈 자리가 생긴다. */
-  var GAL_COLS = 5;
-  function galCols() {
-    var w = window.innerWidth;
-    return w <= 680 ? 2 : w <= 1080 ? 3 : 5;
-  }
-  var galItems = [];          // 지금 조건에 맞는 프리셋
-  var galDrawn = new Map();   // 줄 번호 → DOM
-  var galReady = false;
-
-  function presets() {
-    return (window.StudioPresets && window.StudioPresets.list()) || [];
-  }
-
-  function galFilter() {
-    var q = ($("[data-gal-q]").value || "").trim().toLowerCase();
-    var fs = $("[data-gal-style]").value;
-    var fp = $("[data-gal-pal]").value;
-    var ff = $("[data-gal-fam]").value;
-    var num = parseInt(q.replace(/[^0-9]/g, ""), 10);
-    galItems = presets().filter(function (p) {
-      if (fs && p.style !== fs) return false;
-      if (fp && p.palette !== fp) return false;
-      if (ff && p.family !== ff) return false;
-      if (!q) return true;
-      if (Number.isFinite(num) && String(p.n) === String(num)) return true;
-      return (p.name + " " + p.styleName + " " + p.paletteName + " " + p.family + " " + p.id)
-        .toLowerCase().indexOf(q) !== -1;
-    });
-    $("[data-gal-count]").textContent = galItems.length.toLocaleString("ko-KR") + "가지";
-    /* 여는 버튼의 안내도 같이 맞춘다. 화면에 개수를 적어 두면 스타일을
-       늘릴 때마다 어긋난다. 늘 실제 개수를 읽는다. */
-    var openSub = $("[data-preset-count]");
-    var total = presets().length;
-    if (openSub && total) {
-      openSub.textContent = total.toLocaleString("ko-KR") + "가지 생김새 중에서 고르기";
-    }
-    $("[data-gal-empty]").hidden = galItems.length > 0;
-    galDrawn.forEach(function (el) { el.remove(); });
-    galDrawn.clear();
-    GAL_COLS = galCols();
-    var inner = galBody.clientWidth - 24;
-    var colW = (inner - GAL_GAP * (GAL_COLS - 1)) / GAL_COLS;
-    GAL_ROW_H = Math.round(colW * (GAL_CELL_H / GAL_CELL_W) + GAL_CAP_H + GAL_GAP);
-    galSpacer.style.height = Math.ceil(galItems.length / GAL_COLS) * GAL_ROW_H + "px";
-    galBody.scrollTop = 0;
-    galPaint();
-  }
-
-  /* 칸 하나. 만들 때 한 번만 그리고, 화면 밖으로 나가면 통째로 지운다. */
-  function galCell(p) {
-    var b = el("button", "gal-cell");
-    b.type = "button";
-    b.title = p.name + " · " + p.paletteName + " · " + p.family + " · #" + p.n;
-    var cv = document.createElement("canvas");
-    cv.width = GAL_CELL_W; cv.height = GAL_CELL_H;
-    cv.className = "gal-cell-art";
-    b.appendChild(cv);
-    var cap = el("span", "gal-cell-cap");
-    cap.appendChild(el("b", null, p.name));
-    cap.appendChild(el("small", null, p.paletteName + " · " + p.family));
-    b.appendChild(cap);
-    b.appendChild(el("span", "gal-cell-n", "#" + p.n));
-
-    try {
-      var inst = window.StudioArt.create(cv, {
-        w: GAL_CELL_W, h: GAL_CELL_H, fps: 30, dur: 20,
-        style: p.style, palette: p.palette, seed: p.seed,
-        density: p.density, scale: p.scale, speed: p.speed,
-        contrast: p.contrast, glow: p.glow, grain: p.grain, accent: p.accent,
-        motion: p.motion, symmetry: p.symmetry, invert: p.invert,
-      });
-      /* 한 장만 그린다. 2,000칸이 동시에 움직이면 아무것도 볼 수 없다. */
-      inst.renderFrame(37);
-    } catch (e) {
-      /* 한 칸이 실패해도 갤러리 전체를 세우지는 않는다. */
-    }
-
-    b.addEventListener("click", function () { applyPreset(p); });
-    return b;
-  }
-
-  function galPaint() {
-    if (!galReady) return;
-    var top = galBody.scrollTop;
-    var vis = galBody.clientHeight;
-    var first = Math.max(0, Math.floor(top / GAL_ROW_H) - GAL_BUF);
-    var last = Math.min(
-      Math.ceil(galItems.length / GAL_COLS) - 1,
-      Math.floor((top + vis) / GAL_ROW_H) + GAL_BUF
-    );
-
-    galDrawn.forEach(function (row, i) {
-      if (i < first || i > last) { row.remove(); galDrawn.delete(i); }
-    });
-    for (var i = first; i <= last; i++) {
-      if (galDrawn.has(i)) continue;
-      var row = el("div", "gal-row");
-      row.style.top = i * GAL_ROW_H + "px";
-      for (var c = 0; c < GAL_COLS; c++) {
-        var p = galItems[i * GAL_COLS + c];
-        if (!p) break;
-        row.appendChild(galCell(p));
+    function currentPanel() {
+      if (elPanel.value === "custom") {
+        return { name: "직접 입력", w: Math.max(64, +elW.value || 1920), h: Math.max(64, +elH.value || 1080), note: "custom" };
       }
-      galGrid.appendChild(row);
-      galDrawn.set(i, row);
+      return PANELS[+elPanel.value];
     }
-  }
 
-  function applyPreset(p) {
-    st.style = p.style; st.palette = p.palette;
-    st.density = p.density; st.scale = p.scale; st.speed = p.speed;
-    st.contrast = p.contrast; st.glow = p.glow; st.grain = p.grain; st.accent = p.accent;
-    st.motion = p.motion; st.symmetry = String(p.symmetry); st.invert = !!p.invert;
-    st.seed = p.seed; st.preset = p.n;
-    galClose();
-    sync(true);
-  }
+    function syncPanel() {
+      var p = currentPanel();
+      var custom = elPanel.value === "custom";
+      elW.disabled = elH.disabled = !custom;
+      if (!custom) { elW.value = p.w; elH.value = p.h; }
+      var box = elCanvas.parentNode;
+      var maxW = box.clientWidth || 720;
+      var maxH = 420;
+      var sc = Math.min(maxW / p.w, maxH / p.h, 1);
+      elCanvas.width = Math.round(p.w * sc * 2) / 2;
+      elCanvas.height = Math.round(p.h * sc * 2) / 2;
+      elCanvas.style.width = Math.round(p.w * sc) + "px";
+      elCanvas.style.height = Math.round(p.h * sc) + "px";
+      updateQuote();
+    }
 
-  function galOpen() {
-    if (!galReady) {
-      galBody = $("[data-gal-body]");
-      galGrid = $("[data-gal-grid]");
-      galSpacer = $("[data-gal-spacer]");
+    function opts() {
+      return {
+        asset: $("[data-st-opt='asset']", root).checked,
+        custom: $("[data-st-opt='custom']", root).checked,
+        rush: $("[data-st-opt='rush']", root).checked
+      };
+    }
 
-      var sSel = $("[data-gal-style]");
-      sSel.appendChild(new Option("스타일 전체", ""));
-      STYLES.forEach(function (x) { sSel.appendChild(new Option(x[1], x[0])); });
-      var pSel = $("[data-gal-pal]");
-      pSel.appendChild(new Option("색 전체", ""));
-      PALETTES.forEach(function (x) { pSel.appendChild(new Option(x[1], x[0])); });
-      var fSel = $("[data-gal-fam]");
-      fSel.appendChild(new Option("성격 전체", ""));
-      (window.StudioPresets.families || []).forEach(function (f) { fSel.appendChild(new Option(f, f)); });
+    function updateQuote() {
+      var p = currentPanel(), sec = Math.max(5, +elSec.value || 30);
+      var q = quote(p, sec, opts());
+      // 견적서 메일에 지금 화면의 설정을 그대로 실어 보내기 위해 마지막 값을 들고 있는다.
+      LAST = { panel: p, sec: sec, q: q, o: opts() };
+      elQuote.innerHTML =
+        '<div class="st-q-row"><span>화면 규격</span><b>' + p.w + " × " + p.h + '</b></div>' +
+        '<div class="st-q-row"><span>재생 길이</span><b>' + sec + '초</b></div>' +
+        '<div class="st-q-row"><span>렌더 크레딧</span><b>' + q.credits + ' 크레딧</b></div>' +
+        '<div class="st-q-row"><span>옵션 배수</span><b>×' + q.mult + '</b></div>' +
+        '<div class="st-q-total"><span>예상 금액</span><b>' + comma(q.won) + '원</b></div>' +
+        '<p class="st-q-note">1크레딧 = 4K 30초 기준입니다. 렌더 원가가 화면 넓이와 길이에 비례하므로 금액도 같은 기준으로 계산합니다. 부가세 별도이며, 확정 견적은 담당자 확인 후 발행합니다.</p>';
+    }
 
-      galBody.addEventListener("scroll", galPaint, { passive: true });
-      window.addEventListener("resize", function () {
-        if (GAL_COLS !== galCols() && gal.open) galFilter();
+    var gen = new GEN.Gen(elCanvas);
+    var spec = null;
+    var sceneIdx = 0;
+    var history = [];              // 방금 만든 화면들. 좋은 것이 지나가 버리면 안 된다.
+    var HISTORY_MAX = 8;
+
+    /* 느낌 열둘. 순서는 작품 번호에 박히므로 바꾸거나 중간에 끼워 넣지 않는다.
+     * 새로 만들면 뒤에 붙인다. */
+    var SCENES = [
+      { ko: "봄빛 리본",   text: "로비 미디어월에 걸 봄바람 빛 리본, 따뜻하고 화사하게" },
+      { ko: "바다 물결",   text: "바다와 파도, 잔잔하게 흐르는 로비 화면" },
+      { ko: "겨울 눈",     text: "겨울 밤 도심 전광판, 눈송이 내리는 화면, 차분하게" },
+      { ko: "전통 단청",   text: "고분군 야간 포토존, 전통 색감으로 웅장하게" },
+      { ko: "도시 야경",   text: "도시 야경 네온 전광판, 경쾌하게" },
+      { ko: "우주 별빛",   text: "우주와 별빛, 고요하게 흐르는 밤하늘" },
+      { ko: "숲 초록",     text: "숲과 나무, 초록빛으로 산뜻하게" },
+      { ko: "노을",        text: "노을 지는 저녁, 은은하게" },
+      { ko: "수묵 여백",   text: "수묵 담백한 여백, 묵직하게" },
+      { ko: "형광 사이버", text: "형광 사이버 글리치, 강렬하게" },
+      { ko: "안개 하늘",   text: "안개 낀 하늘과 바람결, 몽환적으로" },
+      { ko: "빛 번짐",     text: "빛줄기 번짐, 은은하고 잔잔하게" }
+    ];
+    var CUSTOM = 31;               // 직접 적은 문장. 번호만으로는 되살릴 수 없다.
+
+    /* 작품 번호 = 느낌 번호(위 5비트) + 씨앗(아래 19비트).
+     * 문장 정보가 번호 안에 들어 있어야 붙여넣기로 같은 화면이 나온다. */
+    function code(idx, seed) {
+      var v = (((idx & 31) << 19) | (seed & 0x7FFFF)) >>> 0;
+      return "BN-" + v.toString(16).toUpperCase().padStart(6, "0");
+    }
+    function parseCode(txt) {
+      var m = /([0-9A-Fa-f]{6})\s*$/.exec(String(txt || "").trim());
+      if (!m) return null;
+      var v = parseInt(m[1], 16) >>> 0;
+      return { idx: (v >> 19) & 31, seed: v & 0x7FFFF };
+    }
+    function newSeed() { return Math.floor(Math.random() * 0x7FFFF); }
+
+    function storyOf(idx) {
+      return idx === CUSTOM ? (elStory.value || "").trim() : SCENES[idx].text;
+    }
+
+    function make(idx, seed, fromHistory) {
+      if (idx == null) idx = sceneIdx;
+      var story = storyOf(idx);
+      if (!story) { elStory.focus(); return; }
+      sceneIdx = idx;
+      var pn = currentPanel();
+      var sd = seed == null ? newSeed() : seed;
+      spec = GEN.compose(story, sd, pn.w / pn.h);
+      spec.idx = idx;
+      gen.set(spec).start();
+      if (!fromHistory) remember(idx, sd, story, spec.ar);
+      drawHistory();
+      markScene();
+
+      elChips.innerHTML = "";
+      spec.tags.forEach(function (t) { elChips.appendChild(el("span", "st-chip", t)); });
+
+      elCuts.innerHTML =
+        '<div class="st-code-head">' +
+        '<p class="st-code-num">' + code(idx, sd) + '</p>' +
+        '<button type="button" class="st-copy" data-st-copy>번호 복사</button>' +
+        '</div>' +
+        '<p class="st-code-note">이 번호가 이 화면의 설계도입니다. ' +
+        '결제하시면 <b>같은 번호로</b> 화면 규격에 맞춰 고화질로 렌더링해 드립니다.</p>' +
+        (idx === CUSTOM
+          ? '<p class="st-code-sub">직접 적으신 문장으로 만든 번호입니다. 나중에 부르실 때는 문장도 함께 적어 주세요.</p>'
+          : '<p class="st-code-sub">번호를 복사해 두시면 언제든 이 화면으로 돌아옵니다.</p>');
+
+      elGo.textContent = "다시 만들기";
+      updateQuote();
+    }
+
+    function markScene() {
+      Array.prototype.forEach.call(root.querySelectorAll(".st-scene"), function (b, i) {
+        b.classList.toggle("is-on", i === sceneIdx);
       });
-      ["input", "change"].forEach(function (ev) {
-        $("[data-gal-q]").addEventListener(ev, galFilter);
+    }
+
+    /* 랜덤으로 돌리다 보면 좋은 것이 지나간다. 여덟 장까지 남겨 둔다. */
+    function remember(idx, seed, story, ar) {
+      history = history.filter(function (h) { return !(h.seed === seed && h.idx === idx); });
+      history.unshift({ idx: idx, seed: seed, story: story, ar: ar });
+      if (history.length > HISTORY_MAX) history.pop();
+    }
+
+    function drawHistory() {
+      if (!elHist) return;
+      elHist.innerHTML = "";
+      if (history.length < 2) { elHistWrap.hidden = true; return; }
+      elHistWrap.hidden = false;
+      history.forEach(function (h) {
+        var b = el("button", "st-hist-item");
+        b.type = "button";
+        b.title = code(h.idx, h.seed) + " 다시 보기";
+        if (spec && h.seed === spec.seed && h.idx === spec.idx) b.className += " is-on";
+        var c = document.createElement("canvas");
+        c.width = 240; c.height = Math.max(80, Math.round(240 / Math.max(0.4, h.ar)));
+        if (c.height > 300) { c.height = 300; c.width = Math.round(300 * h.ar); }
+        var one = new GEN.Gen(c);
+        one.set(GEN.compose(h.story, h.seed, h.ar));
+        one.draw(1.6);
+        b.appendChild(c);
+        b.appendChild(el("span", null, code(h.idx, h.seed)));
+        b.addEventListener("click", function () { make(h.idx, h.seed, true); });
+        elHist.appendChild(b);
       });
-      [sSel, pSel, fSel].forEach(function (x) { x.addEventListener("change", galFilter); });
-      galReady = true;
     }
-    if (gal.showModal) gal.showModal(); else gal.setAttribute("open", "");
-    galFilter();
-  }
-  function galClose() {
-    if (gal.close) gal.close(); else gal.removeAttribute("open");
-  }
 
-  /* ── 의뢰 ─────────────────────────────────────────────────── */
-  var dialog = $("[data-order-dialog]");
+    elPanel.addEventListener("change", function () {
+      syncPanel();
+      if (spec) make();          // 비율이 바뀌면 어울리는 그림도 달라진다
+    });
+    [elW, elH, elSec].forEach(function (n) { n.addEventListener("input", updateQuote); });
+    Array.prototype.forEach.call(root.querySelectorAll("[data-st-opt]"), function (n) {
+      n.addEventListener("change", updateQuote);
+    });
+    elGo.addEventListener("click", function () { make(); });
+    elStory.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) make(CUSTOM);
+    });
+    elStory.addEventListener("input", function () { sceneIdx = CUSTOM; markScene(); });
 
-  function specText() {
-    var d = deliverSize();
-    return [
-      "[온 미디어아트 에디트 · 고객이 만든 설정]",
-      "",
-      "· 스타일: " + labelOf(STYLES, st.style) + " (" + st.style + ")",
-      "· 색: " + labelOf(PALETTES, st.palette) + " (" + st.palette + ")"
-        + (labelOf(PALETTES, st.palette, 2) ? " — " + labelOf(PALETTES, st.palette, 2) : ""),
-      "· 화면 규격: " + st.ratio + " · 납품 " + d.w + "×" + d.h,
-      "· 움직임: " + labelOf(MOTIONS, st.motion) + " · 대칭 " + labelOf(SYMS, st.symmetry)
-        + (st.invert ? " · 밝은 바탕" : ""),
-      "· 조절: 밀도 " + st.density + " / 크기 " + st.scale + " / 속도 " + st.speed
-        + " / 대비 " + st.contrast + " / 번짐 " + st.glow + " / 그레인 " + st.grain
-        + " / 포인트 " + st.accent,
-      "· 시드: " + st.seed,
-      st.preset ? "· 프리셋: #" + st.preset : "· 프리셋: 직접 조절",
-      "",
-      "재현용 파라미터 (그대로 렌더에 넣으면 같은 그림이 나옵니다)",
-      artQuery(d),
-    ].join("\n");
-  }
+    // 느낌 버튼 — 문장을 치지 않아도 계속 만들 수 있어야 한다
+    var elScenes = $("[data-st-scenes]", root);
+    SCENES.forEach(function (sc, i) {
+      var b = el("button", "st-scene");
+      b.type = "button";
+      b.appendChild(el("b", null, sc.ko));
+      b.appendChild(el("i", null, i < 9 ? String(i + 1) : (i === 9 ? "0" : "")));
+      b.addEventListener("click", function () { elStory.value = ""; make(i); });
+      elScenes.appendChild(b);
+    });
 
-  function openOrder(wantRandom) {
-    $("[data-order-lede]").textContent = wantRandom
-      ? "고르신 방향을 바탕으로 저희가 변주 3종을 만들어 보내드립니다. 설정은 아래 그대로 함께 접수됩니다."
-      : "아래 설정 그대로 접수됩니다. 같은 시드로 렌더하므로 지금 보고 계신 그림이 그대로 납품본이 됩니다.";
-    $("[data-want-random]").checked = !!wantRandom;
-    $("[data-order-status]").textContent = "";
-    if (dialog.showModal) dialog.showModal();
-    else dialog.setAttribute("open", "");
-  }
+    $("[data-st-random]", root).addEventListener("click", function () {
+      elStory.value = "";
+      make(Math.floor(Math.random() * SCENES.length));
+    });
 
-  function closeOrder() {
-    if (dialog.close) dialog.close();
-    else dialog.removeAttribute("open");
-  }
+    // 숫자키로도 고를 수 있다. 1~9 그리고 0.
+    document.addEventListener("keydown", function (e) {
+      if (e.target === elStory || /input|textarea|select/i.test(e.target.tagName)) return;
+      if (e.key >= "1" && e.key <= "9") { elStory.value = ""; make(+e.key - 1); }
+      else if (e.key === "0") { elStory.value = ""; make(9); }
+      else if (e.key === "r" || e.key === "R" || e.key === "ㄱ") {
+        elStory.value = "";
+        make(Math.floor(Math.random() * SCENES.length));
+      }
+    });
 
-  async function sendOrder() {
-    var form = $("[data-order-form]");
-    var get = function (n) { return (form.elements[n] && form.elements[n].value || "").trim(); };
-    var status = $("[data-order-status]");
-    if (!get("organization") || !get("name") || !get("phone")) {
-      status.textContent = "기관명 · 담당자 · 연락처를 적어 주세요. 어디로 보낼지 알아야 합니다.";
-      status.dataset.kind = "warn";
-      return;
+    // 번호 복사 · 번호로 불러오기
+    root.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-st-copy]");
+      if (!b || !spec) return;
+      var txt = code(spec.idx, spec.seed);
+      var done = function () { b.textContent = "복사했습니다"; setTimeout(function () { b.textContent = "번호 복사"; }, 1600); };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(txt).then(done, function () { prompt("이 번호를 복사해 두세요", txt); });
+      } else { prompt("이 번호를 복사해 두세요", txt); }
+    });
+
+    var elLoad = $("[data-st-load]", root);
+    var elLoadBtn = $("[data-st-load-go]", root);
+    var elLoadMsg = $("[data-st-load-msg]", root);
+    function loadCode() {
+      var p2 = parseCode(elLoad.value);
+      if (!p2) { elLoadMsg.textContent = "BN- 으로 시작하는 번호를 넣어 주세요."; return; }
+      if (p2.idx === CUSTOM && !(elStory.value || "").trim()) {
+        elLoadMsg.textContent = "직접 적으신 문장으로 만든 번호입니다. 그 문장을 아래에 적어 주세요.";
+        return;
+      }
+      if (p2.idx !== CUSTOM && p2.idx >= SCENES.length) {
+        elLoadMsg.textContent = "확인되지 않는 번호입니다. 다시 확인해 주세요.";
+        return;
+      }
+      elLoadMsg.textContent = "";
+      elLoad.value = "";
+      make(p2.idx, p2.seed);
     }
-    var wantRandom = $("[data-want-random]").checked;
-    var btn = document.querySelector('[data-act="order-send"]');
-    btn.disabled = true; btn.textContent = "보내는 중…";
-    status.dataset.kind = ""; status.textContent = "보내는 중입니다.";
+    elLoadBtn.addEventListener("click", loadCode);
+    elLoad.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); loadCode(); } });
 
-    var payload = {
-      organization: get("organization"),
-      name: get("name"),
-      phone: get("phone"),
-      email: get("email"),
-      service: ["온 미디어아트 에디트 제작 의뢰"].concat(wantRandom ? ["변주 3종 랜덤 제작"] : []),
-      message: specText() + "\n\n■ 현장 정보 · 하고 싶은 말\n" + (get("note") || "—")
-        + (wantRandom ? "\n\n■ 요청: 이 방향으로 변주 3종을 저희가 랜덤으로 만들어 주기를 원함" : ""),
-      page: "/studio",
-    };
+    window.addEventListener("resize", syncPanel);
 
-    try {
-      var res = await fetch("/api/inquiry", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(payload),
+    // ── 견적서 받기 ────────────────────────────────────────────
+    // 가입시키지 않습니다. 이름과 이메일만 받아 지금 화면의 설정을 그대로 실어 보냅니다.
+    // 광고성 메일은 정보통신망법 제50조에 따라 사전 동의가 있어야 하므로,
+    // 회신 동의와 수신 동의를 반드시 따로 받고 그 결과를 접수 내용에 남깁니다.
+    function specText(story) {
+      if (!LAST) return "(견적을 계산하기 전에 보내셨습니다)";
+      var picked = [];
+      var art = spec ? code(spec.idx, spec.seed) : null;
+      if (LAST.o.asset) picked.push("기관 로고·이미지 반영");
+      if (LAST.o.custom) picked.push("커스텀 스타일 요청");
+      if (LAST.o.rush) picked.push("당일 급행");
+      return [
+        "작품 번호: " + (art || "(만들기 전)"),
+        "원하시는 화면: " + (story || "(적지 않으심)"),
+        "엔진 설정(사내 확인용): " + (spec ? spec.style + " / " + spec.palette.id : "-"),
+        "화면 규격: " + LAST.panel.name + " " + LAST.panel.w + "×" + LAST.panel.h,
+        "재생 길이: " + LAST.sec + "초",
+        "렌더 크레딧: " + LAST.q.credits + " 크레딧 (옵션 배수 ×" + LAST.q.mult + ")",
+        "추가 요청: " + (picked.join(", ") || "없음"),
+        "예상 금액: " + comma(LAST.q.won) + "원 (부가세 별도)"
+      ].join("\n");
+    }
+
+    function say(text, tone) {
+      if (!elMsg) return;
+      elMsg.textContent = text;
+      if (tone) elMsg.setAttribute("data-tone", tone);
+      else elMsg.removeAttribute("data-tone");
+    }
+
+    if (elForm) {
+      elForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var d = new FormData(elForm);
+        var name = String(d.get("name") || "").trim();
+        var email = String(d.get("email") || "").trim();
+
+        if (!name) { say("이름을 적어 주세요.", "err"); return; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { say("이메일 주소를 다시 확인해 주세요.", "err"); return; }
+        if (!d.get("consentRequired")) { say("견적 회신을 위한 수집 동의가 필요합니다.", "err"); return; }
+
+        var marketing = d.get("consentMarketing") ? "동의함" : "동의하지 않음";
+        elSend.disabled = true;
+        say("보내는 중…");
+
+        fetch("/api/inquiry", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            name: name,
+            email: email,
+            phone: String(d.get("phone") || "").trim(),
+            organization: String(d.get("organization") || "").trim(),
+            service: ["미디어아트 제작 (봄날 스튜디오 견적)"],
+            page: "studio",
+            message: specText((elStory.value || "").trim()) +
+              "\n\n[동의 기록] 개인정보 수집·이용: 동의함 / 광고성 정보 수신: " + marketing
+          })
+        })
+          .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json().catch(function () { return {}; }); })
+          .then(function () {
+            elForm.reset();
+            say("접수했습니다. 적어 주신 주소로 견적서를 보내드리겠습니다. (평일 기준)", "ok");
+          })
+          .catch(function () {
+            elSend.disabled = false;
+            say("전송이 되지 않았습니다. 010-4292-1999 또는 studio@publicbloom.art로 연락 주세요.", "err");
+          });
       });
-      if (!res.ok) throw new Error("status " + res.status);
-      status.dataset.kind = "ok";
-      status.textContent = "접수됐습니다. 확인 후 24시간 이내에 연락드립니다.";
-      btn.textContent = "접수 완료";
-    } catch (err) {
-      /* 접수 창구가 막혀도 고객이 만든 설정을 잃게 두지 않는다. */
-      status.dataset.kind = "warn";
-      status.textContent = "접수 창구에 연결하지 못했습니다. 메일 앱을 엽니다.";
-      btn.disabled = false; btn.textContent = "보내기";
-      location.href = "mailto:studio@publicbloom.art?subject=" +
-        encodeURIComponent("[온 미디어아트 에디트] " + get("organization")) +
-        "&body=" + encodeURIComponent(payload.message + "\n\n담당자: " + get("name") + " / " + get("phone"));
     }
-  }
 
-  /* ── 버튼 배선 ────────────────────────────────────────────── */
-  document.addEventListener("click", function (e) {
-    var t = e.target.closest("[data-act]");
-    if (!t) return;
-    var act = t.dataset.act;
-    if (act === "open-presets") { galOpen(); return; }
-    if (act === "gal-close") { galClose(); return; }
-    if (act === "gal-random") {
-      if (galItems.length) applyPreset(galItems[Math.floor(Math.random() * galItems.length)]);
-      return;
-    }
-    if (act === "shuffle-all") { shuffleAll(); sync(true); }
-    else if (act === "shuffle-style") { shuffleStyle(); sync(true); }
-    else if (act === "shuffle-palette") { shufflePalette(); sync(true); }
-    else if (act === "shuffle-tune") { shuffleTune(); sync(true); }
-    else if (act === "shuffle-seed") { st.seed = newSeed(); sync(true); }
-    else if (act === "order") openOrder(false);
-    else if (act === "ask-random") openOrder(true);
-    else if (act === "order-send") sendOrder();
-    else if (act === "order-close") closeOrder();
-    else if (act === "copy-spec") {
-      var txt = specText();
-      if (navigator.clipboard) navigator.clipboard.writeText(txt).then(function () {
-        t.textContent = "복사했습니다";
-        setTimeout(function () { t.textContent = "설정 복사"; }, 1600);
-      });
-    } else if (act === "pause") {
-      var on = t.getAttribute("aria-pressed") === "true";
-      t.setAttribute("aria-pressed", String(!on));
-      userPaused = !on;
-      $("[data-pause-label]").textContent = on ? "멈춤" : "재생";
-      setPlaying(on);
-    }
+    elStat.textContent =
+      "누를 때마다 새 화면이 나옵니다. 같은 문장이라도 매번 다르게 그립니다.";
+    syncPanel();
   });
-
-  /* ── 시작 ─────────────────────────────────────────────────── */
-  function init() {
-    load();
-    buildStyles();
-    buildPalettes();
-    buildSliders();
-    buildSeg("motion", MOTIONS, function (v) { st.motion = v; sync(true); });
-    buildSeg("symmetry", SYMS, function (v) { st.symmetry = v; sync(true); });
-    buildSeg("ratio", RATIOS.map(function (r) { return [r[0], r[0], r[2]]; }), function (v) { st.ratio = v; sync(true); });
-    buildSeg("scene", SCENES.map(function (s) { return [s.id, s.label]; }), function (v) { st.scene = v; sync(); });
-
-    var seed = $("[data-seed]");
-    seed.addEventListener("change", function () {
-      var v = parseInt(seed.value.replace(/[^0-9]/g, ""), 10);
-      st.seed = Number.isFinite(v) && v > 0 ? v : newSeed();
-      sync(true);
-    });
-    $("[data-toggle='invert']").addEventListener("change", function (e2) {
-      st.invert = e2.target.checked; sync(true);
-    });
-
-    document.querySelector('[data-count="style"]').textContent = STYLES.length;
-    document.querySelector('[data-count="palette"]').textContent = PALETTES.length;
-
-    sync(true);
-
-    /* 화면 밖으로 나가면 루프를 멈춘다. 보이지도 않는 그림 때문에
-       고객 노트북이 더워질 이유가 없다. 사람이 직접 멈춰둔 상태는 존중한다. */
-    if ("IntersectionObserver" in window) {
-      new IntersectionObserver(function (entries) {
-        entries.forEach(function (en) {
-          if (userPaused) return;
-          setPlaying(en.isIntersecting);
-        });
-      }, { rootMargin: "80px" }).observe($("[data-scene-wrap]"));
-    }
-
-    /* 탭을 다른 데로 옮겨도 멈춘다. */
-    document.addEventListener("visibilitychange", function () {
-      if (userPaused) return;
-      setPlaying(!document.hidden);
-    });
-  }
-
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
-  else init();
 })();

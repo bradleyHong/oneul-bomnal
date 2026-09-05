@@ -8,5 +8,6 @@ docs/
 node_modules/
 sink.log
 .claude/
-frames
-output
+
+# 제작기 라이브러리 원본 인덱스(사내 전용). 썸네일과 library.json 만 배포한다.
+asset/manifest.json

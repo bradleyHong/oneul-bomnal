@@ -544,7 +544,7 @@ if (WANT("faq")) {
     s.addText(d, { x, y: y + chh + 0.36, w: cw, h: 0.26, margin: 0, fontFace: BODY, fontSize: 10, color: GREY });
   });
   s.addText(
-    "위 현장은 상상연필과 함께 수행한 레퍼런스입니다. 오늘은 봄날 명의의 납품 실적은 대구 북구청 사이니지 미디어아트 3편이며, 입찰·수의계약용 실적증명서는 요청 시 발송합니다.",
+    "위 현장은 오늘은 봄날이 수행한 레퍼런스입니다. 입찰·수의계약용 실적증명서는 요청 시 발송합니다.",
     { x: 0.7, y: 6.62, w: 10.8, h: 0.5, margin: 0, fontFace: BODY, fontSize: 10, color: "8A93A3", lineSpacing: 14 }
   );
   pageNum(s);
