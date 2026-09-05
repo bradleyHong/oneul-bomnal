@@ -517,3 +517,103 @@
     flex: none;
   }
 }
+
+/* ── 전시실 ──────────────────────────────────────────────────
+ *
+ * 고른 화면은 사진전에 걸린 것처럼 보여 준다. 어두운 방, 빛나는 액자
+ * 하나, 그리고 옆에 붙은 작은 벽 라벨.
+ *
+ * 흰 페이지 한가운데에 검은 그림을 얹으면 그림이 "창"이 아니라 "구멍"
+ * 으로 보인다. 파는 물건이 미디어아트인데 그렇게 두면 값이 안 선다.
+ * 이 칸만 어둡게 가라앉히고 그림 둘레로 빛이 새게 하면, 같은 그림이
+ * 벽에 걸린 것처럼 읽힌다.
+ *
+ * 페이지 전체를 어둡게 하지는 않는다. 고르는 자리와 견적 폼은 밝아야
+ * 읽기 쉽다. 어두운 것은 작품이 걸린 이 칸 하나뿐이다. */
+.st-picked {
+  position: relative;
+  margin-top: 18px;
+  padding: 30px 26px 26px;
+  border-radius: 16px;
+  background: radial-gradient(118% 92% at 50% 36%, #141821 0%, #0a0c11 56%, #06070a 100%);
+  color: #e8ecf3;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.055);
+}
+
+/* 받침 상자를 걷어낸다. 액자는 캔버스 자신이다. */
+.st-picked .st-stage {
+  background: none;
+  border-radius: 0;
+  min-height: 0;
+  padding: 22px 6px 14px;
+}
+
+/* 백라이트 액자 — 테두리 한 줄, 벽으로 새는 빛, 바닥으로 지는 그림자.
+   빛 색은 어느 팔레트에도 걸리지 않게 무채색으로 둔다. */
+.st-picked .st-stage canvas {
+  border-radius: 2px;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.14),
+    0 0 70px 10px rgba(214, 226, 255, 0.10),
+    0 26px 64px -24px rgba(0, 0, 0, 0.95);
+}
+
+/* 느낌표는 그림 바로 밑에 붙는 짧은 설명이다. 액자에서 떨어뜨리면
+   허공에 뜬 단추처럼 보인다. */
+.st-picked .st-chips { margin-top: 4px; justify-content: center; }
+.st-picked .st-chip {
+  background: rgba(255, 255, 255, 0.055);
+  color: rgba(195, 213, 242, 0.78);
+  font-size: .74rem;
+  font-weight: 500;
+  padding: 3px 10px;
+}
+
+/* 라벨 위에 붙는 설명은 라벨과 같은 쪽으로 붙인다 */
+.st-picked > .st-cuts-title {
+  margin: 22px 0 8px;
+  text-align: right;
+  color: rgba(232, 236, 243, 0.55);
+  font-weight: 600;
+}
+
+/* 벽 라벨 — 작품 옆에 따로 붙는 작은 판. 참고 사진에서는 액자보다
+   훨씬 작고, 오른쪽 아래에 떨어져 있고, 저 혼자 은은하게 빛난다. */
+.st-picked .st-code {
+  max-width: 380px;
+  margin-left: auto;
+  background: #f3f2ee;
+  border-radius: 3px;
+  padding: 15px 17px;
+  box-shadow: 0 0 38px -8px rgba(255, 255, 255, 0.22);
+}
+.st-picked .st-code-num { color: #12213a; }
+.st-picked .st-code-note { color: #3b4553; }
+.st-picked .st-code-note b { color: #12213a; }
+.st-picked .st-code-sub { color: #6c7787; }
+
+.st-picked .st-next { margin-top: 20px; }
+
+/* 방금 만든 것들도 어두운 방에 함께 있다 */
+.st-picked .st-hist-wrap { margin-top: 26px; }
+.st-picked .st-hist-item span { color: rgba(232, 236, 243, 0.42); }
+.st-picked .st-hist-item:hover { border-color: rgba(255, 255, 255, 0.28); }
+.st-picked .st-hist-item.is-on { border-color: #7fb0ff; }
+.st-picked .st-hist-item.is-on span { color: #9dc3ff; }
+
+@media (max-width: 940px) {
+  /* 좁은 화면에서는 덮개 전체가 전시실이 된다. */
+  .st-picked.is-sheet {
+    background: radial-gradient(120% 78% at 50% 30%, #141821 0%, #0a0c11 58%, #06070a 100%);
+    border-radius: 0;
+  }
+  .st-picked.is-sheet .st-sheet-close {
+    border-color: rgba(255, 255, 255, 0.22);
+    background: rgba(14, 18, 26, 0.86);
+    color: #dbe6ff;
+  }
+  /* 라벨을 폭에 맞춰 편다. 좁은 화면에서 오른쪽에 몰리면 읽기 나쁘다. */
+  .st-picked .st-code { max-width: none; margin-left: 0; }
+  .st-picked > .st-cuts-title { text-align: left; }
+  .st-picked .st-stage { padding: 14px 0 10px; }
+}

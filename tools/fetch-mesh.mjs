@@ -26,7 +26,7 @@ const BASE = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/
    크기에서는 이 정도면 형태가 다 읽힌다. 4K 에서는 성기게 보이는데
    그쪽이 오히려 우리 결에 맞는다(여백을 남긴다). */
 const MAX_VERTS = 560;
-const MAX_EDGES = 900;
+const MAX_TRIS = 820;
 
 /* 좌표는 0~2047 정수로 담는다. -0.123 같은 소수보다 글자가 짧고
    압축도 잘 먹는다. 엔진이 QUANT 로 나눠 다시 -0.5~0.5 로 편다.
@@ -186,30 +186,33 @@ async function grab(name, korean) {
       V.push(Math.max(0, Math.min(QUANT - 1, Math.round((v + 0.5) * QUANT))));
     }
 
-  /* 삼각형의 변을 모서리로. 같은 변이 두 번 들어가지 않게 한다. */
-  const seen = new Set(), all = [];
+  /* 삼각형을 그대로 담는다.
+     모서리만 담았더니 빛을 칠 수가 없었다. 면이 없으면 법선이 없고,
+     법선이 없으면 어느 쪽이 빛을 받는지 알 수 없다. 점을 아무리
+     촘촘히 찍어도 점 구름으로만 보였다.
+     모서리는 브라우저에서 삼각형으로부터 뽑아 쓴다. 둘 다 담으면
+     파일만 커진다. */
+  const seenT = new Set(), all = [];
   for (let i = 0; i + 2 < tri.length; i += 3) {
-    const t = [map[tri[i]], map[tri[i + 1]], map[tri[i + 2]]];
-    for (const [a, b] of [[t[0], t[1]], [t[1], t[2]], [t[2], t[0]]]) {
-      if (a === b) continue;
-      const key = a < b ? a + "," + b : b + "," + a;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      all.push(a, b);
-    }
+    const a = map[tri[i]], b = map[tri[i + 1]], c = map[tri[i + 2]];
+    if (a === b || b === c || a === c) continue;          /* 뭉치면서 납작해진 것 */
+    const k2 = [a, b, c].slice().sort((x, y) => x - y).join(",");
+    if (seenT.has(k2)) continue;
+    seenT.add(k2);
+    all.push(a, b, c);
   }
   /* 상한을 넘으면 앞에서 자르지 않고 고르게 솎는다.
      앞에서 자르면 첫 부품만 남는다. */
-  const ne = all.length / 2;
-  const est = Math.max(1, Math.ceil(ne / MAX_EDGES));
-  const E = [];
-  for (let i = 0; i < ne; i += est) E.push(all[i * 2], all[i * 2 + 1]);
+  const nt = all.length / 3;
+  const est = Math.max(1, Math.ceil(nt / MAX_TRIS));
+  const T = [];
+  for (let i = 0; i < nt; i += est) T.push(all[i * 3], all[i * 3 + 1], all[i * 3 + 2]);
 
   mkdirSync(OUT, { recursive: true });
-  const out = { name: korean || name, source: name, quant: QUANT, verts: V, edges: E };
+  const out = { name: korean || name, source: name, quant: QUANT, verts: V, tris: T };
   writeFileSync(join(OUT, name + ".json"), JSON.stringify(out));
-  console.log(`꼭짓점 ${V.length / 3} · 모서리 ${E.length / 2}`);
-  return { name, korean: korean || name, verts: V.length / 3, edges: E.length / 2 };
+  console.log(`꼭짓점 ${V.length / 3} · 삼각형 ${T.length / 3}`);
+  return { name, korean: korean || name, verts: V.length / 3, tris: T.length / 3 };
 }
 
 const args = process.argv.slice(2);

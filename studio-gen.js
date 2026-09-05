@@ -174,7 +174,9 @@
      자모는 가운데 글자 한 자라 어느 쪽에도 넣지 않는다. 활자판과 신호는
      가로로 늘어서는 그림이라 띠에만 넣는다. */
   var ART_TALL = ART_TALL_V2.concat(["segment", "asciiart", "desordre"]);
-  var ART_WIDE = ART_WIDE_V2.concat(["pdu", "barcode", "segment", "asciiart", "desordre"]);
+  var ART_WIDE = ART_WIDE_V2.concat(["pdu", "barcode", "segment", "asciiart", "desordre",
+                                   /* 액자는 넓은 어둠에 작은 빛 하나라 띠에서 오히려 산다 */
+                                   "frame"]);
 
   function withPrefix(list, have) {
     have = have || artIds();

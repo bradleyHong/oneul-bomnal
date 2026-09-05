@@ -310,6 +310,23 @@ function create(canvas, opts) {
     const n = parseInt(hex.slice(1), 16);
     return "rgba(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + alpha + ")";
   }
+  /* 바탕색에서 색 i 쪽으로 amt 만큼 간 불투명한 색.
+     반투명으로 칠하면 뒤 면이 비쳐 앞뒤가 뒤엉킨다. 먼 것부터 덮어
+     그리는 화가 방식을 쓰려면 색이 불투명해야 한다. amt 가 0이면
+     바탕색 그대로라, 빛이 안 닿은 면은 저절로 어둠에 묻힌다. */
+  const BGRGB = (function () {
+    const n = parseInt((P.invert ? pal.ink : pal.bg).slice(1), 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  })();
+  function shade(i, amt) {
+    const hex = TONES[((i % TONES.length) + TONES.length) % TONES.length];
+    const n = parseInt(hex.slice(1), 16);
+    const a = clamp(amt, 0, 1);
+    return "rgb(" + Math.round(BGRGB[0] + (((n >> 16) & 255) - BGRGB[0]) * a) + ","
+                  + Math.round(BGRGB[1] + (((n >> 8) & 255) - BGRGB[1]) * a) + ","
+                  + Math.round(BGRGB[2] + ((n & 255) - BGRGB[2]) * a) + ")";
+  }
+
   function inkA(alpha) {
     const n = parseInt(INK.slice(1), 16);
     return "rgba(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + alpha + ")";
@@ -362,7 +379,10 @@ function create(canvas, opts) {
                        kaleido: 1, burst: 1, tunnel: 1, flythrough: 1,
                        /* 점군은 꼭짓점 900개를 하나씩 찍는다. 찍을 때마다
                           그림자가 따라붙어 379→3.6ms 였다. 같은 병이다. */
-                       pointcloud: 1 };
+                       pointcloud: 1,
+                       /* 명암은 삼각형 수백 개를 하나씩 채운다. 같은 병이다.
+                          번짐을 한 번에 얹는 편이 촛불빛에도 맞는다. */
+                       chiaroscuro: 1 };
 
   let bloomBuf = null;
   function applyBloom(strength) {
@@ -399,13 +419,71 @@ function create(canvas, opts) {
      한 바퀴가 정확히 DUR 이다. 그래야 마지막 프레임이 첫 프레임으로
      이어진다. */
   const MESH_TABLE = global.StudioMeshes || null;
-  const MESH_IDS = (global.StudioMeshIds || []).filter((id) => MESH_TABLE && MESH_TABLE[id]);
+  /* 삼각형이 없는 것은 안 쓴다. 브라우저에 옛 studio-meshes.js 가
+     캐시로 남아 있으면 꼭짓점만 들어 있어, 그대로 쓰면 그리다 멈춘다.
+     주소에 판 번호를 달아 두었지만 그것만 믿지 않는다. */
+  const MESH_IDS = (global.StudioMeshIds || [])
+    .filter((id) => MESH_TABLE && MESH_TABLE[id] && MESH_TABLE[id].t && MESH_TABLE[id].t.length);
   let meshPos = null;
+  /* 꼭짓점마다 "빛이 얼마나 닿았나". 0이면 그늘, 1이면 정면으로 받는다.
+     면과 법선이 없으므로 가운데에서 꼭짓점으로 뻗는 방향을 법선으로 친다.
+     덩어리진 물건에는 이 어림이 잘 맞는다. 두상·해골·주전자처럼
+     우리가 받아 둔 것들이 다 그렇다. */
+  let meshLit = null;
+  /* 돌아간 뒤의 3D 좌표. 삼각형의 법선을 재려면 화면 좌표만으로는 안 된다. */
+  let meshXYZ = null;
+  /* 돌아간 뒤의 꼭짓점 법선. */
+  let meshNrm = null;
 
   /** 시드마다 다른 모델을 고른다. 뼈대가 안 실렸으면 null. */
   function meshOf() {
     if (!MESH_IDS.length) return null;
     return MESH_TABLE[MESH_IDS[Math.floor(seeds[880].a * MESH_IDS.length) % MESH_IDS.length]];
+  }
+
+  /** 모서리 목록. 삼각형에서 뽑아 모델에 붙여 둔다.
+      삼각형과 모서리를 둘 다 담으면 파일만 커진다. 한 번만 뽑으면 되는
+      일이라 브라우저에서 만든다. */
+  function meshEdges(m) {
+    if (m._e) return m._e;
+    const T = m.t, seen = new Set(), E = [];
+    for (let i = 0; i + 2 < T.length; i += 3) {
+      const v = [T[i], T[i + 1], T[i + 2]];
+      for (let j = 0; j < 3; j++) {
+        const a = v[j], b = v[(j + 1) % 3];
+        const key = a < b ? a * 65536 + b : b * 65536 + a;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        E.push(a, b);
+      }
+    }
+    m._e = E;
+    return E;
+  }
+
+  /** 꼭짓점 법선. 삼각형마다 잰 법선을 꼭짓점에서 평균 낸다.
+      삼각형 하나하나의 법선만 쓰면, 솎으면서 뒤집힌 몇 개가 그대로
+      드러나 흑백 바둑판처럼 보인다(라디오 모델이 그랬다). 꼭짓점에
+      붙은 여러 면을 함께 재면 뒤집힌 몇 개는 나머지에 밀려난다.
+      한 번만 재면 되는 일이라 모델에 붙여 둔다. */
+  function meshNormals(m) {
+    if (m._n) return m._n;
+    const v = m.v, T = m.t, n = (v.length / 3) | 0;
+    const N = new Float32Array(n * 3);
+    for (let i = 0; i + 2 < T.length; i += 3) {
+      const a = T[i], b = T[i + 1], c = T[i + 2];
+      const ax = v[a * 3], ay = v[a * 3 + 1], az = v[a * 3 + 2];
+      const ux = v[b * 3] - ax, uy = v[b * 3 + 1] - ay, uz = v[b * 3 + 2] - az;
+      const vx = v[c * 3] - ax, vy = v[c * 3 + 1] - ay, vz = v[c * 3 + 2] - az;
+      const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+      for (const j of [a, b, c]) { N[j * 3] += nx; N[j * 3 + 1] += ny; N[j * 3 + 2] += nz; }
+    }
+    for (let i = 0; i < n; i++) {
+      const L = Math.hypot(N[i * 3], N[i * 3 + 1], N[i * 3 + 2]) || 1;
+      N[i * 3] /= L; N[i * 3 + 1] /= L; N[i * 3 + 2] /= L;
+    }
+    m._n = N;
+    return N;
   }
 
   /** 회전·기울임·원근을 한 번에.
@@ -415,6 +493,10 @@ function create(canvas, opts) {
     /* 좌표는 0~2047 정수로 담겨 있다. -0.5~0.5 로 편다. */
     const Q = m.q || 2048, QH = Q * 0.5;
     if (!meshPos || meshPos.length < n * 3) meshPos = new Float32Array(n * 3);
+    if (!meshLit || meshLit.length < n) meshLit = new Float32Array(n);
+    if (!meshXYZ || meshXYZ.length < n * 3) meshXYZ = new Float32Array(n * 3);
+    if (!meshNrm || meshNrm.length < n * 3) meshNrm = new Float32Array(n * 3);
+    const N0 = meshNormals(m);
     const p = meshPos;
     const ph = (t / DUR) * TAU;
     const spin = P.motion === "still" ? 0 : ph;
@@ -448,6 +530,18 @@ function create(canvas, opts) {
       p[i * 3]     = W / 2 + OX + X * R * w;
       p[i * 3 + 1] = H / 2 + OY - Y * R * w;
       p[i * 3 + 2] = clamp(Z * 1.6 + 0.5, 0, 1);
+      /* 빛은 왼쪽 위 앞에서 든다. 안토넬로도 뒤러도 그 자리에 두었다.
+         돌아간 뒤의 좌표로 재야 물건이 돌 때 빛이 따라 돌지 않는다. */
+      const len = Math.hypot(X, Y, Z) || 1;
+      meshLit[i] = clamp((X * -0.55 + Y * 0.62 + Z * 0.56) / len, 0, 1);
+      meshXYZ[i * 3] = X; meshXYZ[i * 3 + 1] = Y; meshXYZ[i * 3 + 2] = Z;
+      /* 법선은 자리 이동 없이 방향만 같은 각도로 돈다 */
+      const mx0 = N0[i * 3], my0 = N0[i * 3 + 1], mz0 = N0[i * 3 + 2];
+      const NX = mx0 * cy + mz0 * sy;
+      let NZ = mz0 * cy - mx0 * sy;
+      const NY = my0 * ct - NZ * st;
+      NZ = my0 * st + NZ * ct;
+      meshNrm[i * 3] = NX; meshNrm[i * 3 + 1] = NY; meshNrm[i * 3 + 2] = NZ;
     }
     return p;
   }
@@ -2390,7 +2484,7 @@ function create(canvas, opts) {
       const m = meshOf();
       if (!m) { STYLES.lowpoly(t); return; }
       const p = meshProject(m, t, 0);
-      const e = m.e, ne = (e.length / 2) | 0;
+      const e = meshEdges(m), ne = (e.length / 2) | 0;
       /* 밀도가 낮으면 모서리를 솎는다. 규칙적으로 건너뛰어야 프레임이
          바뀌어도 같은 모서리가 빠져 그림이 깜빡이지 않는다. */
       const keep = Math.max(1, Math.round(1 / clamp(0.28 + k.density * 0.9, 0.14, 1)));
@@ -2421,7 +2515,7 @@ function create(canvas, opts) {
       if (!m) { STYLES.constellation(t); return; }
       const p = meshProject(m, t, 0.008 + 0.026 * k.speed);
       const n = (m.v.length / 3) | 0;
-      const e = m.e, ne = (e.length / 2) | 0;
+      const e = meshEdges(m), ne = (e.length / 2) | 0;
       /* 꼭짓점 500여 개만 찍으면 형태가 안 읽힌다. 뼈만 남은 별자리처럼
          보인다. 모서리 위에도 점을 앉혀 윤곽을 메운다. 자리는 시드에서
          한 번 정해지므로 프레임이 넘어가도 점이 떨리지 않는다. */
@@ -2457,7 +2551,7 @@ function create(canvas, opts) {
       const m = meshOf();
       if (!m) { STYLES.neonsign(t); return; }
       const p = meshProject(m, t, 0);
-      const e = m.e, ne = (e.length / 2) | 0;
+      const e = meshEdges(m), ne = (e.length / 2) | 0;
       const ph = t / DUR;
       ctx.globalCompositeOperation = ADD;
       ctx.lineCap = "round";
@@ -2774,6 +2868,188 @@ function create(canvas, opts) {
       }
     },
 
+    /* 74 명암 — 어둠에서 형태가 떠오른다.
+       안토넬로 다 메시나의 초상도, 뒤러의 자화상도, 수르바란의 정물도
+       같은 자리에서 시작한다. 검은 바탕, 왼쪽 위에서 드는 빛 하나,
+       그리고 빛이 닿은 만큼만 보이는 형태. 나머지는 어둠에 둔다.
+
+       처음에는 모서리 위에 점을 촘촘히 찍어 면을 흉내 냈는데 끝내
+       점 구름으로만 보였다. 면이 없으면 법선이 없고, 법선이 없으면
+       어느 쪽이 빛을 받는지 알 수가 없다. 그래서 뼈대에 삼각형을
+       담기로 하고, 여기서는 그 삼각형을 먼 것부터 덮어 칠한다. */
+    chiaroscuro(t) {
+      const m = meshOf();
+      if (!m) { STYLES.inkwash(t); return; }
+      const p = meshProject(m, t, 0);
+      const nrm = meshNrm;
+      const T = m.t, nt = (T.length / 3) | 0;
+      const ph = t / DUR;
+
+      /* 방 — 물건 뒤로 아주 옅은 빛 웅덩이. 이게 없으면 물건이 허공에 뜬다. */
+      const gl = ctx.createRadialGradient(W * 0.40, H * 0.40, 0, W * 0.40, H * 0.40,
+                                          Math.max(W, H) * 0.62);
+      gl.addColorStop(0, tone(3, 0.16 + 0.10 * k.glow));
+      gl.addColorStop(1, tone(3, 0));
+      ctx.fillStyle = gl;
+      ctx.fillRect(0, 0, W, H);
+
+      /* 먼 삼각형부터 그린다. 면이 서로를 가려야 덩어리로 보인다. */
+      const key = new Float32Array(nt), ord = new Array(nt);
+      for (let i = 0; i < nt; i++) {
+        key[i] = (p[T[i * 3] * 3 + 2] + p[T[i * 3 + 1] * 3 + 2] + p[T[i * 3 + 2] * 3 + 2]) / 3;
+        ord[i] = i;
+      }
+      ord.sort((x, y) => key[x] - key[y]);
+
+      /* 빛이 숨을 쉰다. 촛불 앞에 둔 것처럼. 한 바퀴가 DUR 이라 루프가 맞는다. */
+      const breath = 0.90 + 0.10 * Math.sin(ph * TAU);
+      const LX = -0.55, LY = 0.62, LZ = 0.56;
+      const gain = 0.42 + 0.52 * k.contrast;
+      ctx.lineJoin = "round";
+      ctx.lineWidth = Math.max(0.5, S * 0.7);      /* 삼각형 사이 실틈을 메운다 */
+      for (let z = 0; z < nt; z++) {
+        const i = ord[z];
+        const a = T[i * 3], b = T[i * 3 + 1], c = T[i * 3 + 2];
+        let nx = (nrm[a * 3] + nrm[b * 3] + nrm[c * 3]) / 3;
+        let ny = (nrm[a * 3 + 1] + nrm[b * 3 + 1] + nrm[c * 3 + 1]) / 3;
+        let nz = (nrm[a * 3 + 2] + nrm[b * 3 + 2] + nrm[c * 3 + 2]) / 3;
+        const nl = Math.hypot(nx, ny, nz) || 1;
+        nx /= nl; ny /= nl; nz /= nl;
+        /* 삼각형을 적어 둔 차례가 모델마다 달라 법선이 앞을 보기도 뒤를
+           보기도 한다. 보는 쪽으로 돌려 세운 뒤에 빛을 잰다. 그러면
+           적어 둔 차례와 상관없이 같은 결로 밝아진다. */
+        if (nz < 0) { nx = -nx; ny = -ny; nz = -nz; }
+        const lam = Math.max(0, nx * LX + ny * LY + nz * LZ);
+        const amt = clamp(0.03 + Math.pow(lam, 1.4) * gain * breath, 0, 1);
+        ctx.fillStyle = ctx.strokeStyle =
+          shade(amt > 0.58 ? 0 : amt > 0.32 ? 1 : amt > 0.14 ? 2 : 3, amt);
+        ctx.beginPath();
+        ctx.moveTo(p[a * 3], p[a * 3 + 1]);
+        ctx.lineTo(p[b * 3], p[b * 3 + 1]);
+        ctx.lineTo(p[c * 3], p[c * 3 + 1]);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      }
+    },
+
+    /* 75 액자 — 어두운 전시실 벽에 걸린 백라이트 액자 한 장.
+       사진전에 가면 검은 방에 액자만 빛나고, 오른쪽에 세로로 돌린 작은
+       글씨가 붙어 있고, 조금 떨어진 곳에 벽 라벨이 하나 더 있다. 그
+       구도 자체가 그림이다. 빛나는 사각 하나와 넓은 어둠.
+
+       처음에는 판을 크게 잡고 안을 환하게 채웠더니 전시실이 아니라
+       밝은 포스터가 됐다. 방은 거의 검어야 하고, 판은 화면의 한 귀퉁이만
+       차지해야 하고, 빛은 판 안에서만 나야 한다. */
+    frame(t) {
+      const ph = t / DUR;
+      const s0 = seeds[770];
+      const cx = W * (0.42 + s0.a * 0.16), cy = H * (0.42 + s0.b * 0.14);
+
+      /* 판 — 검은 마운트에 얹은 인화지. 방보다 아주 조금만 밝다. */
+      const pw = Math.min(W * 0.44, H * 0.80) * clamp(k.scale, 0.85, 1.2);
+      const pheight = pw * 0.72;
+      const px = cx - pw * 0.5, py = cy - pheight * 0.5;
+      const capW = pw * 0.24;
+      const imW = pw - capW - pw * 0.09;
+      const imX = px + pw * 0.05, imY = py + pheight * 0.09, imH = pheight * 0.82;
+
+      /* 벽에 새는 빛. 판 둘레만 아주 옅게 물든다. */
+      const room = ctx.createRadialGradient(cx, cy, pw * 0.42, cx, cy, pw * 1.15);
+      room.addColorStop(0, tone(2, 0.07 + 0.06 * k.glow));
+      room.addColorStop(0.55, tone(2, 0.025 + 0.02 * k.glow));
+      room.addColorStop(1, tone(2, 0));
+      ctx.fillStyle = room;
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.fillStyle = shade(3, 0.10);
+      ctx.fillRect(px, py, pw, pheight);
+
+      /* 사진 자리 — 거의 검고, 빛은 세로 결로만 든다.
+         우리 결이 그렇다. 어둠 위에 빛을 얹지, 밝은 바탕을 깔지 않는다. */
+      ctx.save();
+      ctx.beginPath(); ctx.rect(imX, imY, imW, imH); ctx.clip();
+      ctx.fillStyle = shade(3, 0.22);
+      ctx.fillRect(imX, imY, imW, imH);
+      ctx.globalCompositeOperation = ADD;
+      const bands = 5 + Math.round(k.density * 16);
+      for (let i = 0; i < bands; i++) {
+        const s = seeds[(i * 13 + 780) % seeds.length];
+        /* 한 바퀴에 정수 번 돌아야 한다.
+           0.34배로 두었더니 ph 가 1에 닿을 때 자리가 s.a + 0.02 로 끝나
+           이음매에서 띠가 톡 튀었다. renderFrame(150)==renderFrame(0)만
+           봐서는 안 잡힌다. 그건 나머지 연산 때문에 언제나 참이다. */
+        const u = (s.a + ph * (1 + Math.floor(s.b * 3))) % 1;
+        const bw = imW * (0.004 + s.c * 0.030);
+        const g = ctx.createLinearGradient(0, imY, 0, imY + imH);
+        const a = (0.10 + 0.55 * s.c) * k.contrast;
+        g.addColorStop(0, tone(s.d > 0.7 ? 0 : 1, 0));
+        g.addColorStop(0.35 + s.d * 0.3, tone(s.d > 0.7 ? 0 : 1, Math.min(0.9, a)));
+        g.addColorStop(1, tone(1, 0));
+        ctx.fillStyle = g;
+        ctx.fillRect(imX + u * imW - bw * 0.5, imY, bw, imH);
+      }
+      ctx.globalCompositeOperation = "source-over";
+      ctx.restore();
+      ctx.strokeStyle = tone(1, 0.10 + 0.14 * k.contrast);
+      ctx.lineWidth = Math.max(1, S);
+      ctx.strokeRect(imX + 0.5, imY + 0.5, imW, imH);
+
+      /* 오른쪽 세로 글씨. 제목 한 줄 + 잔글씨 몇 줄.
+         멀리서는 결로 보이고 가까이 가야 글자가 읽힌다. 전시장 캡션이
+         늘 그렇다. */
+      const drawRow = (str, x, y, h, alpha, tn) => {
+        const w5 = h * 5 / 7;
+        ctx.fillStyle = tone(tn, alpha);
+        ctx.beginPath();
+        for (let i = 0; i < str.length; i++) {
+          glyph57(str[i], (gc, gr) => {
+            ctx.rect(x + i * w5 * 1.32 + gc * w5 / 5, y + gr * h / 7, w5 / 5 * 0.86, h / 7 * 0.86);
+          });
+        }
+        ctx.fill();
+      };
+      const code = (Math.floor(s0.c * 0xffffff) >>> 0).toString(16).toUpperCase().padStart(6, "0");
+      const th = Math.max(5, pheight * 0.048);
+      ctx.save();
+      ctx.translate(px + pw - capW * 0.66, py + pheight * 0.91);
+      ctx.rotate(-Math.PI / 2);
+      drawRow("BN " + code, 0, 0, th, 0.50 + 0.35 * k.contrast, 0);
+      const small = th * 0.50;
+      for (let r = 0; r < 4; r++) {
+        let line = "";
+        const n = 12 + Math.floor(seeds[(790 + r) % seeds.length].a * 14);
+        for (let i = 0; i < n; i++) {
+          const q = seeds[(r * 37 + i * 11 + 800) % seeds.length];
+          line += q.a < 0.16 ? " " : (q.b < 0.5 ? FONT57_LETTERS[Math.floor(q.c * 26)]
+                                                : FONT57_DIGITS[Math.floor(q.c * 10)]);
+        }
+        drawRow(line, 0, th * 1.8 + r * small * 1.6, small, 0.13 + 0.09 * k.contrast, 2);
+      }
+      ctx.restore();
+
+      /* 벽 라벨 — 판과 떨어진 자리에 작게 하나. 이게 있어야 벽이 된다.
+         화면 밖으로 나가면 그리지 않는다. */
+      const lw = pw * 0.22, lh = lw * 0.60;
+      /* 화면 안으로 밀어 넣는다. 넣을 자리가 없으면 아예 안 그린다.
+         잘린 라벨은 벽이 아니라 실수로 보인다. */
+      const lx = Math.min(px + pw * (0.66 + s0.d * 0.28), W - lw - W * 0.06);
+      const ly = Math.min(py + pheight * 1.12, H - lh - H * 0.06);
+      if (lx > W * 0.03 && ly > py + pheight * 1.02) {
+        ctx.fillStyle = tone(0, 0.07 + 0.07 * k.accent);
+        ctx.fillRect(lx, ly, lw, lh);
+        const sh = Math.max(3, lh * 0.14);
+        for (let r = 0; r < 3; r++) {
+          let line = "";
+          for (let i = 0; i < 9; i++) {
+            const q = seeds[(r * 23 + i * 7 + 830) % seeds.length];
+            line += q.a < 0.2 ? " " : FONT57_LETTERS[Math.floor(q.c * 26)];
+          }
+          drawRow(line, lx + lw * 0.10, ly + lh * 0.20 + r * sh * 1.8, sh, 0.26, 3);
+        }
+      }
+    },
+
   };
 
   /* ── 마감 처리 ────────────────────────────────────────────────
@@ -2885,6 +3161,8 @@ const STYLE_LABELS = [
 
   ["jamo", "자모"], ["pdu", "활자판"], ["barcode", "신호"],
   ["segment", "칠획"], ["asciiart", "문자 명암"], ["desordre", "무질서"],
+
+  ["chiaroscuro", "명암"], ["frame", "액자"],
 ];
 
 global.StudioArt = {

@@ -10,6 +10,6 @@
     "playwright-core": "^1.49.0"
   },
   "scripts": {
-    "check": "node tools/check-canon.mjs && node tools/check-studio.mjs && node tools/check-artwork.mjs"
+    "check": "node tools/check-canon.mjs && node tools/check-studio.mjs && node tools/check-artwork.mjs && node tools/check-loop.mjs"
   }
 }

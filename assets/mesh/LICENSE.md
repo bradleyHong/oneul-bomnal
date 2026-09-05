@@ -1,6 +1,6 @@
 # 3D 뼈대 출처와 라이선스
 
-여기 있는 파일은 **꼭짓점과 모서리 좌표만** 담고 있습니다. 원본의 재질·
+여기 있는 파일은 **꼭짓점과 삼각형만** 담고 있습니다. 원본의 재질·
 텍스처·색·뼈대 애니메이션은 전부 버렸습니다. 화면에 나가는 것은 그 좌표를
 받아 **우리 코드가 매 프레임 다시 그린 선과 점**입니다. 원본 파일이나
 원본이 렌더된 그림을 그대로 내보내지 않습니다.
@@ -18,21 +18,20 @@
 
 출처: [KhronosGroup/glTF-Sample-Assets](https://github.com/KhronosGroup/glTF-Sample-Assets)
 
-| 파일 | 이름 | 저작권 | 라이선스 | 확인일 | 꼭짓점 · 모서리 |
+| 파일 | 이름 | 저작권 | 라이선스 | 확인일 | 꼭짓점 · 삼각형 |
 |---|---|---|---|---|---|
-| `AntiqueCamera.json` | 앤티크 카메라 | © 2018, UX3D | CC0 1.0 Universal | 2026-09-05 | 545 · 605 |
-| `Avocado.json` | 아보카도 | © 2017, Public (Microsoft) | CC0 1.0 Universal | 2026-09-05 | 363 · 521 |
-| `BarramundiFish.json` | 물고기 | © 2017, Public (Microsoft) | CC0 1.0 Universal | 2026-09-05 | 536 · 795 |
-| `BoomBox.json` | 라디오 | © 2017, Public (Microsoft) | CC0 1.0 Universal | 2026-09-05 | 485 · 739 |
-| `Corset.json` | 코르셋 | © 2017, UX3D | CC0 1.0 Universal | 2026-09-05 | 559 · 883 |
-| `DiffuseTransmissionTeacup.json` | 찻잔 | © 2023, Public domain | CC0 1.0 Universal | 2026-09-05 | 537 · 621 |
-| `GlassVaseFlowers.json` | 꽃병 | © 2023, Public | CC0 1.0 Universal | 2026-09-05 | 554 · 776 |
-| `Lantern.json` | 랜턴 | © 2017, Microsoft | CC0 1.0 Universal | 2026-09-05 | 540 · 798 |
-| `ScatteringSkull.json` | 해골 | © 2025, Public | CC0 1.0 Universal | 2026-09-05 | 525 · 820 |
-| `SciFiHelmet.json` | 헬멧 | © 2017, Public | CC0 1.0 Universal | 2026-09-05 | 511 · 813 |
-| `SheenChair.json` | 의자 | © 2020, Wayfair, LLC | CC0 1.0 Universal | 2026-09-05 | 540 · 827 |
-| `Suzanne.json` | 원숭이 두상 | © 2017, UX3D | CC0 1.0 Universal | 2026-09-05 | 551 · 847 |
-| `WaterBottle.json` | 물병 | © 2017, Public (Microsoft) | CC0 1.0 Universal | 2026-09-05 | 502 · 732 |
+| `AntiqueCamera.json` | 앤티크 카메라 | © 2018, UX3D | CC0 1.0 Universal | 2026-09-05 | 545 · 666 |
+| `Avocado.json` | 아보카도 | © 2017, Public (Microsoft) | CC0 1.0 Universal | 2026-09-05 | 363 · 682 |
+| `BarramundiFish.json` | 물고기 | © 2017, Public (Microsoft) | CC0 1.0 Universal | 2026-09-05 | 536 · 532 |
+| `Corset.json` | 코르셋 | © 2017, UX3D | CC0 1.0 Universal | 2026-09-05 | 559 · 628 |
+| `DiffuseTransmissionTeacup.json` | 찻잔 | © 2023, Public domain | CC0 1.0 Universal | 2026-09-05 | 537 · 696 |
+| `GlassVaseFlowers.json` | 꽃병 | © 2023, Public | CC0 1.0 Universal | 2026-09-05 | 554 · 532 |
+| `Lantern.json` | 랜턴 | © 2017, Microsoft | CC0 1.0 Universal | 2026-09-05 | 540 · 545 |
+| `ScatteringSkull.json` | 해골 | © 2025, Public | CC0 1.0 Universal | 2026-09-05 | 525 · 568 |
+| `SciFiHelmet.json` | 헬멧 | © 2017, Public | CC0 1.0 Universal | 2026-09-05 | 511 · 576 |
+| `SheenChair.json` | 의자 | © 2020, Wayfair, LLC | CC0 1.0 Universal | 2026-09-05 | 540 · 572 |
+| `Suzanne.json` | 원숭이 두상 | © 2017, UX3D | CC0 1.0 Universal | 2026-09-05 | 551 · 572 |
+| `WaterBottle.json` | 물병 | © 2017, Public (Microsoft) | CC0 1.0 Universal | 2026-09-05 | 502 · 480 |
 
 CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/legalcode
 
@@ -49,6 +48,7 @@ CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/legalcode
 | `SheenWoodLeatherSofa` | CC-BY 4.0 (Darmstadt Graphics Group) | 2026-09-05 |
 | `DragonAttenuation` · `DragonDispersion` | 뒤에 붙은 커다란 배경판까지 좌표에 들어와, 상자에 맞추면 용이 콩알만 해진다 | 2026-09-05 |
 | `ToyCar` | 부품이 잘게 나뉘어 있어 솎고 나면 형태가 안 읽힌다 | 2026-09-05 |
+| `BoomBox` | 안쪽 그릴까지 좌표에 들어와, 빛을 치면 흑백 바둑판이 된다 | 2026-09-05 |
 
 ## 더 받으려면
 
