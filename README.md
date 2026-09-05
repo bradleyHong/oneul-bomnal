@@ -12,12 +12,19 @@
 
 ```bash
 node tools/check-canon.mjs    # 캐논과 실제 파일이 어긋나는지 검사 (커밋 전 필수)
+node tools/check-studio.mjs   # 스튜디오 스타일·색 목록이 엔진과 맞는지 검사
 node tools/build-works.mjs    # 작품 원본 → 고객 공개본 다시 생성
-node tools/build-deck.js      # 캐논 → 영업용 회사소개서 (docs/오늘은봄날_회사소개서.pptx)
+node tools/build-deck.js         # 캐논 → 영업용 회사소개서 14장
+node tools/build-deck.js --grant # 캐논 + 사업비 → 지원사업 발표자료 15장
 ```
 
 회사소개서도 같은 캐논에서 나옵니다. 회사 정보나 사업영역이 바뀌면 캐논을 고치고
 `node tools/build-deck.js`로 다시 뽑으면 홈페이지와 소개서가 어긋나지 않습니다.
+
+`--grant`는 지원사업 제출용입니다. 분량 제한이 15장이라 사업영역 네 장을 한 장으로 접고,
+그 자리에 결과물 한 장과 사업비 네 장(구성 · 정부지원금 · 대응자금 · 집행 주의)을 넣습니다.
+사업비 금액은 [`canon/grant.json`](canon/grant.json)에만 있고, `canon/`은 `.vercelignore`에
+있어 웹에는 올라가지 않습니다.
 (PDF가 필요하면 파워포인트에서 내보내기 하시면 됩니다.)
 
 자세한 사용법은 [`canon/README.md`](canon/README.md)에 있습니다.

@@ -11,3 +11,17 @@ sink.log
 
 # 제작기 라이브러리 원본 인덱스(사내 전용). 썸네일과 library.json 만 배포한다.
 asset/manifest.json
+
+# 아직 main의 캐논·사이트맵에 붙이지 않은 화면들.
+# 깃에는 남겨 두되 웹에는 올리지 않는다. 캐논에 없는 페이지가 주소만
+# 알면 열리는 상태가 되면, 정본이 사이트의 전부라는 규칙이 깨진다.
+# /ai 는 그대로 뜨지만 사이트맵에 없고, /ax-studio 는 로그인 경로가
+# 달라 아직 동작하지 않는다. 붙이는 것은 다음 작업으로 남긴다.
+ai.html
+ai.css
+ai.js
+ax-studio.html
+ax-studio.js
+art-stage.js
+panels.js
+studio-presets.js

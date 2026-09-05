@@ -1,0 +1,252 @@
+/* /ai — 미디어아트 AX
+ *
+ * 메인이 홍보 시퀀스다. 그림이 화면에서 가장 밝아야 하므로 UI는 물러난다.
+ * 다섯 언어를 한 페이지에서 쓰기 때문에 글자 길이가 언어마다 크게 다르다.
+ * 고정 폭을 쓰지 않고, 아랍어에서는 방향이 통째로 뒤집힌다.
+ */
+
+.ai-page {
+  --a-bg: #07090f;
+  --a-panel: #0e1119;
+  --a-line: rgba(233, 238, 250, 0.13);
+  --a-ink: #e9eefa;
+  --a-dim: rgba(233, 238, 250, 0.62);
+  --a-faint: rgba(233, 238, 250, 0.36);
+  --a-key: #a9c4ff;
+
+  margin: 0;
+  min-height: 100vh;
+  background: var(--a-bg);
+  color: var(--a-ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo",
+    "Noto Sans KR", "Noto Sans JP", "Noto Sans SC", "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.ai-page * { box-sizing: border-box; }
+/* 아랍어는 서체와 자간이 다르다. 한글용 자간을 그대로 쓰면 글자가 붙는다. */
+.ai-page[data-lang="ar"] {
+  font-family: "Noto Naskh Arabic", "Geeza Pro", "Segoe UI", Tahoma, sans-serif;
+  letter-spacing: 0;
+}
+.ai-page[data-lang="ar"] .promo-line1,
+.ai-page[data-lang="ar"] .ai-h1 { letter-spacing: 0; }
+/* 한중일은 단어 중간에서 끊어도 되지만 한국어는 어절로 끊어야 읽힌다. */
+.ai-page[data-lang="ko"] h1, .ai-page[data-lang="ko"] h2,
+.ai-page[data-lang="ko"] p { word-break: keep-all; }
+.ai-page h1, .ai-page h2, .ai-page p { overflow-wrap: break-word; text-wrap: pretty; }
+
+/* 건너뛰기 링크. 화면 밖으로 밀어내는 대신 잘라서 숨긴다.
+   left:-9999px 방식은 아랍어처럼 오른쪽에서 왼쪽으로 읽는 화면에서
+   반대편에 1만 픽셀짜리 가로 스크롤을 만든다. 실제로 그렇게 터졌다. */
+.skip-link {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  z-index: 60;
+}
+.skip-link:focus {
+  width: auto; height: auto;
+  margin: 0; padding: 10px 14px;
+  clip-path: none;
+  inset-block-start: 12px;
+  inset-inline-start: 12px;
+  border-radius: 8px;
+  font-weight: 800;
+}
+.skip-link:focus { background: var(--a-key); color: #08101f; }
+
+/* ── 상단 ─────────────────────────────────────────────────── */
+.ai-nav {
+  position: relative; z-index: 20;
+  display: flex; flex-wrap: wrap; gap: 12px;
+  align-items: center; justify-content: space-between;
+  padding: 13px clamp(14px, 3vw, 30px);
+}
+.ai-brand { display: flex; align-items: center; gap: 9px; color: var(--a-ink); text-decoration: none; }
+.ai-brand svg { width: 21px; height: 21px; color: var(--a-key); }
+.ai-brand b { font-size: 15.5px; font-weight: 800; letter-spacing: -0.012em; }
+
+.ai-lang { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+.ai-lang-label {
+  font-size: 10.5px; font-weight: 800; letter-spacing: 0.12em;
+  color: var(--a-faint); text-transform: uppercase; margin-inline-end: 4px;
+}
+.ai-lang button {
+  font: inherit; font-size: 12.5px; font-weight: 750;
+  color: var(--a-dim); background: transparent;
+  border: 1px solid var(--a-line); border-radius: 999px;
+  min-height: 34px; padding: 0 12px; cursor: pointer;
+  transition: border-color .16s ease, color .16s ease, background .16s ease;
+}
+.ai-lang button:hover { color: var(--a-ink); border-color: rgba(169, 196, 255, 0.5); }
+.ai-lang button.is-on {
+  color: #08101f; background: var(--a-key); border-color: var(--a-key); font-weight: 850;
+}
+
+/* ── 홍보 시퀀스 ──────────────────────────────────────────── */
+.promo {
+  position: relative;
+  margin: 0 clamp(12px, 3vw, 30px);
+  border: 1px solid var(--a-line);
+  border-radius: 18px;
+  overflow: hidden;
+  background: #04050a;
+}
+.promo-screens { position: relative; width: 100%; aspect-ratio: 16 / 9; }
+.promo-frame {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  border: 0; display: block;
+  opacity: 0;
+  /* 컷은 컷이어야 한다. 페이드로 넘기면 편집점이 뭉개진다. */
+  transition: opacity 60ms linear;
+}
+.promo-frame.is-live { opacity: 1; }
+
+/* 전환 효과. 장면마다 다르게 들어와야 리듬이 산다. */
+.promo-veil { position: absolute; inset: 0; pointer-events: none; background: #000; opacity: 0; }
+.promo.is-cutting[data-cut="dip"] .promo-veil { animation: dip 340ms ease-out; }
+.promo.is-cutting[data-cut="flash"] .promo-veil { background: #dce8ff; animation: flash 190ms ease-out; }
+.promo.is-cutting[data-cut="cut"] .promo-veil { animation: none; opacity: 0; }
+@keyframes dip   { 0% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes flash { 0% { opacity: 0.72; } 100% { opacity: 0; } }
+
+/* 글자. 컷보다 늦게 들어오고 컷보다 먼저 빠진다. */
+.promo-text {
+  position: absolute; inset-inline-start: clamp(18px, 4vw, 54px);
+  inset-block-end: clamp(64px, 9vw, 96px);
+  inset-inline-end: clamp(18px, 4vw, 54px);
+  pointer-events: none;
+}
+.promo-line1, .promo-line2 {
+  margin: 0;
+  opacity: 0;
+  transform: translateY(9px);
+  transition: opacity 300ms ease, transform 300ms ease;
+  text-shadow: 0 2px 22px rgba(0, 0, 0, 0.72), 0 0 3px rgba(0, 0, 0, 0.5);
+}
+.promo-line1 {
+  font-size: clamp(21px, 3.6vw, 48px);
+  line-height: 1.18; font-weight: 900; letter-spacing: -0.028em;
+}
+.promo-line2 {
+  margin-top: 8px;
+  font-size: clamp(12.5px, 1.4vw, 17px);
+  line-height: 1.6; font-weight: 650; color: rgba(233, 238, 250, 0.8);
+}
+.promo-text.is-in .promo-line1,
+.promo-text.is-in .promo-line2 { opacity: 1; transform: translateY(0); }
+.promo-text.is-in .promo-line2 { transition-delay: 90ms; }
+
+/* ── 조작 줄 ──────────────────────────────────────────────── */
+.promo-bar {
+  position: absolute; inset-inline: 0; inset-block-end: 0;
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px clamp(14px, 3vw, 26px) 14px;
+  background: linear-gradient(180deg, rgba(4, 5, 10, 0) 0%, rgba(4, 5, 10, 0.82) 62%);
+}
+.promo-play {
+  display: inline-flex; align-items: center; gap: 7px;
+  font: inherit; font-size: 12.5px; font-weight: 780; color: var(--a-ink);
+  background: rgba(10, 13, 20, 0.72); border: 1px solid var(--a-line);
+  border-radius: 999px; min-height: 36px; padding: 0 14px; cursor: pointer;
+  flex-shrink: 0;
+}
+.promo-play svg { width: 14px; height: 14px; }
+.promo-play:hover { border-color: rgba(169, 196, 255, 0.5); }
+
+/* 편집점 눈금. 칸 너비가 그 장면의 길이다. 짧은 비트는 좁고 긴 숏은 넓다.
+   이 줄만 봐도 편집이 어떤 리듬인지 읽힌다. */
+.promo-cuts { flex: 1; display: grid; gap: 5px; min-width: 0; }
+.promo-cuts-label {
+  font-size: 9.5px; font-weight: 800; letter-spacing: 0.14em;
+  color: var(--a-faint); text-transform: uppercase;
+}
+.cuts { display: flex; gap: 3px; height: 22px; align-items: center; }
+.cut {
+  flex-basis: 0; min-width: 6px; height: 22px; padding: 0;
+  background: none; border: 0; cursor: pointer;
+  display: flex; align-items: center;
+}
+.cut span {
+  display: block; width: 100%; height: 3px; border-radius: 999px;
+  background: rgba(233, 238, 250, 0.24);
+  transition: background .18s ease, height .18s ease;
+}
+.cut:hover span { background: rgba(233, 238, 250, 0.5); }
+.cut.is-on span { background: var(--a-key); height: 6px; }
+
+.promo.is-paused .promo-frame { filter: saturate(0.85); }
+
+/* ── 본문 ─────────────────────────────────────────────────── */
+.ai-main {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: clamp(34px, 6vw, 72px) clamp(16px, 4vw, 30px) 20px;
+}
+.ai-h1 {
+  margin: 0; font-size: clamp(28px, 4.4vw, 52px);
+  line-height: 1.14; letter-spacing: -0.03em; font-weight: 900;
+}
+.ai-lede {
+  margin: 14px 0 0; font-size: clamp(15px, 1.7vw, 19px);
+  line-height: 1.7; color: var(--a-dim); max-width: 60ch;
+}
+.ai-badges {
+  list-style: none; margin: 26px 0 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.ai-badges li {
+  padding: 9px 14px; border-radius: 999px;
+  border: 1px solid var(--a-line); background: var(--a-panel);
+  font-size: 12.5px; font-weight: 700; color: var(--a-dim);
+}
+.ai-what { margin-top: clamp(36px, 5vw, 60px); }
+.ai-what h2, .ai-pillars h2 {
+  margin: 0 0 10px; font-size: clamp(17px, 2vw, 22px);
+  font-weight: 850; letter-spacing: -0.02em;
+}
+.ai-what p { margin: 0; font-size: 15.5px; line-height: 1.78; color: var(--a-dim); max-width: 68ch; }
+
+.ai-pillars {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px; margin-top: clamp(30px, 4vw, 46px);
+}
+.ai-pillars article {
+  padding: clamp(18px, 2vw, 24px);
+  border: 1px solid var(--a-line); border-radius: 14px; background: var(--a-panel);
+}
+.ai-pillars p { margin: 0; font-size: 14px; line-height: 1.74; color: var(--a-dim); }
+
+.ai-cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: clamp(30px, 4vw, 46px); }
+.ai-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 50px; padding: 0 24px; border-radius: 10px;
+  font-size: 15.5px; font-weight: 800; text-decoration: none;
+  color: var(--a-ink); background: var(--a-panel); border: 1px solid var(--a-line);
+  transition: border-color .16s ease, background .16s ease;
+}
+.ai-btn:hover { border-color: rgba(169, 196, 255, 0.5); }
+.ai-btn.primary { color: #08101f; background: var(--a-key); border-color: var(--a-key); }
+.ai-btn.primary:hover { background: #c4d8ff; border-color: #c4d8ff; }
+
+.ai-footer {
+  display: flex; flex-wrap: wrap; gap: 8px 22px;
+  max-width: 980px; margin: clamp(40px, 6vw, 72px) auto 0;
+  padding: 20px clamp(16px, 4vw, 30px) 36px;
+  border-top: 1px solid var(--a-line);
+  font-size: 12px; color: var(--a-faint);
+}
+.ai-footer .footer-stamp { margin-inline-start: auto; }
+
+@media (max-width: 760px) {
+  .ai-pillars { grid-template-columns: minmax(0, 1fr); }
+  .promo-screens { aspect-ratio: 4 / 3; }
+  .promo-text { inset-block-end: clamp(70px, 14vw, 96px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .promo-frame, .promo-line1, .promo-line2 { transition: none; }
+  .promo-veil { animation: none !important; }
+}

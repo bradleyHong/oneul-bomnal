@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>미디어아트 제작 AX | 오늘은 봄날</title>
+    <link rel="stylesheet" href="./styles.css?v=20260831-ax" />
+    <link rel="stylesheet" href="./fleet.css?v=20260831-ax" />
+    <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
+  </head>
+  <body class="fleet-page">
+    <header class="fleet-nav">
+      <div class="fleet-brand">
+        <strong>미디어아트 제작 AX</strong>
+        <span id="axOrg">기관 정보를 불러오는 중…</span>
+      </div>
+      <div class="fleet-nav-tools">
+        <a href="./studio">만들어 보기</a>
+        <a href="./client">회원사 페이지</a>
+        <a href="./">홈페이지</a>
+        <a href="#" data-logout>로그아웃</a>
+      </div>
+    </header>
+
+    <main class="fleet-main">
+      <h1 class="fleet-h1">미디어아트 제작 요청서</h1>
+      <p class="fleet-notice">
+        <strong id="axWelcome">환영합니다.</strong>
+        현장 규격과 연결할 데이터, 원하시는 방향을 네 단계로 적어 주시면 시안 3종을 1주일 이내에 보내드립니다.
+        적다가 나가셔도 이 브라우저에 저장되니 이어서 하시면 됩니다.
+        원하는 그림이 아직 안 잡히셨다면 <a href="./studio">온 미디어아트 에디트</a>에서 먼저 만져 보셔도 됩니다.
+      </p>
+
+      <!-- 진행 표시. 자바스크립트가 없으면 네 단계가 모두 펼쳐진 채로 보인다. -->
+      <ol class="ax-steps" data-ax-steps aria-label="제작 단계">
+        <li><button type="button" class="ax-step is-on" data-ax-step="site"><b>01</b><span>현장 규격</span></button></li>
+        <li><button type="button" class="ax-step" data-ax-step="data"><b>02</b><span>데이터 연결</span></button></li>
+        <li><button type="button" class="ax-step" data-ax-step="brief"><b>03</b><span>원하는 방향</span></button></li>
+        <li><button type="button" class="ax-step" data-ax-step="deliver"><b>04</b><span>납품 형태</span></button></li>
+      </ol>
+
+      <form class="ax-form" id="axForm" data-ax-form novalidate>
+        <div class="fleet-grid ax-grid-2">
+          <section class="fleet-card ax-panel" data-ax-panel="site" aria-labelledby="axSiteTitle">
+            <h2 id="axSiteTitle">01 · 현장 규격</h2>
+            <p class="fleet-card-desc">
+              화면 비율과 해상도가 정해지면 같은 작품을 그 규격으로 다시 출력합니다.
+              모르시는 항목은 비워 두셔도 됩니다. 실측 때 저희가 채웁니다.
+            </p>
+
+            <fieldset class="ax-choice">
+              <legend>화면 종류</legend>
+              <label><input type="radio" name="screen" value="로비 LED 미디어월" checked /><span>로비 LED 미디어월</span></label>
+              <label><input type="radio" name="screen" value="건물 외벽 LED 전광판" /><span>건물 외벽 LED 전광판</span></label>
+              <label><input type="radio" name="screen" value="세로형 사이니지" /><span>세로형 사이니지</span></label>
+              <label><input type="radio" name="screen" value="빔프로젝터 미디어파사드" /><span>빔프로젝터 미디어파사드</span></label>
+              <label><input type="radio" name="screen" value="아직 화면이 없음" /><span>아직 화면이 없음 (설치부터)</span></label>
+            </fieldset>
+
+            <div class="fleet-form-row">
+              <label><span>화면 비율</span>
+                <select name="ratio">
+                  <option>16:9 (가로)</option>
+                  <option>32:9 (와이드)</option>
+                  <option>9:16 (세로)</option>
+                  <option>1:6 (기둥형)</option>
+                  <option>모름 · 실측 필요</option>
+                </select>
+              </label>
+              <label><span>해상도</span>
+                <input name="resolution" type="text" placeholder="예: 3840 × 1080" />
+              </label>
+            </div>
+            <div class="fleet-form-row">
+              <label><span>재생 길이</span>
+                <input name="duration" type="text" placeholder="예: 3분 반복" />
+              </label>
+              <label><span>설치 장소</span>
+                <input name="place" type="text" placeholder="예: 본관 1층 로비" />
+              </label>
+            </div>
+            <label><span>밝기 · 주변 조건</span>
+              <input name="light" type="text" placeholder="예: 통유리라 낮에 역광이 심함" />
+            </label>
+          </section>
+
+          <section class="fleet-card ax-panel" data-ax-panel="data" aria-labelledby="axDataTitle" hidden>
+            <h2 id="axDataTitle">02 · 데이터 연결</h2>
+            <p class="fleet-card-desc">
+              연결하면 담당자가 영상을 갈아 끼우지 않아도 화면이 매일 달라집니다.
+              연결이 필요 없으면 마지막 항목을 고르세요. 패널 크기에 맞춰 렌더링한 4K 영상으로 드립니다.
+            </p>
+
+            <fieldset class="ax-choice">
+              <legend>연결할 데이터 (복수 선택)</legend>
+              <label><input type="checkbox" name="source" value="기상청 날씨" /><span>기상청 날씨 — 색온도와 속도가 날씨를 따라갑니다</span></label>
+              <label><input type="checkbox" name="source" value="에어코리아 대기질" /><span>에어코리아 대기질 — 입자 수와 시야가 그날 공기를 따라갑니다</span></label>
+              <label><input type="checkbox" name="source" value="기관 보유 DB" /><span>기관 보유 DB — 행사 일정 · 이용 현황이 화면의 내용이 됩니다</span></label>
+              <label><input type="checkbox" name="source" value="연동 없음 (4K 영상 납품)" /><span>연동 없음 — 4K 영상으로 받겠습니다</span></label>
+            </fieldset>
+
+            <label><span>기관 DB를 고르셨다면, 어떤 데이터인가요</span>
+              <textarea name="dbNote" rows="3" placeholder="예: 문화재단 행사 일정. 매주 월요일 갱신. 엑셀로 관리 중입니다."></textarea>
+            </label>
+            <p class="fleet-tip">
+              형식은 엑셀 · CSV · API 무엇이든 괜찮습니다. 지금 형태 그대로 알려주시면 저희가 맞춥니다.
+            </p>
+          </section>
+
+          <section class="fleet-card ax-panel" data-ax-panel="brief" aria-labelledby="axBriefTitle" hidden>
+            <h2 id="axBriefTitle">03 · 원하는 방향</h2>
+            <p class="fleet-card-desc">
+              무엇을 만들지 미리 정해두지 않으셔도 됩니다.
+              다만 자세히 알려주실수록 시안의 디테일이 올라갑니다.
+            </p>
+
+            <label><span>주제 · 소재</span>
+              <textarea name="theme" rows="3" placeholder="예: 지역의 강과 물길. 봄에 개관하는 건물이라 밝았으면 합니다."></textarea>
+            </label>
+            <label><span>참고 이미지 · 예시가 있으면 주소를 적어 주세요</span>
+              <input name="reference" type="text" placeholder="예: https://… 또는 '메일로 보내겠습니다'" />
+            </label>
+            <div class="fleet-form-row">
+              <label><span>기관 CI · 지정 색</span>
+                <input name="ci" type="text" placeholder="예: #0B4DA2, 기관 로고 있음" />
+              </label>
+              <label><span>지정 서체</span>
+                <input name="font" type="text" placeholder="예: 기관 전용 서체 있음" />
+              </label>
+            </div>
+            <label><span>피하고 싶은 것</span>
+              <input name="avoid" type="text" placeholder="예: 너무 빠른 깜빡임은 피해주세요" />
+            </label>
+          </section>
+
+          <section class="fleet-card ax-panel" data-ax-panel="deliver" aria-labelledby="axDeliverTitle" hidden>
+            <h2 id="axDeliverTitle">04 · 납품 형태</h2>
+            <p class="fleet-card-desc">받으실 형태를 고르시면 그에 맞춰 준비합니다.</p>
+
+            <fieldset class="ax-choice">
+              <legend>납품 형태</legend>
+              <label><input type="radio" name="deliver" value="4K 영상 파일" checked /><span>4K 영상 파일 — 기존 재생 장비에 그대로 올립니다</span></label>
+              <label><input type="radio" name="deliver" value="실시간 구동 코드" /><span>실시간 구동 코드 — 현장 플레이어에서 코드가 직접 돕니다</span></label>
+              <label><input type="radio" name="deliver" value="설치까지 포함" /><span>설치까지 포함 — LED 패널 · 빔프로젝터 시공과 한 계약으로</span></label>
+            </fieldset>
+
+            <div class="fleet-form-row">
+              <label><span>희망 일정</span>
+                <input name="schedule" type="text" placeholder="예: 10월 개관 전까지" />
+              </label>
+              <label><span>예산 범위</span>
+                <input name="budget" type="text" placeholder="예: 회계연도 기준 협의" />
+              </label>
+            </div>
+            <label><span>재생 PC</span>
+              <select name="pc">
+                <option>이미 있습니다</option>
+                <option>없습니다. 세팅까지 부탁드립니다</option>
+                <option>모르겠습니다</option>
+              </select>
+            </label>
+          </section>
+        </div>
+
+        <section class="fleet-card wide ax-summary" aria-labelledby="axSumTitle">
+          <h2 id="axSumTitle">보내기 전 확인</h2>
+          <p class="fleet-card-desc">아래 내용이 그대로 오늘은 봄날에 접수됩니다.</p>
+          <dl class="ax-review" data-ax-review>
+            <div><dt>현장</dt><dd data-ax-review-site>—</dd></div>
+            <div><dt>데이터</dt><dd data-ax-review-data>—</dd></div>
+            <div><dt>방향</dt><dd data-ax-review-brief>—</dd></div>
+            <div><dt>납품</dt><dd data-ax-review-deliver>—</dd></div>
+          </dl>
+
+          <div class="fleet-form-row">
+            <label><span>담당자 이름</span>
+              <input name="name" type="text" required placeholder="예: 김담당" />
+            </label>
+            <label><span>연락처</span>
+              <input name="phone" type="text" required placeholder="010-0000-0000" />
+            </label>
+          </div>
+          <label><span>이메일</span>
+            <input name="email" type="email" placeholder="담당자 이메일" />
+          </label>
+
+          <div class="fleet-actions">
+            <button class="fleet-btn primary" type="submit" data-ax-submit>제작 요청 보내기</button>
+            <button class="fleet-btn" type="button" data-ax-reset>작성 내용 지우기</button>
+          </div>
+          <p class="fleet-tip" data-ax-status role="status" aria-live="polite">
+            접수되면 확인 후 24시간 이내에 연락드리고, 시안 3종은 1주일 이내에 보내드립니다.
+            급하시면 010-4292-1999로 바로 연락 주세요.
+          </p>
+        </section>
+      </form>
+    </main>
+
+    <footer class="fleet-footer">
+      <span>오늘은 봄날 · 대표 박성실</span>
+      <span>010-4292-1999 · studio@publicbloom.art</span>
+    </footer>
+
+    <script src="./auth.js?v=20260831-ax"></script>
+    <script src="./ax-studio.js?v=20260831-ax" defer></script>
+  </body>
+</html>

@@ -23,6 +23,8 @@ const w = (f, s) => { writeFileSync(join(root, f), s); console.log(`  ${f}`); };
 /* ── llms.txt ─────────────────────────────────────────────── */
 const creds = I.credentials
   .map((c) => `- ${c.name} ${c.number}${c.valid ? ` (유효 ${c.valid})` : ""}`).join("\n");
+// 사업영역 개수는 캐논에서 센다. 손으로 적어 두면 캐논에 하나 더할 때마다 어긋난다.
+const COUNT_KO = (n) => (["영", "한", "두", "세", "네", "다섯", "여섯", "일곱", "여덟", "아홉", "열"][n] ?? String(n)) + " 가지";
 const scopes = B.scopes.map((s, i) =>
   `### ${i + 1}. ${s.name}\n\n${s.summary}\n\n${s.includes.map((x) => `- ${x}`).join("\n")}\n\n자세히: ${BASE}${s.page}`
 ).join("\n\n");
@@ -54,7 +56,7 @@ w("llms.txt", `# 오늘은 봄날 (publicbloom.art)
 - 여성기업 여부: 예. 공공기관 우선구매 대상 여성기업입니다.
 - 시공 지역: ${C.areaServed.join(", ")}. ${C.areaServedNote}
 
-## 사업영역 (네 가지)
+## 사업영역 (${COUNT_KO(B.scopes.length)})
 
 ${scopes}
 

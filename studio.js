@@ -153,16 +153,26 @@
     var CUSTOM = 31;               // 직접 적은 문장. 번호만으로는 되살릴 수 없다.
 
     /* 작품 번호 = 느낌 번호(위 5비트) + 씨앗(아래 19비트).
-     * 문장 정보가 번호 안에 들어 있어야 붙여넣기로 같은 화면이 나온다. */
-    function code(idx, seed) {
-      var v = (((idx & 31) << 19) | (seed & 0x7FFFF)) >>> 0;
-      return "BN-" + v.toString(16).toUpperCase().padStart(6, "0");
+     * 문장 정보가 번호 안에 들어 있어야 붙여넣기로 같은 화면이 나온다.
+     *
+     * 앞의 BN / BN2는 그림을 어느 목록에서 뽑았는지를 가리킨다.
+     * 스타일이 14종에서 70종으로 늘어난 순간, 같은 씨앗이라도 pick이
+     * 다른 칸을 집어 예전 번호가 다른 그림이 된다. 이미 나간 BN- 번호는
+     * 예전 목록으로 그대로 되살리고, 새로 만드는 것만 BN2-로 낸다. */
+    var CODE_V = 2;
+    function code(idx, seed, v) {
+      var n = (((idx & 31) << 19) | (seed & 0x7FFFF)) >>> 0;
+      return ((v || CODE_V) === 1 ? "BN-" : "BN2-") + n.toString(16).toUpperCase().padStart(6, "0");
     }
     function parseCode(txt) {
-      var m = /([0-9A-Fa-f]{6})\s*$/.exec(String(txt || "").trim());
+      var t = String(txt || "").trim();
+      var m = /([0-9A-Fa-f]{6})\s*$/.exec(t);
       if (!m) return null;
-      var v = parseInt(m[1], 16) >>> 0;
-      return { idx: (v >> 19) & 31, seed: v & 0x7FFFF };
+      var n = parseInt(m[1], 16) >>> 0;
+      /* BN2가 아니면 예전 번호로 본다. 접두어 없이 여섯 자리만 적어 온
+         경우도 예전 번호로 친다. 새 번호는 늘 BN2를 달고 나가기 때문이다. */
+      var v = /BN2/i.test(t) ? 2 : 1;
+      return { idx: (n >> 19) & 31, seed: n & 0x7FFFF, v: v };
     }
     function newSeed() { return Math.floor(Math.random() * 0x7FFFF); }
 
@@ -170,17 +180,19 @@
       return idx === CUSTOM ? (elStory.value || "").trim() : SCENES[idx].text;
     }
 
-    function make(idx, seed, fromHistory) {
+    function make(idx, seed, fromHistory, v) {
       if (idx == null) idx = sceneIdx;
+      if (v == null) v = CODE_V;          /* 새로 만드는 것은 늘 최신 판 */
       var story = storyOf(idx);
       if (!story) { elStory.focus(); return; }
       sceneIdx = idx;
       var pn = currentPanel();
       var sd = seed == null ? newSeed() : seed;
-      spec = GEN.compose(story, sd, pn.w / pn.h);
+      spec = GEN.compose(story, sd, pn.w / pn.h, v);
       spec.idx = idx;
+      spec.v = v;
       gen.set(spec).start();
-      if (!fromHistory) remember(idx, sd, story, spec.ar);
+      if (!fromHistory) remember(idx, sd, story, spec.ar, v);
       drawHistory();
       markScene();
 
@@ -189,7 +201,7 @@
 
       elCuts.innerHTML =
         '<div class="st-code-head">' +
-        '<p class="st-code-num">' + code(idx, sd) + '</p>' +
+        '<p class="st-code-num">' + code(idx, sd, v) + '</p>' +
         '<button type="button" class="st-copy" data-st-copy>번호 복사</button>' +
         '</div>' +
         '<p class="st-code-note">이 번호가 이 화면의 설계도입니다. ' +
@@ -209,9 +221,9 @@
     }
 
     /* 랜덤으로 돌리다 보면 좋은 것이 지나간다. 여덟 장까지 남겨 둔다. */
-    function remember(idx, seed, story, ar) {
+    function remember(idx, seed, story, ar, v) {
       history = history.filter(function (h) { return !(h.seed === seed && h.idx === idx); });
-      history.unshift({ idx: idx, seed: seed, story: story, ar: ar });
+      history.unshift({ idx: idx, seed: seed, story: story, ar: ar, v: v || CODE_V });
       if (history.length > HISTORY_MAX) history.pop();
     }
 
@@ -223,17 +235,17 @@
       history.forEach(function (h) {
         var b = el("button", "st-hist-item");
         b.type = "button";
-        b.title = code(h.idx, h.seed) + " 다시 보기";
+        b.title = code(h.idx, h.seed, h.v) + " 다시 보기";
         if (spec && h.seed === spec.seed && h.idx === spec.idx) b.className += " is-on";
         var c = document.createElement("canvas");
         c.width = 240; c.height = Math.max(80, Math.round(240 / Math.max(0.4, h.ar)));
         if (c.height > 300) { c.height = 300; c.width = Math.round(300 * h.ar); }
         var one = new GEN.Gen(c);
-        one.set(GEN.compose(h.story, h.seed, h.ar));
+        one.set(GEN.compose(h.story, h.seed, h.ar, h.v));
         one.draw(1.6);
         b.appendChild(c);
-        b.appendChild(el("span", null, code(h.idx, h.seed)));
-        b.addEventListener("click", function () { make(h.idx, h.seed, true); });
+        b.appendChild(el("span", null, code(h.idx, h.seed, h.v)));
+        b.addEventListener("click", function () { make(h.idx, h.seed, true, h.v); });
         elHist.appendChild(b);
       });
     }
@@ -295,7 +307,7 @@
     var elLoadMsg = $("[data-st-load-msg]", root);
     function loadCode() {
       var p2 = parseCode(elLoad.value);
-      if (!p2) { elLoadMsg.textContent = "BN- 으로 시작하는 번호를 넣어 주세요."; return; }
+      if (!p2) { elLoadMsg.textContent = "BN2- 또는 BN- 으로 시작하는 번호를 넣어 주세요."; return; }
       if (p2.idx === CUSTOM && !(elStory.value || "").trim()) {
         elLoadMsg.textContent = "직접 적으신 문장으로 만든 번호입니다. 그 문장을 아래에 적어 주세요.";
         return;
@@ -306,7 +318,7 @@
       }
       elLoadMsg.textContent = "";
       elLoad.value = "";
-      make(p2.idx, p2.seed);
+      make(p2.idx, p2.seed, false, p2.v);
     }
     elLoadBtn.addEventListener("click", loadCode);
     elLoad.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); loadCode(); } });

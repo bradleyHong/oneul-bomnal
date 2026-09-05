@@ -23,6 +23,10 @@
     f.setAttribute("loading", "eager");
     box.appendChild(f);
     box.classList.add("is-live");
+    /* 자동으로 켜진 화면의 버튼이 "재생"이라고 남아 있으면
+       눌러도 안 켜지는 것처럼 보인다. */
+    var b = box.querySelector(".art-play");
+    if (b) b.textContent = b.dataset.off || "멈추기";
   }
 
   function unmount(box) {

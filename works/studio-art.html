@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<title>온 미디어아트 에디트 · 렌더 화면</title>
+<style>html,body{margin:0;background:#050505;overflow:hidden}canvas{display:block;width:100%;height:100%}</style>
+<script src="../studio-engine.js"></script>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+/* 렌더 화면.
+ *
+ * 그림을 그리는 코드는 ../studio-engine.js 에 있다. 여기서는 주소의
+ * 파라미터를 읽어 넘기고, 미리보기 루프와 정지 신호만 다룬다.
+ *
+ * 고객 미리보기(iframe)와 우리 4K 렌더가 같은 파일을 쓴다. 고객이 화면에서
+ * 고른 그림이 그대로 납품본이 되어야 하기 때문이다. 파일이 둘이면 언젠가
+ * 어긋나고, 그때 고객은 "내가 고른 게 이게 아닌데"라고 말하게 된다.
+ */
+"use strict";
+
+const q = new URLSearchParams(location.search);
+const num = (k, d) => { const v = parseFloat(q.get(k)); return Number.isFinite(v) ? v : d; };
+
+const inst = StudioArt.create(document.getElementById("c"), {
+  w: num("w", 1280),
+  h: num("h", 720),
+  fps: num("fps", 30),
+  seed: Math.floor(num("seed", 4821937)),
+  dur: num("dur", 20),
+  style: q.get("style") || "aurora",
+  palette: q.get("palette") || "ink",
+  density: num("density", 50),
+  speed: num("speed", 50),
+  scale: num("scale", 50),
+  contrast: num("contrast", 50),
+  glow: num("glow", 35),
+  grain: num("grain", 18),
+  accent: num("accent", 60),
+  motion: q.get("motion") || "drift",
+  symmetry: Math.floor(num("symmetry", 1)),
+  invert: q.get("invert") === "1",
+});
+
+/* render-studio.mjs 가 이 둘을 부른다. 이름을 바꾸면 납품 렌더가 멈춘다. */
+window.renderFrame = inst.renderFrame;
+window.__READY__ = true;
+
+/* 조작판이 목록을 읽어 갈 수 있게 그대로 내보낸다. */
+window.STUDIO_STYLES = StudioArt.STYLES;
+window.STUDIO_PALETTES = StudioArt.PALETTE_IDS.map((id) => [id, StudioArt.PALETTES[id].name]);
+
+/* 미리보기 루프. 캡처(capture=1)일 때는 돌지 않는다.
+   그때는 render-studio.mjs 가 프레임을 하나씩 직접 부른다. */
+if (!q.get("capture")) {
+  let f = 0;
+  let paused = false;
+  let raf = 0;
+
+  /* 부모 창(에디터)이 멈추라고 하면 루프를 진짜로 세운다.
+     화면만 감추고 루프를 계속 돌리면 고객 노트북의 팬은 계속 돈다. */
+  window.addEventListener("message", (e) => {
+    if (e.data === "bomnal:pause" && !paused) { paused = true; cancelAnimationFrame(raf); }
+    else if (e.data === "bomnal:play" && paused) { paused = false; raf = requestAnimationFrame(step); }
+  });
+
+  const step = () => {
+    if (paused) return;
+    f = (f + 1) % inst.totalFrames;
+    inst.renderFrame(f);
+    raf = requestAnimationFrame(step);
+  };
+  raf = requestAnimationFrame(step);
+}
+</script>
+</body>
+</html>

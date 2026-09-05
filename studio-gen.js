@@ -101,14 +101,50 @@
     { id: "묵직", re: /묵직|깊|무겁|진중/,     speed: 1, density: 1.3, weight: 1.5, glow: 0.9 }
   ];
 
-  var STYLE_IDS = ["flow", "wave", "particle", "contour", "grid", "bloom", "column",
-                   "snow", "ribbon", "orbit", "mesh", "bar", "spiral", "drift"];
+  var BASE_IDS = ["flow", "wave", "particle", "contour", "grid", "bloom", "column",
+                  "snow", "ribbon", "orbit", "mesh", "bar", "spiral", "drift"];
+
+  /* 그림 엔진(studio-engine.js)의 56종을 여기에 이어 붙인다.
+   *
+   * 이름이 넷 겹친다(wave · bloom · orbit · spiral). 같은 낱말이지만 다른
+   * 그림이라 하나로 합칠 수 없다. 앞에 sa:를 붙여 갈라 둔다. 화면에는
+   * 접두어를 보이지 않는다. 고객이 볼 이유가 없다. */
+  var ART_PREFIX = "sa:";
+  function artIds() {
+    var A = global.StudioArt;
+    if (!A || !A.STYLES) return [];
+    return A.STYLES.map(function (e) { return ART_PREFIX + e[0]; });
+  }
+  function isArt(id) { return typeof id === "string" && id.indexOf(ART_PREFIX) === 0; }
+
+  var STYLE_IDS = BASE_IDS.concat(artIds());
 
   /* 화면 비율에 따라 어울리는 것이 다르다. 1:6 기둥에 등고선을 그리면
    * 가운데만 뭉치고 위아래가 비어 버린다. 실제로 그렇게 나왔다. */
-  var FIT = {
+  /* 세로 기둥에 어울리는 것과 가로 띠에 어울리는 것을 갈라 적는다.
+   * 가운데로 모이는 그림(만다라·궤도·리사주)을 1:6 기둥에 걸면 위아래가
+   * 통째로 빈다. 실제로 그렇게 나왔다. */
+  var ART_TALL = ["hanji", "smoke", "dotmatrix", "weave", "terrace", "stripe", "branch",
+                  "rain", "bamboo", "flock", "bloom", "inkwash", "thread", "paper"];
+  var ART_WIDE = ["moire", "oscillo", "slitscan", "dotmatrix", "weave", "terrace", "blinds",
+                  "stripe", "lowpoly", "hanji", "wave", "warp", "topo", "magnet", "isocity"];
+  function withPrefix(list) {
+    var have = artIds();
+    return list.map(function (id) { return ART_PREFIX + id; })
+               .filter(function (id) { return have.indexOf(id) >= 0; });
+  }
+
+  /* 1판 — 엔진을 붙이기 전 목록. 이미 나간 BN- 번호가 이걸 쓴다.
+     한 칸도 바꾸거나 끼워 넣지 않는다. */
+  var FIT_V1 = {
     tall:  ["column", "bar", "flow", "wave", "drift", "snow", "particle", "mesh", "ribbon"],
     wide:  ["wave", "flow", "bar", "ribbon", "grid", "drift", "mesh", "particle", "column"],
+    even:  BASE_IDS
+  };
+
+  var FIT = {
+    tall:  FIT_V1.tall.concat(withPrefix(ART_TALL)),
+    wide:  FIT_V1.wide.concat(withPrefix(ART_WIDE)),
     even:  STYLE_IDS
   };
 
@@ -119,8 +155,20 @@
    * 어울리는 이웃으로도 돌려 가며 쓴다. */
   function pick(r, arr) { return arr[Math.floor(r() * arr.length)]; }
 
-  function compose(text, seed, aspect) {
+  /* 판(version)을 받는다.
+   *
+   * 작품 번호는 느낌 번호와 씨앗만 담는다. 그림은 이 함수가 그 둘로 다시
+   * 뽑아 만든다. 그래서 스타일 목록이 길어지면 pick이 다른 칸을 집어,
+   * 이미 나간 번호가 다른 그림이 된다. 화면에는 "같은 번호로 렌더링해
+   * 드립니다"라고 적혀 있으므로 그렇게 두면 안 된다.
+   *
+   *   v=1  기존 14종만. BN- 번호가 예전 그대로 나온다.
+   *   v=2  엔진 56종까지 70종. BN2- 번호가 쓴다.
+   *
+   * 색·느낌·나머지 값은 두 판이 같다. r()을 부르는 횟수가 같기 때문이다. */
+  function compose(text, seed, aspect, v) {
     var r = rng(seed);
+    var v2 = v !== 1;
     var palHint = null, styleHint = null, tags = [];
 
     LEX.forEach(function (e) {
@@ -145,7 +193,8 @@
 
     // 스타일 — 화면 비율에 맞는 것들 중에서 고른다
     var ar = aspect || 16 / 9;
-    var fit = ar >= 2.2 ? FIT.wide : (ar <= 0.62 ? FIT.tall : FIT.even);
+    var F = v2 ? FIT : FIT_V1;
+    var fit = ar >= 2.2 ? F.wide : (ar <= 0.62 ? F.tall : F.even);
     var style;
     if (styleHint && fit.indexOf(styleHint) >= 0 && r() < 0.45) style = styleHint;
     else style = pick(r, fit);
@@ -180,7 +229,68 @@
   Gen.prototype.set = function (spec) {
     this.spec = spec;
     this.pts = null;
+    this.art = null;                   /* 사양이 바뀌면 엔진 인스턴스를 새로 만든다 */
     return this;
+  };
+
+  /* ── 그림 엔진 다리 ───────────────────────────────────────
+   * studio-engine.js는 캔버스를 받아 제 배경·비네팅·알갱이까지 한 장을
+   * 통째로 그린다. 여기서 배경을 미리 칠하고 넘기면 두 번 칠하게 되므로,
+   * 엔진이 맡는 스타일은 이 함수가 프레임을 통째로 맡는다.
+   *
+   * 시간은 5초 한 바퀴 그대로다. 엔진에 dur=5, fps=30을 주고 150프레임 중
+   * 몇 번째인지만 계산해 넘긴다. 현장 패널에서 이어 붙였을 때 끊기지
+   * 않아야 한다는 규칙은 엔진 쪽도 같다. */
+  var ART_FPS = 30;
+
+  /** 이 화면의 팔레트를 엔진이 아는 모양으로 바꾼다. 낱말이 고른 색을
+      그대로 쓰려는 것이다. 엔진 팔레트로 갈아타면 "바다"라고 적었는데
+      단청이 나온다. */
+  function artPalette(p) {
+    var ink = p.ink || [];
+    return {
+      name: p.id,
+      bg: p.bg,
+      ink: ink[ink.length - 1] || ink[0] || "#ffffff",
+      accent: ink[1] || ink[0] || "#ffffff",
+      tones: [ink[0], ink[1] || ink[0], ink[2] || ink[0], ink[3] || ink[1] || ink[0]]
+    };
+  }
+
+  var ART_MOTIONS = ["drift", "pulse", "orbit", "still"];
+
+  Gen.prototype.artDraw = function (t) {
+    var A = global.StudioArt;
+    var s = this.spec;
+    if (!A) return false;
+    var W = this.cv.width, H = this.cv.height;
+    if (!this.art || this.art.w !== W || this.art.h !== H) {
+      var r = rng(s.seed ^ 0x5eed1);
+      var cl = function (v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; };
+      this.art = {
+        w: W, h: H,
+        inst: A.create(this.cv, {
+          w: W, h: H, fps: ART_FPS, dur: PERIOD,
+          seed: s.seed,
+          style: s.style.slice(ART_PREFIX.length),
+          palette: artPalette(s.palette),
+          /* 분위기(느낌)가 정한 값을 엔진의 0~100 눈금으로 옮긴다 */
+          density:  cl(Math.round(s.density * 42), 8, 96),
+          speed:    cl(Math.round(s.speed * 46), 8, 95),
+          scale:    cl(Math.round(s.warp * 36), 15, 90),
+          contrast: cl(Math.round(s.weight * 46), 25, 95),
+          glow:     cl(Math.round(s.glow * 36), 5, 85),
+          grain:    14,
+          accent:   cl(Math.round(40 + r() * 45), 28, 92),
+          motion:   ART_MOTIONS[Math.floor(r() * ART_MOTIONS.length)],
+          symmetry: 1,
+          invert:   false
+        })
+      };
+    }
+    var total = this.art.inst.totalFrames;
+    this.art.inst.renderFrame(Math.round((t / PERIOD) * total) % total);
+    return true;
   };
 
   Gen.prototype.start = function () {
@@ -203,6 +313,9 @@
     var s = this.spec;
     if (!s) return;
     var ctx = this.ctx, W = this.cv.width, H = this.cv.height;
+
+    /* 엔진이 맡는 스타일은 한 장을 통째로 그린다. 물기(워터마크)만 얹는다. */
+    if (isArt(s.style) && this.artDraw(t)) { this.watermark(ctx, W, H); return; }
 
     ctx.globalCompositeOperation = "source-over";
     ctx.globalAlpha = 1;
