@@ -25,3 +25,5 @@ ax-studio.js
 art-stage.js
 panels.js
 studio-presets.js
+.agents/
+skills-lock.json
