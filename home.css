@@ -59,12 +59,15 @@ body.home-2026 { background: #fff; color: #16233a; }
    16:9 를 화면보다 크게 잡고 가운데를 보여 주는 방식으로 덮는다. */
 .home2-vimeo {
   position: absolute;
-  top: 50%;
+  /* 영상 아래쪽에 자막이 구워져 있다. 가운데를 맞추면 그 띠가 제목
+     글자와 겹쳐 지저분해진다. 16:9 를 8% 키워 잘라낼 여유를 만들고
+     위로 조금 올려, 자막 띠가 보이는 자리 밖으로 나가게 한다. */
+  top: 44%;
   left: 50%;
-  width: 100vw;
-  height: 56.25vw;            /* 가로가 길 때 — 100vw 의 9/16 */
-  min-width: 177.78vh;        /* 세로가 길 때 — 100vh 의 16/9 */
-  min-height: 100vh;
+  width: 108vw;
+  height: 60.75vw;            /* 가로가 길 때 — 108vw 의 9/16 */
+  min-width: 192vh;           /* 세로가 길 때 — 108vh 의 16/9 */
+  min-height: 108vh;
   transform: translate(-50%, -50%);
   border: 0;
   pointer-events: none;       /* 첫 화면은 읽는 자리다. 눌러도 재생기가 반응하지 않게 */
@@ -457,4 +460,46 @@ body.home-2026 main > .section { background: #fff; }
 .home2-cred span,
 .home2-cap span {
   letter-spacing: 0.015em;
+}
+
+/* 배경으로 도는 것이 무슨 작업인지 적는 줄.
+   첫 화면에서 제일 작은 글자지만, 이게 없으면 예쁜 배경일 뿐이다. */
+.home2-credit {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 10px;
+  margin: 0;
+  padding: 0 var(--h-pad) 10px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: rgba(233, 239, 250, 0.72);
+}
+
+.home2-credit-label {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.home2-credit a {
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.32);
+  transition: border-color 160ms ease;
+}
+
+.home2-credit a:hover {
+  border-bottom-color: #fff;
+}
+
+.home2-credit-meta {
+  color: rgba(233, 239, 250, 0.55);
 }
