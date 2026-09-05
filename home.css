@@ -1,5 +1,5 @@
 /* ─────────────────────────────────────────────────────────────
-   홈 첫 화면 — 미디어아트 스튜디오 문법으로 다시 짠다.
+   홈 첫 화면 · 미디어아트 스튜디오 문법으로 다시 짠다.
 
    해외 스튜디오(Moment Factory, Float4 등)의 공통점은 단순하다.
    작품이 화면을 전부 먹고, 글자는 한 줄만 남고, 자격 배지는 첫 화면에
@@ -14,7 +14,10 @@ body.home-2026 {
   --h-ink: #06080c;
   --h-white: #fff;
   --h-mute: rgba(255, 255, 255, 0.6);
-  --h-dim: rgba(255, 255, 255, 0.38);
+  /* 0.38이면 12px 보조 글씨가 어두운 바탕에서 3.49:1이라 기준(4.5:1)에
+     못 미친다. 0.48로 올리면 5.0:1이 된다. 어두운 면 위의 작은 글씨는
+     회색으로 흐리는 대신 대비를 확보하고 자간을 조금 벌려야 읽힌다. */
+  --h-dim: rgba(255, 255, 255, 0.48);
   --h-line: rgba(255, 255, 255, 0.14);
   --h-pad: clamp(18px, 4vw, 56px);
 }
@@ -138,7 +141,7 @@ body.home-2026 { background: #fff; color: #16233a; }
 }
 .home2-cta .is-ghost:hover { border-color: var(--h-white); background: rgba(255, 255, 255, 0.1); }
 
-/* 지금 대구 — "오늘은 봄날"이라는 이름이 사는 자리 */
+/* 지금 대구 · "오늘은 봄날"이라는 이름이 사는 자리 */
 .home2-now {
   position: relative;
   z-index: 2;
@@ -226,7 +229,7 @@ body.home-2026 { background: #fff; color: #16233a; }
 .home2-cap b { display: block; font-size: 1rem; font-weight: 700; letter-spacing: -0.01em; }
 .home2-cap span { display: block; margin-top: 3px; font-size: 0.79rem; color: var(--h-dim); }
 
-/* ── 자격 — 첫 화면이 아니라 여기에 둔다 ────────────────── */
+/* ── 자격 · 첫 화면이 아니라 여기에 둔다 ────────────────── */
 .home2-cred {
   background: var(--h-ink);
   color: var(--h-white);
@@ -258,10 +261,32 @@ body.home-2026 .site-nav {
   inset: 0 0 auto;
   background: transparent;
 }
+/* 떠 있는 메뉴는 판이 아니라 재질이어야 한다. 0.88은 거의 불투명이라
+   본문이 그 아래로 지나가는 느낌이 없었다. 투명도를 낮추고 채도를
+   올려 뒤가 비치게 하고, 경계는 1px 선 대신 흐림으로 끝낸다. */
 body.home-2026 .site-nav.scrolled {
-  background: rgba(6, 8, 12, 0.88);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(6, 8, 12, 0.68);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 0;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* 투명도를 줄이라고 한 사용자에게는 유리판 대신 판을 준다 */
+@media (prefers-reduced-transparency: reduce) {
+  body.home-2026 .site-nav.scrolled {
+    background: #06080c;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  body.home-2026 .site-nav.scrolled {
+    background: #000;
+    backdrop-filter: none;
+    border-bottom: 1px solid #fff;
+  }
 }
 body.home-2026.site-page .brand strong,
 body.home-2026.site-page .brand span,
@@ -283,7 +308,7 @@ body.home-2026 main > .section { background: #fff; }
   .home2-cta a { transition: none; }
 }
 
-/* ── 미디어박스 — 흰 본문 사이에 넣는 어두운 마디 ─────────── */
+/* ── 미디어박스 · 흰 본문 사이에 넣는 어두운 마디 ─────────── */
 .home2-box {
   background: var(--h-ink);
   color: var(--h-white);
@@ -389,3 +414,35 @@ body.home-2026 main > .section { background: #fff; }
   color: var(--h-mute);
 }
 .home2-box-terms b { color: var(--h-white); font-weight: 700; }
+
+/* ── 히어로 배경 영상 ───────────────────────────────────────
+   같은 작품을 라이브로 돌리면 4K 캔버스라 페이지가 5fps가 된다.
+   미리 뽑은 완전 루프 영상을 포스터 위에 겹친다. 재생이 안 되면
+   포스터가 그대로 보이므로 어떤 경우에도 빈 화면은 나오지 않는다. */
+.home2-art-video {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+/* 움직임을 줄이라고 한 사용자에게는 정지 화면을 준다 */
+@media (prefers-reduced-motion: reduce) {
+  .home2-art-video { display: none; }
+}
+
+/* 좁은 화면에서는 데이터를 쓰지 않는다. 첫 화면도 짧아 정지 화면으로 충분하다. */
+@media (max-width: 640px) {
+  .home2-art-video { display: none; }
+}
+
+/* 어두운 면 위의 12px 안팎 글씨는 자간을 조금 벌려 읽히게 한다 */
+.home2-eyebrow,
+.home2-cred span,
+.home2-cap span {
+  letter-spacing: 0.015em;
+}
