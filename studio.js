@@ -217,6 +217,11 @@
 
       elGo.textContent = "고른 화면 다시 그리기";
       updateQuote();
+      /* 어느 경로로 만들었든 큰 화면은 같은 방식으로 연다.
+         칸을 눌렀을 때만 열어 두었더니, 번호로 불러오거나 기록을 누르거나
+         "저희가 골라 드릴까요"를 누른 경우에는 덮개가 안 뜨고 미리보기가
+         본문에 그대로 쌓였다. 좁은 화면에서 페이지가 끝없이 길어진다. */
+      showPicked();
     }
 
     function markScene() {
@@ -420,7 +425,9 @@
      *
      * 열두 장을 한 번에 그린다. 열두 장을 다 움직이면 노트북 팬이 도니
      * 한 장씩 정지 화면으로만 그린다. 고른 것만 움직인다. */
-    var WALL_N = 12;
+    /* 좁은 화면에서 열두 칸은 여섯 줄이 되어 그것만으로 화면 세 개
+       분량이다. 절반만 내놓고 "다른 화면 보기"로 넘기게 한다. */
+    function wallCount() { return window.innerWidth <= 640 ? 6 : 12; }
     var elWall = $("[data-st-wall]", root);
     var wallItems = [];
 
@@ -498,7 +505,8 @@
       /* 느낌을 골고루 돌린다. 같은 느낌 열둘을 보여 주면 "다 비슷하다"가
          된다. 시작 자리를 매번 옮겨 다시 눌러도 같은 열둘이 안 나온다. */
       var off = Math.floor(Math.random() * SCENES.length);
-      for (var i = 0; i < WALL_N; i++) {
+      var n = wallCount();
+      for (var i = 0; i < n; i++) {
         var idx = (off + i) % SCENES.length;
         /* 이미 팔린 번호는 내놓지 않는다. 씨앗이 52만 개라 부딪히는 일이
            드물지만, 부딪히면 다른 씨앗으로 옮긴다.
@@ -549,7 +557,6 @@
         elStory.value = "";
         make(it.idx, it.seed, false, it.v);
         wallMark();
-        showPicked();
       });
 
       /* 하트는 칸을 고르는 것과 다른 일이다. 버튼 안에 버튼을 넣을 수
@@ -620,8 +627,15 @@
         picked.scrollTop = 0;
       } else {
         picked.classList.remove("is-sheet");
+        document.body.classList.remove("st-sheet-open");
+        /* 이미 눈에 보이면 굳이 옮기지 않는다. 다시 그릴 때마다 화면이
+           튀면 값을 만지는 사람이 멀미한다. */
         var stage = root.querySelector(".st-stage");
-        if (stage && stage.scrollIntoView) stage.scrollIntoView({ behavior: "smooth", block: "center" });
+        if (stage && stage.getBoundingClientRect) {
+          var r = stage.getBoundingClientRect();
+          var seen = r.top < window.innerHeight * 0.8 && r.bottom > window.innerHeight * 0.2;
+          if (!seen && stage.scrollIntoView) stage.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
       }
       /* 감춰져 있는 동안에는 담는 칸의 폭이 0이라 720px로 잡아 두었다가,
          보이는 순간 폭에 눌려 16:9가 0.80으로 찌그러졌다. 자리가 잡힌
@@ -639,6 +653,16 @@
 
     var elSheetClose = $("[data-st-sheet-close]", root);
     if (elSheetClose) elSheetClose.addEventListener("click", hidePicked);
+
+    /* 덮개를 닫고 나서 견적으로 간다. 덮개가 덮인 채로 뒤쪽 문서를
+       스크롤하면 아무 일도 안 일어난 것처럼 보인다. */
+    var elToQuote = $("[data-st-to-quote]", root);
+    if (elToQuote) elToQuote.addEventListener("click", function (e) {
+      e.preventDefault();
+      hidePicked();
+      var q = document.getElementById("quote");
+      if (q && q.scrollIntoView) q.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape") hidePicked();
     });
