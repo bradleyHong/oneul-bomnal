@@ -37,6 +37,9 @@
   /* ── 견적 ─────────────────────────────────────────── */
   var BASE_PIXELSEC = 3840 * 2160 * 30;     // 4K 30초 = 1크레딧
   var CREDIT_WON = 1000000;
+  /* 전용 플레이어 한 대. 라즈베리파이 5 · 16GB, 작품을 넣고 HDMI 만 꽂으면
+     도는 상태로 보낸다. 값이 정해진 물건이라 배수를 안 탄다. */
+  var PLAYER_WON = 1500000;
 
   function quote(panel, seconds, opts) {
     var credits = (panel.w * panel.h * seconds) / BASE_PIXELSEC;
@@ -45,8 +48,11 @@
     if (opts.asset) mult *= 1.2;
     if (opts.custom) mult *= 1.6;
     if (opts.rush) mult *= 1.5;
-    var won = Math.round(credits * mult * CREDIT_WON / 10000) * 10000;
-    return { credits: credits, mult: Math.round(mult * 100) / 100, won: won };
+    var render = Math.round(credits * mult * CREDIT_WON / 10000) * 10000;
+    /* 물건은 배수가 아니라 값이 정해져 있다. 렌더 값과 따로 더한다. */
+    var player = opts.player ? PLAYER_WON : 0;
+    return { credits: credits, mult: Math.round(mult * 100) / 100, render: render,
+             player: player, won: render + player };
   }
 
   function comma(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
@@ -115,7 +121,9 @@
       return {
         asset: $("[data-st-opt='asset']", root).checked,
         custom: $("[data-st-opt='custom']", root).checked,
-        rush: $("[data-st-opt='rush']", root).checked
+        rush: $("[data-st-opt='rush']", root).checked,
+        player: $("[data-st-opt='player']", root).checked,
+        api: $("[data-st-opt='api']", root).checked
       };
     }
 
@@ -129,6 +137,8 @@
         '<div class="st-q-row"><span>재생 길이</span><b>' + sec + '초</b></div>' +
         '<div class="st-q-row"><span>렌더 크레딧</span><b>' + q.credits + ' 크레딧</b></div>' +
         '<div class="st-q-row"><span>옵션 배수</span><b>×' + q.mult + '</b></div>' +
+        (q.player ? '<div class="st-q-row"><span>전용 플레이어 1대</span><b>' + comma(q.player) + '원</b></div>' : '') +
+        (LAST.o.api ? '<div class="st-q-row"><span>API 연결</span><b>담당자 협의</b></div>' : '') +
         '<div class="st-q-total"><span>예상 금액</span><b>' + comma(q.won) + '원</b></div>' +
         '<p class="st-q-note">1크레딧 = 4K 30초 기준입니다. 렌더 원가가 화면 넓이와 길이에 비례하므로 금액도 같은 기준으로 계산합니다. 부가세 별도이며, 확정 견적은 담당자 확인 후 발행합니다.</p>';
     }
@@ -139,22 +149,9 @@
     var history = [];              // 방금 만든 화면들. 좋은 것이 지나가 버리면 안 된다.
     var HISTORY_MAX = 8;
 
-    /* 느낌 열둘. 순서는 작품 번호에 박히므로 바꾸거나 중간에 끼워 넣지 않는다.
-     * 새로 만들면 뒤에 붙인다. */
-    var SCENES = [
-      { ko: "봄빛 리본",   text: "로비 미디어월에 걸 봄바람 빛 리본, 따뜻하고 화사하게" },
-      { ko: "바다 물결",   text: "바다와 파도, 잔잔하게 흐르는 로비 화면" },
-      { ko: "겨울 눈",     text: "겨울 밤 도심 전광판, 눈송이 내리는 화면, 차분하게" },
-      { ko: "전통 단청",   text: "고분군 야간 포토존, 전통 색감으로 웅장하게" },
-      { ko: "도시 야경",   text: "도시 야경 네온 전광판, 경쾌하게" },
-      { ko: "우주 별빛",   text: "우주와 별빛, 고요하게 흐르는 밤하늘" },
-      { ko: "숲 초록",     text: "숲과 나무, 초록빛으로 산뜻하게" },
-      { ko: "노을",        text: "노을 지는 저녁, 은은하게" },
-      { ko: "수묵 여백",   text: "수묵 담백한 여백, 묵직하게" },
-      { ko: "형광 사이버", text: "형광 사이버 글리치, 강렬하게" },
-      { ko: "안개 하늘",   text: "안개 낀 하늘과 바람결, 몽환적으로" },
-      { ko: "빛 번짐",     text: "빛줄기 번짐, 은은하고 잔잔하게" }
-    ];
+    /* 느낌 열둘은 studio-gen.js 로 옮겼다. 순서가 작품 번호에 박히므로
+       play.html(전용 플레이어)도 같은 목록을 봐야 한다. */
+    var SCENES = GEN.SCENES;
     var CUSTOM = 31;               // 직접 적은 문장. 번호만으로는 되살릴 수 없다.
 
     /* 작품 번호 = 느낌 번호(위 5비트) + 씨앗(아래 19비트).
@@ -365,15 +362,17 @@
       if (LAST.o.asset) picked.push("기관 로고·이미지 반영");
       if (LAST.o.custom) picked.push("커스텀 스타일 요청");
       if (LAST.o.rush) picked.push("당일 급행");
+      if (LAST.o.player) picked.push("전용 플레이어 1대 (라즈베리파이 5 · 16GB, 작품 설치 후 배송, " + comma(PLAYER_WON) + "원)");
+      if (LAST.o.api) picked.push("API 연결 (작품을 주소로 불러오기 · HTML 전달, 협의)");
       return [
         "작품 번호: " + (art || "(만들기 전)"),
         "원하시는 화면: " + (story || "(적지 않으심)"),
         "엔진 설정(사내 확인용): " + (spec ? spec.style + " / " + spec.palette.id : "-"),
         "화면 규격: " + LAST.panel.name + " " + LAST.panel.w + "×" + LAST.panel.h,
         "재생 길이: " + LAST.sec + "초",
-        "렌더 크레딧: " + LAST.q.credits + " 크레딧 (옵션 배수 ×" + LAST.q.mult + ")",
+        "렌더 크레딧: " + LAST.q.credits + " 크레딧 (옵션 배수 ×" + LAST.q.mult + ") = " + comma(LAST.q.render) + "원",
         "추가 요청: " + (picked.join(", ") || "없음"),
-        "예상 금액: " + comma(LAST.q.won) + "원 (부가세 별도)"
+        "예상 금액: " + comma(LAST.q.won) + "원 (부가세 별도" + (LAST.o.api ? " · API 연결은 별도 협의" : "") + ")"
       ].join("\n");
     }
 

@@ -650,3 +650,11 @@
   .st-picked > .st-cuts-title { text-align: left; }
   .st-picked .st-stage { padding: 14px 0 10px; }
 }
+
+/* ── 함께 받기: 값이 정해진 물건 ─────────────────────────────── */
+.st-opts-add label { display: grid; grid-template-columns: auto 1fr auto; column-gap: 8px; align-items: start; }
+.st-opts-add label > span { grid-column: 3; white-space: nowrap; }
+.st-opts-add label > small {
+  grid-column: 2 / 4; margin-top: 3px;
+  font-size: .76rem; line-height: 1.5; color: var(--st-gray);
+}

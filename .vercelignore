@@ -32,3 +32,6 @@ skills-lock.json
 # studio-meshes.js 한 장뿐이다. 원본 JSON 을 같이 올릴 이유가 없다.
 # 출처·라이선스 기록은 깃에 그대로 남는다(assets/mesh/LICENSE.md).
 assets/mesh/
+
+# 플레이어 묶음. tools/pack-player.mjs 가 만든다. 고객마다 다르니 웹에 올리지 않는다.
+dist/

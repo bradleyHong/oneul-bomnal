@@ -131,6 +131,25 @@
     { id: "묵직", re: /묵직|깊|무겁|진중/,     speed: 1, density: 1.3, weight: 1.5, glow: 0.9 }
   ];
 
+  /* 느낌 열둘. 순서는 작품 번호(위 5비트)에 박히므로 바꾸거나 중간에
+   * 끼워 넣지 않는다. 새로 만들면 뒤에 붙인다.
+   * studio.js(고르는 화면)와 play.html(전용 플레이어)이 같은 목록을 본다.
+   * 둘이 어긋나면 같은 번호가 다른 그림이 된다. */
+var SCENES = [
+    { ko: "봄빛 리본",   text: "로비 미디어월에 걸 봄바람 빛 리본, 따뜻하고 화사하게" },
+    { ko: "바다 물결",   text: "바다와 파도, 잔잔하게 흐르는 로비 화면" },
+    { ko: "겨울 눈",     text: "겨울 밤 도심 전광판, 눈송이 내리는 화면, 차분하게" },
+    { ko: "전통 단청",   text: "고분군 야간 포토존, 전통 색감으로 웅장하게" },
+    { ko: "도시 야경",   text: "도시 야경 네온 전광판, 경쾌하게" },
+    { ko: "우주 별빛",   text: "우주와 별빛, 고요하게 흐르는 밤하늘" },
+    { ko: "숲 초록",     text: "숲과 나무, 초록빛으로 산뜻하게" },
+    { ko: "노을",        text: "노을 지는 저녁, 은은하게" },
+    { ko: "수묵 여백",   text: "수묵 담백한 여백, 묵직하게" },
+    { ko: "형광 사이버", text: "형광 사이버 글리치, 강렬하게" },
+    { ko: "안개 하늘",   text: "안개 낀 하늘과 바람결, 몽환적으로" },
+    { ko: "빛 번짐",     text: "빛줄기 번짐, 은은하고 잔잔하게" }
+    ];
+
   var BASE_IDS = ["flow", "wave", "particle", "contour", "grid", "bloom", "column",
                   "snow", "ribbon", "orbit", "mesh", "bar", "spiral", "drift"];
 
@@ -650,6 +669,8 @@
   };
 
   Gen.prototype.watermark = function (ctx, W, H) {
+    /* 계약된 작품을 전용 플레이어에서 틀 때는 도장을 안 찍는다. mark 를 비운다. */
+    if (!this.mark) return;
     /* 1:6 기둥 미리보기처럼 칸이 좁으면 글자가 들어갈 자리가 없어
        "…픽아트"로 잘린다. 잘린 이름을 보이느니 안 보이는 편이 낫다.
        이 크기에서는 가져가 봐야 쓸 데도 없다. */
@@ -1032,7 +1053,7 @@
   };
 
   global.BomnalGen = {
-    compose: compose, Gen: Gen,
+    compose: compose, Gen: Gen, SCENES: SCENES,
     /* 담아 둔 화면이 적어 둔 스타일을 지금도 그릴 줄 아는가 */
     hasStyle: function (id) { return STYLE_IDS.indexOf(id) >= 0; },
     counts: { styles: STYLE_IDS.length, palettes: PALETTES.length, moods: MOODS.length }
