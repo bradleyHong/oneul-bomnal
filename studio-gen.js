@@ -176,12 +176,16 @@
   var ART_TALL = ART_TALL_V2.concat(["segment", "asciiart", "desordre",
                                    /* 낙화는 위에 줄 하나, 아래로 쏟아지는 그림이라
                                       기둥에 그대로 맞는다 */
-                                   "nakhwa"]);
+                                   "nakhwa",
+                                   /* 잎맥과 갈대는 아래에서 올라오는 그림이라 기둥에 맞는다 */
+                                   "leafvein", "reed"]);
   var ART_WIDE = ART_WIDE_V2.concat(["pdu", "barcode", "segment", "asciiart", "desordre",
                                    /* 액자는 넓은 어둠에 작은 빛 하나라 띠에서 오히려 산다 */
                                    "frame",
                                    /* 띠그림은 애초에 가로로 흐르는 그림이다. 32:9 가 제 자리다. */
-                                   "frieze", "hardedge", "nakhwa"]);
+                                   "frieze", "hardedge", "nakhwa",
+                                   /* 갈대밭은 옆으로 넓을수록 살고, 민들레는 홀씨가 옆으로 날아간다 */
+                                   "reed", "dandelion"]);
 
   function withPrefix(list, have) {
     have = have || artIds();

@@ -3280,6 +3280,308 @@ function create(canvas, opts) {
       ctx.globalCompositeOperation = "source-over";
     },
 
+    /* ── 식물 ────────────────────────────────────────────────────
+       에셋 사이트가 이 컨테이너에서 막혀 있어 꽃과 풀은 수식으로 키운다.
+       해바라기 씨앗의 나선, 꽃잎의 겹, 고사리의 되풀이, 바람에 눕는 갈대,
+       민들레 홀씨 — 전부 오래된 수학이고, 남의 이미지가 한 장도 안 들어간다.
+       그쪽이 오히려 "코드로 그린다"에 맞는다. */
+
+    /* 79 씨앗나선 — 해바라기 머리. 씨앗 하나하나가 137.5° 씩 돌아가며
+       앉는다(Vogel, 1979). 발산각이 아주 조금 숨을 쉬고, 빛의 고리가
+       가운데서 바깥으로 번져 나간다. */
+    phyllo(t) {
+      const ph = t / DUR;
+      const n = 260 + Math.round(k.density * 900);
+      const GA = Math.PI * (3 - Math.sqrt(5)) + Math.sin(ph * TAU) * 0.0015;   /* 주기 DUR */
+      const cx = W * (0.42 + seeds[700].a * 0.16), cy = H * (0.44 + seeds[700].b * 0.12);
+      const R = Math.min(W, H) * 0.40 * clamp(k.scale, 0.6, 1.4);
+      const c = R / Math.sqrt(n);
+      const ring = (ph * 2) % 1;                         /* 한 바퀴에 두 번, 정수 */
+      const rot = seeds[701].c * TAU;
+      const BUCK = 6;
+      ctx.globalCompositeOperation = ADD;
+      for (let b = 0; b < BUCK; b++) {
+        const lo = b / BUCK, hi = (b + 1) / BUCK, mid = (b + 0.5) / BUCK;
+        ctx.fillStyle = tone(mid > 0.7 ? 0 : mid > 0.35 ? 1 : 2, Math.min(0.95, (0.10 + 0.85 * mid) * k.contrast));
+        ctx.beginPath();
+        for (let i = 0; i < n; i++) {
+          const u = i / n;
+          const r = c * Math.sqrt(i);
+          /* 고리와의 거리는 원 위에서 잰다. 바깥으로 나간 고리가 그 순간
+             가운데서 다시 나오므로 이음매에서 끊기지 않는다. */
+          const dd = Math.abs(u - ring), dr = Math.min(dd, 1 - dd);
+          const pulse = Math.max(0, 1 - dr * 7);
+          const v = clamp(0.18 + 0.22 * u + 0.62 * pulse * pulse, 0, 0.999);
+          if (Math.floor(v * BUCK) !== b) continue;
+          const a = i * GA + rot;
+          const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+          const rad = Math.max(0.8, c * (0.16 + 0.30 * u) * (0.8 + 0.5 * pulse));
+          ctx.moveTo(x + rad, y);
+          ctx.arc(x, y, rad, 0, TAU);
+        }
+        ctx.fill();
+      }
+      ctx.globalCompositeOperation = "source-over";
+    },
+
+    /* 80 꽃 — 꽃잎 13·8·5장이 세 겹으로 겹친다. 피보나치 수다.
+       겹마다 반대로 돌고, 한 바퀴에 꽃잎 한 장 몫만 돌아 이음매가 맞는다.
+       벌어졌다 오므라들며 숨을 쉰다.
+
+       처음에는 꽃잎을 한 색으로 채웠더니 겹친 자리가 하얗게 날아가
+       아이콘이 됐다. 꽃잎은 밑동이 옅고 끝이 짙어야 한다. 겹마다 방사
+       그라데이션 하나로 채우니 겹친 데가 빛이 아니라 겹으로 읽힌다. */
+    blossom(t) {
+      const ph = t / DUR;
+      const open = 0.66 + 0.34 * breathe(ph);
+      const cx = W * (0.38 + seeds[710].a * 0.24), cy = H * (0.40 + seeds[710].b * 0.20);
+      const R = Math.min(W, H) * 0.31 * clamp(k.scale, 0.6, 1.4);
+      const rings = [[13, 1.00, 2, 0.34], [8, 0.72, 1, 0.38], [5, 0.46, 0, 0.42]];
+      ctx.globalCompositeOperation = ADD;
+      const petalRing = (x, y, np, rr, tn, al, rot, ri) => {
+        const g = ctx.createRadialGradient(x, y, rr * 0.10, x, y, rr);
+        g.addColorStop(0, tone(tn, 0));
+        g.addColorStop(0.55, tone(tn, al * 0.55 * k.contrast));
+        g.addColorStop(1, tone(tn, al * k.contrast));
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        for (let p2 = 0; p2 < np; p2++) {
+          const a = rot + (p2 / np) * TAU;
+          const w = rr * Math.PI / np * 0.60;           /* 꽃잎 반폭 — 겹이 촘촘할수록 좁다 */
+          const ca = Math.cos(a), sa = Math.sin(a);
+          /* 꽃잎 하나 = 밑동에서 끝까지 베지에 두 줄. 타원보다 끝이 뾰족하다. */
+          const tipx = x + ca * rr, tipy = y + sa * rr;
+          ctx.moveTo(x, y);
+          ctx.bezierCurveTo(x + ca * rr * 0.30 - sa * w * 1.4, y + sa * rr * 0.30 + ca * w * 1.4,
+                            x + ca * rr * 0.85 - sa * w, y + sa * rr * 0.85 + ca * w, tipx, tipy);
+          ctx.bezierCurveTo(x + ca * rr * 0.85 + sa * w, y + sa * rr * 0.85 - ca * w,
+                            x + ca * rr * 0.30 + sa * w * 1.4, y + sa * rr * 0.30 - ca * w * 1.4, x, y);
+        }
+        ctx.fill();
+      };
+      rings.forEach((rg, ri) => {
+        const np = rg[0], rr = R * rg[1] * open;
+        const dir = ri % 2 ? -1 : 1;
+        const rot = seeds[711 + ri].c * TAU + dir * ph * (TAU / np);     /* 꽃잎 한 장 몫 */
+        petalRing(cx, cy, np, rr, rg[2], rg[3], rot, ri);
+      });
+      /* 가운데 — 어두운 받침 위에 작은 씨앗나선. 하얗게 날리지 않는다. */
+      ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = shade(3, 0.35);
+      ctx.beginPath(); ctx.arc(cx, cy, R * 0.16 * open, 0, TAU); ctx.fill();
+      ctx.globalCompositeOperation = ADD;
+      const GA = Math.PI * (3 - Math.sqrt(5));
+      const m = 50 + Math.round(k.density * 90);
+      const cc = R * 0.15 * open / Math.sqrt(m);
+      ctx.fillStyle = tone(0, 0.40 * k.contrast);
+      ctx.beginPath();
+      for (let i = 0; i < m; i++) {
+        const r = cc * Math.sqrt(i), a = i * GA + seeds[712].d * TAU;
+        const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+        const rad = Math.max(0.6, cc * 0.36);
+        ctx.moveTo(x + rad, y); ctx.arc(x, y, rad, 0, TAU);
+      }
+      ctx.fill();
+      /* 봉오리 둘 — 구도를 잡아 준다. 큰 꽃과 겹치면 안 그린다. */
+      for (let q = 0; q < 2; q++) {
+        const s = seeds[720 + q];
+        const bx = W * (0.10 + s.a * 0.80), by = H * (0.10 + s.b * 0.80);
+        if (Math.hypot(bx - cx, by - cy) < R * 1.45) continue;
+        petalRing(bx, by, 5, R * 0.22 * (0.7 + s.c * 0.5), 1, 0.30, s.d * TAU - ph * TAU / 5, 0);
+      }
+      ctx.globalCompositeOperation = "source-over";
+    },
+
+    /* 81 잎맥 — 잎 하나를 맥만 남기고 삭힌 것.
+       고사리를 그리려다 나온 그림이다. 잔잎이 격자처럼 겹치니 고사리가
+       아니라 잎맥 표본으로 읽혔고, 그쪽이 더 나았다. 이름을 그쪽으로
+       바꿨다. 잎은 한둘만 크게, 서로 겹치지 않게 띄운다.
+       아래에서 올라오는 그림이라 기둥에 잘 맞는다. */
+    leafvein(t) {
+      const ph = t / DUR;
+      const nF = 1 + Math.round(k.density * 2.4);
+      const paths = [[], [], []];                          /* 주맥 · 측맥 · 잔맥 */
+      for (let f = 0; f < nF; f++) {
+        const s = seeds[(f * 5 + 730) % seeds.length];
+        const bx = W * ((f + 0.5) / nF + (s.a - 0.5) * 0.12 / nF), by = H * 1.03;
+        const L = H * (0.62 + s.b * 0.34) * clamp(k.scale, 0.6, 1.3);
+        /* 잎 반폭. 1:6 기둥에서는 잎이 화면보다 넓어져 격자 터널이 됐다.
+           화면 폭과 잎 사이 간격으로 묶는다. */
+        const halfW = Math.min(L * 0.24, W / nF * 0.38);
+        const lean = (s.c - 0.5) * 0.55;
+        const sw = Math.sin(ph * TAU + s.d * TAU) * 0.07;
+        const M = 26;
+        const pt = (i) => {                                 /* 줄기 위 i번째 점 */
+          const u = i / M;
+          const bend = lean * u + sw * u * u;
+          return [bx + Math.sin(bend) * L * u, by - Math.cos(bend) * L * u];
+        };
+        for (let i = 0; i <= M; i++) {
+          const [x, y] = pt(i);
+          i ? paths[0].push(["l", x, y]) : paths[0].push(["m", x, y]);
+        }
+        for (let i = 3; i < M; i++) {
+          const u = i / M;
+          const [x, y] = pt(i), [x2, y2] = pt(i + 1);
+          const dir = Math.atan2(y2 - y, x2 - x);
+          const pl = halfW * Math.pow(Math.sin(Math.PI * u), 0.85);
+          for (const side of [-1, 1]) {
+            const a = dir + side * (1.05 + 0.15 * (s.a - 0.5));
+            const ex = x + Math.cos(a) * pl, ey = y + Math.sin(a) * pl;
+            paths[1].push(["m", x, y], ["l", ex, ey]);
+            const nl = 7;
+            for (let j = 1; j <= nl; j++) {
+              const v = j / nl;
+              const px = x + (ex - x) * v, py = y + (ey - y) * v;
+              const ll = pl * 0.28 * (1 - v * 0.75);
+              for (const s2 of [-1, 1]) {
+                const a2 = a + s2 * 1.1;
+                paths[2].push(["m", px, py], ["l", px + Math.cos(a2) * ll, py + Math.sin(a2) * ll]);
+              }
+            }
+          }
+        }
+      }
+      ctx.lineCap = "round";
+      const draw = (P, w, tn, al) => {
+        ctx.lineWidth = Math.max(0.8, w);
+        ctx.strokeStyle = tone(tn, al);
+        ctx.beginPath();
+        for (const c of P) c[0] === "m" ? ctx.moveTo(c[1], c[2]) : ctx.lineTo(c[1], c[2]);
+        ctx.stroke();
+      };
+      draw(paths[2], S * 0.8, 2, 0.22 + 0.34 * k.contrast);
+      draw(paths[1], S * 1.3, 1, 0.34 + 0.40 * k.contrast);
+      draw(paths[0], S * 2.4, 0, 0.55 + 0.35 * k.contrast);
+    },
+
+    /* 82 갈대 — 바람에 눕는 줄기와 이삭. 멀리 있는 것은 가늘고 옅어
+       깊이가 생긴다. 32:9 띠에 그대로 맞는다. */
+    reed(t) {
+      const ph = t / DUR;
+      const n = 40 + Math.round(k.density * 220);
+      const BUCK = 3;
+      ctx.lineCap = "round";
+      for (let b = 0; b < BUCK; b++) {
+        const depth = (b + 0.5) / BUCK;                      /* 0 멀다 ~ 1 가깝다 */
+        ctx.lineWidth = Math.max(0.7, S * (0.6 + depth * 2.2));
+        ctx.strokeStyle = tone(b === 2 ? 0 : b === 1 ? 1 : 2, (0.18 + 0.55 * depth) * k.contrast);
+        ctx.beginPath();
+        for (let i = 0; i < n; i++) {
+          const s = seeds[(i * 3 + 740) % seeds.length];
+          if (Math.floor(s.d * BUCK) !== b) continue;
+          const x0 = W * (s.a * 1.1 - 0.05), y0 = H * 1.02;
+          const L = H * (0.34 + s.b * 0.42) * (0.55 + depth * 0.55) * clamp(k.scale, 0.6, 1.3);
+          /* 바람. 자리마다 위상이 조금씩 달라 물결처럼 지나간다. 주기 DUR. */
+          const wind = Math.sin(ph * TAU + x0 / W * 2.4 + s.c * 0.8) * (0.10 + 0.10 * s.c)
+                     + 0.06 * (seeds[750].a - 0.5);
+          /* 옆으로 눕는 폭은 화면 폭을 넘지 못한다. 1:6 기둥에서 키만큼
+             눕히면 줄기가 전부 한가운데로 모여 X 자가 됐다. */
+          const swayW = Math.min(L * 1.6, W * 0.55);
+          const tx = x0 + wind * swayW, ty = y0 - L * (1 - wind * wind * 0.5);
+          const mx = x0 + wind * swayW * 0.31, my = y0 - L * 0.55;
+          ctx.moveTo(x0, y0);
+          ctx.quadraticCurveTo(mx, my, tx, ty);
+        }
+        ctx.stroke();
+        /* 이삭 — 끝에 달린 도톰한 자국 */
+        ctx.lineWidth = Math.max(1.4, S * (1.8 + depth * 4.5));
+        ctx.strokeStyle = tone(b === 2 ? 0 : 1, (0.22 + 0.55 * depth) * k.contrast);
+        ctx.beginPath();
+        for (let i = 0; i < n; i++) {
+          const s = seeds[(i * 3 + 740) % seeds.length];
+          if (Math.floor(s.d * BUCK) !== b) continue;
+          const x0 = W * (s.a * 1.1 - 0.05), y0 = H * 1.02;
+          const L = H * (0.34 + s.b * 0.42) * (0.55 + depth * 0.55) * clamp(k.scale, 0.6, 1.3);
+          const wind = Math.sin(ph * TAU + x0 / W * 2.4 + s.c * 0.8) * (0.10 + 0.10 * s.c)
+                     + 0.06 * (seeds[750].a - 0.5);
+          const swayW = Math.min(L * 1.6, W * 0.55);
+          const tx = x0 + wind * swayW, ty = y0 - L * (1 - wind * wind * 0.5);
+          const hl = L * (0.10 + s.b * 0.06);
+          const dx = wind * 1.2, dy = -1;
+          const dl = Math.hypot(dx, dy);
+          ctx.moveTo(tx - dx / dl * hl, ty - dy / dl * hl);
+          ctx.lineTo(tx, ty);
+        }
+        ctx.stroke();
+      }
+    },
+
+    /* 83 민들레 — 홀씨 머리 하나와 날아가는 홀씨 몇.
+       가닥은 씨앗나선의 각도로 뻗어 고르게 퍼진다. 날아가는 것은 저마다
+       제 주기로 나갔다 다시 나온다. 나타나고 사라질 때 옅어져서 이음매가
+       안 보인다. */
+    dandelion(t) {
+      const ph = t / DUR;
+      const cx = W * (0.34 + seeds[760].a * 0.22), cy = H * (0.40 + seeds[760].b * 0.14);
+      const R = Math.min(W, H) * 0.24 * clamp(k.scale, 0.6, 1.4);
+      const rays = 90 + Math.round(k.density * 150);
+      const GA = Math.PI * (3 - Math.sqrt(5));
+      const bre = 1 + Math.sin(ph * TAU) * 0.012;
+      ctx.lineCap = "round";
+      /* 줄기 */
+      ctx.lineWidth = Math.max(1, S * 2.2);
+      ctx.strokeStyle = tone(1, 0.35 + 0.30 * k.contrast);
+      ctx.beginPath();
+      ctx.moveTo(cx, cy + R * 0.25);
+      ctx.quadraticCurveTo(cx - R * 0.6, cy + H * 0.5, cx - R * 1.4, H * 1.05);
+      ctx.stroke();
+      /* 가닥 */
+      ctx.lineWidth = Math.max(0.6, S * 0.8);
+      ctx.strokeStyle = tone(1, 0.18 + 0.28 * k.contrast);
+      ctx.beginPath();
+      const tufts = [];
+      for (let i = 0; i < rays; i++) {
+        const s = seeds[(i * 2 + 770) % seeds.length];
+        const a = i * GA;
+        const len = R * (0.80 + 0.22 * s.a) * bre;
+        const ex = cx + Math.cos(a) * len, ey = cy + Math.sin(a) * len;
+        ctx.moveTo(cx + Math.cos(a) * R * 0.14, cy + Math.sin(a) * R * 0.14);
+        ctx.lineTo(ex, ey);
+        tufts.push([ex, ey, a]);
+      }
+      ctx.stroke();
+      /* 갓 — 가닥 끝의 작은 부채 */
+      ctx.lineWidth = Math.max(0.6, S * 0.7);
+      ctx.strokeStyle = tone(0, 0.30 + 0.45 * k.contrast);
+      ctx.beginPath();
+      const tl = R * 0.13;
+      for (const [ex, ey, a] of tufts) {
+        for (let j = -2; j <= 2; j++) {
+          const a2 = a + j * 0.30;
+          ctx.moveTo(ex, ey);
+          ctx.lineTo(ex + Math.cos(a2) * tl, ey + Math.sin(a2) * tl);
+        }
+      }
+      ctx.stroke();
+      /* 날아가는 홀씨 */
+      const m = 5 + Math.round(k.density * 16);
+      for (let i = 0; i < m; i++) {
+        const s = seeds[(i * 3 + 800) % seeds.length];
+        const cyc = 1 + Math.floor(s.a * 2);
+        const u = (ph * cyc + s.b) % 1;
+        const fade = Math.sin(Math.PI * u);
+        const a0 = s.c * TAU;
+        const x = cx + Math.cos(a0) * R * 0.9 + u * W * (0.35 + s.d * 0.45)
+                + Math.sin(u * TAU * 2 + s.a * TAU) * W * 0.03;
+        const y = cy + Math.sin(a0) * R * 0.9 - u * H * (0.10 + s.c * 0.35)
+                + Math.cos(u * TAU * 1.5 + s.b * TAU) * H * 0.03;
+        const sc = R * 0.16 * (0.8 + s.d * 0.5);
+        ctx.strokeStyle = tone(0, (0.25 + 0.55 * fade) * fade * k.contrast);
+        ctx.lineWidth = Math.max(0.6, S * 0.8);
+        ctx.beginPath();
+        const tilt = 0.4 + Math.sin(u * TAU + s.a * TAU) * 0.35;
+        ctx.moveTo(x, y);
+        ctx.lineTo(x - Math.sin(tilt) * sc * 1.2, y + Math.cos(tilt) * sc * 1.2);
+        for (let j = -3; j <= 3; j++) {
+          const a2 = -Math.PI / 2 + tilt + j * 0.30;
+          ctx.moveTo(x, y);
+          ctx.lineTo(x + Math.cos(a2) * sc, y + Math.sin(a2) * sc);
+        }
+        ctx.stroke();
+      }
+    },
+
   };
 
   /* ── 마감 처리 ────────────────────────────────────────────────
@@ -3395,6 +3697,9 @@ const STYLE_LABELS = [
   ["chiaroscuro", "명암"], ["frame", "액자"],
 
   ["frieze", "띠그림"], ["hardedge", "색면"], ["nakhwa", "낙화"],
+
+  ["phyllo", "씨앗나선"], ["blossom", "꽃"], ["leafvein", "잎맥"],
+  ["reed", "갈대"], ["dandelion", "민들레"],
 ];
 
 global.StudioArt = {

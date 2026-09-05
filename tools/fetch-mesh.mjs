@@ -73,12 +73,15 @@ function readAccessor(g, bin, i) {
   return out;
 }
 
-async function grab(name, korean) {
+async function grab(name, korean, url) {
   process.stdout.write(`  ${name} 내려받는 중… `);
   /* .glb 한 장으로 나온 것이 대부분이지만, 그렇게 안 낸 모델도 있다
-     (원숭이 두상·헬멧). 그때는 .gltf 와 옆에 붙은 .bin 을 따로 받는다. */
+     (원숭이 두상·헬멧). 그때는 .gltf 와 옆에 붙은 .bin 을 따로 받는다.
+     이름 대신 https:// 주소를 주면 그 .glb 를 그대로 받는다 — glTF-Sample-Assets
+     밖에 있는 CC0 파일(three.js 에 실린 Kenney 꽃 같은 것)을 받을 때 쓴다.
+     그때도 라이선스는 받기 전에 사람이 직접 확인한다. */
   let g = null, bin = null;
-  const glb = await fetch(`${BASE}/${name}/glTF-Binary/${name}.glb`);
+  const glb = await fetch(/^https?:\/\//.test(url) ? url : `${BASE}/${name}/glTF-Binary/${name}.glb`);
   if (glb.ok) {
     ({ json: g, bin } = parseGLB(Buffer.from(await glb.arrayBuffer())));
   } else {
@@ -222,6 +225,7 @@ if (!args.length || args[0] === "--list") {
   console.log(`CC0 인 것만 받는다. 목록은 glTF-Sample-Assets 의 Models.md 에서 확인할 것.`);
   process.exit(0);
 }
-const r = await grab(args[0], args[1]);
+/* node tools/fetch-mesh.mjs <이름> <한글이름> [https://…/파일.glb] */
+const r = await grab(args[0], args[1], args[2] || "");
 console.log(`\n${r.name} → assets/mesh/${r.name}.json`);
 console.log(`assets/mesh/LICENSE.md 에 출처와 라이선스를 반드시 적을 것.`);

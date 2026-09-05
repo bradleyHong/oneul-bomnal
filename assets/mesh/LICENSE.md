@@ -17,6 +17,10 @@
 ## 받아 둔 것
 
 출처: [KhronosGroup/glTF-Sample-Assets](https://github.com/KhronosGroup/glTF-Sample-Assets)
+꽃 하나만 [mrdoob/three.js](https://github.com/mrdoob/three.js/tree/dev/examples/models/gltf/Flower) 에서 받았다.
+그 폴더의 README 가 "Model by Kenney, from Nature Pack. CC0 1.0." 이라고 적고 있다.
+Kenney 의 Nature Pack 은 원래 CC0 로 배포되는 묶음이다. 다른 에셋 사이트(kenney.nl,
+polyhaven, quaternius, sketchfab)는 이 작업 환경에서 막혀 있어 받지 못했다.
 
 | 파일 | 이름 | 저작권 | 라이선스 | 확인일 | 꼭짓점 · 삼각형 |
 |---|---|---|---|---|---|
@@ -49,6 +53,7 @@ CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/legalcode
 | `DragonAttenuation` · `DragonDispersion` | 뒤에 붙은 커다란 배경판까지 좌표에 들어와, 상자에 맞추면 용이 콩알만 해진다 | 2026-09-05 |
 | `ToyCar` | 부품이 잘게 나뉘어 있어 솎고 나면 형태가 안 읽힌다 | 2026-09-05 |
 | `BoomBox` | 안쪽 그릴까지 좌표에 들어와, 빛을 치면 흑백 바둑판이 된다 | 2026-09-05 |
+| `KenneyFlower` (three.js 실림, CC0) | 꼭짓점 42개짜리 저폴리라 꽃이 아니라 결정체로 보인다. 라이선스는 맞다 | 2026-09-05 |
 
 ## 더 받으려면
 
