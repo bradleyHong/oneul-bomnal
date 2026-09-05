@@ -225,7 +225,11 @@ function create(canvas, opts) {
    * 얹는다. 4분의 1 크기로 흐리게 떠서 더하는 방식이라 값이 거의 안 든다.
    * 그림은 거의 같고 속도는 수십 배 빨라진다. */
   const HEAVY_GLOW = { ripple: 1, thread: 1, smoke: 1, magnet: 1, neonsign: 1,
-                       constellation: 1, flock: 1, rain: 1, oscillo: 1, moire: 1 };
+                       constellation: 1, flock: 1, rain: 1, oscillo: 1, moire: 1,
+                       /* VJ 풍도 같은 병에 걸렸다. 만화경 353→4.4ms(80배),
+                          폭발 118→3.3(36배), 터널 69→4.3(16배),
+                          지형 비행 47→4.4(11배). */
+                       kaleido: 1, burst: 1, tunnel: 1, flythrough: 1 };
 
   let bloomBuf = null;
   function applyBloom(strength) {
@@ -1846,6 +1850,266 @@ function create(canvas, opts) {
         }
       }
     },
+    /* ── VJ 풍 여덟 종 ─────────────────────────────────────────
+       현장에서 음악에 맞춰 트는 화면의 결이다. 박자에 맞춰 끊어지고,
+       가운데로 빨려들고, 훑고 지나간다.
+
+       무지개는 쓰지 않는다. 집 규칙이기도 하고, 무지개를 넣는 순간
+       어느 회사가 만들었는지 알 수 없는 화면이 된다. 박자만 VJ의 것을
+       빌리고 색은 팔레트 그대로 쓴다.
+
+       박자는 DUR 을 정수 개로 쪼개 만든다. 정수라야 이어 붙였을 때
+       끊기지 않는다. */
+
+    /* 57 스트로브 — 격자가 박자에 맞춰 번쩍인다. */
+    strobe(t) {
+      const B = 16;                          /* 한 바퀴에 열여섯 박 */
+      const u = (t / DUR) * B;
+      const bi = Math.floor(u), bf = u - bi;
+      const cols = 3 + Math.round(k.density * 9);
+      const rows = Math.max(2, Math.round(cols * H / W));
+      const cw = W / cols, ch = H / rows;
+      /* 박마다 켜지는 칸이 달라진다. 씨앗에서 뽑으니 언제 봐도 같은 순서다. */
+      const on = 1 + Math.round(k.density * cols * rows * 0.5);
+      /* 꺼진 순간에도 바탕 격자는 남긴다.
+         벽에는 정지 화면 한 장만 보인다. 박과 박 사이에 걸리면 검은 판이
+         되고, 고객은 그 칸을 영영 고르지 않는다. */
+      ctx.strokeStyle = inkA(0.05 + 0.10 * k.contrast);
+      ctx.lineWidth = Math.max(0.9, 1 * S);
+      for (let gx = 1; gx < cols; gx++) {
+        ctx.beginPath(); ctx.moveTo(gx * cw, 0); ctx.lineTo(gx * cw, H); ctx.stroke();
+      }
+      for (let gy = 1; gy < rows; gy++) {
+        ctx.beginPath(); ctx.moveTo(0, gy * ch); ctx.lineTo(W, gy * ch); ctx.stroke();
+      }
+      /* 박 안에서 사그라들되 바닥을 둔다. 완전히 꺼지면 화면이 사라진다. */
+      const fade = 0.34 + 0.66 * Math.pow(1 - bf, 1.6);
+      for (let i = 0; i < on; i++) {
+        const s = seeds[(bi * 37 + i * 11 + 440) % 900];
+        const cx = Math.floor(s.a * cols), cy = Math.floor(s.b * rows);
+        ctx.fillStyle = tone(i % 4, (0.12 + 0.62 * k.contrast) * fade);
+        ctx.fillRect(cx * cw, cy * ch, cw * 0.94, ch * 0.94);
+      }
+      /* 박이 바뀌는 순간 화면 전체가 한 번 밝아진다 */
+      if (bf < 0.12) {
+        ctx.fillStyle = inkA(0.05 * (1 - bf / 0.12) * k.contrast);
+        ctx.fillRect(0, 0, W, H);
+      }
+    },
+
+    /* 58 터널 — 앞으로 끝없이 빨려 들어간다. */
+    tunnel(t) {
+      const ph = t / DUR;
+      const rings = 10 + Math.round(k.density * 26);
+      const cx = W / 2, cy = H / 2;
+      const R = Math.max(W, H) * 0.8 * k.scale;
+      const sides = 3 + Math.floor(seeds[441].a * 5);   /* 삼각~칠각 */
+      ctx.lineWidth = Math.max(0.9, 1.6 * S);
+      ctx.globalCompositeOperation = ADD;
+      for (let i = 0; i < rings; i++) {
+        /* 0~1 을 한 바퀴 도는 깊이. 정수 주기라 완전 루프다. */
+        const z = ((i / rings) + ph * (0.5 + k.speed)) % 1;
+        const r = R * z * z;                  /* 멀수록 촘촘하게 */
+        if (r < 2) continue;
+        const rot = z * Math.PI * (sides % 2 ? 0.6 : 0.4) + ph * TAU * 0.1;
+        ctx.beginPath();
+        for (let j = 0; j <= sides; j++) {
+          const a = (j / sides) * TAU + rot;
+          const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r * (H / W) * 1.4;
+          j ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+        }
+        ctx.strokeStyle = tone(i % 4, (1 - z) * 0.55 * (0.4 + k.contrast));
+        ctx.stroke();
+      }
+      ctx.globalCompositeOperation = "source-over";
+    },
+
+    /* 59 스펙트럼 — 소리를 보는 그 막대. 소리는 없고 결만 빌린다. */
+    bars(t) {
+      const n = 8 + Math.round(k.density * 40);
+      const ph = t / DUR;
+      const gap = W / n;
+      const bw = gap * 0.62;
+      for (let i = 0; i < n; i++) {
+        const s = seeds[i + 450];
+        /* 정수 주파수 셋을 겹쳐 높낮이를 만든다. 소리 대신 규칙이다. */
+        const v = (Math.sin((ph * TAU) * (1 + Math.floor(s.a * 4)) + i * 0.7) * 0.5 + 0.5) *
+                  (Math.sin((ph * TAU) * (2 + Math.floor(s.b * 3)) + s.c * TAU) * 0.3 + 0.7);
+        const hgt = H * (0.06 + 0.82 * v * k.scale * 0.8);
+        const x = i * gap + (gap - bw) / 2;
+        ctx.fillStyle = tone(i % 4, 0.18 + 0.55 * k.contrast);
+        ctx.fillRect(x, H - hgt, bw, hgt);
+        /* 꼭대기 표시. VJ 화면에서 눈이 따라가는 선이다. */
+        const cap = H - hgt - Math.max(2, 4 * S);
+        ctx.fillStyle = inkA(0.5 + 0.4 * k.contrast);
+        ctx.fillRect(x, cap, bw, Math.max(1.5, 2.5 * S));
+      }
+    },
+
+    /* 60 만화경 — 한 조각을 거울로 되풀이한다. */
+    kaleido(t) {
+      const ph = motionPhase(t);
+      const wedges = 6 + 2 * Math.floor(seeds[460].a * 4);   /* 6·8·10·12 */
+      const n = 6 + Math.round(k.density * 22);
+      const R = Math.min(W, H) * 0.52 * k.scale;
+      ctx.save();
+      ctx.translate(W / 2, H / 2);
+      ctx.globalCompositeOperation = ADD;
+      for (let w = 0; w < wedges; w++) {
+        ctx.save();
+        ctx.rotate((w / wedges) * TAU + ph * 0.12 * k.speed);
+        if (w % 2) ctx.scale(1, -1);          /* 거울 */
+        for (let i = 0; i < n; i++) {
+          const s = seeds[i + 462];
+          const rr = R * (0.12 + 0.86 * s.a);
+          const aa = (s.b - 0.5) * (TAU / wedges) * 0.9;
+          const x = Math.cos(aa) * rr, y = Math.sin(aa) * rr;
+          const sz = R * (0.012 + 0.055 * s.c) * (0.6 + 0.5 * Math.sin(ph + s.d * TAU));
+          ctx.beginPath();
+          if (s.d < 0.5) ctx.arc(x, y, Math.abs(sz), 0, TAU);
+          else { ctx.moveTo(x, y - sz); ctx.lineTo(x + sz, y + sz); ctx.lineTo(x - sz, y + sz); ctx.closePath(); }
+          ctx.fillStyle = tone((i + w) % 4, 0.10 + 0.34 * k.contrast);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+      ctx.globalCompositeOperation = "source-over";
+      ctx.restore();
+    },
+
+    /* 61 지형 비행 — 격자 지형 위를 낮게 난다. */
+    flythrough(t) {
+      const ph = t / DUR;
+      const rows = 10 + Math.round(k.density * 22);
+      const cols = 12 + Math.round(k.density * 20);
+      const hor = H * 0.42;                   /* 지평선 */
+      ctx.lineWidth = Math.max(0.9, 1.2 * S);
+      ctx.globalCompositeOperation = ADD;
+      for (let r = 0; r < rows; r++) {
+        /* 줄이 앞으로 다가온다. 한 바퀴에 정수 번 돌아 완전 루프. */
+        const z = ((r / rows) + ph * (0.6 + k.speed)) % 1;
+        const p = z * z;                      /* 원근 */
+        const y = hor + (H - hor) * p;
+        const sp = W * (0.06 + 1.9 * p);      /* 그 줄의 폭 */
+        ctx.beginPath();
+        for (let c = 0; c <= cols; c++) {
+          const u = c / cols - 0.5;
+          const hh = fbm(u * 3 * k.scale + r * 0.21, r * 0.21 + ph * 2, 3);
+          const x = W / 2 + u * sp;
+          const yy = y - hh * (H * 0.10) * p * k.scale;
+          c ? ctx.lineTo(x, yy) : ctx.moveTo(x, yy);
+        }
+        ctx.strokeStyle = tone(r % 4, (0.06 + 0.5 * p) * (0.4 + k.contrast));
+        ctx.stroke();
+      }
+      ctx.globalCompositeOperation = "source-over";
+    },
+
+    /* 62 비트 폭발 — 박마다 가운데서 터져 나간다. */
+    burst(t) {
+      const B = 8;
+      const u = (t / DUR) * B;
+      const bi = Math.floor(u), bf = u - bi;
+      const cx = W / 2, cy = H / 2;
+      const rays = 8 + Math.round(k.density * 46);
+      const R = Math.max(W, H) * 0.62 * k.scale;
+      ctx.lineCap = "round";
+      ctx.globalCompositeOperation = ADD;
+      /* 앞 박의 잔상까지 네 겹을 겹친다. 두 겹이면 박과 박 사이에 화면이
+         비어, 정지 화면으로 봤을 때 아무것도 없는 칸이 된다.
+         수명을 길게 잡아 늘 무언가 날아가는 중이게 한다. */
+      const LIFE = 3.2;
+      for (let b = 0; b < 4; b++) {
+        const f = bf + b;
+        if (f > LIFE) continue;
+        const grow = 1 - Math.pow(1 - Math.min(1, f / LIFE), 3);
+        const fade = Math.pow(1 - Math.min(1, f / LIFE), 1.2);
+        for (let i = 0; i < rays; i++) {
+          const s = seeds[((bi - b) * 53 + i * 7 + 470 + 900) % 900];
+          const a = (i / rays) * TAU + s.a * 0.6;
+          const r0 = R * grow * (0.35 + 0.65 * s.b);
+          const r1 = r0 + R * 0.10 * (0.4 + s.c);
+          ctx.beginPath();
+          ctx.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0);
+          ctx.lineTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1);
+          ctx.strokeStyle = tone(i % 4, 0.5 * fade * (0.4 + k.contrast));
+          ctx.lineWidth = Math.max(0.9, (1 + 2.4 * s.d) * S * fade);
+          ctx.stroke();
+        }
+      }
+      ctx.globalCompositeOperation = "source-over";
+    },
+
+    /* 63 플라스마 — 데모신에서 온 결. 사인 몇 개가 겹쳐 무늬가 된다. */
+    plasma(t) {
+      const ph = t / DUR;
+      /* 화소마다 계산하면 한 장에 수백 밀리초가 든다. 칸으로 나눠 칠한다. */
+      const g = Math.max(4, Math.round(Math.min(W, H) / (18 + k.density * 60)));
+      const cols = Math.ceil(W / g), rows = Math.ceil(H / g);
+      const sc = 0.045 / Math.max(0.35, k.scale);
+      const steps = 5;                        /* 색을 다섯 단으로 끊는다 */
+      const fills = [];
+      for (let i = 0; i < steps; i++) {
+        fills.push(tone(Math.floor((i / steps) * 3.99), 0.10 + 0.5 * (i / (steps - 1)) * (0.4 + k.contrast)));
+      }
+      for (let j = 0; j < rows; j++) {
+        const y = j * g;
+        let i = 0;
+        while (i < cols) {
+          const x = i * g;
+          const v = Math.sin(x * sc + ph * TAU) +
+                    Math.sin(y * sc * 1.3 + ph * TAU * 2) +
+                    Math.sin((x + y) * sc * 0.7 + ph * TAU) +
+                    Math.sin(Math.sqrt((x - W / 2) * (x - W / 2) + (y - H / 2) * (y - H / 2)) * sc * 1.1 - ph * TAU * 2);
+          let L = Math.floor(((v + 4) / 8) * steps);
+          L = L < 0 ? 0 : L >= steps ? steps - 1 : L;
+          /* 옆 칸이 같은 단이면 이어서 한 번에 칠한다 */
+          let e = i + 1;
+          while (e < cols) {
+            const x2 = e * g;
+            const v2 = Math.sin(x2 * sc + ph * TAU) +
+                       Math.sin(y * sc * 1.3 + ph * TAU * 2) +
+                       Math.sin((x2 + y) * sc * 0.7 + ph * TAU) +
+                       Math.sin(Math.sqrt((x2 - W / 2) * (x2 - W / 2) + (y - H / 2) * (y - H / 2)) * sc * 1.1 - ph * TAU * 2);
+            let L2 = Math.floor(((v2 + 4) / 8) * steps);
+            L2 = L2 < 0 ? 0 : L2 >= steps ? steps - 1 : L2;
+            if (L2 !== L) break;
+            e++;
+          }
+          ctx.fillStyle = fills[L];
+          ctx.fillRect(x, y, (e - i) * g + 1, g + 1);
+          i = e;
+        }
+      }
+    },
+
+    /* 64 셰브론 — 화살 줄이 끝없이 흘러간다. VJ 루프의 상투다. */
+    chevron(t) {
+      const ph = t / DUR;
+      const rows = 3 + Math.round(k.density * 12);
+      const rh = H / rows;
+      const w = Math.max(W, H) * 0.06 * k.scale;
+      ctx.lineWidth = Math.max(1.2, rh * 0.16);
+      ctx.lineCap = "butt";
+      ctx.lineJoin = "miter";
+      for (let r = 0; r < rows; r++) {
+        const s = seeds[r + 480];
+        const dir = r % 2 ? 1 : -1;           /* 줄마다 반대로 흐른다 */
+        const y = r * rh + rh / 2;
+        const span = w * 2.2;
+        const off = ((ph * (0.5 + k.speed) * dir) % 1) * span;
+        ctx.strokeStyle = tone(r % 4, 0.14 + 0.5 * k.contrast * (0.5 + 0.5 * s.a));
+        ctx.beginPath();
+        for (let x = -span * 2; x < W + span; x += span) {
+          const px = x + off;
+          ctx.moveTo(px, y + rh * 0.30);
+          ctx.lineTo(px + w * dir, y);
+          ctx.lineTo(px, y - rh * 0.30);
+        }
+        ctx.stroke();
+      }
+    },
+
   };
 
   /* ── 마감 처리 ────────────────────────────────────────────────
@@ -1950,6 +2214,8 @@ const STYLE_LABELS = [
   ["slitscan", "슬릿스캔"], ["dotmatrix", "도트매트릭스"], ["oscillo", "파형"], ["lowpoly", "로우폴리"],
   ["isocity", "아이소 도시"], ["branch", "가지"], ["mandala", "만다라"], ["hanji", "한지"],
   ["blinds", "블라인드"], ["magnet", "자기장"], ["terrace", "계단 지형"], ["weave", "직조"],
+  ["strobe", "스트로브"], ["tunnel", "터널"], ["bars", "스펙트럼"], ["kaleido", "만화경"],
+  ["flythrough", "지형 비행"], ["burst", "비트 폭발"], ["plasma", "플라스마"], ["chevron", "셰브론"],
 ];
 
 global.StudioArt = {
