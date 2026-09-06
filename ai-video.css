@@ -113,3 +113,11 @@
 .av-msg[data-tone="ok"] { color: #1c7a44; }
 .av-msg[data-tone="err"] { color: #c0392b; }
 .av-legal { margin: 22px 0 0; font-size: .8rem; color: var(--av-gray); line-height: 1.7; }
+
+.av-price {
+  margin: 2px 0 10px; font-size: 1.6rem; font-weight: 800;
+  letter-spacing: -.02em; color: var(--av-ink);
+}
+.av-price span { font-size: .82rem; font-weight: 600; color: var(--av-gray); margin-left: 4px; }
+.av-tier.is-on .av-price { color: #fff; }
+.av-tier.is-on .av-price span { color: #8fb4dc; }
