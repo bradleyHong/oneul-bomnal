@@ -151,7 +151,7 @@ var SCENES = [
     ];
 
   var BASE_IDS = ["flow", "wave", "particle", "contour", "grid", "bloom", "column",
-                  "snow", "ribbon", "orbit", "mesh", "bar", "spiral", "drift"];
+                  "snow", "ribbon", "orbit", "mesh", "bar", "spiral", "drift", "organic"];
 
   /* 그림 엔진(studio-engine.js)의 56종을 여기에 이어 붙인다.
    *
@@ -506,7 +506,7 @@ var SCENES = [
 
   /* 면을 채우는 스타일은 겹치면 빛이 포화돼 하얗게 탄다.
    * 선으로 그리는 것만 세 겹을 준다. */
-  var FILLING = ["wave", "ribbon", "bar", "drift", "grid", "bloom"];
+  var FILLING = ["wave", "ribbon", "bar", "drift", "grid", "bloom", "organic"];
 
   Gen.prototype.layer = function (ctx, W, H, t, s, draw) {
     var fills = FILLING.indexOf(s.style) >= 0;
@@ -585,13 +585,15 @@ var SCENES = [
    * 빛이 번지고 가장자리가 가라앉아야 화면으로 읽힌다.
    * 작게 줄여 흐린 뒤 더하는 방식이라 큰 화면에서도 값이 싸다. */
   Gen.prototype.post = function (ctx, W, H, s) {
+    // 면을 통째로 칠하는 스타일은 이미 밝다. 블룸을 그대로 얹으면 하얗게 뜬다.
+    var solid = FILLING.indexOf(s.style) >= 0;
     var bw = Math.max(48, Math.round(W / 4)), bh = Math.max(27, Math.round(H / 4));
     if (!this.bc || this.bc.width !== bw || this.bc.height !== bh) {
       this.bc = document.createElement("canvas");
       this.bc.width = bw; this.bc.height = bh;
       this.bx = this.bc.getContext("2d");
     }
-    var bx = this.bx, glow = s.glow || 1;
+    var bx = this.bx, glow = (s.glow || 1) * (solid ? 0.35 : 1);
     bx.globalCompositeOperation = "copy";
     bx.filter = "blur(" + Math.max(2, Math.round(bw / 44)) + "px) brightness(1.3) saturate(1.2)";
     bx.drawImage(this.cv, 0, 0, bw, bh);
@@ -661,12 +663,15 @@ var SCENES = [
       gx.putImageData(im, 0, 0);
       this.gr = g;
     }
-    var step = Math.floor((t / PERIOD) * 5) * 53;      // 다섯 자리만 오간다
+    /* 자리를 뛰게 하면 마지막 자리에서 0으로 돌아올 때 화면이 튄다.
+       무늬가 256px 마다 되풀이되므로, 원을 그리며 미끄러지게 하면
+       한 바퀴 돌아 제자리로 와서 이음매가 생기지 않는다. */
+    var ga = TAU * (t / PERIOD);
     ctx.save();
     ctx.globalCompositeOperation = "overlay";
     ctx.globalAlpha = 0.085;
     var pat = ctx.createPattern(this.gr, "repeat");
-    ctx.translate(step % 256, (step * 2) % 256);
+    ctx.translate(Math.cos(ga) * 26, Math.sin(ga) * 26);
     ctx.fillStyle = pat;
     ctx.fillRect(-256, -256, W + 512, H + 512);
     ctx.restore();
@@ -707,6 +712,42 @@ var SCENES = [
   }
 
   /* ── 스타일 여덟 가지 ─────────────────────────────────── */
+
+  /* ── 얼룩 노이즈 ──────────────────────────────────────────
+   * 레퍼런스로 받은 화면(산호·이끼처럼 번지는 얼룩)을 코드로 만드는 방법.
+   *
+   *   1. 값 노이즈를 여러 겹 겹쳐 부드러운 얼룩을 만든다
+   *   2. 그 좌표를 다시 노이즈로 밀어(도메인 워프) 유기적으로 휘게 한다
+   *   3. 결과를 몇 단으로 잘라(포스터라이즈) 색 층을 나눈다
+   *   4. 층 안에 고운 알갱이를 깔아 산호 같은 질감을 준다
+   *
+   * 5초 반복은 시간을 원으로 돌려서 지킨다. 표본 좌표를 (cos, sin) 만큼
+   * 옮기면 한 바퀴 돌아 제자리로 오므로 이음매가 생기지 않는다.
+   *
+   * 픽셀마다 노이즈를 여러 번 부르므로 화면 그대로 계산하면 느리다.
+   * 4분의 1로 줄여 계산하고 늘려 그린다. 원래 부드러운 그림이라 티가
+   * 나지 않고, 알갱이는 늘린 뒤에 얹어 또렷함을 지킨다. */
+  function makeNoise(seed) {
+    var r = rng(seed), perm = new Uint8Array(256), P = new Uint8Array(512), i, j, t;
+    for (i = 0; i < 256; i++) perm[i] = i;
+    for (i = 255; i > 0; i--) { j = (r() * (i + 1)) | 0; t = perm[i]; perm[i] = perm[j]; perm[j] = t; }
+    for (i = 0; i < 512; i++) P[i] = perm[i & 255];
+    function fade(u) { return u * u * u * (u * (u * 6 - 15) + 10); }
+    function at(x, y) { return P[(P[x & 255] + y) & 255] / 255; }
+    return function (x, y) {
+      var X = Math.floor(x), Y = Math.floor(y);
+      var fx = x - X, fy = y - Y, u = fade(fx), v = fade(fy);
+      var a = at(X, Y), b = at(X + 1, Y), c = at(X, Y + 1), d = at(X + 1, Y + 1);
+      return (a + (b - a) * u) + ((c + (d - c) * u) - (a + (b - a) * u)) * v;
+    };
+  }
+
+  function fbm(n, x, y, oct) {
+    var v = 0, amp = 0.5, f = 1;
+    for (var i = 0; i < oct; i++) { v += n(x * f, y * f) * amp; amp *= 0.5; f *= 2; }
+    return v;
+  }
+
   var STYLES = {
 
     /* 흐르는 띠 — 사인 곡선을 겹쳐 리본처럼 흐르게 한다 */
@@ -734,6 +775,79 @@ var SCENES = [
     },
 
     /* 파동 — 아래에서 위로 겹치는 물결 면 */
+    /* 얼룩 — 산호·이끼처럼 번지는 유기적 층. 레퍼런스에 가장 가까운 그림이다. */
+    organic: function (ctx, W, H, t, s) {
+      var SC = 4;                                   // 4분의 1로 줄여 계산한다
+      var w = Math.max(24, Math.round(W / SC)), h = Math.max(14, Math.round(H / SC));
+      if (!this.oc || this.oc.width !== w || this.oc.height !== h) {
+        this.oc = document.createElement("canvas");
+        this.oc.width = w; this.oc.height = h;
+        this.ox = this.oc.getContext("2d");
+        this.od = this.ox.createImageData(w, h);
+      }
+      var n = this.on && this.onSeed === s.seed ? this.on : (this.onSeed = s.seed, this.on = makeNoise(s.seed));
+      var img = this.od, D = img.data;
+      var ink = s.palette.ink.map(hex2rgb), bg = hex2rgb(s.palette.bg);
+      var bands = 3 + Math.round(2 * s.density);    // 색이 나뉘는 단 수
+      var zoom = 2.2 / (0.7 + s.density * 0.5);
+      var warp = 0.9 + s.warp * 1.1;
+      var a = ph(t, 1), R = 0.55;                   // 시간을 원으로 돌린다
+      var ox = Math.cos(a) * R, oy = Math.sin(a) * R;
+
+      for (var y = 0; y < h; y++) {
+        for (var x = 0; x < w; x++) {
+          var u = x / w * zoom * (W / H > 1 ? W / H : 1);
+          var v = y / h * zoom;
+          // 도메인 워프 — 좌표를 노이즈로 한 번 밀어 유기적으로 휘게 한다
+          var qx = fbm(n, u + ox, v + oy, 3);
+          var qy = fbm(n, u + 5.2 + ox, v + 1.3 + oy, 3);
+          var e = fbm(n, u + warp * qx + ox, v + warp * qy + oy, 4);
+          var k = Math.max(0, Math.min(bands - 1, Math.floor(e * bands * 1.35)));
+          var f = e * bands * 1.35 - k;             // 층 안에서의 위치
+          var c = ink[k % ink.length];
+          // 곧게 올리면 화면 절반이 밝아져 레퍼런스와 반대가 된다.
+          // 곡선을 주어 아래 단은 배경에 붙이고 맨 위 단만 빛나게 한다.
+          var g = k / (bands - 1 || 1);
+          var mix = 0.1 + 0.85 * Math.pow(g, 1.8);
+          var i4 = (y * w + x) * 4;
+          var sh = 0.72 + 0.3 * f;                  // 층 안에서 밝기가 살짝 흐른다
+          D[i4]     = (bg[0] + (c[0] - bg[0]) * mix) * sh;
+          D[i4 + 1] = (bg[1] + (c[1] - bg[1]) * mix) * sh;
+          D[i4 + 2] = (bg[2] + (c[2] - bg[2]) * mix) * sh;
+          D[i4 + 3] = 255;
+        }
+      }
+      this.ox.putImageData(img, 0, 0);
+      ctx.save();
+      ctx.globalCompositeOperation = "source-over";
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(this.oc, 0, 0, W, H);
+      ctx.restore();
+
+      // 알갱이 — 층 안의 산호 같은 질감. 늘린 뒤에 얹어야 또렷하다.
+      if (!this.og) {
+        var g = document.createElement("canvas");
+        g.width = g.height = 200;
+        var gx = g.getContext("2d"), gi = gx.createImageData(200, 200), gr = rng(s.seed + 77);
+        for (var q = 0; q < gi.data.length; q += 4) {
+          var vv = gr() < 0.5 ? 96 : 168;
+          gi.data[q] = gi.data[q + 1] = gi.data[q + 2] = vv;
+          gi.data[q + 3] = 255;
+        }
+        gx.putImageData(gi, 0, 0);
+        this.og = g;
+      }
+      ctx.save();
+      ctx.globalCompositeOperation = "overlay";
+      ctx.globalAlpha = 0.3;
+      var pat = ctx.createPattern(this.og, "repeat");
+      var oa = TAU * (t / PERIOD);
+      ctx.translate(Math.cos(oa) * 18, Math.sin(oa) * 18);
+      ctx.fillStyle = pat;
+      ctx.fillRect(-200, -200, W + 400, H + 400);
+      ctx.restore();
+    },
+
     /* 파동 — 종이를 오려 겹친 물결. 뒤에서 앞으로 덮어 칠한다.
      * 반투명으로 겹치면 몇 겹 만에 흰색에 닿아 바닥이 타버린다. */
     wave: function (ctx, W, H, t, s) {
