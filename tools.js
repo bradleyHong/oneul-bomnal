@@ -68,16 +68,22 @@
    *
    * 여기 적힌 이름은 엔진이 쓰는 이름과 같다. 그래야 설정표 한 줄이
    * 그대로 4K 렌더로 넘어간다. 이름을 바꾸면 그 고리가 끊긴다. */
-  var KNOBS = [
+  var MOVE_KNOBS = [
+    { id: "speed",    ko: "속도",  help: "움직이는 빠르기" }
+  ];
+  var TEX_KNOBS = [
     { id: "density",  ko: "밀도",  help: "빽빽한 정도" },
     { id: "scale",    ko: "크기",  help: "무늬 하나의 크기" },
     { id: "contrast", ko: "대비",  help: "밝고 어두움의 차" },
     { id: "glow",     ko: "번짐",  help: "빛이 퍼지는 정도" },
-    { id: "speed",    ko: "속도",  help: "움직이는 빠르기" },
+    { id: "grain",    ko: "결",    help: "알갱이의 굵기" },
     { id: "accent",   ko: "색조",  help: "포인트 색이 도는 정도" }
   ];
+  var KNOBS = MOVE_KNOBS.concat(TEX_KNOBS);
   var MOTIONS = [["drift", "흐름"], ["pulse", "숨"], ["orbit", "회전"], ["still", "정지"]];
   var SYMS = [[1, "없음"], [2, "2겹"], [4, "4겹"], [6, "6겹"]];
+  /* 납품 길이. 설정표에 실어 보내면 우리가 그 길이로 뽑는다. */
+  var DURS = [[15, "15초"], [30, "30초"], [60, "60초"]];
 
   function $(q, r) { return (r || document).querySelector(q); }
   function el(tag, cls, txt) {
@@ -159,6 +165,7 @@
     if (tune.symmetry != null) add("symmetry", tune.symmetry);
     if (tune.invert != null) add("invert", tune.invert ? 1 : 0);
     add("w", sz.w); add("h", sz.h);
+    add("dur", tune.dur || 30);
     return q.join("&");
   }
 
@@ -246,7 +253,13 @@
     });
 
     /* ② 손보기 — 색판, 미닫이 여섯, 움직임, 대칭, 밝은 바탕 */
-    var PALS = GEN.PALETTES || [];
+    var PALS = (GEN.PALETTES || []).concat(GEN.PALETTES_EXTRA || []);
+    var elMix = $("[data-tl-mix]", root);
+    var elMixRow = $("[data-tl-mix-row]", root);
+    var elMixHex = $("[data-tl-mix-hex]", root);
+    /* 손님이 직접 섞는 색. 기관 브랜드 색이 정해진 곳이 많다. */
+    var MIX_ID = "직접 고른 색";
+    var mix = { id: MIX_ID, bg: "#0d1420", ink: ["#ffd6e7", "#ffb3d1", "#c9f0d8", "#fff2b8", "#ffffff"] };
     function palChip(p) {
       var b = el("button", "tl-chip");
       b.type = "button";
@@ -270,7 +283,61 @@
     elPal.appendChild(palChip(null));
     PALS.forEach(function (p) { elPal.appendChild(palChip(p)); });
 
-    KNOBS.forEach(function (k) {
+    /* 직접 만들기 — 누르면 색 고르는 칸이 열린다 */
+    var mixChip = el("button", "tl-chip tl-chip-mix");
+    mixChip.type = "button";
+    mixChip.title = "색을 직접 고릅니다";
+    mixChip.appendChild(el("span", "tl-chip-ko", "직접 만들기"));
+    mixChip.addEventListener("click", function () {
+      palId = MIX_ID;
+      elMix.hidden = false;
+      markTune();
+      redraw();
+    });
+    elPal.appendChild(mixChip);
+
+    /* 색 고르는 칸 다섯: 바탕 하나와 색 넷 */
+    var MIX_LABELS = ["바탕", "색 1", "색 2", "색 3", "색 4"];
+    var mixInputs = [];
+    MIX_LABELS.forEach(function (ko, i) {
+      var w = el("label", "tl-mix-one");
+      w.appendChild(el("span", null, ko));
+      var inp = document.createElement("input");
+      inp.type = "color";
+      inp.value = i === 0 ? mix.bg : mix.ink[i - 1];
+      inp.setAttribute("aria-label", ko);
+      inp.addEventListener("input", function () {
+        if (i === 0) mix.bg = inp.value; else mix.ink[i - 1] = inp.value;
+        mix.ink[4] = mix.ink[3];
+        palId = MIX_ID;
+        syncMixHex();
+        markTune();
+        redraw();
+      });
+      w.appendChild(inp);
+      mixInputs.push(inp);
+      elMixRow.appendChild(w);
+    });
+    function syncMixHex() {
+      if (document.activeElement === elMixHex) return;
+      elMixHex.value = [mix.bg].concat(mix.ink.slice(0, 4)).join(" ");
+    }
+    /* 색 번호를 붙여 넣어도 되게. 기관 지침서에는 늘 #RRGGBB 로 적혀 있다. */
+    elMixHex.addEventListener("input", function () {
+      var hx = (elMixHex.value.match(/#?[0-9a-fA-F]{6}/g) || [])
+        .map(function (h) { return "#" + h.replace(/^#/, "").toLowerCase(); });
+      if (hx.length < 2) return;
+      mix.bg = hx[0];
+      for (var i = 0; i < 4; i++) mix.ink[i] = hx[i + 1] || hx[hx.length - 1];
+      mix.ink[4] = mix.ink[3];
+      mixInputs.forEach(function (inp, i) { inp.value = i === 0 ? mix.bg : mix.ink[i - 1]; });
+      palId = MIX_ID;
+      markTune();
+      redraw();
+    });
+    syncMixHex();
+
+    function addKnob(box, k) {
       var wrap = el("label", "tl-knob");
       wrap.appendChild(el("span", "tl-knob-ko", k.ko));
       var input = document.createElement("input");
@@ -287,8 +354,11 @@
       wrap.appendChild(input);
       wrap.appendChild(num);
       wrap.dataset.knob = k.id;
-      elKnobs.appendChild(wrap);
-    });
+      box.appendChild(wrap);
+    }
+    var elKnobsMove = $("[data-tl-knobs-move]", root);
+    MOVE_KNOBS.forEach(function (k) { addKnob(elKnobsMove, k); });
+    TEX_KNOBS.forEach(function (k) { addKnob(elKnobs, k); });
 
     function pickRow(label, items, get, set) {
       var row = el("div", "tl-pick");
@@ -316,16 +386,21 @@
     var rowInv = pickRow("바탕", [["", "저절로"], [0, "어둡게"], [1, "밝게"]],
       function () { return tune.invert == null ? "" : (tune.invert ? 1 : 0); },
       function (v) { if (v === "") delete tune.invert; else tune.invert = !!+v; });
+    var rowDur = pickRow("길이", DURS,
+      function () { return tune.dur || 30; },
+      function (v) { tune.dur = +v; });
 
     function tuneCount() {
-      return Object.keys(tune).length + (palId ? 1 : 0);
+      var n = 0;
+      for (var k in tune) if (k !== "dur") n++;
+      return n + (palId ? 1 : 0);
     }
     function markTune() {
       var n = tuneCount();
       elTuneTag.textContent = n ? "손본 것 " + n + "개" : "저절로";
       elTuneTag.classList.toggle("is-on", n > 0);
       Array.prototype.forEach.call(elPal.children, function (b, i) {
-        var id = i === 0 ? null : PALS[i - 1].id;
+        var id = i === 0 ? null : (i <= PALS.length ? PALS[i - 1].id : MIX_ID);
         b.classList.toggle("is-on", id === palId);
       });
       Array.prototype.forEach.call(elKnobs.children, function (w) {
@@ -333,7 +408,7 @@
         w.classList.toggle("is-on", on);
         if (!on) $(".tl-knob-num", w).textContent = "저절로";
       });
-      [rowMotion, rowSym, rowInv].forEach(function (row) {
+      [rowMotion, rowSym, rowInv, rowDur].forEach(function (row) {
         var cur = String(row._get());
         Array.prototype.forEach.call($(".tl-pick-box", row).children, function (b) {
           b.classList.toggle("is-on", b.dataset.val === cur);
@@ -343,6 +418,7 @@
 
     $("[data-tl-reset]", root).addEventListener("click", function () {
       tune = {}; palId = null;
+      elMix.hidden = true;
       Array.prototype.forEach.call(elKnobs.children, function (w) {
         $("input", w).value = "50";
       });
@@ -400,7 +476,8 @@
          돌아갈 자리가 없으면 손님이 고른 색이 그대로 눌러앉는다. */
       if (!s.basePal) s.basePal = s.spec.palette;
       s.spec.palette = s.basePal;
-      if (palId) {
+      if (palId === MIX_ID) s.spec.palette = { id: MIX_ID, bg: mix.bg, ink: mix.ink.slice() };
+      else if (palId) {
         for (var i = 0; i < PALS.length; i++) if (PALS[i].id === palId) s.spec.palette = PALS[i];
       }
       s.spec.tune = tuneCount() ? tune : null;
@@ -474,7 +551,8 @@
       if (shot.style && GEN.hasStyle(shot.style)) sp.style = shot.style;
       sp.idx = shot.idx; sp.v = CODE_V;
       /* 화면에서 손본 그대로 받아 가셔야 한다 */
-      if (palId) for (var pi = 0; pi < PALS.length; pi++) if (PALS[pi].id === palId) sp.palette = PALS[pi];
+      if (palId === MIX_ID) sp.palette = { id: MIX_ID, bg: mix.bg, ink: mix.ink.slice() };
+      else if (palId) for (var pi = 0; pi < PALS.length; pi++) if (PALS[pi].id === palId) sp.palette = PALS[pi];
       /* 색을 안 고르셨으면 compose 가 뽑은 색 그대로 간다 */
       sp.tune = tuneCount() ? tune : null;
       g2.set(sp);
@@ -503,6 +581,71 @@
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(txt).then(done, function () { prompt("이 줄을 복사해 두세요", txt); });
       } else { prompt("이 줄을 복사해 두세요", txt); }
+    });
+
+    /* ── 바로 보내기 ─────────────────────────────────────────
+     * 손본 설정을 들고 스튜디오로 건너가지 않아도 되게 여기서 바로 받는다.
+     * 보내는 것은 설정표 한 줄과 연락처뿐이다. 그 줄이 곧 주문서다 —
+     * 우리는 받아서 render-studio 에 그대로 넣으면 된다. */
+    var elSendForm = $("[data-tl-form]", root);
+    var elSendBtn = $("[data-tl-send]", root);
+    var elSendMsg = $("[data-tl-msg]", root);
+    function sendSay(t, tone) {
+      if (!elSendMsg) return;
+      elSendMsg.textContent = t;
+      if (tone) elSendMsg.setAttribute("data-tone", tone);
+      else elSendMsg.removeAttribute("data-tone");
+    }
+    if (elSendForm) elSendForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (!shot) { sendSay("먼저 화면을 하나 뽑아 주세요.", "err"); return; }
+      var d = new FormData(elSendForm);
+      var name = String(d.get("name") || "").trim();
+      var email = String(d.get("email") || "").trim();
+      if (!name) { sendSay("이름을 적어 주세요.", "err"); return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { sendSay("이메일 주소를 다시 확인해 주세요.", "err"); return; }
+      if (!d.get("consentRequired")) { sendSay("회신을 위한 수집 동의가 필요합니다.", "err"); return; }
+      var sz = SIZES[sizeIx];
+      var sheet = elSheet ? elSheet.textContent : "";
+      elSendBtn.disabled = true;
+      sendSay("보내는 중…");
+      fetch("/api/inquiry", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          phone: String(d.get("phone") || "").trim(),
+          organization: String(d.get("organization") || "").trim(),
+          service: ["미디어아트 제작 (봄날 도구 · 손님이 손본 설정)"],
+          page: "tools",
+          message: [
+            "도구: " + (stage ? stage.ko : "-"),
+            "작품 번호: " + code(shot.idx, shot.seed),
+            "화면 규격: " + sz.ko + " " + sz.w + "×" + sz.h,
+            "재생 길이: " + (tune.dur || 30) + "초",
+            "손본 항목: " + (tuneCount() ? tuneCount() + "개" : "없음(저절로)"),
+            "색: " + (palId || "저절로"),
+            "",
+            "재현용 파라미터:",
+            sheet,
+            "",
+            "  node tools/render-studio.mjs \"" + sheet + "\" --name " + code(shot.idx, shot.seed) +
+              " --dur " + (tune.dur || 30),
+            "",
+            "[동의 기록] 개인정보 수집·이용: 동의함"
+          ].join("\n")
+        })
+      })
+        .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json().catch(function () { return {}; }); })
+        .then(function () {
+          elSendForm.reset();
+          sendSay("받았습니다. 이 화면 그대로 4K로 뽑아 평일 24시간 이내에 보내드리겠습니다.", "ok");
+        })
+        .catch(function () {
+          elSendBtn.disabled = false;
+          sendSay("전송이 되지 않았습니다. 010-4292-1999 또는 studio@publicbloom.art 로 연락 주세요.", "err");
+        });
     });
 
     /* 스페이스로 다시 뽑고, Esc 로 목록으로. 도구는 손이 빨라야 한다. */

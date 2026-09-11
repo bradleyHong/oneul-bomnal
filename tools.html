@@ -10,8 +10,8 @@
       content="쓰임이 정해진 도구 열둘. 한 번 누르면 한 점이 나옵니다. 로그인도 가입도 없고, 적어 주실 것도 없습니다."
     />
     <link rel="stylesheet" href="./styles.css?v=20260905-craft" />
-    <link rel="stylesheet" href="./studio.css?v=20260911-tune" />
-    <link rel="stylesheet" href="./tools.css?v=20260911-tune" />
+    <link rel="stylesheet" href="./studio.css?v=20260911-mix" />
+    <link rel="stylesheet" href="./tools.css?v=20260911-mix" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
   </head>
   <body class="st-page tl-page">
@@ -66,9 +66,29 @@
         <details class="tl-tune" data-tl-tune>
           <summary>손보기 <span class="tl-tune-tag" data-tl-tune-tag>저절로</span></summary>
           <div class="tl-tune-body">
+            <h3 class="tl-grp">색</h3>
             <div class="tl-pal" data-tl-pal role="group" aria-label="색"></div>
-            <div class="tl-knobs" data-tl-knobs></div>
+
+            <!-- 기관 색을 그대로 쓰실 수 있게. 브랜드 색이 정해진 곳이 많다. -->
+            <div class="tl-mix" data-tl-mix hidden>
+              <p class="tl-mix-help">
+                기관 색을 그대로 넣으셔도 됩니다. 바탕 하나와 색 넷을 고르시면
+                그 색으로만 그립니다.
+              </p>
+              <div class="tl-mix-row" data-tl-mix-row></div>
+              <label class="tl-mix-paste">
+                색 번호로 넣기
+                <input type="text" data-tl-mix-hex placeholder="#0d1420 #ffd6e7 #ffb3d1 #c9f0d8 #fff2b8" />
+              </label>
+            </div>
+
+            <h3 class="tl-grp">무빙</h3>
             <div class="tl-picks" data-tl-picks></div>
+            <div class="tl-knobs tl-knobs-move" data-tl-knobs-move></div>
+
+            <h3 class="tl-grp">질감</h3>
+            <div class="tl-knobs" data-tl-knobs></div>
+
             <button type="button" class="tl-reset" data-tl-reset>처음으로</button>
           </div>
         </details>
@@ -97,12 +117,42 @@
           작품 번호를 적어 두시면 같은 화면을 언제든 다시 그립니다.
           담아 두신 화면은 <a href="./studio">스튜디오</a>에서도 그대로 보입니다.
         </p>
+
+        <!-- 바로 보내기. 손본 설정을 들고 스튜디오로 건너가지 않아도 되게. -->
+        <section class="tl-send">
+          <h2 class="tl-send-h">이 화면 그대로 만들어 드릴까요</h2>
+          <p class="tl-send-lead">
+            위 설정표가 그대로 저희에게 갑니다. <b>받는 즉시 같은 화면을 4K로 뽑아</b>
+            평일 24시간 이내에 보내드립니다. (휴일·공휴일 제외)
+          </p>
+          <form class="tl-form" data-tl-form novalidate>
+            <div class="tl-form-row">
+              <label>이름 <span aria-hidden="true">*</span>
+                <input type="text" name="name" autocomplete="name" required /></label>
+              <label>이메일 <span aria-hidden="true">*</span>
+                <input type="email" name="email" autocomplete="email" required /></label>
+            </div>
+            <div class="tl-form-row">
+              <label>연락처
+                <input type="tel" name="phone" autocomplete="tel" placeholder="선택" /></label>
+              <label>기관·상호
+                <input type="text" name="organization" autocomplete="organization" placeholder="선택" /></label>
+            </div>
+            <label class="tl-consent">
+              <input type="checkbox" name="consentRequired" required />
+              <span><b>(필수)</b> 회신을 위해 이름·이메일·연락처를 수집하는 데 동의합니다.
+                회신이 끝나면 <b>6개월 뒤 파기</b>합니다.</span>
+            </label>
+            <button type="submit" class="tl-btn is-primary tl-send-btn" data-tl-send>이 설정 보내기</button>
+            <p class="tl-form-msg" data-tl-msg role="status" aria-live="polite"></p>
+          </form>
+        </section>
       </section>
     </main>
 
     <script src="./studio-meshes.js?v=20260905-mesh3" defer></script>
     <script src="./studio-engine.js?v=20260911-89" defer></script>
-    <script src="./studio-gen.js?v=20260911-89" defer></script>
-    <script src="./tools.js?v=20260911-tune" defer></script>
+    <script src="./studio-gen.js?v=20260911-90" defer></script>
+    <script src="./tools.js?v=20260911-mix" defer></script>
   </body>
 </html>

@@ -50,7 +50,8 @@ if (!spec) {
 const q = new URLSearchParams(spec);
 const NAME  = flag("name", "studio");
 const FPS   = +flag("fps", 30);
-const DUR   = +flag("dur", 20);
+/* 설정표에 길이가 적혀 있으면 그것이 기본. 손님이 도구에서 고른 값이다. */
+const DUR   = +flag("dur", +q.get("dur") || 20);
 const W     = +flag("w", +q.get("w") || 3840);
 const H     = +flag("h", +q.get("h") || 2160);
 const CODEC = flag("codec", "h264");
