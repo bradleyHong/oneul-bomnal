@@ -1109,8 +1109,9 @@ h1 {
 .local-art-strip .media-signal small,
 .region-art-grid .media-signal small {
   overflow: hidden;
-  color: rgba(255, 255, 255, 0.64);
-  font-size: 9px;
+  /* 9px는 읽기 어렵다. 11px로 올린다. 워터마크와 달리 이건 내용이다. */
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 11px;
   font-weight: 900;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -5361,7 +5362,7 @@ main > .section > .section-head .section-kicker {
 .data-status td { padding: 12px 14px; border-bottom: 1px solid #e4e9ee; vertical-align: top; }
 .data-status td:first-child { font-weight: 700; white-space: nowrap; }
 .data-status td b { color: #0b62c4; }
-.data-status small { display: block; margin-top: 6px; color: #7a8899; line-height: 1.55; }
+.data-status small { display: block; margin-top: 6px; color: #5f6d7e; line-height: 1.55; }
 
 /* 공공 API 복붙 키트 (showcase) */
 .api-kit { margin-top: 44px; padding: 28px; background: #f7f9fb; border-radius: 12px; }
@@ -5566,4 +5567,85 @@ body.site-page:not(.home-2026) .site-nav {
     background: #05070d;
     border-color: #ffffff;
   }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   새 홈에서는 야간 글자색 전환을 끈다
+
+   아래 야간 블록은 하늘 레이어가 글자 뒤에 비치던 시절에 쓴 것이다.
+   그때는 밤이 되면 배경이 어두워지므로 글자를 밝게 바꿔야 했다.
+
+   지금 홈은 섹션마다 자기 배경(흰색)을 가진다. 하늘은 높이 0으로
+   완전히 가려져 있다. 그런데 sky.js는 계속 돌며 --daylight를 0으로
+   내리고, 그러면 야간 규칙이 글자를 흰색으로 바꾼다. 흰 바탕에 흰
+   글씨가 되어 밤에 작업·사업영역·스튜디오·실시간 네 섹션의 글자
+   46개가 보이지 않았다.
+
+   sky.js 자체는 남긴다. 실시간 하늘 문구(data-sky-readout)와 사진
+   밝기를 아직 담당한다. 색 전환만 끈다.
+   ══════════════════════════════════════════════════════════════ */
+/* --sky-ink 계열은 :root에서 var(--night-mix)를 이미 계산해 넣는다.
+   그래서 body에서 --night-mix만 0으로 바꿔도 소용이 없다.
+   결과값을 직접 덮어써야 한다. 값은 낮(밝은 바탕) 기준이다. */
+body.home-2026 {
+  --night-mix: 0;
+  --sky-ink: #101b33;
+  --sky-ink-soft: #172341;
+  --sky-ink-accent: #10367d;
+  --sky-halo: rgba(255, 255, 255, 0.82);
+}
+
+/* ── 누를 수 있는 것은 손가락이 닿을 만큼 커야 한다 ──────────
+   재어 보니 헤더 브랜드가 모바일에서 86×21px, 도구 페이지 상단
+   메뉴가 59×19px, 푸터 연락처가 127×18px였다. 손가락 끝이 닿는
+   면적은 대략 44×44px다.
+
+   처음에는 ::after로 보이지 않는 영역만 넓혔는데, 간격이 좁은
+   푸터 메뉴에서 이웃 링크의 영역과 겹쳤다. 겹치면 엉뚱한 링크가
+   눌린다. 그래서 위아래 여백을 실제로 주고, 대신 묶음의 줄 간격을
+   줄여 보이는 간격은 그대로 두는 방식으로 바꿨다.
+
+   문장 안에 섞인 링크는 건드리지 않는다. 거기까지 넓히면 옆 글자의
+   영역과 겹친다. */
+.site-nav .brand {
+  min-height: 44px;
+}
+
+.site-nav nav > a,
+.st-nav-tools a {
+  padding-block: 11px;
+}
+
+.footer-links {
+  gap: 2px 22px;
+}
+
+.footer-links a {
+  padding-block: 9px;
+}
+
+.footer-info dd a,
+.signage-copy dd a,
+.faq-more a {
+  display: inline-block;
+  padding-block: 8px;
+}
+
+.footer-info div {
+  padding-top: 4px;
+}
+
+/* 화면 위에 얹힌 재생 버튼도 조금 키운다 */
+.art-play {
+  min-height: 36px;
+}
+
+/* 표 안의 안내 링크와 복사 버튼도 누르는 것이다 */
+.spec-table td a {
+  display: inline-block;
+  padding-block: 8px;
+}
+
+.api-kit-head button {
+  min-height: 36px;
 }
