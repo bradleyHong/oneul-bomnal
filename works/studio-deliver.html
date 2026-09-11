@@ -74,7 +74,7 @@ if (tones.length) {
 
 /* 손잡이 — 손님이 돌린 값 */
 const tune = {};
-for (const k of ["density", "speed", "scale", "contrast", "glow", "accent", "symmetry"]) {
+for (const k of ["density", "speed", "scale", "contrast", "glow", "grain", "accent", "symmetry"]) {
   if (q.get(k) !== null) tune[k] = num(k, 50);
 }
 if (q.get("motion")) tune.motion = q.get("motion");

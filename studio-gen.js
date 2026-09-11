@@ -79,6 +79,28 @@
     { id: "심해",   bg: "#03080f", ink: ["#2f7fa8", "#1b4f70", "#7fd0e8", "#0f3550", "#cfeaf5"] }
   ];
 
+  /* ── 더 고를 수 있는 색 ─────────────────────────────────────
+   *
+   * 위 PALETTES 는 compose 가 제비뽑기로 집는 목록이다. 여기에 하나라도
+   * 더하면 그 뽑기가 밀려서 이미 나간 번호가 다른 색으로 나온다.
+   * 그래서 새 색은 이쪽에 둔다 — 손님이 도구에서 손으로 고를 때만 쓰고,
+   * 제비뽑기에는 들어가지 않는다. 손으로 고른 색은 설정표에 색값 자체가
+   * 실려 나가므로 판과 아무 상관이 없다. */
+  var PALETTES_EXTRA = [
+    { id: "먹과 금", bg: "#08070a", ink: ["#e4c26a", "#a8802c", "#f5e6bd", "#5c4416", "#fffaf0"] },
+    { id: "청자",    bg: "#061210", ink: ["#9fd8c8", "#5aa894", "#d9f2ea", "#2f6b5c", "#f0fffa"] },
+    { id: "적벽",    bg: "#120606", ink: ["#e0533c", "#8f2b1f", "#f5a48f", "#5c1a12", "#ffe8e0"] },
+    { id: "코발트",  bg: "#04081a", ink: ["#3a6bff", "#1f3fb0", "#9fb8ff", "#0f1f6b", "#e8efff"] },
+    { id: "구리",    bg: "#100a06", ink: ["#d98a4a", "#a05a28", "#f2c79a", "#5c3316", "#fff0e0"] },
+    { id: "안개 숲", bg: "#0a100c", ink: ["#b8ccb0", "#7d9a78", "#e0ecd8", "#4a5f48", "#f2f8ee"] },
+    { id: "자정",    bg: "#020308", ink: ["#4a5a8f", "#2a3560", "#8fa0d0", "#151d3a", "#dde4f5"] },
+    { id: "백자",    bg: "#0c0d0f", ink: ["#e8e6e0", "#c0bdb4", "#ffffff", "#8a877e", "#f8f7f4"] },
+    { id: "진달래",  bg: "#120810", ink: ["#e86aa8", "#a83870", "#f7b0d0", "#6b1f45", "#ffe8f2"] },
+    { id: "청포도",  bg: "#0a0f06", ink: ["#c4e05a", "#8aa82c", "#e8f5a0", "#4f6b16", "#f8ffe0"] },
+    { id: "재",      bg: "#0a0a0a", ink: ["#9a9a9a", "#6a6a6a", "#d8d8d8", "#3a3a3a", "#f0f0f0"] },
+    { id: "심홍",    bg: "#0f0410", ink: ["#c93a7a", "#7a1f52", "#f08ab0", "#4a0f30", "#ffd8e8"] }
+  ];
+
   PALETTES = MINED.concat(PALETTES);
 
   /* 낱말이 고른 색과 잘 어울리는 이웃들. 같은 문장이라도 여기서 돌려 쓴다. */
@@ -476,7 +498,9 @@ var SCENES = [
       scale:    cl(Math.round(use("scale", s.warp * 36)), 15, 90),
       contrast: cl(Math.round(use("contrast", s.weight * 46)), 25, 95),
       glow:     cl(Math.round(use("glow", s.glow * 36)), 5, 85),
-      grain:    bare ? 0 : 14,     /* 알갱이는 겹을 합친 뒤 grade 가 한 번만 얹는다 */
+      /* 알갱이는 겹을 합친 뒤 grade 가 한 번만 얹는다. 손님이 결을 돌리면
+         그 값을 여기에도 실어 엔진 쪽 결까지 같이 굵어진다. */
+      grain:    bare ? 0 : (T.grain == null ? 14 : T.grain),
       accent:   cl(Math.round(use("accent", 40 + r() * 45)), 28, 92),
       motion:   use("motion", ART_MOTIONS[Math.floor(r() * ART_MOTIONS.length)]),
       symmetry: use("symmetry", 1),
@@ -1250,8 +1274,11 @@ var SCENES = [
 
   global.BomnalGen = {
     compose: compose, Gen: Gen, SCENES: SCENES,
-    /* 색판. 도구에서 손님이 색을 고를 때 쓴다. */
+    /* 색판. 도구에서 손님이 색을 고를 때 쓴다.
+       PALETTES 는 제비뽑기에도 쓰이므로 순서를 못 바꾼다.
+       EXTRA 는 손으로 고를 때만 쓰는 덤이다. */
     PALETTES: PALETTES,
+    PALETTES_EXTRA: PALETTES_EXTRA,
     /* 그 판·그 비율에서 실제로 뽑히는 후보. 도구가 자기 묶음을 이걸로
        거른다. 안 거르면 솎아낸 그림이 도구를 통해 다시 나온다. */
     pool: function (v, ar) {
