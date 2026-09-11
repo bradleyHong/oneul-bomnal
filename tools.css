@@ -26,16 +26,16 @@
 .tl-card:hover, .tl-card:focus-visible {
   transform: translateY(-2px);
   border-color: var(--st-blue);
-  box-shadow: 0 8px 22px rgba(11, 98, 196, .18);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.62);
 }
 .tl-card canvas { display: block; width: 100%; height: auto; background: #05070c; }
 .tl-card-name { font-size: 1.06rem; font-weight: 800; padding: 12px 14px 0; }
-.tl-card-desc { font-size: .84rem; color: #9aa8bb; padding: 0 14px; line-height: 1.5; }
+.tl-card-desc { font-size: .84rem; color: var(--faint); padding: 0 14px; line-height: 1.5; }
 
 /* ── 도구 화면 ───────────────────────────────────────────── */
 .tl-stage-head { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
 .tl-back {
-  border: 1px solid var(--st-line); background: #fff; color: var(--st-body);
+  border: 1px solid var(--st-line); background: var(--surface); color: var(--st-body);
   border-radius: 999px; padding: 7px 14px; font-size: .88rem; cursor: pointer;
 }
 .tl-back:hover { border-color: var(--st-blue); color: var(--st-blue); }
@@ -44,11 +44,11 @@
 
 .tl-sizes { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
 .tl-size {
-  border: 1px solid var(--st-line); background: #fff; color: var(--st-body);
+  border: 1px solid var(--st-line); background: var(--surface); color: var(--st-body);
   border-radius: 999px; padding: 7px 14px; font-size: .86rem; cursor: pointer;
 }
 .tl-size:hover { border-color: var(--st-blue); color: var(--st-blue); }
-.tl-size.is-on { background: var(--st-ink); border-color: var(--st-ink); color: #fff; font-weight: 700; }
+.tl-size.is-on { background: var(--surface); border-color: var(--st-ink); color: var(--void); font-weight: 700; }
 
 .tl-canvas-wrap {
   display: flex; align-items: center; justify-content: center;
@@ -59,18 +59,18 @@
 .tl-acts { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 10px; }
 .tl-btn {
   display: inline-flex; align-items: center; gap: 8px;
-  border: 1px solid var(--st-line); background: #fff; color: var(--st-ink);
+  border: 1px solid var(--st-line); background: var(--surface); color: var(--st-ink);
   border-radius: 10px; padding: 11px 18px; font-size: .95rem; font-weight: 600;
   cursor: pointer; text-decoration: none;
 }
 .tl-btn:hover { border-color: var(--st-blue); color: var(--st-blue); }
-.tl-btn.is-primary { background: var(--st-blue); border-color: var(--st-blue); color: #fff; }
-.tl-btn.is-primary:hover { background: #0a56ac; color: #fff; }
+.tl-btn.is-primary { background: var(--st-blue); border-color: var(--st-blue); color: var(--void); }
+.tl-btn.is-primary:hover { background: #0a56ac; color: var(--void); }
 .tl-btn kbd {
   font: inherit; font-size: .76rem; opacity: .8;
   border: 1px solid currentColor; border-radius: 5px; padding: 1px 6px;
 }
-.tl-heart.is-on { background: #fff0f3; border-color: #d84a63; color: #c0374f; }
+.tl-heart.is-on { background: var(--paper); border-color: #ff7d92; color: #ff7d92; }
 
 .tl-code { margin: 6px 0 4px; font-size: .95rem; color: var(--st-body); }
 .tl-code b {
@@ -100,7 +100,7 @@
 
 /* ── 손보기 ─────────────────────────────────────────────────
    접어 둔다. 맨 처음부터 손잡이 여덟 개를 들이밀면 "네가 정해라"가 된다. */
-.tl-tune { margin: 14px 0 4px; border: 1px solid var(--st-line); border-radius: 12px; background: #fff; }
+.tl-tune { margin: 14px 0 4px; border: 1px solid var(--st-line); border-radius: 12px; background: var(--surface); }
 .tl-tune > summary {
   cursor: pointer; padding: 12px 16px; font-weight: 700; font-size: .95rem;
   display: flex; align-items: center; gap: 10px; list-style: none;
@@ -112,14 +112,14 @@
   font-size: .78rem; font-weight: 600; color: var(--st-gray);
   border: 1px solid var(--st-line); border-radius: 999px; padding: 2px 9px;
 }
-.tl-tune-tag.is-on { color: #fff; background: var(--st-blue); border-color: var(--st-blue); }
+.tl-tune-tag.is-on { color: var(--void); background: var(--st-blue); border-color: var(--st-blue); }
 .tl-tune-body { padding: 4px 16px 16px; border-top: 1px solid var(--st-line); }
 
 .tl-pal { display: flex; flex-wrap: wrap; gap: 7px; margin: 14px 0 16px; }
 .tl-chip {
   display: flex; flex-direction: column; align-items: stretch; gap: 3px;
   border: 1px solid var(--st-line); border-radius: 9px; padding: 5px 7px 4px;
-  background: #fff; cursor: pointer; min-width: 62px;
+  background: var(--surface); cursor: pointer; min-width: 62px;
 }
 .tl-chip:hover { border-color: var(--st-blue); }
 .tl-chip.is-on { border-color: var(--st-ink); box-shadow: 0 0 0 2px var(--st-ink) inset; }
@@ -141,14 +141,14 @@
 .tl-pick-ko { font-size: .86rem; color: var(--st-body); width: 46px; }
 .tl-pick-box { display: flex; gap: 6px; flex-wrap: wrap; }
 .tl-pick-b {
-  border: 1px solid var(--st-line); background: #fff; color: var(--st-body);
+  border: 1px solid var(--st-line); background: var(--surface); color: var(--st-body);
   border-radius: 999px; padding: 5px 12px; font-size: .82rem; cursor: pointer;
 }
 .tl-pick-b:hover { border-color: var(--st-blue); color: var(--st-blue); }
-.tl-pick-b.is-on { background: var(--st-ink); border-color: var(--st-ink); color: #fff; font-weight: 700; }
+.tl-pick-b.is-on { background: var(--surface); border-color: var(--st-ink); color: var(--void); font-weight: 700; }
 
 .tl-reset {
-  margin-top: 14px; border: 1px solid var(--st-line); background: #fff; color: var(--st-gray);
+  margin-top: 14px; border: 1px solid var(--st-line); background: var(--surface); color: var(--st-gray);
   border-radius: 8px; padding: 7px 14px; font-size: .84rem; cursor: pointer;
 }
 .tl-reset:hover { border-color: var(--st-ink); color: var(--st-ink); }
@@ -162,7 +162,7 @@
 .tl-sheet-head b { font-size: .95rem; }
 .tl-sheet-head span { color: var(--st-gray); font-size: .82rem; flex: 1; }
 .tl-copy {
-  border: 1px solid var(--st-line); background: #fff; color: var(--st-ink);
+  border: 1px solid var(--st-line); background: var(--surface); color: var(--st-ink);
   border-radius: 8px; padding: 6px 14px; font-size: .84rem; font-weight: 600; cursor: pointer;
 }
 .tl-copy:hover { border-color: var(--st-blue); color: var(--st-blue); }
@@ -219,8 +219,8 @@
 .tl-consent input { margin-top: 3px; }
 .tl-send-btn { width: 100%; justify-content: center; }
 .tl-form-msg { margin: 10px 0 0; font-size: .86rem; min-height: 1.2em; color: var(--st-body); }
-.tl-form-msg[data-tone="err"] { color: #c0374f; }
-.tl-form-msg[data-tone="ok"] { color: #1b7a4a; font-weight: 600; }
+.tl-form-msg[data-tone="err"] { color: #ff7d92; }
+.tl-form-msg[data-tone="ok"] { color: #4ade80; font-weight: 600; }
 
 @media (max-width: 640px) {
   .tl-form-row { grid-template-columns: 1fr; }

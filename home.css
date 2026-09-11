@@ -26,7 +26,10 @@ body.home-2026 {
    연보라 그라데이션이 화면 전체를 덮으면 작품 색이 죽는다.
    대신 지금 날씨는 첫 화면 아래 한 줄로 남긴다. */
 body.home-2026 .sky-layer { display: none; }
-body.home-2026 { background: #fff; color: #16233a; }
+/* 바탕은 가장 깊은 자리다. 구역이 그 위에 얹히고, 카드가 다시 그
+   위로 뜬다. 깊이를 그림자가 아니라 밝기로 만든다 — 어둠 위에서
+   그림자는 아무것도 아니다. */
+body.home-2026 { background: var(--void); color: var(--ink); }
 
 /* ── 첫 화면 ────────────────────────────────────────────── */
 .home2-hero {
@@ -167,8 +170,11 @@ body.home-2026 { background: #fff; color: #16233a; }
   text-decoration: none;
   transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 }
-.home2-cta .is-solid { background: var(--h-white); color: #0b0e13; }
-.home2-cta .is-solid:hover { background: #d7e3f3; }
+/* 어두운 바탕에서 가장 센 단추는 흰 판이다. 다만 판이 희면 글자는
+   어두워야 한다 — 바탕을 뒤집을 때 글자까지 같이 밝아져 흰 판에 흰
+   글자가 됐었다. */
+.home2-cta .is-solid { background: var(--h-white); color: var(--void); }
+.home2-cta .is-solid:hover { background: #ffffff; }
 .home2-cta .is-ghost {
   color: var(--h-white);
   border: 1px solid rgba(255, 255, 255, 0.34);
@@ -257,7 +263,7 @@ body.home-2026 { background: #fff; color: #16233a; }
   font: inherit; font-size: 0.76rem; font-weight: 700;
   cursor: pointer;
 }
-.home2-tile .art-play:hover { background: rgba(8, 10, 14, 0.82); border-color: #fff; }
+.home2-tile .art-play:hover { background: rgba(8, 10, 14, 0.82); border-color: var(--edge-soft); }
 
 .home2-cap { display: block; padding-top: 12px; }
 .home2-cap b { display: block; font-size: 1rem; font-weight: 700; letter-spacing: -0.01em; }
@@ -319,7 +325,7 @@ body.home-2026 .site-nav.scrolled {
   body.home-2026 .site-nav.scrolled {
     background: #000;
     backdrop-filter: none;
-    border-bottom: 1px solid #fff;
+    border-bottom: 1px solid var(--edge-soft);
   }
 }
 body.home-2026.site-page .brand strong,
@@ -327,16 +333,16 @@ body.home-2026.site-page .brand span,
 body.home-2026.site-page .site-nav nav a { color: #fff; }
 body.home-2026.site-page .brand span { color: rgba(255, 255, 255, 0.56); }
 body.home-2026.site-page .site-nav nav a:hover { color: #fff; }
-body.home-2026.site-page .nav-toggle span { background: #fff; }
+body.home-2026.site-page .nav-toggle span { background: var(--ink); }
 body.home-2026 .site-nav nav a.is-cta {
   border: 1px solid rgba(255, 255, 255, 0.36);
   border-radius: 999px;
   padding: 7px 16px;
 }
-body.home-2026 .site-nav nav a.is-cta:hover { background: rgba(255, 255, 255, 0.12); border-color: #fff; }
+body.home-2026 .site-nav nav a.is-cta:hover { background: rgba(255, 255, 255, 0.12); border-color: var(--edge-soft); }
 
 /* 본문은 흰 바탕에서 다시 읽힌다 */
-body.home-2026 main > .section { background: #fff; }
+body.home-2026 main > .section { background: var(--paper); }
 
 @media (prefers-reduced-motion: reduce) {
   .home2-cta a { transition: none; }
@@ -391,12 +397,13 @@ body.home-2026 main > .section { background: #fff; }
   font-size: 0.92rem; font-weight: 700; text-decoration: none;
   color: var(--h-white); border: 1px solid rgba(255, 255, 255, 0.34);
 }
-.home2-box-more a:first-child { background: var(--h-white); color: #0b0e13; border-color: var(--h-white); }
+/* 흰 판 위 글자는 어두워야 한다. 위 .is-solid 와 같은 이유다. */
+.home2-box-more a:first-child { background: var(--h-white); color: var(--void); border-color: var(--h-white); }
 .home2-box-feat li:nth-last-child(-n+2) { border-bottom: 0; }
 @media (max-width: 620px) { .home2-box-feat li:nth-last-child(-n+2) { border-bottom: 1px solid var(--h-line); }
   .home2-box-feat li:last-child { border-bottom: 0; } }
 .home2-box-more a:hover { background: rgba(255, 255, 255, 0.12); }
-.home2-box-more a:first-child:hover { background: #d7e3f3; }
+.home2-box-more a:first-child:hover { background: #ffffff; }
 
 .home2-box-proof {
   margin: clamp(24px, 3.5vh, 34px) 0 0;
@@ -503,7 +510,7 @@ body.home-2026 main > .section { background: #fff; }
 }
 
 .home2-credit a:hover {
-  border-bottom-color: #fff;
+  border-bottom-color: var(--edge-soft);
 }
 
 .home2-credit-meta {

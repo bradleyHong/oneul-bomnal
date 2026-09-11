@@ -2,16 +2,51 @@
    봄날 스튜디오가 "바로 고르는" 자리라면 여기는 "맡기는" 자리다.
    그래서 화면이 아니라 글이 중심이고, 실제로 납품한 것부터 보여준다. */
 :root {
-  --av-ink: #16233a;
-  --av-body: #41505f;
-  /* #7a8899는 흰 바탕에서 3.61:1이라 기준에 못 미친다. #5f6d7e는 5.28:1 */
-  --av-gray: #5f6d7e;
-  --av-blue: #0b62c4;
-  --av-pale: #f1f4f8;
-  --av-line: #dfe4ea;
+  /* 페이지마다 자기 회청색을 들고 있으면 브랜드가 갈라진다. 이름만
+     남기고 값은 본 팔레트(styles.css)를 가리킨다. 규칙은 그대로 둔다. */
+  --av-ink: var(--ink);
+  --av-body: var(--muted);
+  --av-gray: var(--deep);
+  --av-blue: var(--glow);
+  --av-pale: var(--petal);
+  --av-line: var(--edge);
 }
+/* 이 페이지의 머리띠는 스튜디오와 같은 마크업(.st-nav)을 쓰는데,
+   studio.css 를 불러오지 않는다. 그래서 여태 아무 규칙도 받지 못한
+   맨 글줄이었다. 흰 바탕에서는 그냥 제목처럼 보여 눈에 안 띄었다.
+
+   studio.css 를 통째로 끌어오면 이 페이지에 필요 없는 규칙까지
+   따라온다. 머리띠에 필요한 것만 여기 적는다. */
+.st-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  padding: 14px 28px;
+  border-bottom: 1px solid var(--av-line);
+  background: var(--surface);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.st-brand strong { display: block; font-size: 1.02rem; }
+.st-brand span { font-size: .82rem; color: var(--av-gray); }
+.st-nav-tools { display: flex; gap: 16px; }
+.st-nav-tools a {
+  color: var(--av-blue);
+  text-decoration: none;
+  font-size: .92rem;
+  font-weight: 600;
+}
+.st-nav-tools a:hover { text-decoration: underline; }
+@media (max-width: 640px) {
+  .st-nav { flex-wrap: wrap; gap: 8px 16px; padding: 12px 18px; }
+}
+
 .av-page {
-  margin: 0; background: #fff; color: var(--av-ink);
+  margin: 0; background: var(--void); color: var(--av-ink);
   font-family: "Pretendard", "Apple SD Gothic Neo", system-ui, sans-serif;
 }
 .av-main { max-width: 1180px; margin: 0 auto; padding: 30px 24px 80px; }
@@ -32,10 +67,10 @@
 .av-lead { margin: 0 0 12px; color: var(--av-body); line-height: 1.75; max-width: 46ch; }
 .av-lead b { color: var(--av-ink); }
 .av-cta {
-  display: inline-block; margin-top: 12px; background: var(--av-blue); color: #fff;
+  display: inline-block; margin-top: 12px; background: var(--av-blue); color: var(--void);
   border-radius: 999px; padding: 12px 26px; font-weight: 700; text-decoration: none;
 }
-.av-cta:hover { background: #0a55aa; }
+.av-cta:hover { background: var(--glow); }
 .av-hero-img { margin: 0; }
 .av-hero-img img { width: 100%; border-radius: 12px; display: block; }
 .av-hero-img figcaption { margin-top: 8px; font-size: .78rem; color: var(--av-gray); }
@@ -49,12 +84,18 @@
 .av-tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 @media (max-width: 780px) { .av-tiers { grid-template-columns: 1fr; } }
 .av-tier { background: var(--av-pale); border-radius: 12px; padding: 22px; }
-.av-tier.is-on { background: var(--av-ink); color: #fff; }
+/* 고른 것. 어둠에서 '고름'은 판을 통째로 켜는 것이 아니라 그 자리에
+   빛이 어리는 것이다. 통째로 켜면 안에 든 글자가 갈 곳이 없어진다. */
+.av-tier.is-on {
+  background: var(--glow-dim);
+  box-shadow: inset 0 0 0 1px var(--edge-glow);
+  color: var(--ink);
+}
 .av-tier h3 { margin: 0 0 4px; font-size: 1.25rem; }
 .av-tier-use { margin: 0 0 14px; font-size: .84rem; color: var(--av-blue); font-weight: 700; }
-.av-tier.is-on .av-tier-use { color: #8fb4dc; }
+.av-tier.is-on .av-tier-use { color: var(--glow); }
 .av-tier ul { margin: 0; padding-left: 18px; line-height: 1.85; font-size: .9rem; color: var(--av-body); }
-.av-tier.is-on ul { color: #c5d1df; }
+.av-tier.is-on ul { color: var(--muted); }
 
 .av-need-list { margin: 0; padding: 0; list-style: none; counter-reset: n; }
 .av-need-list li {
@@ -63,7 +104,7 @@
 }
 .av-need-list li::before {
   content: counter(n); position: absolute; left: 0; top: 15px;
-  width: 30px; height: 30px; border-radius: 50%; background: var(--av-blue); color: #fff;
+  width: 30px; height: 30px; border-radius: 50%; background: var(--av-blue); color: var(--void);
   display: grid; place-items: center; font-size: .84rem; font-weight: 700;
 }
 .av-need-list b { display: block; font-size: 1.02rem; margin-bottom: 4px; }
@@ -90,13 +131,13 @@
 .av-hint { display: block; font-weight: 400; font-size: .78rem; color: var(--av-gray); margin-top: 2px; }
 .av-form input[type="text"], .av-form input[type="email"], .av-form input[type="tel"],
 .av-form textarea {
-  width: 100%; box-sizing: border-box; margin-top: 6px; border: 1px solid #cfd8e2;
-  border-radius: 8px; padding: 10px 12px; font: inherit; background: #fff; color: var(--av-ink);
+  width: 100%; box-sizing: border-box; margin-top: 6px; border: 1px solid var(--edge);
+  border-radius: 8px; padding: 10px 12px; font: inherit; background: var(--void); color: var(--av-ink);
 }
 .av-form textarea { resize: vertical; line-height: 1.6; }
 .av-long { margin-bottom: 12px; }
 
-.av-fs { border: 1px solid #cfd8e2; border-radius: 10px; padding: 12px 14px; margin: 4px 0 16px; background: #fff; }
+.av-fs { border: 1px solid var(--edge); border-radius: 10px; padding: 12px 14px; margin: 4px 0 16px; background: var(--surface); }
 .av-fs legend { font-size: .84rem; font-weight: 700; padding: 0 6px; }
 .av-fs label { display: inline-flex; align-items: center; gap: 6px; margin-right: 16px; font-weight: 400; font-size: .9rem; }
 
@@ -106,13 +147,13 @@
 
 .av-submit {
   margin-top: 12px; border: 0; border-radius: 10px; background: var(--av-blue);
-  color: #fff; font: inherit; font-weight: 700; font-size: 1rem; padding: 13px 30px; cursor: pointer;
+  color: var(--void); font: inherit; font-weight: 700; font-size: 1rem; padding: 13px 30px; cursor: pointer;
 }
-.av-submit:hover { background: #0a55aa; }
-.av-submit[disabled] { background: #93a6bd; cursor: default; }
+.av-submit:hover { background: var(--glow); }
+.av-submit[disabled] { background: var(--lift); cursor: default; }
 .av-msg { margin: 12px 0 0; font-size: .86rem; line-height: 1.6; min-height: 1.2em; }
-.av-msg[data-tone="ok"] { color: #1c7a44; }
-.av-msg[data-tone="err"] { color: #c0392b; }
+.av-msg[data-tone="ok"] { color: #4ade80; }
+.av-msg[data-tone="err"] { color: #ff6b74; }
 .av-legal { margin: 22px 0 0; font-size: .8rem; color: var(--av-gray); line-height: 1.7; }
 
 .av-price {
@@ -120,5 +161,5 @@
   letter-spacing: -.02em; color: var(--av-ink);
 }
 .av-price span { font-size: .82rem; font-weight: 600; color: var(--av-gray); margin-left: 4px; }
-.av-tier.is-on .av-price { color: #fff; }
-.av-tier.is-on .av-price span { color: #8fb4dc; }
+.av-tier.is-on .av-price { color: var(--ink); }
+.av-tier.is-on .av-price span { color: var(--glow); }
