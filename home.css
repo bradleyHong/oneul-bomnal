@@ -113,7 +113,8 @@ body.home-2026 { background: #fff; color: #16233a; }
 
 .home2-eyebrow {
   margin: 0 0 clamp(14px, 2vh, 24px);
-  font-size: clamp(10px, 1vw, 12px);
+  /* 모바일에서 10px까지 내려가 읽기 어려웠다. 최소 11px로 올린다. */
+  font-size: clamp(11px, 1vw, 12px);
   letter-spacing: 0.26em;
   text-transform: uppercase;
   color: var(--h-dim);

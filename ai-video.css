@@ -4,7 +4,8 @@
 :root {
   --av-ink: #16233a;
   --av-body: #41505f;
-  --av-gray: #7a8899;
+  /* #7a8899는 흰 바탕에서 3.61:1이라 기준에 못 미친다. #5f6d7e는 5.28:1 */
+  --av-gray: #5f6d7e;
   --av-blue: #0b62c4;
   --av-pale: #f1f4f8;
   --av-line: #dfe4ea;

@@ -2,7 +2,9 @@
 :root {
   --st-ink: #16233a;
   --st-body: #41505f;
-  --st-gray: #7a8899;
+  /* #7a8899는 흰 바탕에서 3.61:1, 회색 판 위에서 3.28:1이라 기준에 못 미친다.
+     #5f6d7e로 올리면 각각 5.28:1, 4.79:1이 된다. */
+  --st-gray: #5f6d7e;
   --st-blue: #0b62c4;
   --st-pale: #f1f4f8;
   --st-line: #dfe4ea;
@@ -175,8 +177,9 @@
 
 /* 느낌 고르기 · 문장을 치지 않아도 계속 만들 수 있어야 한다 */
 .st-help { margin: 0 0 10px; font-size: .8rem; color: var(--st-gray); line-height: 1.55; }
+/* 10.88px는 손에 쥔 화면에서 읽기 어렵다. 11.5px로 올린다. */
 .st-opt-tag {
-  font-size: .68rem; font-weight: 600; color: var(--st-gray);
+  font-size: .72rem; font-weight: 600; color: var(--st-gray);
   border: 1px solid #cfd8e2; border-radius: 999px; padding: 1px 7px; margin-left: 4px;
 }
 .st-scenes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
@@ -188,7 +191,8 @@
   transition: border-color .15s ease, background .15s ease;
 }
 .st-scene b { font-size: .84rem; font-weight: 700; }
-.st-scene i { font-style: normal; font-size: .66rem; color: var(--st-gray); letter-spacing: .04em; }
+/* 10.56px는 손에 쥔 화면에서 읽기 어렵다. 11.5px로 올린다. */
+.st-scene i { font-style: normal; font-size: .72rem; color: var(--st-gray); letter-spacing: .04em; }
 .st-scene:hover { border-color: var(--st-blue); background: #f4f8fd; }
 .st-scene.is-on { border-color: var(--st-blue); background: #e9f1fb; }
 .st-scene.is-on b { color: var(--st-blue); }
