@@ -64,10 +64,12 @@ body.home-2026 { background: #fff; color: #16233a; }
      위로 조금 올려, 자막 띠가 보이는 자리 밖으로 나가게 한다. */
   top: 44%;
   left: 50%;
-  width: 108vw;
-  height: 60.75vw;            /* 가로가 길 때 — 108vw 의 9/16 */
-  min-width: 192vh;           /* 세로가 길 때 — 108vh 의 16/9 */
-  min-height: 108vh;
+  /* 8% 만 키우면 top:44% 로 올린 만큼 아래가 모자라 22px 이 빈다.
+     20% 로 잡아야 자막 띠를 밀어내고도 사방이 덮인다. */
+  width: 120vw;
+  height: 67.5vw;             /* 가로가 길 때 — 120vw 의 9/16 */
+  min-width: 214vh;           /* 세로가 길 때 — 120vh 의 16/9 */
+  min-height: 120vh;
   transform: translate(-50%, -50%);
   border: 0;
   pointer-events: none;       /* 첫 화면은 읽는 자리다. 눌러도 재생기가 반응하지 않게 */
@@ -79,8 +81,11 @@ body.home-2026 { background: #fff; color: #16233a; }
 .home2-art.is-playing .home2-vimeo {
   opacity: 1;
 }
+/* 이 규칙이 .home2-vimeo 보다 뒤에 있고 선택자도 더 세다(.home2-art iframe).
+   그래서 inset:0 이 위에서 잡아 둔 top/left 를 덮어써, 영상이 화면 왼쪽
+   위로 밀려 4분의 1만 덮고 있었다. 남의 집 재생기는 여기서 제외한다. */
 .home2-art img,
-.home2-art iframe {
+.home2-art iframe:not(.home2-vimeo) {
   position: absolute;
   inset: 0;
   width: 100%;

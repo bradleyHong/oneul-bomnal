@@ -109,6 +109,35 @@ for (const [count, last] of ERAS) {
   }
 }
 if (!gen.includes("ART_V2_COUNT = 56, ART_V3_COUNT = 78, ART_V4_COUNT = 88")) fails.push("studio-gen.js의 판별 수(56·78·88)가 다르다");
+
+/* 엔진을 붙이기 전부터 있던 목록(BASE_V1)도 판을 탄다.
+   even 후보는 이 목록이 맨 앞에 붙으므로, 하나만 더해도 그 뒤가 통째로
+   밀려 이미 나간 번호가 다른 그림이 된다. #29 가 "얼룩"을 여기 더하면서
+   실제로 그랬다(16:9·4:3 에서 1판 13% · 4판 11%). 엔진 목록만 지켜서는
+   못 막는 자리라 따로 본다. */
+{
+  const BASE_V1 = ["flow", "wave", "particle", "contour", "grid", "bloom", "column",
+                   "snow", "ribbon", "orbit", "mesh", "bar", "spiral", "drift"];
+  const i = gen.indexOf("var BASE_V1 = [");
+  if (i < 0) {
+    fails.push("studio-gen.js에 BASE_V1이 없다 — 기본 목록이 판에 얼려 있지 않으면 옛 번호가 밀린다");
+  } else {
+    const got = [...gen.slice(i, gen.indexOf("];", i)).matchAll(/"([a-z0-9-]+)"/g)].map((m) => m[1]);
+    if (got.join(",") !== BASE_V1.join(",")) {
+      fails.push(`BASE_V1이 바뀌었다 (${got.length}개). 1~4판이 쓰는 목록이라 한 칸도 바꿀 수 없다`
+               + " — 새 기본 그림은 BASE_IDS 쪽에 더하고 판을 올려야 한다");
+    }
+  }
+  /* 옛 판이 BASE_IDS(늘어나는 쪽)를 보고 있으면 같은 사고가 난다 */
+  for (const key of ["FIT_V1", "FIT_V2", "FIT_V3", "FIT_V4"]) {
+    const j = gen.indexOf(`var ${key} = {`);
+    if (j < 0) continue;
+    const body = gen.slice(j, gen.indexOf("};", j));
+    if (/even:\s*BASE_IDS/.test(body)) {
+      fails.push(`${key}의 even이 BASE_IDS를 본다. 얼린 목록(BASE_V1)을 봐야 한다`);
+    }
+  }
+}
 for (const need of ["FIT_V1", "FIT_V2", "FIT_V3", "FIT_V4", "FITS"]) {
   if (!gen.includes(need)) fails.push(`studio-gen.js에 ${need}가 없다 (판별 목록이 끊겼다)`);
 }
