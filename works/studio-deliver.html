@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<title>봄날 스튜디오 · 납품 렌더 화면</title>
+<style>html,body{margin:0;background:#050505;overflow:hidden}canvas{display:block;width:100%;height:100%}</style>
+<script src="../studio-meshes.js"></script>
+<script src="../studio-engine.js"></script>
+<script src="../studio-gen.js"></script>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+/* 납품 렌더 화면.
+ *
+ * works/studio-art.html 은 엔진(studio-engine.js)만 부른다. 그런데 손님이
+ * 스튜디오와 도구에서 보는 화면은 엔진 위에 봄날 껍데기(studio-gen.js)가
+ * 한 겹 더 얹힌 것이다 — 먼 겹을 흐리게 깔고, 빛을 번지게 하고, 알갱이를
+ * 뿌리고, 색을 눌러 앉힌다. 그래서 같은 설정이라도 저쪽으로 뽑으면
+ * 손님이 승인한 화면보다 평평하게 나왔다.
+ *
+ * 이 파일은 손님이 본 것과 같은 길로 그린다. 도구가 내주는 "설정표"를
+ * 그대로 주소에 붙이면 그 화면이 나온다.
+ *
+ *   works/studio-deliver.html?style=flyposter&seed=182006&scene=3&ar=1.777
+ *     &bg=%230d1420&tones=ffd6e7,ffb3d1,c9f0d8,fff2b8
+ *     &density=55&speed=50&scale=50&contrast=60&glow=38&motion=drift&symmetry=1&invert=0
+ *     &w=3840&h=2160&fps=30&dur=30&mark=0
+ *
+ * mark=0 이면 도장을 찍지 않는다. 계약된 납품본에만 쓴다.
+ */
+"use strict";
+
+const q = new URLSearchParams(location.search);
+const num = (k, d) => { const v = parseFloat(q.get(k)); return Number.isFinite(v) ? v : d; };
+const GEN = window.BomnalGen;
+
+const W = Math.round(num("w", 3840));
+const H = Math.round(num("h", 2160));
+const FPS = num("fps", 30);
+const PERIOD = 5;                      /* 봄날 화면은 5초에 한 바퀴 돈다 */
+
+const cv = document.getElementById("c");
+cv.width = W; cv.height = H;
+
+/* 장면 문장. 느낌 번호(scene)를 주면 그 문장을, 아니면 빈 문장을 쓴다.
+   compose 는 문장과 씨앗으로 나머지 값을 다시 만든다. */
+const scene = Math.round(num("scene", -1));
+const text = q.get("text") || (scene >= 0 && scene < GEN.SCENES.length ? GEN.SCENES[scene].text : "");
+const seed = Math.round(num("seed", 4821937));
+const ar = num("ar", W / H);
+const ver = Math.round(num("v", 6));
+
+const spec = GEN.compose(text, seed, ar, ver);
+if (scene >= 0) spec.idx = scene;
+spec.v = ver;
+
+/* 그림 — 설정표에 적힌 것이 이긴다 */
+const style = q.get("style");
+if (style) {
+  const id = style.indexOf("sa:") === 0 ? style : "sa:" + style;
+  if (GEN.hasStyle(id)) spec.style = id;
+  else if (GEN.hasStyle(style)) spec.style = style;
+}
+
+/* 색 — 색판 이름이 아니라 색 자체를 싣는다. 이름표가 바뀌어도 납품본은
+   같은 색으로 나와야 한다. */
+const tones = (q.get("tones") || "").split(",").filter(Boolean)
+  .map((h) => "#" + h.replace(/^#/, ""));
+if (tones.length) {
+  spec.palette = { id: q.get("pal") || "설정표", bg: q.get("bg") || spec.palette.bg, ink: tones };
+}
+
+/* 손잡이 — 손님이 돌린 값 */
+const tune = {};
+for (const k of ["density", "speed", "scale", "contrast", "glow", "accent", "symmetry"]) {
+  if (q.get(k) !== null) tune[k] = num(k, 50);
+}
+if (q.get("motion")) tune.motion = q.get("motion");
+if (q.get("invert") !== null) tune.invert = q.get("invert") === "1";
+if (Object.keys(tune).length) spec.tune = tune;
+
+const gen = new GEN.Gen(cv);
+gen.mark = q.get("mark") === "0" ? "" : "시연본 · 봄날퍼블릭아트";
+gen.set(spec);
+
+/* render-studio.mjs 가 이 둘을 부른다. 이름을 바꾸면 납품 렌더가 멈춘다.
+   n 프레임 → 한 바퀴 안의 시각. 30초를 뽑으면 5초짜리가 여섯 번 돈다. */
+window.renderFrame = function (n) { gen.draw((n / FPS) % PERIOD); };
+window.__READY__ = true;
+
+if (!q.get("capture")) {
+  let f = 0;
+  (function loop() { window.renderFrame(f++); requestAnimationFrame(loop); })();
+}
+</script>
+</body>
+</html>

@@ -75,11 +75,20 @@ const frameDir = join(root, "frames", NAME);
 mkdirSync(outDir, { recursive: true });
 mkdirSync(frameDir, { recursive: true });
 
-const artPath = join(root, "works", "studio-art.html");
+/* 어느 화면으로 그릴지.
+ *
+ * 설정표에 tones(색) 나 scene(느낌 번호) 이 들어 있으면 스튜디오·도구가
+ * 내준 것이다. 그건 봄날 껍데기까지 얹어 그려야 손님이 승인한 화면과
+ * 같아진다 — studio-deliver.html 이 그 길이다.
+ * 옛 설정줄(엔진 값만 있는 것)은 예전처럼 studio-art.html 로 간다. */
+const viaGen = q.get("tones") !== null || q.get("scene") !== null || q.get("gen") === "1";
+const artFile = viaGen ? "studio-deliver.html" : "studio-art.html";
+const artPath = join(root, "works", artFile);
 if (!existsSync(artPath)) {
-  console.error("works/studio-art.html 이 없습니다.");
+  console.error(`works/${artFile} 이 없습니다.`);
   process.exit(1);
 }
+console.log(`그리는 화면: works/${artFile}`);
 
 /* ── 프레임 뽑기 ──────────────────────────────────────────── */
 let chromium;

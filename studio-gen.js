@@ -268,13 +268,52 @@ var SCENES = [
     wide:  FIT_V1.wide.concat(withPrefix(ART_WIDE_V4, artIdsN(ART_V4_COUNT))),
     even:  BASE_V1.concat(artIdsN(ART_V4_COUNT))
   };
-  /* 5판 — 지금 나가는 번호(BN5-). */
-  var FIT = {
+  var FIT_V5 = {
     tall:  FIT_V1.tall.concat(withPrefix(ART_TALL)),
     wide:  FIT_V1.wide.concat(withPrefix(ART_WIDE)),
     even:  STYLE_IDS
   };
-  var FITS = { 1: FIT_V1, 2: FIT_V2, 3: FIT_V3, 4: FIT_V4, 5: FIT };
+
+  /* ── 6판 — 솎아낸 판 ───────────────────────────────────────
+   *
+   * 5판까지는 그린 것을 전부 후보에 넣었다. 그래서 손님이 "다른 화면
+   * 보기"를 누르면 공들인 그림과 습작이 같은 확률로 나왔다. 원 몇 개와
+   * 선 몇 줄뿐인 화면이 나오면, 그 뒤에 아무리 좋은 것이 있어도 손님은
+   * 이미 이 가게의 수준을 그것으로 봤다.
+   *
+   * 그래서 6판은 내놓을 것만 담는다. 89종을 다 펼쳐 놓고 골랐다.
+   * 뺀 것의 기준은 취향이 아니라 밀도다 — 화면이 비어 보이거나(비·궤도·
+   * 액자), 어디서나 보는 흔한 도형이거나(미니멀·벡터·콜라주·글래스),
+   * 뭉개져 형태가 안 읽히는 것(연기·모자이크·간섭무늬)을 뺐다.
+   *
+   * 뺀 그림도 코드는 그대로 있다. 이미 나간 번호(BN- ~ BN5-)는 예전
+   * 목록으로 그리므로 팔린 화면은 하나도 안 바뀐다. 6판부터 안 뽑힐 뿐이다.
+   *
+   * 기본 그림(flow·wave 같은 것)은 6판에서 통째로 뺐다. 그림이 나빠서가
+   * 아니라 4K 납품 경로(tools/render-studio.mjs → works/studio-art.html)가
+   * 엔진 그림만 그릴 줄 알기 때문이다. 6판 번호는 전부 그 자리에서 4K로
+   * 뽑을 수 있어야 한다. 손님이 손잡이를 돌려 만든 설정표를 받아 그대로
+   * 렌더해 보내는 것이 6판의 약속이다. */
+  var ART_V6 = [
+    "pop", "swiss", "aurora", "inkwash", "wave", "crystal", "thread", "bloom",
+    "circuit", "topo", "constellation", "stripe", "paper", "bamboo", "ripple",
+    "slitscan", "dotmatrix", "oscillo", "lowpoly", "isocity", "branch", "mandala",
+    "hanji", "blinds", "magnet", "terrace", "weave", "tunnel", "kaleido",
+    "wire", "pointcloud",
+    "jamo", "pdu", "barcode", "segment", "asciiart", "desordre",
+    "chiaroscuro", "frieze", "hardedge", "nakhwa",
+    "phyllo", "blossom", "leafvein", "reed", "dandelion",
+    "petalfall", "ocean", "anamorph", "impasto", "renaissance", "flyposter"
+  ];
+  function keptOnly(list) {
+    return list.filter(function (id) { return ART_V6.indexOf(id) >= 0; });
+  }
+  var FIT = {
+    tall:  withPrefix(keptOnly(ART_TALL)),
+    wide:  withPrefix(keptOnly(ART_WIDE)),
+    even:  withPrefix(ART_V6)
+  };
+  var FITS = { 1: FIT_V1, 2: FIT_V2, 3: FIT_V3, 4: FIT_V4, 5: FIT_V5, 6: FIT };
 
   /* ── 문장 읽기 ────────────────────────────────────────────
    * 낱말은 방향만 잡는다. 고정하지 않는다.
@@ -412,26 +451,36 @@ var SCENES = [
      않는데 캔버스만 세 배로 든다. 벽에 열두 칸이면 그대로 느려진다. */
   var ART_DEPTH_MIN = 480;
 
-  /** 사양 하나를 엔진이 알아듣는 값으로 옮긴다. */
+  /** 사양 하나를 엔진이 알아듣는 값으로 옮긴다.
+   *
+   * s.tune 이 있으면 그 값이 이긴다. 손님이 도구에서 손잡이를 돌린 값이다.
+   * 느낌에서 자동으로 뽑은 값은 손잡이를 안 건드린 자리에만 남는다.
+   * 이렇게 해 두면 "저절로 나온 것"과 "손본 것"이 같은 길로 그려져,
+   * 손님이 본 화면과 우리가 납품하는 4K 가 어긋나지 않는다. */
   function artOpts(s, W, H, seed, densMul, bare) {
     var r = rng(seed ^ 0x5eed1);
     var cl = function (v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; };
+    var T = s.tune || {};
+    var use = function (key, auto) { return T[key] == null ? auto : T[key]; };
     return {
       w: W, h: H, fps: ART_FPS, dur: PERIOD,
       seed: seed,
       style: s.style.slice(ART_PREFIX.length),
       palette: artPalette(s.palette),
       /* 분위기(느낌)가 정한 값을 엔진의 0~100 눈금으로 옮긴다 */
-      density:  cl(Math.round(s.density * densMul * 42), 8, 96),
-      speed:    cl(Math.round(s.speed * 46), 8, 95),
-      scale:    cl(Math.round(s.warp * 36), 15, 90),
-      contrast: cl(Math.round(s.weight * 46), 25, 95),
-      glow:     cl(Math.round(s.glow * 36), 5, 85),
+      /* 밀도만 겹마다 다르게 쓴다(먼 겹은 성글게). 손님이 정한 값에도
+         같은 비율을 곱해야 겹이 따로 놀지 않는다. */
+      density:  cl(Math.round(T.density == null ? s.density * densMul * 42
+                                                 : T.density * densMul), 8, 96),
+      speed:    cl(Math.round(use("speed", s.speed * 46)), 8, 95),
+      scale:    cl(Math.round(use("scale", s.warp * 36)), 15, 90),
+      contrast: cl(Math.round(use("contrast", s.weight * 46)), 25, 95),
+      glow:     cl(Math.round(use("glow", s.glow * 36)), 5, 85),
       grain:    bare ? 0 : 14,     /* 알갱이는 겹을 합친 뒤 grade 가 한 번만 얹는다 */
-      accent:   cl(Math.round(40 + r() * 45), 28, 92),
-      motion:   ART_MOTIONS[Math.floor(r() * ART_MOTIONS.length)],
-      symmetry: 1,
-      invert:   false,
+      accent:   cl(Math.round(use("accent", 40 + r() * 45)), 28, 92),
+      motion:   use("motion", ART_MOTIONS[Math.floor(r() * ART_MOTIONS.length)]),
+      symmetry: use("symmetry", 1),
+      invert:   !!use("invert", false),
       bare:     !!bare
     };
   }
@@ -506,7 +555,11 @@ var SCENES = [
     cancelAnimationFrame(this.raf);
     this.t0 = performance.now();
     (function loop(now) {
-      var t = ((now - self.t0) / 1000) % PERIOD;
+      /* rAF 가 넘겨주는 시각은 "이 프레임이 시작한 때"다. start() 를
+         프레임 도중에 부르면 그 값이 t0 보다 앞설 수 있어 t 가 음수가 된다.
+         음수 t 는 그리는 쪽에서 seeds[음수] 를 집어 스타일이 통째로 터진다
+         (신호(barcode)에서 실제로 났다). 0 밑으로는 안 내려가게 막는다. */
+      var t = (Math.max(0, now - self.t0) / 1000) % PERIOD;
       self.draw(t);
       self.raf = requestAnimationFrame(loop);
     })(performance.now());
@@ -1197,6 +1250,14 @@ var SCENES = [
 
   global.BomnalGen = {
     compose: compose, Gen: Gen, SCENES: SCENES,
+    /* 색판. 도구에서 손님이 색을 고를 때 쓴다. */
+    PALETTES: PALETTES,
+    /* 그 판·그 비율에서 실제로 뽑히는 후보. 도구가 자기 묶음을 이걸로
+       거른다. 안 거르면 솎아낸 그림이 도구를 통해 다시 나온다. */
+    pool: function (v, ar) {
+      var F = FITS[v] || FIT;
+      return (ar >= 2.2 ? F.wide : (ar <= 0.62 ? F.tall : F.even)).slice();
+    },
     /* 담아 둔 화면이 적어 둔 스타일을 지금도 그릴 줄 아는가 */
     hasStyle: function (id) { return STYLE_IDS.indexOf(id) >= 0; },
     counts: { styles: STYLE_IDS.length, palettes: PALETTES.length, moods: MOODS.length }

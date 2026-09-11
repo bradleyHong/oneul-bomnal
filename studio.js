@@ -166,8 +166,9 @@
          BN2- 2판  + 엔진 56종
          BN3- 3판  + 엔진 78종 (3D·글자·액자·띠그림·색면·낙화까지)
          BN4- 4판  + 식물 5종 + 현대미술 5종
-         BN5- 5판  + 벽보 */
-    var CODE_V = 5;
+         BN5- 5판  + 벽보 + 얼룩
+         BN6- 6판  내놓을 것만 솎았다 (엔진 52종) */
+    var CODE_V = 6;
     function code(idx, seed, v) {
       var n = (((idx & 31) << 19) | (seed & 0x7FFFF)) >>> 0;
       var vv = v || CODE_V;
@@ -189,6 +190,9 @@
       return idx === CUSTOM ? (elStory.value || "").trim() : SCENES[idx].text;
     }
 
+    /* 주소의 설정표로 처음 한 번 그릴 때만 그 줄을 살려 둔다. */
+    var fromUrlSpec = false;
+
     function make(idx, seed, fromHistory, v, style) {
       if (idx == null) idx = sceneIdx;
       if (v == null) v = CODE_V;          /* 새로 만드는 것은 늘 최신 판 */
@@ -198,6 +202,9 @@
       var pn = currentPanel();
       var sd = seed == null ? newSeed() : seed;
       spec = GEN.compose(story, sd, pn.w / pn.h, v);
+      /* 화면을 새로 뽑으면 도구에서 들고 온 설정표는 더 이상 이 화면이
+         아니다. 남겨 두면 손님이 승인한 것과 다른 줄이 우리에게 온다. */
+      if (fromUrlSpec) fromUrlSpec = false; else SHEET = "";
       /* 담아 둔 화면에서 왔으면 그때 그린 스타일로. 판 목록이 밀려도
          고객이 본 그림이 그대로 열린다. */
       if (style && GEN.hasStyle(style)) spec.style = style;
@@ -324,12 +331,15 @@
       } else { prompt("이 번호를 복사해 두세요", txt); }
     });
 
+    /* 도구에서 넘어온 설정표. 없으면 빈 문자열. */
+    var SHEET = "";
+
     var elLoad = $("[data-st-load]", root);
     var elLoadBtn = $("[data-st-load-go]", root);
     var elLoadMsg = $("[data-st-load-msg]", root);
     function loadCode() {
       var p2 = parseCode(elLoad.value);
-      if (!p2) { elLoadMsg.textContent = "BN5-, BN4-, BN3-, BN2-, BN- 으로 시작하는 번호를 넣어 주세요."; return; }
+      if (!p2) { elLoadMsg.textContent = "BN6-, BN5-, BN4-, BN3-, BN2-, BN- 으로 시작하는 번호를 넣어 주세요."; return; }
       if (p2.idx === CUSTOM && !(elStory.value || "").trim()) {
         elLoadMsg.textContent = "직접 적으신 문장으로 만든 번호입니다. 그 문장을 아래에 적어 주세요.";
         return;
@@ -356,11 +366,16 @@
        열어야 고객이 도구에서 본 화면이 그대로 나온다. */
     (function () {
       var q = new URLSearchParams(location.search);
+      /* 도구에서 손본 설정표. 의뢰 문안에 그대로 실어야 우리가 받아서
+         바로 렌더할 수 있다. */
+      var sh = (q.get("spec") || "").trim();
+      if (sh && sh.indexOf("style=") >= 0) SHEET = sh;
       var raw = (q.get("code") || "").trim();
       if (!raw) return;
       var p3 = parseCode(raw);
       if (!p3 || p3.idx === CUSTOM || p3.idx >= SCENES.length) return;
       var st = q.get("style");
+      fromUrlSpec = !!SHEET;
       make(p3.idx, p3.seed, false, p3.v, st && GEN.hasStyle(st) ? st : null);
       var picked = $("[data-st-picked]", root);
       if (picked && picked.scrollIntoView) picked.scrollIntoView({ block: "start" });
@@ -372,6 +387,24 @@
     // 가입시키지 않습니다. 이름과 이메일만 받아 지금 화면의 설정을 그대로 실어 보냅니다.
     // 광고성 메일은 정보통신망법 제50조에 따라 사전 동의가 있어야 하므로,
     // 회신 동의와 수신 동의를 반드시 따로 받고 그 결과를 접수 내용에 남깁니다.
+    /* 도구를 안 거치고 스튜디오에서 바로 고른 화면도 같은 모양의 줄로 적는다.
+       담당자가 두 가지 양식을 구분할 이유가 없다. */
+    function specLine() {
+      if (!spec) return "(만들기 전)";
+      var pn = currentPanel();
+      var enc = encodeURIComponent;
+      var tones = (spec.palette.ink || []).map(function (h) { return h.replace(/^#/, ""); }).join(",");
+      return ["style=" + enc(String(spec.style).replace(/^sa:/, "")),
+              "scene=" + spec.idx,
+              "seed=" + spec.seed,
+              "v=" + (spec.v || CODE_V),
+              "ar=" + (pn.w / pn.h).toFixed(6),
+              "pal=" + enc(spec.palette.id),
+              "bg=" + enc(spec.palette.bg),
+              "tones=" + enc(tones),
+              "w=" + pn.w, "h=" + pn.h].join("&");
+    }
+
     function specText(story) {
       if (!LAST) return "(견적을 계산하기 전에 보내셨습니다)";
       var picked = [];
@@ -385,6 +418,10 @@
         "작품 번호: " + (art || "(만들기 전)"),
         "원하시는 화면: " + (story || "(적지 않으심)"),
         "엔진 설정(사내 확인용): " + (spec ? spec.style + " / " + spec.palette.id : "-"),
+        /* 이 줄 하나면 담당자가 그 자리에서 4K 를 뽑는다.
+             node tools/render-studio.mjs "<이 줄>" --name <이름> --dur <초>
+           손님이 도구에서 손본 값까지 전부 담겨 있다. */
+        "재현용 파라미터: " + (SHEET || specLine()),
         "화면 규격: " + LAST.panel.name + " " + LAST.panel.w + "×" + LAST.panel.h,
         "재생 길이: " + LAST.sec + "초",
         "렌더 크레딧: " + LAST.q.credits + " 크레딧 (옵션 배수 ×" + LAST.q.mult + ") = " + comma(LAST.q.render) + "원",
