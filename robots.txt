@@ -11,8 +11,6 @@ Disallow: /admin
 Disallow: /admin.html
 Disallow: /client
 Disallow: /client.html
-Disallow: /studio
-Disallow: /studio.html
 Disallow: /tools
 Disallow: /tools.html
 Disallow: /login
@@ -43,8 +41,6 @@ Disallow: /admin
 Disallow: /admin.html
 Disallow: /client
 Disallow: /client.html
-Disallow: /studio
-Disallow: /studio.html
 Disallow: /tools
 Disallow: /tools.html
 Disallow: /login
@@ -75,8 +71,6 @@ Disallow: /admin
 Disallow: /admin.html
 Disallow: /client
 Disallow: /client.html
-Disallow: /studio
-Disallow: /studio.html
 Disallow: /tools
 Disallow: /tools.html
 Disallow: /login
@@ -107,8 +101,6 @@ Disallow: /admin
 Disallow: /admin.html
 Disallow: /client
 Disallow: /client.html
-Disallow: /studio
-Disallow: /studio.html
 Disallow: /tools
 Disallow: /tools.html
 Disallow: /login
@@ -139,8 +131,6 @@ Disallow: /admin
 Disallow: /admin.html
 Disallow: /client
 Disallow: /client.html
-Disallow: /studio
-Disallow: /studio.html
 Disallow: /tools
 Disallow: /tools.html
 Disallow: /login
@@ -171,8 +161,6 @@ Disallow: /admin
 Disallow: /admin.html
 Disallow: /client
 Disallow: /client.html
-Disallow: /studio
-Disallow: /studio.html
 Disallow: /tools
 Disallow: /tools.html
 Disallow: /login
@@ -203,8 +191,6 @@ Disallow: /admin
 Disallow: /admin.html
 Disallow: /client
 Disallow: /client.html
-Disallow: /studio
-Disallow: /studio.html
 Disallow: /tools
 Disallow: /tools.html
 Disallow: /login
@@ -235,8 +221,6 @@ Disallow: /admin
 Disallow: /admin.html
 Disallow: /client
 Disallow: /client.html
-Disallow: /studio
-Disallow: /studio.html
 Disallow: /tools
 Disallow: /tools.html
 Disallow: /login
@@ -267,8 +251,6 @@ Disallow: /admin
 Disallow: /admin.html
 Disallow: /client
 Disallow: /client.html
-Disallow: /studio
-Disallow: /studio.html
 Disallow: /tools
 Disallow: /tools.html
 Disallow: /login
@@ -299,8 +281,6 @@ Disallow: /admin
 Disallow: /admin.html
 Disallow: /client
 Disallow: /client.html
-Disallow: /studio
-Disallow: /studio.html
 Disallow: /tools
 Disallow: /tools.html
 Disallow: /login
@@ -331,8 +311,6 @@ Disallow: /admin
 Disallow: /admin.html
 Disallow: /client
 Disallow: /client.html
-Disallow: /studio
-Disallow: /studio.html
 Disallow: /tools
 Disallow: /tools.html
 Disallow: /login
@@ -363,8 +341,6 @@ Disallow: /admin
 Disallow: /admin.html
 Disallow: /client
 Disallow: /client.html
-Disallow: /studio
-Disallow: /studio.html
 Disallow: /tools
 Disallow: /tools.html
 Disallow: /login
@@ -395,8 +371,6 @@ Disallow: /admin
 Disallow: /admin.html
 Disallow: /client
 Disallow: /client.html
-Disallow: /studio
-Disallow: /studio.html
 Disallow: /tools
 Disallow: /tools.html
 Disallow: /login
@@ -427,8 +401,6 @@ Disallow: /admin
 Disallow: /admin.html
 Disallow: /client
 Disallow: /client.html
-Disallow: /studio
-Disallow: /studio.html
 Disallow: /tools
 Disallow: /tools.html
 Disallow: /login
