@@ -1014,6 +1014,74 @@
         </div>
       </section>
 
+      <!-- 스크롤이 붓이 된다 ──────────────────────────────────────
+           여기까지 온 사람은 "코드로 만든다"는 말을 세 번쯤 읽었다.
+           읽는 것보다 손으로 한 번 밀어 보는 쪽이 빠르다.
+
+           영상을 튼 것이 아니다. 미리 뽑아 둔 프레임을 스크롤 위치에
+           맞춰 골라 그린다(scroll-art.js). 그림 엔진은 219KB 라 이
+           장식 하나 때문에 올릴 수 없다. -->
+      <section class="section sart-section" id="interactive">
+        <div class="section-head">
+          <p class="section-kicker">Interactive Art</p>
+          <h2>스크롤하는 만큼 그림이 움직입니다</h2>
+          <p>영상을 튼 것이 아닙니다. 저희가 코드로 그린 화면을 한 장씩 미리 뽑아 두고,
+             손가락이 미는 만큼 골라 그립니다. 현장에 걸리는 화면도 같은 코드로 돕니다.</p>
+        </div>
+
+        <div class="sart sart-wide" data-scroll-art="./assets/scroll/bamboo-grove.webp"
+             data-frames="48" data-cols="8" data-cell="960x540" data-mode="sticky">
+          <div class="sart-stick">
+            <div class="sart-frame">
+              <img class="sart-poster" src="./assets/scroll/bamboo-grove-poster.webp"
+                   alt="대숲을 코드로 그린 미디어아트 화면" width="960" height="540"
+                   loading="lazy" decoding="async" />
+              <canvas class="sart-canvas" aria-hidden="true"></canvas>
+            </div>
+            <p class="sart-tag"><b>竹林 · 대숲</b><span>스크롤해 보세요</span></p>
+          </div>
+        </div>
+
+        <ul class="sart-row">
+          <li class="sart" data-scroll-art="./assets/scroll/leafvein.webp"
+              data-frames="24" data-cols="6" data-cell="360x360" data-mode="pass">
+            <div class="sart-frame is-square">
+              <img class="sart-poster" src="./assets/scroll/leafvein-poster.webp"
+                   alt="잎맥을 코드로 그린 미디어아트 화면" width="360" height="360"
+                   loading="lazy" decoding="async" />
+              <canvas class="sart-canvas" aria-hidden="true"></canvas>
+            </div>
+            <p class="sart-cap"><b>葉脈 · 잎맥</b><span>선으로만 그린 잎</span></p>
+          </li>
+          <li class="sart" data-scroll-art="./assets/scroll/reed.webp"
+              data-frames="24" data-cols="6" data-cell="360x360" data-mode="pass">
+            <div class="sart-frame is-square">
+              <img class="sart-poster" src="./assets/scroll/reed-poster.webp"
+                   alt="갈대를 코드로 그린 미디어아트 화면" width="360" height="360"
+                   loading="lazy" decoding="async" />
+              <canvas class="sart-canvas" aria-hidden="true"></canvas>
+            </div>
+            <p class="sart-cap"><b>蘆葦 · 갈대</b><span>바람에 눕는 결</span></p>
+          </li>
+          <li class="sart" data-scroll-art="./assets/scroll/petalfall.webp"
+              data-frames="24" data-cols="6" data-cell="360x360" data-mode="pass">
+            <div class="sart-frame is-square">
+              <img class="sart-poster" src="./assets/scroll/petalfall-poster.webp"
+                   alt="꽃눈이 내리는 모습을 코드로 그린 미디어아트 화면" width="360" height="360"
+                   loading="lazy" decoding="async" />
+              <canvas class="sart-canvas" aria-hidden="true"></canvas>
+            </div>
+            <p class="sart-cap"><b>花雪 · 꽃눈</b><span>떨어지는 꽃잎</span></p>
+          </li>
+        </ul>
+
+        <p class="sart-note">
+          여기 걸린 넷은 <b>규격이 정해져 있지 않습니다</b>. 영상 파일이 아니라 코드라서
+          현장 화면의 비율과 해상도를 주시면 그 규격 그대로 다시 출력합니다.
+          32:9 외벽 전광판이든 1:6 기둥이든 같은 작품이 그 크기로 나옵니다.
+        </p>
+      </section>
+
       <!-- 미디어아트 박스 렌탈 · 화면이 없는 자리를 위한 구성 ─────
            위 미디어박스는 이미 달린 패널에 물리는 플레이어를 파는 것이고,
            여기는 화면 자체가 없는 야외·야간 행사에 한 벌을 통째로
@@ -1233,5 +1301,6 @@
       <script src="./inquiry.js?v=20260821-clean"></script>
       <script src="./auth.js?v=20260728-auth"></script>
     <script src="./art-embed.js?v=20260823-art" defer></script>
+    <script src="./scroll-art.js?v=20260911-sart" defer></script>
   </body>
 </html>

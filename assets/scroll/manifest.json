@@ -1,0 +1,42 @@
+{
+  "bamboo-grove": {
+    "label": "대숲",
+    "w": 960,
+    "h": 540,
+    "frames": 48,
+    "cols": 8,
+    "rows": 6,
+    "sheet": "./assets/frames/bamboo-grove.webp",
+    "poster": "./assets/frames/bamboo-grove-poster.webp"
+  },
+  "leafvein": {
+    "label": "잎맥",
+    "w": 360,
+    "h": 360,
+    "frames": 24,
+    "cols": 6,
+    "rows": 4,
+    "sheet": "./assets/frames/leafvein.webp",
+    "poster": "./assets/frames/leafvein-poster.webp"
+  },
+  "reed": {
+    "label": "갈대",
+    "w": 360,
+    "h": 360,
+    "frames": 24,
+    "cols": 6,
+    "rows": 4,
+    "sheet": "./assets/frames/reed.webp",
+    "poster": "./assets/frames/reed-poster.webp"
+  },
+  "petalfall": {
+    "label": "꽃눈",
+    "w": 360,
+    "h": 360,
+    "frames": 24,
+    "cols": 6,
+    "rows": 4,
+    "sheet": "./assets/frames/petalfall.webp",
+    "poster": "./assets/frames/petalfall-poster.webp"
+  }
+}
