@@ -327,15 +327,32 @@ var SCENES = [
     "phyllo", "blossom", "leafvein", "reed", "dandelion",
     "petalfall", "ocean", "anamorph", "impasto", "renaissance", "flyposter"
   ];
-  function keptOnly(list) {
-    return list.filter(function (id) { return ART_V6.indexOf(id) >= 0; });
+  function keptIn(list, keep) {
+    return list.filter(function (id) { return keep.indexOf(id) >= 0; });
   }
-  var FIT = {
-    tall:  withPrefix(keptOnly(ART_TALL)),
-    wide:  withPrefix(keptOnly(ART_WIDE)),
+  var FIT_V6 = {
+    tall:  withPrefix(keptIn(ART_TALL, ART_V6)),
+    wide:  withPrefix(keptIn(ART_WIDE, ART_V6)),
     even:  withPrefix(ART_V6)
   };
-  var FITS = { 1: FIT_V1, 2: FIT_V2, 3: FIT_V3, 4: FIT_V4, 5: FIT_V5, 6: FIT };
+
+  /* ── 7판 — 활자를 덜어내고 한글을 세운다 ────────────────────
+   *
+   * 활자 묶음(활자판·칠획·신호·문자 명암)은 넷 다 라틴 글자와 숫자를
+   * 늘어놓는 그림이다. 기계가 뱉은 표처럼 보이지 그림으로는 안 읽혔다.
+   * 넷을 빼고, 대신 제대로 짠 한글 조판을 세운다. 자모는 획이고 획은
+   * 좌표라 코드로 그리기에 라틴 알파벳보다 오히려 낫다.
+   *
+   * 자모(jamo)는 남긴다. 낱글자 하나를 크게 쓰는 그림이라 조판과 다르다. */
+  var ART_V7 = ART_V6
+    .filter(function (id) { return ["pdu", "segment", "barcode", "asciiart"].indexOf(id) < 0; })
+    .concat(["hangul"]);
+  var FIT = {
+    tall:  withPrefix(keptIn(ART_TALL.concat(["hangul"]), ART_V7)),
+    wide:  withPrefix(keptIn(ART_WIDE.concat(["hangul"]), ART_V7)),
+    even:  withPrefix(ART_V7)
+  };
+  var FITS = { 1: FIT_V1, 2: FIT_V2, 3: FIT_V3, 4: FIT_V4, 5: FIT_V5, 6: FIT_V6, 7: FIT };
 
   /* ── 문장 읽기 ────────────────────────────────────────────
    * 낱말은 방향만 잡는다. 고정하지 않는다.

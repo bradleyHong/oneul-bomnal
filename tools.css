@@ -227,3 +227,8 @@
   .tl-send { padding: 16px; }
   .tl-mix-one input[type="color"] { width: 48px; height: 36px; }
 }
+
+/* 도구 이름은 영문으로 크게, 한글 뜻은 그 아래 작게.
+   로비에 거는 물건을 파는 자리라 이름부터 물건처럼 보여야 한다. */
+.tl-card-name { font-family: ui-sans-serif, system-ui, sans-serif; letter-spacing: -.01em; text-transform: lowercase; }
+.tl-stage-name strong { text-transform: lowercase; letter-spacing: -.01em; }

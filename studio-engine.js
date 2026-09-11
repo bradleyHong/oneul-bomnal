@@ -389,7 +389,9 @@ function create(canvas, opts) {
                           획 수천 개, 회랑은 바닥 타일 수백 장. 다 같은 병이다. */
                        petalfall: 1, ocean: 1, impasto: 1, renaissance: 1, anamorph: 1,
                        /* 벽보는 활자 칸을 수만 개 찍는다. 같은 병이다. */
-                       flyposter: 1 };
+                       flyposter: 1,
+                       /* 한글 조판은 획을 수백 번 긋는다. 같은 병이다. */
+                       hangul: 1 };
 
   /* 획이 많지만 번지면 안 되는 것.
      HEAVY_GLOW 에 넣으면 획마다 그림자를 다는 것은 면하지만, 대신 다 그린 뒤
@@ -4226,6 +4228,126 @@ function create(canvas, opts) {
       }
     },
 
+    /* 90 한글 조판 — 세로쓰기 판면.
+       자모는 획이고 획은 좌표다. 그래서 한글은 코드로 그리기에 라틴
+       알파벳보다 오히려 낫다. 이 그림은 낱글자를 흩뿌리지 않는다.
+       옛 책의 판면을 그대로 짠다 — 계선(세로줄)을 치고, 칸마다 낱말을
+       세로로 앉히고, 한 칸만 크게 세워 중심을 잡고, 귀퉁이에 낙관을 찍는다.
+
+       글자는 아무 획이나 붙여 만든 가짜가 아니라 전부 읽히는 낱말이다.
+       빛·결·숨·바람·하늘·마음처럼 어느 현장에 걸어도 되는 말만 쓴다.
+
+       획은 쓰는 차례대로 드러난다. 한 바퀴에 다 쓰고, 머물고, 지워져
+       제자리로 온다(breathe). 그래야 5초 이음매가 맞는다. */
+    hangul(t) {
+      const ph = t / DUR;
+      /* 낱말 — [초성, 중성, 종성] 을 음절마다. 종성 0 은 받침 없음.
+         CHO  ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎ = 0..13
+         JUNG ㅏㅑㅓㅕㅣㅗㅛㅜㅠㅡ        = 0..9
+         JONG 0=없음, 1..14 = 위 초성 차례 */
+      const WORDS = [
+        [[5, 5, 5]],                          /* 봄 */
+        [[1, 0, 4]],                          /* 날 */
+        [[5, 4, 10]],                         /* 빛 */
+        [[0, 3, 4]],                          /* 결 */
+        [[6, 7, 5]],                          /* 숨 */
+        [[4, 7, 4]],                          /* 물 */
+        [[0, 4, 4]],                          /* 길 */
+        [[13, 9, 0], [3, 9, 5]],              /* 흐름 */
+        [[5, 0, 0], [3, 0, 5]],               /* 바람 */
+        [[13, 0, 0], [1, 9, 4]],              /* 하늘 */
+        [[4, 0, 0], [7, 9, 5]],               /* 마음 */
+        [[0, 9, 0], [1, 9, 4]],               /* 그늘 */
+        [[6, 5, 0], [3, 4, 0]],               /* 소리 */
+        [[0, 3, 0], [7, 7, 4]],               /* 겨울 */
+        [[7, 3, 0], [3, 9, 5]],               /* 여름 */
+        [[0, 0, 0], [7, 9, 4]],               /* 가을 */
+        [[0, 7, 0], [3, 9, 5]],               /* 구름 */
+        [[7, 4, 0], [6, 9, 4]],               /* 이슬 */
+        [[1, 5, 0], [7, 9, 4]],               /* 노을 */
+        [[0, 9, 0], [3, 4, 5]]                /* 그림 */
+      ];
+
+      /* 판면 — 여백을 넉넉히 둔다. 옛 책은 글자보다 여백이 넓다. */
+      const mx = W * 0.10, my = H * 0.12;
+      const pw = W - mx * 2, pwh = H - my * 2;
+      const wideK = clamp(W / H / (16 / 9), 0.25, 2.6);
+      /* 칸 수. 좁은 기둥에서는 한 줄, 넓은 띠에서는 여러 줄. */
+      const cols = clamp(Math.round((3 + k.density * 4) * wideK), 1, 12);
+      const cw = pw / cols;
+      const rot = seeds[890].a;
+
+      /* 계선 — 아주 옅게. 있는 줄 모르게 있어야 한다. */
+      ctx.strokeStyle = tone(2, 0.06 + 0.10 * k.contrast);
+      ctx.lineWidth = Math.max(0.6, S * 0.8);
+      ctx.beginPath();
+      for (let i = 0; i <= cols; i++) {
+        const x = mx + i * cw;
+        ctx.moveTo(x, my); ctx.lineTo(x, my + pwh);
+      }
+      ctx.moveTo(mx, my); ctx.lineTo(mx + pw, my);
+      ctx.moveTo(mx, my + pwh); ctx.lineTo(mx + pw, my + pwh);
+      ctx.stroke();
+
+      /* 한 칸은 크게 세운다. 판면에 중심이 없으면 벽지가 된다. */
+      const hero = Math.floor(seeds[891].b * cols);
+
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+
+      for (let c = 0; c < cols; c++) {
+        const big = c === hero && cols > 1;
+        const s = seeds[(c * 7 + 892) % seeds.length];
+        const word = WORDS[Math.floor(((s.a + rot) % 1) * WORDS.length) % WORDS.length];
+        /* 글자 크기 — 큰 칸은 칸을 꽉 채우고, 나머지는 절반쯤. */
+        const side = Math.min(cw * (big ? 0.80 : 0.46) * clamp(k.scale, 0.7, 1.3), pwh * 0.30);
+        const gap = side * 0.20;
+        const total = word.length * side + (word.length - 1) * gap;
+        /* 낱말 덩어리를 칸 가운데 앉히고, 칸마다 조금씩만 어긋낸다.
+           자로 잰 듯 맞추면 표가 되고, 제멋대로 두면 흩어진다. */
+        const y0 = my + (pwh - total) / 2 + (s.b - 0.5) * pwh * 0.16;
+        const x0 = mx + c * cw + (cw - side) / 2;
+        /* 쓰는 차례. 칸마다 조금씩 늦게 시작한다.
+           다 쓰고 나면 오래 머문다 — 벽에 걸린 그림은 대개 멈춰 있어야 하고,
+           멈춘 동안이 짧으면 글자가 늘 반쯤 쓰이다 만 것처럼 보인다. */
+        const lag = (c / Math.max(1, cols)) * 0.14;
+        const u = clamp((ph - lag) / (1 - 0.14), 0, 1);
+        const rv = u < 0.20 ? u / 0.20 : (u < 0.88 ? 1 : 1 - (u - 0.88) / 0.12);
+
+        ctx.lineWidth = Math.max(1.4, side * (big ? 0.115 : 0.095));
+        ctx.strokeStyle = big
+          ? tone(0, Math.min(0.98, (0.55 + 0.45 * k.contrast) * rv))
+          : tone(s.c > 0.72 ? 1 : 2, Math.min(0.9, (0.26 + 0.42 * k.contrast) * rv));
+
+        for (let i = 0; i < word.length; i++) {
+          const y = y0 + i * (side + gap);
+          if (y > my + pwh) break;
+          /* 글자마다 차례로. 앞 글자가 다 써진 뒤 다음 글자가 시작한다. */
+          const r = clamp(rv * word.length - i, 0, 1);
+          if (r <= 0) continue;
+          syllable(word[i][0], word[i][1], word[i][2], x0, y, side, side, r);
+        }
+      }
+
+      /* 낙관 — 붉은 도장 한 점. 판면에 온기를 준다.
+         네모 안에 획 몇 개. 글자를 넣으면 읽으려 들어 중심이 흩어진다. */
+      const sr = Math.min(W, H) * 0.055 * clamp(k.scale, 0.8, 1.2);
+      const sx = mx + pw - sr * (0.4 + seeds[893].c * 0.8);
+      const sy = my + pwh - sr * (0.4 + seeds[893].d * 1.4);
+      const sa = Math.min(0.95, (0.55 + 0.4 * k.contrast) * breathe(clamp(ph * 1.4, 0, 1)));
+      ctx.fillStyle = tone(1, sa * 0.9);
+      ctx.fillRect(sx - sr / 2, sy - sr / 2, sr, sr);
+      ctx.strokeStyle = tone(3, sa);
+      ctx.lineWidth = Math.max(1, sr * 0.10);
+      ctx.beginPath();
+      for (let i = 0; i < 3; i++) {
+        const yy = sy - sr * 0.26 + i * sr * 0.26;
+        ctx.moveTo(sx - sr * 0.26, yy); ctx.lineTo(sx + sr * 0.26, yy);
+      }
+      ctx.moveTo(sx, sy - sr * 0.30); ctx.lineTo(sx, sy + sr * 0.30);
+      ctx.stroke();
+    },
+
   };
 
   /* ── 마감 처리 ────────────────────────────────────────────────
@@ -4349,6 +4471,8 @@ const STYLE_LABELS = [
   ["impasto", "유화"], ["renaissance", "르네상스"],
 
   ["flyposter", "벽보"],
+
+  ["hangul", "한글 조판"],
 ];
 
 global.StudioArt = {

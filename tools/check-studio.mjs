@@ -92,6 +92,15 @@ for (const key of ["ART_TALL", "ART_WIDE"]) {
     }
     if (ids.length < 30) fails.push(`ART_V6이 ${ids.length}종뿐이다. 너무 적게 남았다`);
   }
+  /* 지금 나가는 판. 6판에서 덜고 더한 것들 */
+  const j = gen.indexOf("var ART_V7 = ART_V6");
+  if (j < 0) fails.push("studio-gen.js에 ART_V7이 없다 (지금 판 목록이 없다)");
+  else {
+    const ids = [...gen.slice(j, gen.indexOf("]);", j) + 3).matchAll(/"([a-z0-9-]+)"/g)].map((m) => m[1]);
+    for (const id of ids) {
+      if (!listed.includes(id)) fails.push(`ART_V7의 "${id}"가 엔진에 없다 (오타면 조용히 빠진다)`);
+    }
+  }
 }
 
 /* 씨앗 배열을 넘어서 집는 곳.
@@ -114,7 +123,7 @@ for (const key of ["ART_TALL", "ART_WIDE"]) {
    한 번 뚫렸다 — #25 가 판을 안 올리고 8종을 넣어 담아 둔 화면이 바뀌었다.
    그래서 이제는 "지금 나가 있는 판의 수"도 같이 본다: 배포된 판에
    스타일을 더하려면 판을 올려야 한다. */
-const ERAS = [[56, "weave"], [78, "nakhwa"], [88, "renaissance"], [89, "flyposter"]];
+const ERAS = [[56, "weave"], [78, "nakhwa"], [88, "renaissance"], [89, "flyposter"], [90, "hangul"]];
 for (const [count, last] of ERAS) {
   if (listed.length < count) {
     fails.push(`엔진 스타일이 ${listed.length}종이다. ${count}종 판보다 적다 (지운 것이 있다)`);
@@ -153,7 +162,7 @@ if (!gen.includes("ART_V2_COUNT = 56, ART_V3_COUNT = 78, ART_V4_COUNT = 88")) fa
     }
   }
 }
-for (const need of ["FIT_V1", "FIT_V2", "FIT_V3", "FIT_V4", "FIT_V5", "FITS"]) {
+for (const need of ["FIT_V1", "FIT_V2", "FIT_V3", "FIT_V4", "FIT_V5", "FIT_V6", "FITS"]) {
   if (!gen.includes(need)) fails.push(`studio-gen.js에 ${need}가 없다 (판별 목록이 끊겼다)`);
 }
 /* 지금 나가는 판(CODE_V)이 마지막으로 얼린 판보다 커야 한다.
