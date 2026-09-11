@@ -4499,6 +4499,120 @@ main .home-hero .primary-link {
 }
 .ref-note strong { color: var(--ink); font-weight: 800; }
 
+/* ── 작업 영상 카드 ──────────────────────────────────────────
+   눌러야 재생기가 붙는다. 누르기 전에는 내려받는 것이 없어 썸네일
+   그림도 없다. 그래서 색과 글자만으로 카드가 서 있어야 한다.
+   히어로와 같은 바탕색을 써서 위아래가 한 화면으로 읽히게 한다. */
+
+.ref-films { margin-top: clamp(28px, 3.4vw, 44px); }
+
+.ref-films-head {
+  margin: 0 0 14px;
+  font-size: clamp(16px, 1.5vw, 19px);
+  font-weight: 850;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.film-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(14px, 1.6vw, 22px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.film {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0d1017;
+  box-shadow: 0 10px 28px rgba(16, 27, 51, 0.14);
+}
+
+.film-card {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  width: 100%;
+  padding: 16px;
+  border: 0;
+  margin: 0;
+  font: inherit;
+  text-align: left;
+  color: #fff;
+  cursor: pointer;
+  background:
+    radial-gradient(120% 90% at 50% 18%, #16203a 0%, #0a0e17 62%, #101b33 100%);
+  transition: transform 180ms ease;
+}
+
+.film-ico {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  background: rgba(255, 255, 255, 0.14);
+  transition: background 180ms ease;
+}
+/* 삼각형은 글꼴에 기대지 않는다. 테두리로 그린다. */
+.film-ico::after {
+  content: "";
+  width: 0;
+  height: 0;
+  margin-left: 3px;
+  border-left: 11px solid #fff;
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+}
+
+.film-txt {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.film-name {
+  font-size: 15px;
+  font-weight: 850;
+  letter-spacing: -0.01em;
+}
+.film-txt small {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.film-card:hover .film-ico { background: rgba(255, 255, 255, 0.26); }
+/* 눌린 순간에 바로 반응한다. 재생기가 붙기까지 잠깐 비는 시간을
+   손끝이 먼저 채운다. */
+.film-card:active { transform: scale(0.99); }
+
+/* 재생 신호를 받기 전에는 단추가 그대로 보인다. 재생기는 그 뒤에서
+   조용히 준비한다. 끝내 안 열리면 카드는 원래 모습으로 남는다. */
+.film iframe {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #0d1017;
+  opacity: 0;
+  /* 투명해도 iframe 은 누름을 받아 간다. 켜지기 전에는 비켜서 있어야
+     아래의 단추가 계속 눌린다. */
+  pointer-events: none;
+  transition: opacity 320ms ease;
+}
+.film.is-playing iframe { opacity: 1; pointer-events: auto; }
+.film.is-playing .film-card { visibility: hidden; }
+
 /* ── ③ 하는 일 ───────────────────────────────────────────── */
 
 .offer-grid {
@@ -4619,6 +4733,7 @@ main .home-hero .primary-link {
   .ref-card.is-wide,
   .ref-card.is-tall { grid-column: span 1; }
   .ref-card.is-tall img { aspect-ratio: 4 / 3; }
+  .film-grid { grid-template-columns: 1fr; }
   .live-hud-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
