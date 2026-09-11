@@ -18,7 +18,7 @@
   if (!GEN) return;
 
   /* 스튜디오와 같은 판이어야 한다. 여기서 뽑은 번호를 저기 붙여 넣기 때문이다. */
-  var CODE_V = 6;
+  var CODE_V = 7;
   var PREFIX = "sa:";
 
   /* ── 도구 ─────────────────────────────────────────────────
@@ -26,31 +26,32 @@
    * 쓰임이다. 고객은 "점군"과 "홀로그램"의 차이를 알 이유가 없다.
    * 알아야 하는 것은 "3D 모형을 코드로 다시 그린 화면"이라는 것뿐이다. */
   var TOOLS = [
-    { id: "poster", ko: "벽보", desc: "면·망점·활자. 인쇄물의 문법",
+    { id: "poster", en: "poster", ko: "벽보", desc: "면·망점·활자. 인쇄물의 문법",
       styles: ["flyposter", "hardedge"] },
-    { id: "water", ko: "물결", desc: "밀려오고 번지는 것",
+    { id: "hangeul", en: "hangeul", ko: "한글", desc: "획으로 짜는 한글 판면",
+      styles: ["hangul", "jamo"] },
+    { id: "tide", en: "tide", ko: "물결", desc: "밀려오고 번지는 것",
       styles: ["ocean", "wave", "ripple"] },
-    { id: "petal", ko: "꽃눈", desc: "떨어지고 피는 것",
+    { id: "petal", en: "petal", ko: "꽃눈", desc: "떨어지고 피는 것",
       styles: ["petalfall", "blossom", "dandelion", "bloom"] },
-    { id: "brush", ko: "붓질", desc: "손으로 그은 자국",
+    { id: "brush", en: "brush", ko: "붓질", desc: "손으로 그은 자국",
       styles: ["impasto", "inkwash", "hanji"] },
-    { id: "room", ko: "회랑", desc: "화면 안으로 들어간다",
+    { id: "arcade", en: "arcade", ko: "회랑", desc: "화면 안으로 들어간다",
       styles: ["renaissance", "anamorph", "tunnel"] },
-    { id: "type", ko: "활자", desc: "글자로만 그린 화면",
-      styles: ["jamo", "pdu", "asciiart", "segment", "barcode"] },
-    { id: "light", ko: "빛알", desc: "어둠 위의 빛",
+    { id: "lumen", en: "lumen", ko: "빛알", desc: "어둠 위의 빛",
       styles: ["constellation", "crystal", "aurora"] },
-    { id: "grain", ko: "결", desc: "겹치고 쌓이는 결",
+    { id: "weave", en: "weave", ko: "결", desc: "겹치고 쌓이는 결",
       styles: ["weave", "thread", "topo", "terrace"] },
-    { id: "mesh", ko: "뼈대", desc: "3D 모형을 코드로 다시 그린다",
+    { id: "mesh", en: "mesh", ko: "뼈대", desc: "3D 모형을 코드로 다시 그린다",
       styles: ["wire", "pointcloud", "chiaroscuro"] },
-    { id: "field", ko: "색면", desc: "색과 면만",
+    { id: "field", en: "field", ko: "색면", desc: "색과 면만",
       styles: ["stripe", "desordre", "frieze", "swiss", "pop"] },
-    { id: "grass", ko: "풀", desc: "자라는 것",
+    { id: "flora", en: "flora", ko: "풀", desc: "자라는 것",
       styles: ["reed", "leafvein", "phyllo", "bamboo", "branch"] },
-    { id: "city", ko: "도시", desc: "격자와 신호",
+    { id: "grid", en: "grid", ko: "도시", desc: "격자와 신호",
       styles: ["isocity", "circuit", "slitscan", "dotmatrix", "blinds", "magnet"] }
   ];
+
 
 
   /* 규격. 스튜디오의 PANELS 와 같은 비율을 쓴다. */
@@ -238,10 +239,10 @@
       var c = document.createElement("canvas");
       c.width = 320; c.height = 180;
       b.appendChild(c);
-      var t = el("span", "tl-card-name", tool.ko);
+      var t = el("span", "tl-card-name", tool.en);
       b.appendChild(t);
-      b.appendChild(el("span", "tl-card-desc", tool.desc));
-      b.title = tool.ko + " · " + tool.desc;
+      b.appendChild(el("span", "tl-card-desc", tool.ko + " · " + tool.desc));
+      b.title = tool.en + " · " + tool.desc;
       elGrid.appendChild(b);
 
       var one = new GEN.Gen(c);
@@ -509,8 +510,8 @@
     function open(tool) {
       stage = tool;
       markTune();
-      elName.textContent = tool.ko;
-      elDesc.textContent = tool.desc;
+      elName.textContent = tool.en;
+      elDesc.textContent = tool.ko + " · " + tool.desc;
       markSizes();
       elHome.hidden = true;
       elStage.hidden = false;
@@ -620,7 +621,7 @@
           service: ["미디어아트 제작 (봄날 도구 · 손님이 손본 설정)"],
           page: "tools",
           message: [
-            "도구: " + (stage ? stage.ko : "-"),
+            "도구: " + (stage ? stage.en + " (" + stage.ko + ")" : "-"),
             "작품 번호: " + code(shot.idx, shot.seed),
             "화면 규격: " + sz.ko + " " + sz.w + "×" + sz.h,
             "재생 길이: " + (tune.dur || 30) + "초",

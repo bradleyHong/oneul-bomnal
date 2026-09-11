@@ -168,7 +168,7 @@
          BN4- 4판  + 식물 5종 + 현대미술 5종
          BN5- 5판  + 벽보 + 얼룩
          BN6- 6판  내놓을 것만 솎았다 (엔진 52종) */
-    var CODE_V = 6;
+    var CODE_V = 7;
     function code(idx, seed, v) {
       var n = (((idx & 31) << 19) | (seed & 0x7FFFF)) >>> 0;
       var vv = v || CODE_V;
@@ -339,7 +339,7 @@
     var elLoadMsg = $("[data-st-load-msg]", root);
     function loadCode() {
       var p2 = parseCode(elLoad.value);
-      if (!p2) { elLoadMsg.textContent = "BN6-, BN5-, BN4-, BN3-, BN2-, BN- 으로 시작하는 번호를 넣어 주세요."; return; }
+      if (!p2) { elLoadMsg.textContent = "BN7-, BN6-, BN5-, BN4-, BN3-, BN2-, BN- 으로 시작하는 번호를 넣어 주세요."; return; }
       if (p2.idx === CUSTOM && !(elStory.value || "").trim()) {
         elLoadMsg.textContent = "직접 적으신 문장으로 만든 번호입니다. 그 문장을 아래에 적어 주세요.";
         return;
