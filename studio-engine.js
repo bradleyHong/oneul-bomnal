@@ -2707,7 +2707,8 @@ function create(canvas, opts) {
     barcode(t) {
       const ph = t / DUR;
       const STEPS = 6;
-      const step = Math.floor(ph * STEPS) % STEPS;
+      /* 음수로 내려가지 않게 감는다. 음수면 seeds 를 거꾸로 집어 터진다. */
+      const step = ((Math.floor(ph * STEPS) % STEPS) + STEPS) % STEPS;
       /* 띠는 얇게. 처음에 화면 높이의 40%를 흰 막대로 채웠더니 여백이
          하나도 안 남아 그림이 아니라 무늬가 됐다. 아래위를 비운다. */
       const y0 = H * 0.37, bh = H * 0.26;
@@ -2756,7 +2757,8 @@ function create(canvas, opts) {
     segment(t) {
       const ph = t / DUR;
       const STEPS = 10;
-      const step = Math.floor(ph * STEPS) % STEPS;
+      /* 음수로 내려가지 않게 감는다. 음수면 seeds 를 거꾸로 집어 터진다. */
+      const step = ((Math.floor(ph * STEPS) % STEPS) + STEPS) % STEPS;
       /* 줄 수를 먼저 정하고 거기서 글자 크기를 뽑는다.
          칸 너비부터 정했더니 16:9 에서 늘 한 줄만 나왔다. 표시기는
          여러 줄이 늘어서야 계기판으로 읽힌다. */

@@ -97,3 +97,82 @@
   .tl-btn kbd { display: none; }
   .tl-btn { padding: 12px 14px; }
 }
+
+/* ── 손보기 ─────────────────────────────────────────────────
+   접어 둔다. 맨 처음부터 손잡이 여덟 개를 들이밀면 "네가 정해라"가 된다. */
+.tl-tune { margin: 14px 0 4px; border: 1px solid var(--st-line); border-radius: 12px; background: #fff; }
+.tl-tune > summary {
+  cursor: pointer; padding: 12px 16px; font-weight: 700; font-size: .95rem;
+  display: flex; align-items: center; gap: 10px; list-style: none;
+}
+.tl-tune > summary::-webkit-details-marker { display: none; }
+.tl-tune > summary::before { content: "＋"; color: var(--st-gray); font-weight: 400; }
+.tl-tune[open] > summary::before { content: "－"; }
+.tl-tune-tag {
+  font-size: .78rem; font-weight: 600; color: var(--st-gray);
+  border: 1px solid var(--st-line); border-radius: 999px; padding: 2px 9px;
+}
+.tl-tune-tag.is-on { color: #fff; background: var(--st-blue); border-color: var(--st-blue); }
+.tl-tune-body { padding: 4px 16px 16px; border-top: 1px solid var(--st-line); }
+
+.tl-pal { display: flex; flex-wrap: wrap; gap: 7px; margin: 14px 0 16px; }
+.tl-chip {
+  display: flex; flex-direction: column; align-items: stretch; gap: 3px;
+  border: 1px solid var(--st-line); border-radius: 9px; padding: 5px 7px 4px;
+  background: #fff; cursor: pointer; min-width: 62px;
+}
+.tl-chip:hover { border-color: var(--st-blue); }
+.tl-chip.is-on { border-color: var(--st-ink); box-shadow: 0 0 0 2px var(--st-ink) inset; }
+.tl-chip-sw { display: flex; gap: 2px; height: 12px; }
+.tl-chip-sw i { flex: 1; border-radius: 2px; }
+.tl-chip-ko { font-size: .72rem; color: var(--st-body); text-align: center; }
+.tl-chip.is-on .tl-chip-ko { font-weight: 700; color: var(--st-ink); }
+
+.tl-knobs { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px 20px; }
+.tl-knob { display: grid; grid-template-columns: 46px 1fr 52px; align-items: center; gap: 10px; }
+.tl-knob-ko { font-size: .86rem; color: var(--st-body); }
+.tl-knob input { width: 100%; accent-color: var(--st-blue); }
+.tl-knob-num { font-size: .78rem; color: var(--st-gray); text-align: right; font-weight: 600; }
+.tl-knob.is-on .tl-knob-ko { color: var(--st-ink); font-weight: 700; }
+.tl-knob.is-on .tl-knob-num { color: var(--st-blue); }
+
+.tl-picks { margin-top: 14px; display: grid; gap: 8px; }
+.tl-pick { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.tl-pick-ko { font-size: .86rem; color: var(--st-body); width: 46px; }
+.tl-pick-box { display: flex; gap: 6px; flex-wrap: wrap; }
+.tl-pick-b {
+  border: 1px solid var(--st-line); background: #fff; color: var(--st-body);
+  border-radius: 999px; padding: 5px 12px; font-size: .82rem; cursor: pointer;
+}
+.tl-pick-b:hover { border-color: var(--st-blue); color: var(--st-blue); }
+.tl-pick-b.is-on { background: var(--st-ink); border-color: var(--st-ink); color: #fff; font-weight: 700; }
+
+.tl-reset {
+  margin-top: 14px; border: 1px solid var(--st-line); background: #fff; color: var(--st-gray);
+  border-radius: 8px; padding: 7px 14px; font-size: .84rem; cursor: pointer;
+}
+.tl-reset:hover { border-color: var(--st-ink); color: var(--st-ink); }
+
+/* ── 설정표 ───────────────────────────────────────────────── */
+.tl-sheet { margin: 10px 0 6px; border: 1px solid var(--st-line); border-radius: 10px; background: var(--st-pale); }
+.tl-sheet-head {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 10px 14px 8px; font-size: .88rem;
+}
+.tl-sheet-head b { font-size: .95rem; }
+.tl-sheet-head span { color: var(--st-gray); font-size: .82rem; flex: 1; }
+.tl-copy {
+  border: 1px solid var(--st-line); background: #fff; color: var(--st-ink);
+  border-radius: 8px; padding: 6px 14px; font-size: .84rem; font-weight: 600; cursor: pointer;
+}
+.tl-copy:hover { border-color: var(--st-blue); color: var(--st-blue); }
+.tl-sheet-line {
+  display: block; padding: 0 14px 12px; font-size: .74rem; line-height: 1.6;
+  color: var(--st-body); word-break: break-all;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+@media (max-width: 640px) {
+  .tl-knob { grid-template-columns: 42px 1fr 44px; }
+  .tl-chip { min-width: 54px; }
+}

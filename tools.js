@@ -18,7 +18,7 @@
   if (!GEN) return;
 
   /* 스튜디오와 같은 판이어야 한다. 여기서 뽑은 번호를 저기 붙여 넣기 때문이다. */
-  var CODE_V = 5;
+  var CODE_V = 6;
   var PREFIX = "sa:";
 
   /* ── 도구 ─────────────────────────────────────────────────
@@ -29,28 +29,29 @@
     { id: "poster", ko: "벽보", desc: "면·망점·활자. 인쇄물의 문법",
       styles: ["flyposter", "hardedge"] },
     { id: "water", ko: "물결", desc: "밀려오고 번지는 것",
-      styles: ["ocean", "wave", "ripple", "moire"] },
+      styles: ["ocean", "wave", "ripple"] },
     { id: "petal", ko: "꽃눈", desc: "떨어지고 피는 것",
       styles: ["petalfall", "blossom", "dandelion", "bloom"] },
     { id: "brush", ko: "붓질", desc: "손으로 그은 자국",
-      styles: ["impasto", "inkwash", "hand", "smoke"] },
+      styles: ["impasto", "inkwash", "hanji"] },
     { id: "room", ko: "회랑", desc: "화면 안으로 들어간다",
-      styles: ["renaissance", "anamorph", "tunnel", "flythrough"] },
+      styles: ["renaissance", "anamorph", "tunnel"] },
     { id: "type", ko: "활자", desc: "글자로만 그린 화면",
       styles: ["jamo", "pdu", "asciiart", "segment", "barcode"] },
     { id: "light", ko: "빛알", desc: "어둠 위의 빛",
-      styles: ["constellation", "crystal", "aurora", "neonsign"] },
+      styles: ["constellation", "crystal", "aurora"] },
     { id: "grain", ko: "결", desc: "겹치고 쌓이는 결",
       styles: ["weave", "thread", "topo", "terrace"] },
     { id: "mesh", ko: "뼈대", desc: "3D 모형을 코드로 다시 그린다",
-      styles: ["wire", "pointcloud", "hologram", "chiaroscuro"] },
+      styles: ["wire", "pointcloud", "chiaroscuro"] },
     { id: "field", ko: "색면", desc: "색과 면만",
-      styles: ["stripe", "chevron", "bars", "plasma", "desordre"] },
+      styles: ["stripe", "desordre", "frieze", "swiss", "pop"] },
     { id: "grass", ko: "풀", desc: "자라는 것",
-      styles: ["reed", "leafvein", "phyllo", "bamboo"] },
+      styles: ["reed", "leafvein", "phyllo", "bamboo", "branch"] },
     { id: "city", ko: "도시", desc: "격자와 신호",
-      styles: ["isocity", "circuit", "warp", "slitscan"] }
+      styles: ["isocity", "circuit", "slitscan", "dotmatrix", "blinds", "magnet"] }
   ];
+
 
   /* 규격. 스튜디오의 PANELS 와 같은 비율을 쓴다. */
   var SIZES = [
@@ -60,6 +61,23 @@
     { id: "column16", ko: "기둥 1:6", w: 360, h: 2160 },
     { id: "square", ko: "정사각", w: 2048, h: 2048 }
   ];
+
+  /* ── 손잡이 ───────────────────────────────────────────────
+   * 손님이 돌릴 수 있는 값. 안 건드리면 "저절로" 로 두고, 느낌에서 뽑은
+   * 값이 그대로 간다. 건드린 자리만 그 값이 이긴다.
+   *
+   * 여기 적힌 이름은 엔진이 쓰는 이름과 같다. 그래야 설정표 한 줄이
+   * 그대로 4K 렌더로 넘어간다. 이름을 바꾸면 그 고리가 끊긴다. */
+  var KNOBS = [
+    { id: "density",  ko: "밀도",  help: "빽빽한 정도" },
+    { id: "scale",    ko: "크기",  help: "무늬 하나의 크기" },
+    { id: "contrast", ko: "대비",  help: "밝고 어두움의 차" },
+    { id: "glow",     ko: "번짐",  help: "빛이 퍼지는 정도" },
+    { id: "speed",    ko: "속도",  help: "움직이는 빠르기" },
+    { id: "accent",   ko: "색조",  help: "포인트 색이 도는 정도" }
+  ];
+  var MOTIONS = [["drift", "흐름"], ["pulse", "숨"], ["orbit", "회전"], ["still", "정지"]];
+  var SYMS = [[1, "없음"], [2, "2겹"], [4, "4겹"], [6, "6겹"]];
 
   function $(q, r) { return (r || document).querySelector(q); }
   function el(tag, cls, txt) {
@@ -83,11 +101,26 @@
    * 적어 준다. 갈아 끼워도 색·씨앗·나머지 값은 그대로다. */
   function spin(tool, ar) {
     var scenes = GEN.SCENES, i, idx, seed, sp;
+    /* 이 비율에서 실제로 뽑히는 것만 남긴다. 판을 솎으면 도구 묶음에도
+       빠진 이름이 남는데, 거르지 않으면 아래 "갈아 끼우기"가 그 이름을
+       되살려 솎아낸 그림이 도구로 다시 나온다. */
+    var pool = GEN.pool ? GEN.pool(CODE_V, ar) : null;
+    var ok = pool ? tool.styles.filter(function (id) { return pool.indexOf(PREFIX + id) >= 0; })
+                  : tool.styles.slice();
+    if (!ok.length && pool) {
+      /* 이 비율에 이 도구의 그림이 하나도 없다(기둥에 회랑 같은 경우).
+         그때는 판에 남아 있는 것 중에서 고른다. 없는 그림을 억지로
+         세우지 않는다. */
+      ok = tool.styles.filter(function (id) { return GEN.hasStyle(PREFIX + id); });
+      var even = GEN.pool(CODE_V, 16 / 9);
+      ok = ok.filter(function (id) { return even.indexOf(PREFIX + id) >= 0; });
+    }
+    if (!ok.length) ok = tool.styles.slice();
     for (i = 0; i < 400; i++) {
       idx = Math.floor(Math.random() * scenes.length);
       seed = newSeed();
       sp = GEN.compose(scenes[idx].text, seed, ar, CODE_V);
-      if (tool.styles.indexOf(bare(sp.style)) >= 0) {
+      if (ok.indexOf(bare(sp.style)) >= 0) {
         sp.idx = idx; sp.v = CODE_V;
         return { idx: idx, seed: seed, spec: sp, forced: false };
       }
@@ -95,10 +128,38 @@
     idx = Math.floor(Math.random() * scenes.length);
     seed = newSeed();
     sp = GEN.compose(scenes[idx].text, seed, ar, CODE_V);
-    var want = PREFIX + tool.styles[Math.floor(Math.random() * tool.styles.length)];
+    var want = PREFIX + ok[Math.floor(Math.random() * ok.length)];
     if (GEN.hasStyle(want)) sp.style = want;
     sp.idx = idx; sp.v = CODE_V;
     return { idx: idx, seed: seed, spec: sp, forced: true };
+  }
+
+  /* ── 설정표 ───────────────────────────────────────────────
+   * 손님 화면을 그대로 4K 로 뽑는 데 필요한 전부를 한 줄에 담는다.
+   * 색은 이름이 아니라 색 자체를 싣는다. 색판 이름표가 바뀌어도
+   * 납품본은 같은 색으로 나와야 하기 때문이다.
+   *
+   *   node tools/render-studio.mjs "<이 줄>" --name 봄날로비 --dur 30
+   *
+   * 이 줄만 있으면 우리 쪽에서 바로 렌더해 보낼 수 있다. */
+  function sheetOf(shot, sz, tune) {
+    var sp = shot.spec;
+    var q = [];
+    var add = function (k, v) { q.push(k + "=" + encodeURIComponent(String(v))); };
+    add("style", bare(sp.style));
+    add("scene", shot.idx);
+    add("seed", shot.seed);
+    add("v", CODE_V);
+    add("ar", (sz.w / sz.h).toFixed(6));
+    add("pal", sp.palette.id);
+    add("bg", sp.palette.bg);
+    add("tones", (sp.palette.ink || []).map(function (h) { return h.replace(/^#/, ""); }).join(","));
+    KNOBS.forEach(function (k) { if (tune[k.id] != null) add(k.id, tune[k.id]); });
+    if (tune.motion) add("motion", tune.motion);
+    if (tune.symmetry != null) add("symmetry", tune.symmetry);
+    if (tune.invert != null) add("invert", tune.invert ? 1 : 0);
+    add("w", sz.w); add("h", sz.h);
+    return q.join("&");
   }
 
   /* ── 담아두기 ─────────────────────────────────────────────
@@ -149,9 +210,18 @@
     var elQuote = $("[data-tl-quote]", root);
     var elPlay = $("[data-tl-play]", root);
 
+    var elTune = $("[data-tl-tune]", root);
+    var elTuneTag = $("[data-tl-tune-tag]", root);
+    var elPal = $("[data-tl-pal]", root);
+    var elKnobs = $("[data-tl-knobs]", root);
+    var elPicks = $("[data-tl-picks]", root);
+    var elSheet = $("[data-tl-sheet]", root);
+
     var stage = null;          /* 지금 열린 도구 */
     var sizeIx = 0;
     var shot = null;           /* 지금 뽑아 둔 한 점 */
+    var tune = {};             /* 손님이 돌린 값. 빈 것은 "저절로" */
+    var palId = null;          /* 손님이 고른 색. null 이면 저절로 */
     var gen = new GEN.Gen(elCanvas);
 
     /* ① 도구 목록 — 칸마다 그 도구가 만든 그림 한 장 */
@@ -175,7 +245,119 @@
       b.addEventListener("click", function () { open(tool); });
     });
 
-    /* ② 규격 단추 */
+    /* ② 손보기 — 색판, 미닫이 여섯, 움직임, 대칭, 밝은 바탕 */
+    var PALS = GEN.PALETTES || [];
+    function palChip(p) {
+      var b = el("button", "tl-chip");
+      b.type = "button";
+      b.title = p ? p.id : "저절로";
+      if (p) {
+        b.style.background = p.bg;
+        var sw = el("span", "tl-chip-sw");
+        (p.ink || []).slice(0, 4).forEach(function (c) {
+          var d = el("i"); d.style.background = c; sw.appendChild(d);
+        });
+        b.appendChild(sw);
+      }
+      b.appendChild(el("span", "tl-chip-ko", p ? p.id : "저절로"));
+      b.addEventListener("click", function () {
+        palId = p ? p.id : null;
+        markTune();
+        redraw();
+      });
+      return b;
+    }
+    elPal.appendChild(palChip(null));
+    PALS.forEach(function (p) { elPal.appendChild(palChip(p)); });
+
+    KNOBS.forEach(function (k) {
+      var wrap = el("label", "tl-knob");
+      wrap.appendChild(el("span", "tl-knob-ko", k.ko));
+      var input = document.createElement("input");
+      input.type = "range"; input.min = "5"; input.max = "95"; input.step = "1";
+      input.value = "50";
+      input.setAttribute("aria-label", k.ko + " · " + k.help);
+      var num = el("b", "tl-knob-num", "저절로");
+      input.addEventListener("input", function () {
+        tune[k.id] = +input.value;
+        num.textContent = input.value;
+        markTune();
+        redraw();
+      });
+      wrap.appendChild(input);
+      wrap.appendChild(num);
+      wrap.dataset.knob = k.id;
+      elKnobs.appendChild(wrap);
+    });
+
+    function pickRow(label, items, get, set) {
+      var row = el("div", "tl-pick");
+      row.appendChild(el("span", "tl-pick-ko", label));
+      var box = el("span", "tl-pick-box");
+      items.forEach(function (it) {
+        var b = el("button", "tl-pick-b", it[1]);
+        b.type = "button";
+        b.dataset.val = String(it[0]);
+        b.addEventListener("click", function () { set(it[0]); markTune(); redraw(); });
+        box.appendChild(b);
+      });
+      row.appendChild(box);
+      row.dataset.get = label;
+      row._get = get;
+      elPicks.appendChild(row);
+      return row;
+    }
+    var rowMotion = pickRow("움직임", [["", "저절로"]].concat(MOTIONS),
+      function () { return tune.motion || ""; },
+      function (v) { if (v) tune.motion = v; else delete tune.motion; });
+    var rowSym = pickRow("대칭", [["", "저절로"]].concat(SYMS),
+      function () { return tune.symmetry == null ? "" : tune.symmetry; },
+      function (v) { if (v === "") delete tune.symmetry; else tune.symmetry = +v; });
+    var rowInv = pickRow("바탕", [["", "저절로"], [0, "어둡게"], [1, "밝게"]],
+      function () { return tune.invert == null ? "" : (tune.invert ? 1 : 0); },
+      function (v) { if (v === "") delete tune.invert; else tune.invert = !!+v; });
+
+    function tuneCount() {
+      return Object.keys(tune).length + (palId ? 1 : 0);
+    }
+    function markTune() {
+      var n = tuneCount();
+      elTuneTag.textContent = n ? "손본 것 " + n + "개" : "저절로";
+      elTuneTag.classList.toggle("is-on", n > 0);
+      Array.prototype.forEach.call(elPal.children, function (b, i) {
+        var id = i === 0 ? null : PALS[i - 1].id;
+        b.classList.toggle("is-on", id === palId);
+      });
+      Array.prototype.forEach.call(elKnobs.children, function (w) {
+        var on = tune[w.dataset.knob] != null;
+        w.classList.toggle("is-on", on);
+        if (!on) $(".tl-knob-num", w).textContent = "저절로";
+      });
+      [rowMotion, rowSym, rowInv].forEach(function (row) {
+        var cur = String(row._get());
+        Array.prototype.forEach.call($(".tl-pick-box", row).children, function (b) {
+          b.classList.toggle("is-on", b.dataset.val === cur);
+        });
+      });
+    }
+
+    $("[data-tl-reset]", root).addEventListener("click", function () {
+      tune = {}; palId = null;
+      Array.prototype.forEach.call(elKnobs.children, function (w) {
+        $("input", w).value = "50";
+      });
+      markTune();
+      redraw();
+    });
+
+    /* 손잡이만 바뀌었을 때는 번호를 새로 뽑지 않는다. 같은 작품을 손보는
+       중인데 번호가 바뀌면 무엇을 보고 있는지 알 수 없다. */
+    function redraw() {
+      if (!stage || !shot) return;
+      draw(shot, true);
+    }
+
+    /* ③ 규격 단추 */
     SIZES.forEach(function (sz, i) {
       var b = el("button", "tl-size", sz.ko);
       b.type = "button";
@@ -206,21 +388,38 @@
       elCanvas.height = Math.max(64, h);
     }
 
-    function draw(s) {
+    function draw(s, keepCode) {
       shot = s;
-      shot.ar = SIZES[sizeIx].w / SIZES[sizeIx].h;
+      var sz = SIZES[sizeIx];
+      shot.ar = sz.w / sz.h;
       shot.ko = GEN.SCENES[s.idx].ko;
       shot.style = s.spec.style;
+      /* 손님이 고른 색·손잡이를 사양에 얹는다. 겹·번짐·알갱이까지 같은
+         길로 그려지므로, 여기서 본 화면이 그대로 납품본이 된다. */
+      /* 저절로 뽑힌 색을 따로 적어 둔다. "처음으로" 를 눌렀을 때
+         돌아갈 자리가 없으면 손님이 고른 색이 그대로 눌러앉는다. */
+      if (!s.basePal) s.basePal = s.spec.palette;
+      s.spec.palette = s.basePal;
+      if (palId) {
+        for (var i = 0; i < PALS.length; i++) if (PALS[i].id === palId) s.spec.palette = PALS[i];
+      }
+      s.spec.tune = tuneCount() ? tune : null;
+      /* 검사용 — 지금 화면에 쓰고 있는 사양을 그대로 내놓는다.
+         납품 화면이 설정표로 같은 그림을 만드는지 견줄 때 쓴다. */
+      global.__TL_SPEC = s.spec;
       gen.set(s.spec).start();
       var num = code(s.idx, s.seed);
       var q = "code=" + num + (s.forced ? "&style=" + encodeURIComponent(s.style) : "");
+      var sheet = sheetOf(s, sz, tune);
       elCode.innerHTML = "";
       elCode.appendChild(el("b", null, num));
       elCode.appendChild(el("span", null,
-        s.forced ? " · 그림 " + bare(s.style) + " (이 비율에는 번호와 함께 적어야 되살아납니다)"
-                 : " · 이 번호만으로 어디서나 같은 화면"));
-      elQuote.href = "./studio?" + q;
-      elPlay.href = "./play?" + q + "&w=" + SIZES[sizeIx].w + "&h=" + SIZES[sizeIx].h;
+        tuneCount() ? " · 손보신 화면입니다. 아래 설정표를 함께 주세요"
+                    : (s.forced ? " · 그림 " + bare(s.style) + " (이 비율에는 번호와 함께 적어야 되살아납니다)"
+                                : " · 이 번호만으로 어디서나 같은 화면")));
+      if (elSheet) elSheet.textContent = sheet;
+      elQuote.href = "./studio?" + q + "&spec=" + encodeURIComponent(sheet);
+      elPlay.href = "./play?" + q + "&w=" + sz.w + "&h=" + sz.h;
       markHeart();
     }
     function markHeart() {
@@ -232,6 +431,7 @@
 
     function open(tool) {
       stage = tool;
+      markTune();
       elName.textContent = tool.ko;
       elDesc.textContent = tool.desc;
       markSizes();
@@ -273,6 +473,10 @@
       var sp = GEN.compose(GEN.SCENES[shot.idx].text, shot.seed, sz.w / sz.h, CODE_V);
       if (shot.style && GEN.hasStyle(shot.style)) sp.style = shot.style;
       sp.idx = shot.idx; sp.v = CODE_V;
+      /* 화면에서 손본 그대로 받아 가셔야 한다 */
+      if (palId) for (var pi = 0; pi < PALS.length; pi++) if (PALS[pi].id === palId) sp.palette = PALS[pi];
+      /* 색을 안 고르셨으면 compose 가 뽑은 색 그대로 간다 */
+      sp.tune = tuneCount() ? tune : null;
       g2.set(sp);
       g2.draw(1.7);
       var name = code(shot.idx, shot.seed) + "_" + sz.id + ".png";
@@ -286,6 +490,19 @@
         a.remove();
         setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
       }, "image/png");
+    });
+
+    var elCopy = $("[data-tl-copy]", root);
+    if (elCopy) elCopy.addEventListener("click", function () {
+      var txt = elSheet ? elSheet.textContent : "";
+      if (!txt) return;
+      var done = function () {
+        elCopy.textContent = "복사했습니다";
+        setTimeout(function () { elCopy.textContent = "복사"; }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(txt).then(done, function () { prompt("이 줄을 복사해 두세요", txt); });
+      } else { prompt("이 줄을 복사해 두세요", txt); }
     });
 
     /* 스페이스로 다시 뽑고, Esc 로 목록으로. 도구는 손이 빨라야 한다. */

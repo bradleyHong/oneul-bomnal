@@ -10,8 +10,8 @@
       content="쓰임이 정해진 도구 열둘. 한 번 누르면 한 점이 나옵니다. 로그인도 가입도 없고, 적어 주실 것도 없습니다."
     />
     <link rel="stylesheet" href="./styles.css?v=20260905-craft" />
-    <link rel="stylesheet" href="./studio.css?v=20260910-tools" />
-    <link rel="stylesheet" href="./tools.css?v=20260910-tools" />
+    <link rel="stylesheet" href="./studio.css?v=20260911-tune" />
+    <link rel="stylesheet" href="./tools.css?v=20260911-tune" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
   </head>
   <body class="st-page tl-page">
@@ -61,15 +61,38 @@
           <canvas data-tl-canvas width="960" height="540" aria-label="이 도구가 만든 화면"></canvas>
         </div>
 
+        <!-- 손보기. 접어 두었다가 원하는 분만 편다.
+             맨 처음부터 손잡이 여덟 개를 들이밀면 "네가 정해라"가 된다. -->
+        <details class="tl-tune" data-tl-tune>
+          <summary>손보기 <span class="tl-tune-tag" data-tl-tune-tag>저절로</span></summary>
+          <div class="tl-tune-body">
+            <div class="tl-pal" data-tl-pal role="group" aria-label="색"></div>
+            <div class="tl-knobs" data-tl-knobs></div>
+            <div class="tl-picks" data-tl-picks></div>
+            <button type="button" class="tl-reset" data-tl-reset>처음으로</button>
+          </div>
+        </details>
+
         <div class="tl-acts">
           <button type="button" class="tl-btn is-primary" data-tl-spin>다시 뽑기 <kbd>space</kbd></button>
           <button type="button" class="tl-btn" data-tl-png>PNG로 받기</button>
           <button type="button" class="tl-btn tl-heart" data-tl-heart aria-pressed="false">♥ 담아두기</button>
-          <a class="tl-btn" data-tl-quote href="./studio">이 번호로 견적</a>
+          <a class="tl-btn" data-tl-quote href="./studio">이 설정으로 견적</a>
           <a class="tl-btn" data-tl-play href="./play" target="_blank" rel="noopener">전체 화면</a>
         </div>
 
         <p class="tl-code" data-tl-code></p>
+
+        <!-- 설정표. 이 줄 하나면 우리가 그 자리에서 4K로 뽑는다. -->
+        <div class="tl-sheet">
+          <div class="tl-sheet-head">
+            <b>설정표</b>
+            <span>이 줄을 주시면 같은 화면을 4K로 뽑아 보내드립니다</span>
+            <button type="button" class="tl-copy" data-tl-copy>복사</button>
+          </div>
+          <code class="tl-sheet-line" data-tl-sheet></code>
+        </div>
+
         <p class="st-help">
           작품 번호를 적어 두시면 같은 화면을 언제든 다시 그립니다.
           담아 두신 화면은 <a href="./studio">스튜디오</a>에서도 그대로 보입니다.
@@ -78,8 +101,8 @@
     </main>
 
     <script src="./studio-meshes.js?v=20260905-mesh3" defer></script>
-    <script src="./studio-engine.js?v=20260910-89" defer></script>
-    <script src="./studio-gen.js?v=20260910-89" defer></script>
-    <script src="./tools.js?v=20260910-tools" defer></script>
+    <script src="./studio-engine.js?v=20260911-89" defer></script>
+    <script src="./studio-gen.js?v=20260911-89" defer></script>
+    <script src="./tools.js?v=20260911-tune" defer></script>
   </body>
 </html>
