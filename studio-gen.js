@@ -150,8 +150,21 @@ var SCENES = [
     { ko: "빛 번짐",     text: "빛줄기 번짐, 은은하고 잔잔하게" }
     ];
 
-  var BASE_IDS = ["flow", "wave", "particle", "contour", "grid", "bloom", "column",
-                  "snow", "ribbon", "orbit", "mesh", "bar", "spiral", "drift", "organic"];
+  /* 엔진을 붙이기 전부터 있던 그림들.
+   *
+   * 이 목록도 판을 타야 한다. 엔진 목록(artIds)만 얼려 놓고 여기를 늘리면
+   * 같은 일이 그대로 일어난다 — even 후보는 이 목록이 앞에 붙으므로,
+   * 하나만 더해도 그 뒤가 통째로 밀려 이미 나간 번호가 다른 그림이 된다.
+   * #29 가 "얼룩"을 여기 더하면서 실제로 그랬다. 16:9 와 4:3 화면에서
+   * 1판 13%, 2판 10%, 3판 10%, 4판 11% 의 번호가 다른 그림으로 바뀌었다.
+   * 세로·띠는 목록이 따로라 무사했다.
+   *
+   * 그래서 1~4판이 쓰던 열넷을 BASE_V1 으로 얼리고, 새로 더한 것은
+   * 5판부터만 쓴다. 여기에 더할 때는 반드시 판을 올린다. */
+  var BASE_V1 = ["flow", "wave", "particle", "contour", "grid", "bloom", "column",
+                 "snow", "ribbon", "orbit", "mesh", "bar", "spiral", "drift"];
+  /* 5판 — 여기에만 더한다. */
+  var BASE_IDS = BASE_V1.concat(["organic"]);
 
   /* 그림 엔진(studio-engine.js)의 56종을 여기에 이어 붙인다.
    *
@@ -184,12 +197,13 @@ var SCENES = [
    *
    *   2판  엔진 56종  (BN2-, #11 ~ #25 사이)
    *   3판  엔진 78종  (BN3-, #26 이 나간 상태)
-   *   4판  전부      (BN4-, 지금 나가는 것)
+   *   4판  엔진 88종  (BN4-, #27 이 나간 상태)
+   *   5판  전부      (BN5-, 지금 나가는 것)
    *
    * #25 가 나가 있던 몇 시간 동안 BN2- 로 나간 번호는 64종 목록으로
    * 뽑힌 것이라 56종으로는 못 되살린다. 그 창은 짧았고 팔린 번호는
    * 없다. 하트는 그린 스타일 이름을 같이 저장해 이 문제를 비켜 간다. */
-  var ART_V2_COUNT = 56, ART_V3_COUNT = 78;
+  var ART_V2_COUNT = 56, ART_V3_COUNT = 78, ART_V4_COUNT = 88;
   function artIdsN(n) { return artIds().slice(0, n); }
 
   /* 2판·3판 목록. 이미 나간 번호가 쓴다. 한 칸도 바꾸거나 끼워 넣지 않는다.
@@ -205,19 +219,25 @@ var SCENES = [
   var ART_WIDE_V3 = ART_WIDE_V2.concat(["pdu", "barcode", "segment", "asciiart", "desordre",
                                         "frame", "frieze", "hardedge", "nakhwa"]);
 
-  /* 4판 — 여기에만 더한다.
+  /* 4판 목록. 이미 나간 번호가 쓴다. 한 칸도 바꾸지 않는다.
    * 가운데로 모이는 그림(3D 뼈대·자모·씨앗나선·꽃)은 기둥과 띠에 넣지
    * 않는다. 걸면 가운데만 차고 나머지가 통째로 빈다. */
-  var ART_TALL = ART_TALL_V3.concat([
+  var ART_TALL_V4 = ART_TALL_V3.concat([
     /* 잎맥과 갈대는 아래에서 올라오는 그림이라 기둥에 맞는다 */
     "leafvein", "reed",
     /* 꽃눈은 위에서 내리고, 유화는 밭이라 어디든 찬다 */
     "petalfall", "impasto"]);
-  var ART_WIDE = ART_WIDE_V3.concat([
+  var ART_WIDE_V4 = ART_WIDE_V3.concat([
     /* 갈대밭은 옆으로 넓을수록 살고, 민들레는 홀씨가 옆으로 날아간다 */
     "reed", "dandelion",
     /* 파도와 회랑은 수평선이 있는 그림이라 띠에 산다. 꽃눈·유화는 밭 */
     "petalfall", "ocean", "impasto", "renaissance"]);
+
+  /* 5판 — 여기에만 더한다.
+   * 벽보는 인쇄물이라 어느 비율에서나 선다. 기둥에서는 활자 줄이
+   * 층층이 쌓이고, 띠에서는 줄무늬가 길게 흐른다. */
+  var ART_TALL = ART_TALL_V4.concat(["flyposter"]);
+  var ART_WIDE = ART_WIDE_V4.concat(["flyposter"]);
 
   function withPrefix(list, have) {
     have = have || artIds();
@@ -230,26 +250,31 @@ var SCENES = [
   var FIT_V1 = {
     tall:  ["column", "bar", "flow", "wave", "drift", "snow", "particle", "mesh", "ribbon"],
     wide:  ["wave", "flow", "bar", "ribbon", "grid", "drift", "mesh", "particle", "column"],
-    even:  BASE_IDS
+    even:  BASE_V1
   };
 
   var FIT_V2 = {
     tall:  FIT_V1.tall.concat(withPrefix(ART_TALL_V2, artIdsN(ART_V2_COUNT))),
     wide:  FIT_V1.wide.concat(withPrefix(ART_WIDE_V2, artIdsN(ART_V2_COUNT))),
-    even:  BASE_IDS.concat(artIdsN(ART_V2_COUNT))
+    even:  BASE_V1.concat(artIdsN(ART_V2_COUNT))
   };
   var FIT_V3 = {
     tall:  FIT_V1.tall.concat(withPrefix(ART_TALL_V3, artIdsN(ART_V3_COUNT))),
     wide:  FIT_V1.wide.concat(withPrefix(ART_WIDE_V3, artIdsN(ART_V3_COUNT))),
-    even:  BASE_IDS.concat(artIdsN(ART_V3_COUNT))
+    even:  BASE_V1.concat(artIdsN(ART_V3_COUNT))
   };
-  /* 4판 — 지금 나가는 번호(BN4-). */
+  var FIT_V4 = {
+    tall:  FIT_V1.tall.concat(withPrefix(ART_TALL_V4, artIdsN(ART_V4_COUNT))),
+    wide:  FIT_V1.wide.concat(withPrefix(ART_WIDE_V4, artIdsN(ART_V4_COUNT))),
+    even:  BASE_V1.concat(artIdsN(ART_V4_COUNT))
+  };
+  /* 5판 — 지금 나가는 번호(BN5-). */
   var FIT = {
     tall:  FIT_V1.tall.concat(withPrefix(ART_TALL)),
     wide:  FIT_V1.wide.concat(withPrefix(ART_WIDE)),
     even:  STYLE_IDS
   };
-  var FITS = { 1: FIT_V1, 2: FIT_V2, 3: FIT_V3, 4: FIT };
+  var FITS = { 1: FIT_V1, 2: FIT_V2, 3: FIT_V3, 4: FIT_V4, 5: FIT };
 
   /* ── 문장 읽기 ────────────────────────────────────────────
    * 낱말은 방향만 잡는다. 고정하지 않는다.

@@ -165,8 +165,9 @@
          BN-  1판  기본 14종
          BN2- 2판  + 엔진 56종
          BN3- 3판  + 엔진 78종 (3D·글자·액자·띠그림·색면·낙화까지)
-         BN4- 4판  + 식물 5종 */
-    var CODE_V = 4;
+         BN4- 4판  + 식물 5종 + 현대미술 5종
+         BN5- 5판  + 벽보 */
+    var CODE_V = 5;
     function code(idx, seed, v) {
       var n = (((idx & 31) << 19) | (seed & 0x7FFFF)) >>> 0;
       var vv = v || CODE_V;
@@ -328,7 +329,7 @@
     var elLoadMsg = $("[data-st-load-msg]", root);
     function loadCode() {
       var p2 = parseCode(elLoad.value);
-      if (!p2) { elLoadMsg.textContent = "BN4-, BN3-, BN2-, BN- 으로 시작하는 번호를 넣어 주세요."; return; }
+      if (!p2) { elLoadMsg.textContent = "BN5-, BN4-, BN3-, BN2-, BN- 으로 시작하는 번호를 넣어 주세요."; return; }
       if (p2.idx === CUSTOM && !(elStory.value || "").trim()) {
         elLoadMsg.textContent = "직접 적으신 문장으로 만든 번호입니다. 그 문장을 아래에 적어 주세요.";
         return;
@@ -348,6 +349,22 @@
     }
     elLoadBtn.addEventListener("click", loadCode);
     elLoad.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); loadCode(); } });
+
+    /* 주소로 들어온 번호. 도구 페이지·API·플레이어가 여기로 보낸다.
+         /studio?code=BN5-0AC6F6&style=sa:flyposter
+       스타일은 비율 때문에 갈아 끼운 번호에만 붙는다. 붙어 있으면 그 그림으로
+       열어야 고객이 도구에서 본 화면이 그대로 나온다. */
+    (function () {
+      var q = new URLSearchParams(location.search);
+      var raw = (q.get("code") || "").trim();
+      if (!raw) return;
+      var p3 = parseCode(raw);
+      if (!p3 || p3.idx === CUSTOM || p3.idx >= SCENES.length) return;
+      var st = q.get("style");
+      make(p3.idx, p3.seed, false, p3.v, st && GEN.hasStyle(st) ? st : null);
+      var picked = $("[data-st-picked]", root);
+      if (picked && picked.scrollIntoView) picked.scrollIntoView({ block: "start" });
+    })();
 
     window.addEventListener("resize", syncPanel);
 

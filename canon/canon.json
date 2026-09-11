@@ -558,6 +558,7 @@
     "/admin",
     "/client",
     "/studio",
+    "/tools",
     "/login",
     "/api/",
     "/mediabox",

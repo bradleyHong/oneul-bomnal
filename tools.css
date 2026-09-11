@@ -1,0 +1,99 @@
+/* 봄날 도구.
+   스튜디오(studio.css)의 뼈대를 그대로 쓰고, 도구 화면에 필요한 것만 더한다.
+   도구는 손이 빨라야 하므로 단추를 크게 두고 설명을 줄인다. */
+
+.tl-main { max-width: 1160px; }
+.tl-foot { margin-top: 26px; }
+
+/* ── 도구 목록 ───────────────────────────────────────────── */
+.tl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 18px;
+}
+.tl-card {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 0 0 12px;
+  background: #0b0e14;
+  border: 1px solid var(--st-line);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  color: #eef2f8;
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+.tl-card:hover, .tl-card:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--st-blue);
+  box-shadow: 0 8px 22px rgba(11, 98, 196, .18);
+}
+.tl-card canvas { display: block; width: 100%; height: auto; background: #05070c; }
+.tl-card-name { font-size: 1.06rem; font-weight: 800; padding: 12px 14px 0; }
+.tl-card-desc { font-size: .84rem; color: #9aa8bb; padding: 0 14px; line-height: 1.5; }
+
+/* ── 도구 화면 ───────────────────────────────────────────── */
+.tl-stage-head { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
+.tl-back {
+  border: 1px solid var(--st-line); background: #fff; color: var(--st-body);
+  border-radius: 999px; padding: 7px 14px; font-size: .88rem; cursor: pointer;
+}
+.tl-back:hover { border-color: var(--st-blue); color: var(--st-blue); }
+.tl-stage-name strong { font-size: 1.7rem; font-weight: 800; margin-right: 10px; }
+.tl-stage-name span { color: var(--st-gray); font-size: .94rem; }
+
+.tl-sizes { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.tl-size {
+  border: 1px solid var(--st-line); background: #fff; color: var(--st-body);
+  border-radius: 999px; padding: 7px 14px; font-size: .86rem; cursor: pointer;
+}
+.tl-size:hover { border-color: var(--st-blue); color: var(--st-blue); }
+.tl-size.is-on { background: var(--st-ink); border-color: var(--st-ink); color: #fff; font-weight: 700; }
+
+.tl-canvas-wrap {
+  display: flex; align-items: center; justify-content: center;
+  background: #05070c; border-radius: 14px; padding: 14px; min-height: 240px;
+}
+.tl-canvas-wrap canvas { display: block; max-width: 100%; height: auto; border-radius: 4px; }
+
+.tl-acts { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 10px; }
+.tl-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid var(--st-line); background: #fff; color: var(--st-ink);
+  border-radius: 10px; padding: 11px 18px; font-size: .95rem; font-weight: 600;
+  cursor: pointer; text-decoration: none;
+}
+.tl-btn:hover { border-color: var(--st-blue); color: var(--st-blue); }
+.tl-btn.is-primary { background: var(--st-blue); border-color: var(--st-blue); color: #fff; }
+.tl-btn.is-primary:hover { background: #0a56ac; color: #fff; }
+.tl-btn kbd {
+  font: inherit; font-size: .76rem; opacity: .8;
+  border: 1px solid currentColor; border-radius: 5px; padding: 1px 6px;
+}
+.tl-heart.is-on { background: #fff0f3; border-color: #d84a63; color: #c0374f; }
+
+.tl-code { margin: 6px 0 4px; font-size: .95rem; color: var(--st-body); }
+.tl-code b {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 1.05rem; color: var(--st-ink); letter-spacing: .04em;
+}
+.tl-code span { color: var(--st-gray); font-size: .86rem; }
+
+@media (max-width: 640px) {
+  .tl-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .tl-card-name { font-size: .96rem; padding: 10px 11px 0; }
+  .tl-card-desc { font-size: .78rem; padding: 0 11px; }
+  .tl-stage-name strong { font-size: 1.35rem; }
+  .tl-acts .tl-btn { flex: 1 1 46%; justify-content: center; }
+  .tl-canvas-wrap { padding: 8px; }
+}
+
+/* 손전화 — 도구는 한 손으로 눌러야 한다.
+   차림표가 두 줄로 눌리면 도구 이름이 가려지므로 줄을 바꿔 준다. */
+@media (max-width: 560px) {
+  .tl-page .st-nav { flex-wrap: wrap; gap: 6px 14px; padding: 12px 16px; }
+  .tl-page .st-brand span { display: none; }
+  .tl-page .st-main { padding: 22px 16px 56px; }
+  .tl-btn kbd { display: none; }
+  .tl-btn { padding: 12px 14px; }
+}

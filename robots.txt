@@ -13,6 +13,8 @@ Disallow: /client
 Disallow: /client.html
 Disallow: /studio
 Disallow: /studio.html
+Disallow: /tools
+Disallow: /tools.html
 Disallow: /login
 Disallow: /login.html
 Disallow: /api/
@@ -43,6 +45,8 @@ Disallow: /client
 Disallow: /client.html
 Disallow: /studio
 Disallow: /studio.html
+Disallow: /tools
+Disallow: /tools.html
 Disallow: /login
 Disallow: /login.html
 Disallow: /api/
@@ -73,6 +77,8 @@ Disallow: /client
 Disallow: /client.html
 Disallow: /studio
 Disallow: /studio.html
+Disallow: /tools
+Disallow: /tools.html
 Disallow: /login
 Disallow: /login.html
 Disallow: /api/
@@ -103,6 +109,8 @@ Disallow: /client
 Disallow: /client.html
 Disallow: /studio
 Disallow: /studio.html
+Disallow: /tools
+Disallow: /tools.html
 Disallow: /login
 Disallow: /login.html
 Disallow: /api/
@@ -133,6 +141,8 @@ Disallow: /client
 Disallow: /client.html
 Disallow: /studio
 Disallow: /studio.html
+Disallow: /tools
+Disallow: /tools.html
 Disallow: /login
 Disallow: /login.html
 Disallow: /api/
@@ -163,6 +173,8 @@ Disallow: /client
 Disallow: /client.html
 Disallow: /studio
 Disallow: /studio.html
+Disallow: /tools
+Disallow: /tools.html
 Disallow: /login
 Disallow: /login.html
 Disallow: /api/
@@ -193,6 +205,8 @@ Disallow: /client
 Disallow: /client.html
 Disallow: /studio
 Disallow: /studio.html
+Disallow: /tools
+Disallow: /tools.html
 Disallow: /login
 Disallow: /login.html
 Disallow: /api/
@@ -223,6 +237,8 @@ Disallow: /client
 Disallow: /client.html
 Disallow: /studio
 Disallow: /studio.html
+Disallow: /tools
+Disallow: /tools.html
 Disallow: /login
 Disallow: /login.html
 Disallow: /api/
@@ -253,6 +269,8 @@ Disallow: /client
 Disallow: /client.html
 Disallow: /studio
 Disallow: /studio.html
+Disallow: /tools
+Disallow: /tools.html
 Disallow: /login
 Disallow: /login.html
 Disallow: /api/
@@ -283,6 +301,8 @@ Disallow: /client
 Disallow: /client.html
 Disallow: /studio
 Disallow: /studio.html
+Disallow: /tools
+Disallow: /tools.html
 Disallow: /login
 Disallow: /login.html
 Disallow: /api/
@@ -313,6 +333,8 @@ Disallow: /client
 Disallow: /client.html
 Disallow: /studio
 Disallow: /studio.html
+Disallow: /tools
+Disallow: /tools.html
 Disallow: /login
 Disallow: /login.html
 Disallow: /api/
@@ -343,6 +365,8 @@ Disallow: /client
 Disallow: /client.html
 Disallow: /studio
 Disallow: /studio.html
+Disallow: /tools
+Disallow: /tools.html
 Disallow: /login
 Disallow: /login.html
 Disallow: /api/
@@ -373,6 +397,8 @@ Disallow: /client
 Disallow: /client.html
 Disallow: /studio
 Disallow: /studio.html
+Disallow: /tools
+Disallow: /tools.html
 Disallow: /login
 Disallow: /login.html
 Disallow: /api/
@@ -403,6 +429,8 @@ Disallow: /client
 Disallow: /client.html
 Disallow: /studio
 Disallow: /studio.html
+Disallow: /tools
+Disallow: /tools.html
 Disallow: /login
 Disallow: /login.html
 Disallow: /api/

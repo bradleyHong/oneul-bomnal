@@ -387,7 +387,16 @@ function create(canvas, opts) {
                        nakhwa: 1,
                        /* 꽃눈은 꽃잎 수백 장, 파도는 사각형 수천 개, 유화는
                           획 수천 개, 회랑은 바닥 타일 수백 장. 다 같은 병이다. */
-                       petalfall: 1, ocean: 1, impasto: 1, renaissance: 1, anamorph: 1 };
+                       petalfall: 1, ocean: 1, impasto: 1, renaissance: 1, anamorph: 1,
+                       /* 벽보는 활자 칸을 수만 개 찍는다. 같은 병이다. */
+                       flyposter: 1 };
+
+  /* 획이 많지만 번지면 안 되는 것.
+     HEAVY_GLOW 에 넣으면 획마다 그림자를 다는 것은 면하지만, 대신 다 그린 뒤
+     번짐을 한 번 얹는다. 벽보는 인쇄물이라 빛나면 안 된다 — 종이가 발광하는
+     화면이 되고, 넓은 밝은 면이 번져 활자가 안 읽힌다. 획은 그대로 아끼고
+     번짐만 뺀다. */
+  const NO_BLOOM = { flyposter: 1 };
 
   let bloomBuf = null;
   function applyBloom(strength) {
@@ -4079,6 +4088,142 @@ function create(canvas, opts) {
       ctx.fill();
     },
 
+    /* 89 벽보 — 붙였다 뜯긴 포스터.
+       인쇄물의 문법은 셋뿐이다. 면, 망점, 활자.
+       색 띠가 왼쪽에서 흐르다 오른쪽으로 갈수록 세로 줄로 끊기고, 그 위에
+       솔리드 블록과 망점 블록이 몇 장 얹히고, 화면 전체에 활자가 빽빽하게
+       깔린다. 글자는 우리 글자판(FONT57)으로 매 프레임 다시 찍는다 —
+       글꼴 파일을 부르지 않으므로 인터넷 없는 전용 플레이어에서도 같다.
+       (playgrnd 의 kiosk 도구가 쓰는 결을 보고, 우리 색과 글자로 다시 짰다.) */
+    flyposter(t) {
+      const ph = t / DUR;
+      const wideK = clamp(W / H / (16 / 9), 0.45, 2.6);
+
+      /* 색 사다리 — 바탕에서 가장 밝은 색까지 잇는다.
+         면을 반투명으로 겹치면 인쇄가 아니라 유리가 된다. 전부 불투명. */
+      const rgbOf = (hex) => { const v = parseInt(hex.slice(1), 16); return [(v >> 16) & 255, (v >> 8) & 255, v & 255]; };
+      const LAD = [BGRGB, rgbOf(TONES[3 % TONES.length]), rgbOf(TONES[2]), rgbOf(TONES[1]), rgbOf(TONES[0])];
+      const col = (v) => {
+        const x = clamp(v, 0, 0.9999) * (LAD.length - 1);
+        const i = Math.floor(x), u = x - i;
+        const a = LAD[i], b = LAD[Math.min(LAD.length - 1, i + 1)];
+        return "rgb(" + Math.round(a[0] + (b[0] - a[0]) * u) + ","
+                      + Math.round(a[1] + (b[1] - a[1]) * u) + ","
+                      + Math.round(a[2] + (b[2] - a[2]) * u) + ")";
+      };
+      const BGC = "rgb(" + BGRGB[0] + "," + BGRGB[1] + "," + BGRGB[2] + ")";
+
+      /* ① 색 띠 쓸기 → 세로 줄무늬.
+         왼쪽은 색이 이어지고, 오른쪽으로 갈수록 계단으로 끊긴다.
+         한 바퀴에 색이 정확히 한 번 돌아 이음매가 맞는다. */
+      const N = Math.round((60 + k.density * 150) * clamp(wideK, 0.6, 2.2));
+      const bands = 2 + Math.floor(seeds[850].a * 3);       /* 색이 화면을 몇 번 훑나 */
+      const Q = 3 + Math.floor(seeds[850].b * 4);           /* 끊길 때의 계단 수 */
+      const flip = seeds[850].c < 0.5 ? 1 : -1;             /* 어느 쪽이 끊기나 */
+      const bw = W / N;
+      for (let i = 0; i < N; i++) {
+        const u = (i + 0.5) / N;
+        const raw = 0.5 + 0.5 * Math.sin((u * bands + ph) * TAU + seeds[851].a * TAU);
+        const step = Math.floor(raw * Q) / (Q - 1);
+        const side = flip > 0 ? u : 1 - u;
+        const hard = clamp((side - 0.16) / 0.74, 0, 1);
+        const v = lerp(raw, clamp(step, 0, 1), hard * hard);
+        /* 바탕 줄무늬는 가장 밝은 색까지 올리지 않는다. 화면 전체가 흰
+           벽이 되면 로비 LED 에서 눈이 부시고, 그 위의 활자가 안 읽힌다.
+           가장 밝은 자리는 아래 블록 몇 장에만 준다. */
+        ctx.fillStyle = col(0.08 + v * 0.64 * clamp(k.contrast, 0.7, 1.15));
+        ctx.fillRect(Math.floor(i * bw), 0, Math.ceil(bw) + 1, H);
+      }
+
+      /* ② 블록 — 솔리드·넉아웃·망점. 격자에 맞춰 앉힌다.
+         자유롭게 놓으면 콜라주가 되고, 격자에 맞추면 인쇄물이 된다. */
+      const GX = 6, GY = 4;
+      const gw = W / GX, gh = H / GY;
+      const nb = 3 + Math.round(k.density * 5);
+      for (let i = 0; i < nb; i++) {
+        const s = seeds[(i * 7 + 860) % seeds.length];
+        const s2 = seeds[(i * 7 + 861) % seeds.length];
+        const cw = gw * (1 + Math.floor(s.c * 2));
+        const chh = gh * (1 + Math.floor(s.d * 2)) * 0.72;
+        const x = clamp(Math.floor(s.a * GX) * gw, 0, W - cw);
+        const y = clamp(Math.floor(s.b * GY) * gh + gh * 0.12, 0, H - chh);
+        /* 한 바퀴에 정수 번 깜빡인다 */
+        const blink = 0.5 + 0.5 * Math.sin((ph * (1 + Math.floor(s2.d * 2)) + s2.c) * TAU);
+        const kind = Math.floor(s2.a * 3);
+        if (kind === 0) {
+          ctx.fillStyle = col(0.72 + 0.28 * blink);
+          ctx.fillRect(x, y, cw, chh);
+        } else if (kind === 1) {
+          ctx.fillStyle = BGC;                              /* 뚫린 면 */
+          ctx.fillRect(x, y, cw, chh);
+          ctx.strokeStyle = col(0.9);
+          ctx.lineWidth = Math.max(1.5, S * 2.4);
+          ctx.strokeRect(x + ctx.lineWidth / 2, y + ctx.lineWidth / 2, cw - ctx.lineWidth, chh - ctx.lineWidth);
+        } else {
+          /* 망점 — 한쪽에서 다른 쪽으로 점이 커진다 */
+          const p = Math.max(4, S * (7 + s2.b * 9));
+          const cols = Math.ceil(cw / p), rows = Math.ceil(chh / p);
+          ctx.fillStyle = col(0.86);
+          ctx.beginPath();
+          for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+              const uu = cols > 1 ? c / (cols - 1) : 0;
+              const g = clamp(uu * 1.25 - 0.1 + (s2.c - 0.5) * 0.3 + blink * 0.25, 0, 1);
+              const rad = p * 0.48 * g;
+              if (rad < 0.35) continue;
+              const cx = x + (c + 0.5) * p, cy = y + (r + 0.5) * p;
+              if (cx > x + cw || cy > y + chh) continue;
+              ctx.moveTo(cx + rad, cy);
+              ctx.arc(cx, cy, rad, 0, TAU);
+            }
+          }
+          ctx.fill();
+        }
+      }
+
+      /* ③ 활자 격자 — 화면을 가로지르는 줄들.
+         줄마다 한 낱말이 되풀이되고, 한 바퀴에 정수 칸만큼 흘러 이음매가
+         맞는다. 몇 줄은 뚫어 찍어(넉아웃) 종이가 벗겨진 것처럼 보인다.
+         획을 하나씩 칠하면 4K 에서 감당이 안 되므로 줄마다 길 하나로 모아
+         한 번에 채운다. */
+      /* 낱말은 어느 현장에 걸어도 되는 것만 쓴다. 우리 회사 이름이나
+         지명을 박으면 고객 로비에 우리 간판이 걸리는 꼴이 된다. */
+      const WORDS = ["LIGHT", "SPRING", "BLOOM", "TODAY", "MEDIA", "ART",
+                     "CODE", "SIGNAL", "MOTION", "SCREEN", "DAILY", "FIELD"];
+      const ROWS = 8 + Math.round(k.density * 13);
+      const rowH = H / ROWS;
+      for (let r = 0; r < ROWS; r++) {
+        const s = seeds[(r * 5 + 870) % seeds.length];
+        const s2 = seeds[(r * 5 + 871) % seeds.length];
+        if (s.d < 0.20) continue;                           /* 빈 줄 — 숨 쉴 자리 */
+        const big = s.a > 0.88;
+        const chH = rowH * (big ? 1.5 : 0.58);
+        const chW = chH * 5 / 7;
+        const cell = chW * 1.22;
+        const word = WORDS[Math.floor(s.b * WORDS.length)] + "  ";
+        const period = cell * word.length;
+        const cyc = 1 + Math.floor(s.c * 3);
+        const dir = s2.a < 0.5 ? 1 : -1;
+        const off = (((s.a + ph * cyc * dir) % 1) + 1) % 1 * period;
+        const y = r * rowH + (rowH - chH) / 2;
+        const knock = s2.b > 0.60;
+        const px = chW / 5, py = chH / 7;
+        const count = Math.ceil((W + period * 2) / cell);
+        ctx.fillStyle = knock ? BGC : col(0.55 + 0.45 * s2.c);
+        ctx.beginPath();
+        for (let c = 0; c < count; c++) {
+          const x = -period + off + c * cell;
+          if (x > W || x + chW < 0) continue;
+          const ch = word[c % word.length];
+          if (ch === " ") continue;
+          glyph57(ch, (gx, gy) => {
+            ctx.rect(x + gx * px, y + gy * py, px * 0.92, py * 0.92);
+          });
+        }
+        ctx.fill();
+      }
+    },
+
   };
 
   /* ── 마감 처리 ────────────────────────────────────────────────
@@ -4155,7 +4300,7 @@ function create(canvas, opts) {
     withSymmetry(() => draw(t));
     ctx.shadowBlur = 0;
     /* 획이 많은 스타일은 여기서 한 번만 번지게 한다 */
-    if (k.glow > 0.02 && heavy) applyBloom(0.22 + k.glow * 0.5);
+    if (k.glow > 0.02 && heavy && NO_BLOOM[P.style] !== 1) applyBloom(0.22 + k.glow * 0.5);
 
     if (!P.bare) {
       applyVignette();
@@ -4200,6 +4345,8 @@ const STYLE_LABELS = [
 
   ["petalfall", "꽃눈"], ["ocean", "파도"], ["anamorph", "아나모픽"],
   ["impasto", "유화"], ["renaissance", "르네상스"],
+
+  ["flyposter", "벽보"],
 ];
 
 global.StudioArt = {
