@@ -211,6 +211,12 @@
       spec.idx = idx;
       spec.v = v;
       gen.set(spec).start();
+      /* 고른 화면을 '현장에 걸어보기'(mockup.js)가 받아 간다. 거기서는
+         같은 사양을 면마다 제 비율로 다시 그린다. 여기서 그린 한 장을
+         늘려 붙이는 것이 아니다. */
+      try {
+        document.dispatchEvent(new CustomEvent("bn:picked", { detail: spec }));
+      } catch (e) { /* 오래된 브라우저에서는 목업만 조용히 비워 둔다 */ }
       if (!fromHistory) remember(idx, sd, story, spec.ar, v);
       drawHistory();
       markScene();

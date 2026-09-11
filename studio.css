@@ -662,3 +662,82 @@
   grid-column: 2 / 4; margin-top: 3px;
   font-size: .76rem; line-height: 1.5; color: var(--st-gray);
 }
+
+
+/* ── 현장에 걸어보기 ─────────────────────────────────────────
+   고른 화면을 실제 사이니지 사진에 원근을 맞춰 얹는다. 캔버스는
+   matrix3d 로 눕히므로, 감싼 자리는 사진과 같은 크기여야 한다. */
+.mock {
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid var(--edge);
+}
+
+.mock-stage {
+  position: relative;
+  margin: 12px 0 0;
+  border-radius: 12px;
+  /* 눕힌 캔버스가 사진 밖으로 한두 화소 비어져 나온다. 잘라 낸다. */
+  overflow: hidden;
+  background: var(--void);
+  line-height: 0;
+}
+.mock-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.mock-surface {
+  position: absolute;
+  left: 0;
+  top: 0;
+  /* 사진 위에 얹힌 화면이지 누를 것이 아니다. */
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 260ms ease;
+}
+.mock.is-live .mock-surface { opacity: 1; }
+
+.mock-pick {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+.mock-chip {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid var(--edge-soft);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--muted);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.14s ease, background 0.14s ease;
+}
+.mock-chip b {
+  font-size: .86rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+.mock-chip span {
+  font-size: .74rem;
+  line-height: 1.5;
+  color: var(--deep);
+}
+.mock-chip:hover { border-color: var(--edge); }
+/* 고른 것은 켜져 보여야 한다. 테두리 한 겹으로는 훑을 때 안 보인다. */
+.mock-chip.is-on {
+  border-color: var(--edge-glow);
+  background: var(--glow-dim);
+}
+.mock-chip.is-on b { color: var(--ink); }
+
+.mock-meta {
+  margin: 10px 0 0;
+  font-size: .78rem;
+  line-height: 1.6;
+  color: var(--deep);
+}
