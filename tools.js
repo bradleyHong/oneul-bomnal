@@ -60,6 +60,11 @@
     { id: "vert916", ko: "세로 9:16", w: 1080, h: 1920 },
     { id: "ultra329", ko: "띠 32:9", w: 3840, h: 1080 },
     { id: "column16", ko: "기둥 1:6", w: 360, h: 2160 },
+    /* 두 면 기둥. 모서리를 사이에 두고 두 면이 함께 보이는 자리다.
+       면마다 따로 돌리면 같은 그림이 두 번 걸린 것으로 보인다 — 기둥
+       하나가 아니라 화면 두 대다. 펼친 폭으로 한 장을 그려 드리고
+       모서리에서 반씩 잘라 거는 것이 맞다. */
+    { id: "column2", ko: "기둥 2면 · 모서리", w: 1512, h: 2160, wrap: 2 },
     { id: "square", ko: "정사각", w: 2048, h: 2048 }
   ];
 
@@ -166,6 +171,7 @@
     if (tune.symmetry != null) add("symmetry", tune.symmetry);
     if (tune.invert != null) add("invert", tune.invert ? 1 : 0);
     add("w", sz.w); add("h", sz.h);
+    if (sz.wrap) add("wrap", sz.wrap);   /* 모서리에서 몇 쪽으로 자를지 */
     add("dur", tune.dur || 30);
     return q.join("&");
   }
@@ -623,7 +629,9 @@
           message: [
             "도구: " + (stage ? stage.en + " (" + stage.ko + ")" : "-"),
             "작품 번호: " + code(shot.idx, shot.seed),
-            "화면 규격: " + sz.ko + " " + sz.w + "×" + sz.h,
+            "화면 규격: " + sz.ko + " " + sz.w + "×" + sz.h +
+              (sz.wrap ? " (한 장으로 그려 모서리에서 " + sz.wrap + "쪽으로 자름 · 면마다 "
+                         + Math.round(sz.w / sz.wrap) + "×" + sz.h + ")" : ""),
             "재생 길이: " + (tune.dur || 30) + "초",
             "손본 항목: " + (tuneCount() ? tuneCount() + "개" : "없음(저절로)"),
             "색: " + (palId || "저절로"),

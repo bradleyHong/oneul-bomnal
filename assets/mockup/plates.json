@@ -165,7 +165,8 @@
     "size": [
       900,
       1612
-    ]
+    ],
+    "wrap": true
   },
   {
     "id": "lobby-led",
