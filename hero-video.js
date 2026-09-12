@@ -84,10 +84,18 @@
  * 그래서 누른 그 카드만 재생기로 바뀐다. 누르기 전에는 색과 글자뿐이라
  * 내려받는 것이 없다. 썸네일 그림조차 없다.
  *
- * 단추는 지우지 않고 재생기 아래에 남겨 둔다. 위에서 히어로가 겪은 것과
- * 같은 이유다 — 영상이 비공개이거나 회사 방화벽이 막아도 iframe 은 그냥
- * 붙고, 그 자리에 회색 판이 걸린다. 정말 그림이 나오기 시작했다는 신호를
- * 받은 뒤에 단추를 감춘다. 신호가 안 오면 카드는 원래 모습 그대로 남는다.
+ * 처음에는 "재생 신호를 받은 뒤에만 재생기를 보여 준다"로 두었다.
+ * 회색 판이 걸리는 것을 막으려던 것인데, 그게 더 나쁜 고장을 만들었다.
+ *
+ * 히어로는 muted 로 돌아 자동재생이 늘 허용되고 신호가 온다. 이 카드들은
+ * 소리가 있어 자동재생이 거부될 수 있고, 그러면 신호가 오지 않는다.
+ * 신호가 없으니 빗장이 안 열리고, 누른 사람에게는 아무 일도 일어나지
+ * 않은 것처럼 보였다. 실제로 "안 들어갔다"는 말을 들었다.
+ *
+ * 그래서 뒤집었다. 누르면 곧바로 보여 준다. 대신 2.5초 안에 재생기가
+ * 인사조차 하지 않으면(비공개·방화벽·차단) 카드를 원래대로 되돌리고
+ * Vimeo 에서 직접 열 수 있는 길을 내준다. 숨기는 것보다 왜 안 되는지
+ * 보이는 편이 낫다.
  */
 (function () {
   "use strict";
@@ -113,16 +121,15 @@
       if (d.event === "ready") {
         m.frame.contentWindow.postMessage({ method: "addEventListener", value: "play" }, VIMEO);
         m.frame.contentWindow.postMessage({ method: "addEventListener", value: "timeupdate" }, VIMEO);
-      } else if (d.event === "play" || d.event === "timeupdate") {
-        m.box.classList.add("is-playing");
-        /* 감춘 단추가 탭 순서에 남아 있으면 키보드로 다니다 보이지 않는
-           것에 초점이 멈춘다. */
-        m.btn.setAttribute("tabindex", "-1");
-        m.btn.setAttribute("aria-hidden", "true");
+      }
+      /* 인사만 받아도 살아 있는 것이다. 되돌리기 시계를 끈다. */
+      m.alive = true;
+      clearTimeout(m.timer);
+      if ((d.event === "play" || d.event === "timeupdate") && !m.moved) {
         /* 눌러서 연 사람은 지금 이 영상을 보려던 참이다. 화면이 실제로
-           나온 뒤에 초점을 넘긴다. 보이지도 않는 것에 미리 넘기면
-           키보드 사용자는 자기가 어디 있는지 알 수 없다. */
-        if (!m.moved) { m.moved = true; m.frame.focus(); }
+           나온 뒤에 초점을 넘긴다. */
+        m.moved = true;
+        m.frame.focus();
       }
       return;
     }
@@ -150,7 +157,36 @@
       f.setAttribute("allowfullscreen", "");
 
       box.appendChild(f);
-      mounted.push({ box: box, btn: btn, frame: f, moved: false });
+      /* 누르면 곧바로 보여 준다. 재생 신호를 기다리지 않는다. */
+      box.classList.add("is-playing");
+      btn.setAttribute("tabindex", "-1");
+      btn.setAttribute("aria-hidden", "true");
+
+      var m = { box: box, btn: btn, frame: f, moved: false, alive: false };
+      mounted.push(m);
+
+      /* 재생기가 인사조차 하지 않으면 거기 아무것도 없는 것이다.
+         비공개 영상이거나, 기관 방화벽이 vimeo 를 막았거나, 이 영상의
+         '어디에 embed 할 수 있는가' 설정이 우리 도메인을 막고 있다.
+         회색 판을 남겨 두는 대신 카드를 되돌리고 직접 열 길을 낸다. */
+      m.timer = setTimeout(function () {
+        if (m.alive) return;
+        box.classList.remove("is-playing");
+        box.classList.add("is-stuck");
+        btn.removeAttribute("tabindex");
+        btn.removeAttribute("aria-hidden");
+        if (f.parentNode) f.parentNode.removeChild(f);
+
+        if (!box.querySelector(".film-out")) {
+          var a = document.createElement("a");
+          a.className = "film-out";
+          a.href = "https://vimeo.com/" + id + (key ? "/" + key : "");
+          a.target = "_blank";
+          a.rel = "noopener";
+          a.textContent = "Vimeo에서 열기";
+          box.appendChild(a);
+        }
+      }, 2500);
     });
   });
 })();

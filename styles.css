@@ -4940,6 +4940,24 @@ main .home-hero .primary-link {
   transition: opacity 320ms ease;
 }
 .film.is-playing iframe { opacity: 1; pointer-events: auto; }
+
+/* 재생기가 끝내 안 열렸을 때. 왜 안 되는지 보이는 편이 낫다 —
+   기관 방화벽이 vimeo 를 막아 두는 일이 흔하다. */
+.film-out {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 2;
+  padding: 8px 13px;
+  border: 1px solid var(--edge-glow);
+  border-radius: 999px;
+  background: var(--glow-dim);
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 800;
+  text-decoration: none;
+}
+.film-out:hover { background: var(--glow-soft); }
 .film.is-playing .film-card { visibility: hidden; }
 
 /* ── ③ 하는 일 ───────────────────────────────────────────── */
