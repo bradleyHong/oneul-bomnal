@@ -92,10 +92,13 @@
  * 신호가 없으니 빗장이 안 열리고, 누른 사람에게는 아무 일도 일어나지
  * 않은 것처럼 보였다. 실제로 "안 들어갔다"는 말을 들었다.
  *
- * 그래서 뒤집었다. 누르면 곧바로 보여 준다. 대신 2.5초 안에 재생기가
- * 인사조차 하지 않으면(비공개·방화벽·차단) 카드를 원래대로 되돌리고
- * Vimeo 에서 직접 열 수 있는 길을 내준다. 숨기는 것보다 왜 안 되는지
- * 보이는 편이 낫다.
+ * 고칠 자리는 "기다린다"가 아니라 "무엇을 기다리는가"였다. play 가
+ * 아니라 ready 를 기다리면 된다. ready 는 재생기가 자리를 잡았다는
+ * 접속 인사라 자동재생 허가와 상관없이 곧바로 온다.
+ *
+ * 그래서 ready 에 연다. 회색 판이 스치는 일도 없다. 2.5초 안에 인사조차
+ * 없으면(비공개·방화벽·embed 도메인 차단) 카드를 원래대로 되돌린다.
+ * 'Vimeo에서 보기' 는 마크업에 늘 들어 있어 그때도 길이 남는다.
  */
 (function () {
   "use strict";
@@ -118,13 +121,22 @@
     for (var i = 0; i < mounted.length; i++) {
       var m = mounted[i];
       if (!m.frame.contentWindow || m.frame.contentWindow !== e.source) continue;
+      /* 인사를 받았으면 거기 재생기가 있는 것이다. 그때 연다.
+         play 를 기다리면 소리 있는 영상에서 자동재생이 거부될 때
+         영영 열리지 않는다 — 처음에 그렇게 해서 안 열렸다. */
+      if (!m.alive) {
+        m.alive = true;
+        clearTimeout(m.timer);
+        m.box.classList.add("is-playing");
+        m.btn.setAttribute("tabindex", "-1");
+        m.btn.setAttribute("aria-hidden", "true");
+        var n = m.btn.querySelector("small");
+        if (n && m.note) n.textContent = m.note;
+      }
       if (d.event === "ready") {
         m.frame.contentWindow.postMessage({ method: "addEventListener", value: "play" }, VIMEO);
         m.frame.contentWindow.postMessage({ method: "addEventListener", value: "timeupdate" }, VIMEO);
       }
-      /* 인사만 받아도 살아 있는 것이다. 되돌리기 시계를 끈다. */
-      m.alive = true;
-      clearTimeout(m.timer);
       if ((d.event === "play" || d.event === "timeupdate") && !m.moved) {
         /* 눌러서 연 사람은 지금 이 영상을 보려던 참이다. 화면이 실제로
            나온 뒤에 초점을 넘긴다. */
@@ -157,13 +169,15 @@
       f.setAttribute("allowfullscreen", "");
 
       box.appendChild(f);
-      /* 누르면 곧바로 보여 준다. 재생 신호를 기다리지 않는다. */
-      box.classList.add("is-playing");
-      btn.setAttribute("tabindex", "-1");
-      btn.setAttribute("aria-hidden", "true");
-
+      /* 아직 보여 주지 않는다. 재생기가 인사할 때까지 카드가 그대로
+         있어야 반쯤 그려진 회색 판이 스치지 않는다. */
       var m = { box: box, btn: btn, frame: f, moved: false, alive: false };
       mounted.push(m);
+
+      /* 인사가 올 때까지 카드는 그대로다. 아무 표시가 없으면 누른 사람은
+         눌리지 않았다고 생각하고 또 누른다. 작은 글씨만 바꿔 둔다. */
+      var note = btn.querySelector("small");
+      if (note) { m.note = note.textContent; note.textContent = "불러오는 중…"; }
 
       /* 재생기가 인사조차 하지 않으면 거기 아무것도 없는 것이다.
          비공개 영상이거나, 기관 방화벽이 vimeo 를 막았거나, 이 영상의
@@ -176,17 +190,12 @@
         btn.removeAttribute("tabindex");
         btn.removeAttribute("aria-hidden");
         if (f.parentNode) f.parentNode.removeChild(f);
+        var n2 = btn.querySelector("small");
+        if (n2) n2.textContent = "여기서는 열리지 않습니다 · Vimeo에서 보기";
 
-        if (!box.querySelector(".film-out")) {
-          var a = document.createElement("a");
-          a.className = "film-out";
-          a.href = "https://vimeo.com/" + id + (key ? "/" + key : "");
-          a.target = "_blank";
-          a.rel = "noopener";
-          a.textContent = "Vimeo에서 열기";
-          box.appendChild(a);
-        }
-      }, 2500);
+        /* 'Vimeo에서 보기' 는 마크업에 늘 들어 있다. 재생 중에만 감춰
+           두었던 것이므로 is-playing 을 뗀 것으로 다시 보인다. */
+      }, 4500);
     });
   });
 })();
