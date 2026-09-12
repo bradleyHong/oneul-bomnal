@@ -194,6 +194,8 @@ undefined
 - [대구 LED 패널 설치 · LED 전광판 설치](https://publicbloom.art/led-install)
 - [미디어파사드 콘텐츠 제작](https://publicbloom.art/media-facade-content)
 - [사이니지 종류별 화면 예시](https://publicbloom.art/showcase)
+- [코드로 만든 작품](https://publicbloom.art/pieces)
+- [스크롤하는 만큼 그림이 움직입니다](https://publicbloom.art/interactive)
 - [여성기업 미디어파사드 오늘은 봄날](https://publicbloom.art/company)
 - [견적문의](https://publicbloom.art/quote)
 - [캐릭터와 이야기만 주세요. 영상은 저희가 만듭니다.](https://publicbloom.art/ai-video)

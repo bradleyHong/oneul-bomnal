@@ -47,7 +47,7 @@
 
 .av-page {
   margin: 0; background: var(--void); color: var(--av-ink);
-  font-family: "Pretendard", "Apple SD Gothic Neo", system-ui, sans-serif;
+  font-family: var(--font, "Pretendard Variable", "Pretendard", "Apple SD Gothic Neo", system-ui, sans-serif);
 }
 .av-main { max-width: 1180px; margin: 0 auto; padding: 30px 24px 80px; }
 

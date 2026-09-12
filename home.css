@@ -518,3 +518,51 @@ body.home-2026 main > .section { background: var(--paper); }
 .home2-credit-meta {
   color: rgba(233, 239, 250, 0.55);
 }
+
+/* ── 더 보기 ─────────────────────────────────────────────────
+   랜딩에 다 이어 붙이면 스크롤이 길어져 무엇을 하는 회사인지 오히려
+   안 읽힌다. 긴 것들은 각자 주소로 빼고 여기서는 이름만 건다. */
+.more-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1px;
+  background: var(--line, rgba(255, 255, 255, .12));
+  border: 1px solid var(--line, rgba(255, 255, 255, .12));
+  border-radius: 14px;
+  overflow: hidden;
+}
+.more-grid a {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px 22px;
+  height: 100%;
+  background: var(--paper, #0b0e14);
+  transition: background 140ms ease;
+}
+.more-grid a:hover,
+.more-grid a:focus-visible { background: rgba(255, 255, 255, .05); }
+.more-grid b {
+  font-size: 1.02rem;
+  font-weight: 650;
+  letter-spacing: -.015em;
+}
+.more-grid span {
+  font-size: .84rem;
+  line-height: 1.5;
+  color: var(--ink-dim, rgba(255, 255, 255, .55));
+}
+@media (max-width: 640px) {
+  .more-grid a { padding: 15px 16px; }
+}
+
+/* 작품 페이지(/pieces)에서 쓰는 타일 구역.
+   랜딩에서는 첫 화면 바로 아래에 검은 띠로 붙지만, 여기서는 본문 한가운데
+   놓이므로 위아래 여백만 줄이고 바탕은 페이지를 따른다. */
+.subpage-main .home2-index {
+  background: transparent;
+  padding-top: clamp(18px, 3vh, 34px);
+}

@@ -51,18 +51,32 @@ html {
   background: var(--void);
 }
 
+/* ── 회사 글꼴 ─────────────────────────────────────────────────
+   미디어 작업을 파는 회사다. 페이지마다 다른 글꼴로 뜨면 그 말이 안 된다.
+   여태 styles.css 는 시스템 글꼴, studio.css·ai-video.css 는 Pretendard 를
+   찾고 있었는데 어디서도 그 글꼴을 불러오지 않아 기기마다 다른 얼굴이
+   나왔다. 한 자리에 정해 두고 전부 이걸 쓴다.
+
+   Pretendard 는 한국어 본문에 맞게 만든 열린 글꼴이다(SIL OFL).
+   못 받아도 아래 시스템 글꼴로 그대로 읽힌다 — 글꼴 하나 때문에
+   글자가 안 보이는 일은 없어야 한다. */
+:root {
+  --font:
+    "Pretendard Variable", "Pretendard",
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", sans-serif;
+}
+
 body {
   color: var(--ink);
-  font-family:
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Apple SD Gothic Neo",
-    "Noto Sans KR",
-    "Segoe UI",
-    sans-serif;
+  font-family: var(--font);
+  /* 한글은 자간이 조금 붙어야 문장으로 읽힌다. 제목은 더 붙인다. */
+  letter-spacing: -.01em;
   background: var(--paper);
+}
+
+h1, h2, h3, .section-kicker, .brand strong {
+  letter-spacing: -.025em;
 }
 
 h1,

@@ -14,7 +14,7 @@
   margin: 0;
   background: var(--void);
   color: var(--st-ink);
-  font-family: "Pretendard", "Apple SD Gothic Neo", system-ui, sans-serif;
+  font-family: var(--font, "Pretendard Variable", "Pretendard", "Apple SD Gothic Neo", system-ui, sans-serif);
 }
 
 .st-nav {
