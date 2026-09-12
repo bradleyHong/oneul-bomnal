@@ -445,7 +445,9 @@ body.home-2026 main > .section { background: var(--paper); }
   line-height: 1.6;
   color: var(--h-dim);
 }
-.home2-box-feat b { flex: 0 0 8.5em; color: var(--h-white); font-weight: 700; }
+/* 설명을 걷어내고 이름만 남겼다. 8.5em 으로 붙잡아 두면 '멈추면 스스로
+   되 / 살아남' 처럼 이름이 두 줄로 꺾인다. 제 폭만큼 쓰게 둔다. */
+.home2-box-feat b { color: var(--h-white); font-weight: 700; }
 
 .home2-box-terms {
   margin: clamp(20px, 3vh, 28px) 0 0;
