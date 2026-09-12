@@ -9,7 +9,7 @@ html, body {
   overflow: hidden;
   background: #000;
   color: #fff;
-  font-family: "Pretendard", "Apple SD Gothic Neo", system-ui, sans-serif;
+  font-family: var(--font, "Pretendard Variable", "Pretendard", "Apple SD Gothic Neo", system-ui, sans-serif);
 }
 
 body.hide-cursor { cursor: none; }
