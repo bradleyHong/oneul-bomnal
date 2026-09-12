@@ -155,6 +155,21 @@
       return { def: s, canvas: c };
     });
 
+    /* 앞가림.
+       화면 자리는 사각형인데 그 앞에 사람이 서 있으면 사각형이 사람을
+       덮는다. 두 면 기둥에서 아이 머리가 통째로 지워졌다 — 서 있는
+       사람 앞으로 화면이 나올 수는 없다.
+       사진에서 떼어 둔 "화면 앞에 있는 것"만 작품 위에 다시 얹는다.
+       사진과 같은 크기·같은 자리라 눕힐 필요가 없다. */
+    if (p.front) {
+      var fr = el("img", "mock-front");
+      fr.src = p.front;
+      fr.alt = "";
+      fr.setAttribute("aria-hidden", "true");
+      fr.decoding = "async";
+      this.stage.appendChild(fr);
+    }
+
     if (img.complete) { this.place(); this.paint(); }
     else img.addEventListener("load", function () { self.place(); self.paint(); });
 

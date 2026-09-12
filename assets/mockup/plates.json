@@ -166,7 +166,8 @@
       900,
       1612
     ],
-    "wrap": true
+    "wrap": true,
+    "front": "./assets/mockup/column-two-front.png"
   },
   {
     "id": "lobby-led",
