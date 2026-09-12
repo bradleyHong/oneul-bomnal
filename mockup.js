@@ -160,11 +160,14 @@
 
     /* 늘려 붙인 것이 아니라는 말을 여기서 한 번 한다. 이 화면이 하려는
        말이 그것이고, 그림만 보아서는 구분되지 않는다. */
-    this.meta.textContent =
-      p.label + " · " +
-      p.surfaces.map(function (s) { return "면 비율 " + ratioText(s.ratio); }).join(" · ") +
-      " · 그 비율로 다시 그린 화면입니다. 늘려 붙인 것이 아닙니다." +
-      " 사진 속 사람과 견주어 크기를 가늠해 보세요.";
+    this.meta.textContent = p.wrap && p.surfaces.length > 1
+      ? p.label + " · 펼친 비율 " + ratioText(p.surfaces.reduce(function (a, s) { return a + (s.ratio || 0); }, 0)) +
+        " · 두 면을 한 화면으로 이어 그립니다. 모서리를 넘어 그림이 계속되므로" +
+        " 화면 두 대가 아니라 기둥 하나로 보입니다. 사진 속 사람과 견주어 크기를 가늠해 보세요."
+      : p.label + " · " +
+        p.surfaces.map(function (s) { return "면 비율 " + ratioText(s.ratio); }).join(" · ") +
+        " · 그 비율로 다시 그린 화면입니다. 늘려 붙인 것이 아닙니다." +
+        " 사진 속 사람과 견주어 크기를 가늠해 보세요.";
   };
 
   function ratioText(r) {
@@ -218,15 +221,21 @@
   Mock.prototype.stop = function () {
     this.gens.forEach(function (g) { try { g.stop(); } catch (e) {} });
     this.gens = [];
+    if (this.wrapRaf) { cancelAnimationFrame(this.wrapRaf); this.wrapRaf = 0; }
   };
 
-  /* 면마다 제 비율로 다시 그린다. 한 장을 늘려 붙이지 않는다. */
+  /* 면마다 제 비율로 다시 그린다. 한 장을 늘려 붙이지 않는다.
+   *
+   * 두 면이 한 기둥에 붙어 있으면 이야기가 다르다. 면마다 따로 돌리면
+   * 같은 그림이 두 번 걸린 것으로 보인다 — 기둥 하나가 아니라 화면 두 대다.
+   * 모서리를 넘어 한 장으로 이어 그려야 기둥이 통으로 읽힌다. */
   Mock.prototype.paint = function () {
     var G = global.BomnalGen;
     if (!G || !this.spec || !this.surfaces || !this.seen) return;
     this.place();                       // 상자가 방금 열렸을 수 있다
     this.stop();
     var self = this;
+    if (this.active && this.active.wrap && this.surfaces.length > 1) return this.paintWrap(G);
     this.surfaces.forEach(function (s) {
       var g = new G.Gen(s.canvas);
       g.set(self.spec);
@@ -234,6 +243,57 @@
       else g.start();
       self.gens.push(g);
     });
+    this.root.classList.add("is-live");
+  };
+
+  /* 모서리를 넘어 이어 그리기.
+   *
+   * 펼친 폭(면 둘을 나란히 놓은 것)으로 한 장을 그리고, 그 장을 왼쪽·
+   * 오른쪽으로 잘라 두 면에 나눠 얹는다. 자르는 비율은 사진에 보이는
+   * 폭이 아니라 실제 면의 폭으로 잰다 — 가까운 면이 사진에서 넓게 보인다고
+   * 그림까지 넓게 주면 모서리에서 그림이 어긋난다.
+   *
+   * 얹는 자리를 사진에 맞추는 일은 place() 의 호모그래피가 이미 한다.
+   * 여기서는 "무엇을 그릴지"만 정한다. */
+  Mock.prototype.paintWrap = function (G) {
+    var self = this;
+    /* 왼쪽부터 차례로. 사진에서 가장 왼쪽에 있는 면이 펼친 그림의 왼쪽이다. */
+    var order = this.surfaces.slice().sort(function (a, b) {
+      var ax = Math.min.apply(null, a.def.quad.map(function (p) { return p[0]; }));
+      var bx = Math.min.apply(null, b.def.quad.map(function (p) { return p[0]; }));
+      return ax - bx;
+    });
+    var dpr = Math.min(global.devicePixelRatio || 1, 2);
+    var sh = 0;
+    order.forEach(function (s) { sh = Math.max(sh, s.canvas.height); });
+    if (!sh) return;
+    var cuts = [], total = 0;
+    order.forEach(function (s) {
+      var w = Math.max(8, Math.round(sh * (s.def.ratio || 0.35)));
+      cuts.push({ s: s, x: total, w: w });
+      total += w;
+    });
+
+    if (!this.wrapCv) this.wrapCv = document.createElement("canvas");
+    var cv = this.wrapCv;
+    if (cv.width !== total || cv.height !== sh) { cv.width = total; cv.height = sh; }
+
+    var g = new G.Gen(cv);
+    g.set(this.spec);
+    this.gens.push(g);
+
+    var copy = function () {
+      cuts.forEach(function (c) {
+        var cx = c.s.canvas.getContext("2d");
+        cx.drawImage(cv, c.x, 0, c.w, sh, 0, 0, c.s.canvas.width, c.s.canvas.height);
+      });
+    };
+    if (this.still && this.still.matches) { g.draw(0); copy(); }
+    else {
+      g.start();
+      var loop = function () { copy(); self.wrapRaf = requestAnimationFrame(loop); };
+      loop();
+    }
     this.root.classList.add("is-live");
   };
 

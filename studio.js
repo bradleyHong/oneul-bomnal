@@ -23,6 +23,9 @@
     { id: "vert916", name: "세로형 · 안내 사이니지", w: 1080, h: 1920, note: "9:16" },
     { id: "ultra329", name: "와이드형 · 외벽 전광판", w: 3840, h: 960, note: "32:9" },
     { id: "column16", name: "기둥형 · 세로 긴 화면", w: 340, h: 2040, note: "1:6" },
+    /* 두 면 기둥. 한 장으로 그려 모서리에서 반씩 잘라 건다.
+       면마다 따로 돌리면 기둥 하나가 아니라 화면 두 대로 보인다. */
+    { id: "column2", name: "두 면 기둥 · 모서리", w: 1512, h: 2160, note: "2면", wrap: 2 },
     { id: "square", name: "정사각 · 포토존", w: 2048, h: 2048, note: "1:1" }
   ];
 
@@ -405,10 +408,11 @@
               "seed=" + spec.seed,
               "v=" + (spec.v || CODE_V),
               "ar=" + (pn.w / pn.h).toFixed(6),
+              pn.wrap ? "wrap=" + pn.wrap : null,
               "pal=" + enc(spec.palette.id),
               "bg=" + enc(spec.palette.bg),
               "tones=" + enc(tones),
-              "w=" + pn.w, "h=" + pn.h].join("&");
+              "w=" + pn.w, "h=" + pn.h].filter(Boolean).join("&");
     }
 
     function specText(story) {
@@ -428,7 +432,9 @@
              node tools/render-studio.mjs "<이 줄>" --name <이름> --dur <초>
            손님이 도구에서 손본 값까지 전부 담겨 있다. */
         "재현용 파라미터: " + (SHEET || specLine()),
-        "화면 규격: " + LAST.panel.name + " " + LAST.panel.w + "×" + LAST.panel.h,
+        "화면 규격: " + LAST.panel.name + " " + LAST.panel.w + "×" + LAST.panel.h +
+          (LAST.panel.wrap ? " (한 장으로 그려 모서리에서 " + LAST.panel.wrap + "쪽으로 자름 · 면마다 "
+                             + Math.round(LAST.panel.w / LAST.panel.wrap) + "×" + LAST.panel.h + ")" : ""),
         "재생 길이: " + LAST.sec + "초",
         "렌더 크레딧: " + LAST.q.credits + " 크레딧 (옵션 배수 ×" + LAST.q.mult + ") = " + comma(LAST.q.render) + "원",
         "추가 요청: " + (picked.join(", ") || "없음"),

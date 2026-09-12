@@ -91,6 +91,17 @@ if (!existsSync(artPath)) {
 }
 console.log(`그리는 화면: works/${artFile}`);
 
+/* 두 면 기둥. 한 장으로 그려 놓고 모서리에서 잘라 건다.
+   자르는 일은 인코딩 뒤에 한 번 더 돌리면 되므로 여기서는 안내만 한다 —
+   자동으로 잘라 버리면 "펼친 한 장"을 확인할 길이 없어진다. */
+const WRAP = +(q.get("wrap") || 0);
+if (WRAP > 1) {
+  console.log(`두 면 기둥입니다. 펼친 한 장을 뽑은 뒤 모서리에서 ${WRAP}쪽으로 자르세요:`);
+  console.log(`  ffmpeg -i <결과.mp4> -filter_complex ` +
+    `"[0:v]crop=iw/${WRAP}:ih:0:0[l];[0:v]crop=iw/${WRAP}:ih:iw/${WRAP}:0[r]" ` +
+    `-map "[l]" 왼면.mp4 -map "[r]" 오른면.mp4`);
+}
+
 /* ── 프레임 뽑기 ──────────────────────────────────────────── */
 let chromium;
 try {
