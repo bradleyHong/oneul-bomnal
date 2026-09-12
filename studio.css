@@ -698,6 +698,18 @@
 }
 .mock.is-live .mock-surface { opacity: 1; }
 
+/* 앞가림 — 화면 앞에 서 있는 것(사람)을 작품 위에 다시 얹는다.
+   사진과 같은 크기·같은 자리라 눕힐 필요가 없다. 캔버스보다 위에 둔다. */
+.mock-front {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  z-index: 2;
+}
+
 .mock-pick {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
