@@ -147,6 +147,50 @@
     }
   });
 
+  /* 카드에 무엇이 든 영상인지 보이게 한다.
+     썸네일을 저장소에 미리 넣어 둘 수가 없다 — 만드는 자리에서는
+     vimeo 에 닿지 못한다. 손님의 브라우저는 닿으므로 그 자리에서
+     oEmbed 로 받아 건다. 못 받으면 지금까지처럼 색과 글자만 남는다. */
+  function poster(btn) {
+    var box = btn.parentNode;
+    if (!box || box.querySelector(".film-poster") || !window.fetch) return;
+    var id = String(btn.dataset.film || "").replace(/[^0-9]/g, "");
+    if (!id) return;
+    var key = String(btn.dataset.filmHash || "").replace(/[^0-9a-z]/gi, "");
+    var page = "https://vimeo.com/" + id + (key ? "/" + key : "");
+    fetch("https://vimeo.com/api/oembed.json?width=960&url=" + encodeURIComponent(page))
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (!d || !d.thumbnail_url || box.querySelector(".film-poster")) return;
+        var img = new Image();
+        img.className = "film-poster";
+        img.alt = "";
+        img.decoding = "async";
+        img.addEventListener("load", function () {
+          if (box.querySelector(".film-poster")) return;
+          box.insertBefore(img, box.firstChild);
+          box.classList.add("has-poster");
+        });
+        img.src = d.thumbnail_url;
+      })
+      .catch(function () { /* 못 받으면 카드는 원래 모습대로 */ });
+  }
+
+  /* 화면에 들어오기 한 뼘 전에 받는다. 넷을 한꺼번에 받으면 아래쪽에
+     있어 보이지도 않는 것 때문에 첫 화면이 늦어진다. */
+  if (window.IntersectionObserver) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        poster(e.target);
+        io.unobserve(e.target);
+      });
+    }, { rootMargin: "60% 0px" });
+    Array.prototype.forEach.call(cards, function (b) { io.observe(b); });
+  } else {
+    Array.prototype.forEach.call(cards, poster);
+  }
+
   Array.prototype.forEach.call(cards, function (btn) {
     btn.addEventListener("click", function () {
       var box = btn.parentNode;

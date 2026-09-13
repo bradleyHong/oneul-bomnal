@@ -4857,9 +4857,13 @@ main .home-hero .primary-link {
   color: var(--ink);
 }
 
+/* 한 편만 걸리는 자리(미디어박스 '이번에 한 것')는 한 칸으로 둔다.
+   셋 칸에 하나만 놓으면 나머지 두 칸이 빈다. */
+.film-grid.is-one { grid-template-columns: minmax(0, 780px); }
+
 .film-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: clamp(14px, 1.6vw, 22px);
   margin: 0;
   padding: 0;
@@ -4873,6 +4877,32 @@ main .home-hero .primary-link {
   overflow: hidden;
   background: #0d1017;
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.54);
+}
+
+/* 손님 브라우저가 받아 건 썸네일. 받기 전에는 없다. */
+.film-poster {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 420ms ease;
+}
+.film.has-poster .film-poster { opacity: 1; }
+.film.is-playing .film-poster { opacity: 0; }
+
+/* 썸네일이 걸리면 카드의 바탕색이 그것을 덮는다. 글자가 읽히도록
+   아래쪽만 어둡게 깔고 나머지는 비운다. */
+.film.has-poster .film-card {
+  background: linear-gradient(
+    to top,
+    rgba(4, 6, 11, 0.86) 0%,
+    rgba(4, 6, 11, 0.42) 34%,
+    rgba(4, 6, 11, 0.06) 62%,
+    rgba(4, 6, 11, 0) 100%
+  );
 }
 
 .film-card {
@@ -4960,10 +4990,12 @@ main .home-hero .primary-link {
    embed 는 남의 집 설정에 달려 있다 — 영상의 '어디에 embed 할 수 있나'
    가 우리 도메인을 막고 있거나, 기관 방화벽이 player.vimeo.com 을
    막아 두는 일이 흔하다. 그때도 세 편에 닿을 길은 남아 있어야 한다. */
+/* 제목은 아래 왼쪽에 있다. 링크를 같은 줄에 두면 카드가 좁아질 때마다
+   자리를 다툰다 — 칸을 셋으로 늘리자 바로 겹쳤다. 위로 올려 둔다. */
 .film-out {
   position: absolute;
-  right: 14px;
-  bottom: 14px;
+  right: 12px;
+  top: 12px;
   z-index: 2;
   padding: 8px 13px;
   border: 1px solid var(--edge-glow);
@@ -4978,8 +5010,6 @@ main .home-hero .primary-link {
 /* 재생 중에는 감춘다. 남의 집 재생기에도 제 단추가 있다. */
 .film.is-playing .film-out { display: none; }
 
-/* 글자 묶음이 링크 밑으로 들어가지 않게 오른쪽을 비워 둔다. */
-.film-card .film-txt { padding-right: 104px; }
 .film.is-playing .film-card { visibility: hidden; }
 
 /* ── ③ 하는 일 ───────────────────────────────────────────── */
@@ -5103,10 +5133,6 @@ main .home-hero .primary-link {
   .ref-card.is-tall { grid-column: span 1; }
   .ref-card.is-tall img { aspect-ratio: 4 / 3; }
   .film-grid { grid-template-columns: 1fr; }
-  /* 좁아지면 제목이 두 줄로 꺾이면서 오른쪽 아래 링크와 겹친다.
-     글자 묶음은 아래에 두고 링크만 위로 올린다. */
-  .film-out { top: 12px; bottom: auto; right: 12px; }
-  .film-card .film-txt { padding-right: 0; }
   .live-hud-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
