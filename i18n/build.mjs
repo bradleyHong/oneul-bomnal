@@ -136,8 +136,8 @@ function head({ lang, pageId, copy, path, type, crumbs }) {
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" />
-    <link rel="stylesheet" href="../styles.css?v=20260913-i18n" />
-    <link rel="stylesheet" href="../i18n/i18n.css?v=20260913-i18n" />
+    <link rel="stylesheet" href="../styles.css?v=20260913-i18n2" />
+    <link rel="stylesheet" href="../i18n/i18n.css?v=20260913-i18n2" />
     <link rel="icon" href="../assets/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="../assets/favicon-180.png" />
     <script type="application/ld+json">
@@ -200,7 +200,7 @@ function footer(L) {
       <p class="footer-stamp">${esc(c.updated)} ${TODAY}</p>
     </footer>
     <script src="../site-pages.js"></script>
-    <script src="../i18n/switch.js?v=20260913-i18n" defer></script>`;
+    <script src="../i18n/switch.js?v=20260913-i18n2" defer></script>`;
 }
 
 function faqBlock(copy, more) {
@@ -589,7 +589,7 @@ ${nav(L, prefix, "quote")}
 ${faqBlock(Q, c.overseasNote)}
     </main>
 ${footer(L)}
-${scripts(`    <script src="../inquiry.js?v=20260913-i18n"></script>`)}
+${scripts(`    <script src="../inquiry.js?v=20260913-i18n2"></script>`)}
 `;
 }
 

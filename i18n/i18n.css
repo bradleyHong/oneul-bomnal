@@ -10,6 +10,11 @@
   padding: 2px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 999px;
+  /* Must not be a <nav>: .site-nav nav is display:none on mobile. */
+  position: static;
+  flex-direction: row;
+  background: transparent;
+  box-shadow: none;
 }
 
 .i18n-switch a {
@@ -92,5 +97,15 @@ html[lang="de"] .answer-block p {
     height: 26px;
     padding: 0 5px;
     font-size: 10px;
+  }
+}
+
+@media (max-width: 760px) {
+  .i18n-switch {
+    order: 2;
+    margin-left: 0;
+  }
+  .site-nav .nav-toggle {
+    order: 3;
   }
 }

@@ -61,7 +61,7 @@
   function ensureCss() {
     if (document.querySelector('link[data-i18n-css]')) return;
     var src = document.currentScript && document.currentScript.src;
-    var href = src ? src.replace(/switch\.js.*$/, "i18n.css?v=20260913-i18n") : "/i18n/i18n.css";
+    var href = src ? src.replace(/switch\.js.*$/, "i18n.css?v=20260913-i18n2") : "/i18n/i18n.css";
     var link = document.createElement("link");
     link.rel = "stylesheet";
     link.href = href;
@@ -74,8 +74,9 @@
     var nav = document.querySelector(".site-nav") || document.querySelector(".st-nav");
     if (!nav || nav.querySelector(".i18n-switch")) return;
 
-    var wrap = document.createElement("nav");
+    var wrap = document.createElement("div");
     wrap.className = "i18n-switch";
+    wrap.setAttribute("role", "navigation");
     wrap.setAttribute("aria-label", "Language / 언어");
 
     LANGS.forEach(function (l) {
