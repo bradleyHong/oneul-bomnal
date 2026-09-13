@@ -25,6 +25,13 @@ const read = (f) => readFileSync(join(root, f), "utf8");
 const has = (f) => existsSync(join(root, f));
 
 const attr = (html, re) => (html.match(re) || [])[1] ?? null;
+const decodeEntities = (s) =>
+  String(s ?? "")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">");
 const metaName = (html, name) =>
   attr(html, new RegExp(`<meta\\s+name="${name}"\\s+content="([^"]*)"`, "i"));
 const metaProp = (html, prop) =>
@@ -195,10 +202,10 @@ if (C.i18n) {
       if (!has(file)) { fail(`다국어 페이지 없음: ${file} (node i18n/build.mjs)`); continue; }
       const html = read(file);
       const wantTitle = L[page.id]?.title;
-      const t = attr(html, /<title>([^<]*)<\/title>/i);
+      const t = decodeEntities(attr(html, /<title>([^<]*)<\/title>/i));
       if (wantTitle && t !== wantTitle) fail(`${file}: title이 언어팩과 다르다`);
       const wantDesc = L[page.id]?.description;
-      const d = metaName(html, "description");
+      const d = decodeEntities(metaName(html, "description"));
       if (wantDesc && d !== wantDesc) fail(`${file}: description이 언어팩과 다르다`);
       const canonical = attr(html, /<link\s+rel="canonical"\s+href="([^"]*)"/i);
       const wantCan = BASE + lang.prefix + (page.slug ? `/${page.slug}` : "");

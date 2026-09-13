@@ -16,12 +16,12 @@
     "navHome": "Accueil",
     "navOffer": "Offre",
     "navStudio": "Studio",
-    "navQuote": "Demander un devis",
+    "navQuote": "Demande de projet",
     "navWorks": "Réalisations (site coréen)",
     "menuOpen": "Ouvrir le menu",
     "menuClose": "Fermer le menu",
     "langLabel": "Langue",
-    "ctaQuote": "Demander un devis",
+    "ctaQuote": "Demande de projet",
     "ctaStudio": "Ouvrir le studio Bomnal",
     "ctaEmail": "Écrire au studio",
     "ctaCall": "Appeler en Corée",
@@ -46,7 +46,7 @@
     "overseasNote": "Les commandes depuis l’étranger sont les bienvenues. Écrivez en français, anglais, japonais ou allemand — nous répondons par courriel. Une installation en Corée se chiffre après visite de site. Le contenu peut être livré à distance en vidéo 4K ou en code temps réel."
   },
   "home": {
-    "title": "Art média et façade LED — conception et pose | Public Bloom",
+    "title": "Art média & façade LED — conception et pose | Public Bloom",
     "description": "Public Bloom (오늘은 봄날) est un studio féminin à Daegu, Corée. La même équipe crée l’art média et peut poser le mur LED ou la façade projetée. Essayez l’AX, puis demandez un devis. studio@publicbloom.art",
     "ogDescription": "De l’art média à la façade LED — même équipe pour concevoir et poser. Daegu, Corée. publicbloom.art",
     "ogImageAlt": "Façade média et écrans LED installés par 오늘은 봄날",
@@ -84,16 +84,17 @@
     "faqTitle": "Questions fréquentes",
     "faqLead": "Réponses autonomes, citables. Le détail des marchés publics coréens est sur le site en coréen.",
     "ctaTitle": "Deux entrées",
-    "ctaLead": "La voie principale est la demande de projet. Ou ouvrez l’AX, choisissez un rendu, puis écrivez-nous."
+    "ctaLead": "La voie principale est la demande de projet. Ou ouvrez l’AX, choisissez un rendu, puis écrivez-nous.",
+    "keywords": "façade média, media façade LED, art média pour écran LED, installation mur LED, mapping vidéo façade, commander œuvre média générative, Public Bloom, Daegu"
   },
   "offer": {
-    "title": "Art média, pose LED et façade | Public Bloom",
+    "title": "Art média & façade LED — conception et pose | Public Bloom",
     "description": "오늘은 봄날 produit de l’art médiatique en code, installe des LED et réalise des façades projetées à Daegu et dans le Gyeongbuk, Busan, Gyeongnam et Ulsan. Entreprise féminine coréenne. Contenu dès 1 000 000 KRW HT.",
     "ogDescription": "Art médiatique génératif, installation LED et façades projetées. Studio féminin à Daegu, Corée.",
     "ogImageAlt": "Mur LED et façade de 오늘은 봄날",
     "h1": "Ce que livre 오늘은 봄날",
     "kicker": "Offre · publicbloom.art",
-    "lead": "Une façade média fait d’un mur un seul grand tableau. Un écran LED est une dalle fixée à ce mur. 오늘은 봄날 (Oneul-eun Bomnal) fait les deux — et écrit l’œuvre en code pour la rééditer quand le format change.",
+    "lead": "Une façade média, ou media façade LED, fait du bâtiment un écran — dalle LED ou mapping vidéo sur la paroi. Public Bloom conçoit l’art média génératif et peut poser le mur dans le même contrat.",
     "aside1k": "Contenu",
     "aside1v": "Art médiatique en code, calé sur le site",
     "aside2k": "Installation",
@@ -123,7 +124,8 @@
     "p3s": "Plusieurs écrans ou un calendrier chargé. Couleurs et typo peuvent être enregistrées en modèle.",
     "installNote": "LED et projecteurs dépendent de la paroi, de l’électricité et de la structure. Nous mesurons, puis nous chiffrons.",
     "faqTitle": "Questions sur l’offre",
-    "faqLead": "Réponses rédigées pour tenir seules."
+    "faqLead": "Réponses rédigées pour tenir seules.",
+    "keywords": "façade média, media façade LED, installation mur LED, mapping vidéo façade, commander œuvre média générative"
   },
   "studio": {
     "title": "Media Art AX — essayer puis commander | Public Bloom",
@@ -149,15 +151,16 @@
     "note": "L’outil reste sur la page coréenne pour ne pas forker les moteurs génératifs. Cette page est la porte en français : regardez, puis écrivez-nous.",
     "openStudio": "Ouvrir l’outil studio",
     "faqTitle": "Questions d’achat",
-    "faqLead": "Commander hors de Corée."
+    "faqLead": "Commander hors de Corée.",
+    "keywords": "commander œuvre média générative, art média pour écran LED, Media Art AX"
   },
   "quote": {
     "title": "Demande de projet | Public Bloom",
     "description": "Demandez un devis à 오늘은 봄날 (Oneul-eun Bomnal) pour de l’art médiatique, une LED ou une façade. Demandes internationales en français bienvenues. studio@publicbloom.art. Daegu, Corée.",
     "ogDescription": "Demandes internationales bienvenues. Art médiatique, LED, façades. Daegu, Corée.",
     "ogImageAlt": "Demande de devis auprès de 오늘은 봄날",
-    "h1": "Demander un devis",
-    "kicker": "Contact · international",
+    "h1": "Demande de projet",
+    "kicker": "Demande de projet · international",
     "lead": "Laissez l’organisation, un contact et la taille du mur ou de l’écran. Le contenu suit le menu publié ; l’installation se chiffre quand le lieu est clair. Vous pouvez écrire en français — nous répondons par courriel.",
     "aside1k": "Courriel",
     "aside1v": "studio@publicbloom.art",
@@ -197,17 +200,18 @@
     "error": "L’envoi a échoué. Nous ouvrons votre messagerie avec le même texte. Sinon, écrivez à studio@publicbloom.art.",
     "subject": "[오늘은 봄날] Demande de projet internationale",
     "faqTitle": "Avant d’écrire",
-    "faqLead": "Notes pratiques pour un acheteur hors Corée."
+    "faqLead": "Notes pratiques pour un acheteur hors Corée.",
+    "keywords": "devis façade média, installation mur LED, art média génératif"
   },
   "faq": {
     "home": [
       {
         "q": "Qu’est-ce qu’une façade média ?",
-        "a": "C’est traiter une face de bâtiment comme un écran — LED dans l’architecture ou projection mappée sur le mur. Public Bloom (오늘은 봄날) produit l’art et peut poser le matériel dans le même contrat. Le site public est publicbloom.art."
+        "a": "Une façade média traite une face de bâtiment comme un écran — LED dans l’architecture ou projection mappée sur le mur. Public Bloom (오늘은 봄날) produit l’art média et peut poser le matériel dans le même contrat, sans séparer studio et électricien. Le site public est publicbloom.art."
       },
       {
         "q": "Puis-je acheter de l’art pour une LED déjà posée ?",
-        "a": "Oui. Ouvrez Media Art AX (studio Bomnal) sans compte, prévisualisez, puis nous rendons au ratio et à la résolution du panneau. Un boîtier HDMI suffit souvent. Le fichier part un jour ouvrable sous 24 h après accord."
+        "a": "Oui. Ouvrez Media Art AX (studio Bomnal) sans compte, prévisualisez un écran, puis nous rendons au ratio et à la résolution du panneau déjà posé. Un boîtier média HDMI suffit souvent. Le fichier part un jour ouvrable sous 24 h après accord."
       },
       {
         "q": "Travaillez-vous seulement en Corée ?",

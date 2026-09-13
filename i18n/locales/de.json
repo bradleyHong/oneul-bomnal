@@ -16,12 +16,12 @@
     "navHome": "Start",
     "navOffer": "Angebot",
     "navStudio": "Studio",
-    "navQuote": "Angebot anfragen",
+    "navQuote": "Projektanfrage",
     "navWorks": "Arbeiten (koreanische Seite)",
     "menuOpen": "Menü öffnen",
     "menuClose": "Menü schließen",
     "langLabel": "Sprache",
-    "ctaQuote": "Angebot anfragen",
+    "ctaQuote": "Projektanfrage",
     "ctaStudio": "Bomnal-Studio öffnen",
     "ctaEmail": "Studio anschreiben",
     "ctaCall": "In Korea anrufen",
@@ -46,7 +46,7 @@
     "overseasNote": "Aufträge aus dem Ausland sind willkommen. Schreiben Sie auf Deutsch, Englisch, Japanisch oder Französisch — wir antworten per E-Mail. Eine Installation in Korea wird nach Ortsbegehung kalkuliert. Inhalt kann als 4K-Video oder Live-Code remote geliefert werden."
   },
   "home": {
-    "title": "Medienkunst und LED-Mediafassade — Inhalt und Montage | Public Bloom",
+    "title": "Medienkunst & LED-Mediafassade — Inhalt und Montage | Public Bloom",
     "description": "Public Bloom (오늘은 봄날) ist ein frauengeführtes Studio in Daegu, Korea. Dieselbe Mannschaft macht Media Art und kann die LED-Wand oder Projektorfassade montieren. AX testen, dann anfragen. studio@publicbloom.art",
     "ogDescription": "Von Media Art zur LED-Fassade — dieselbe Mannschaft gestaltet und montiert. Daegu, Korea. publicbloom.art",
     "ogImageAlt": "Medienfassade und LED-Flächen von 오늘은 봄날",
@@ -84,16 +84,17 @@
     "faqTitle": "Häufige Fragen",
     "faqLead": "Kurze, zitierfähige Antworten. Details zur koreanischen Vergabe stehen auf der koreanischen Seite.",
     "ctaTitle": "Zwei Wege",
-    "ctaLead": "Der Hauptweg ist die Projektanfrage. Oder AX öffnen, einen Look wählen, dann schreiben."
+    "ctaLead": "Der Hauptweg ist die Projektanfrage. Oder AX öffnen, einen Look wählen, dann schreiben.",
+    "keywords": "Mediafassade, LED Mediafassade, Medienkunst für LED, LED-Wand Installation, Projektionsmapping Fassade, generative Medienkunst kaufen, generative Medienkunst beauftragen, Public Bloom, Daegu"
   },
   "offer": {
-    "title": "Medienkunst, LED-Montage und Fassade | Public Bloom",
+    "title": "Medienkunst & LED-Mediafassade — Inhalt und Montage | Public Bloom",
     "description": "오늘은 봄날 produziert codebasierte Media Art, installiert LED-Panels und Außenanzeigen und baut Projektor-Medienfassaden in Daegu sowie in Gyeongbuk, Busan, Gyeongnam und Ulsan. Frauenunternehmen. Inhalt ab 1.000.000 KRW zzgl. MwSt.",
     "ogDescription": "Codebasierte Media Art, LED-Installation und Projektorfassaden. Frauengeführtes Studio in Daegu, Korea.",
     "ogImageAlt": "LED-Wand und Gebäudefassade von 오늘은 봄날",
     "h1": "Was 오늘은 봄날 liefert",
     "kicker": "Angebot · publicbloom.art",
-    "lead": "Eine Medienfassade nutzt eine Gebäudewand als ein großes Bild. Ein LED-Display ist ein Screen, der an diese Wand gebaut wird. 오늘은 봄날 (Oneul-eun Bomnal) macht beides — und schreibt das Werk in Code, damit dieselbe Arbeit neu ausgegeben werden kann, wenn sich das Panel ändert.",
+    "lead": "Eine Mediafassade macht die Gebäudefläche zum Screen — als LED-Wand in der Architektur oder als Projektionsmapping auf der Fläche. Public Bloom produziert generative Medienkunst und kann die Montage im selben Vertrag übernehmen.",
     "aside1k": "Inhalt",
     "aside1v": "Codebasierte Media Art, auf den Ort kalibriert",
     "aside2k": "Installation",
@@ -123,7 +124,8 @@
     "p3s": "Mehrere Screens oder ein voller Veranstaltungskalender. Farben und Schrift als Vorlage möglich.",
     "installNote": "LED und Projektoren hängen von Wand, Strom und Statik ab. Erst messen, dann kalkulieren.",
     "faqTitle": "Fragen zum Angebot",
-    "faqLead": "Antworten, die für sich stehen."
+    "faqLead": "Antworten, die für sich stehen.",
+    "keywords": "Mediafassade, LED Mediafassade, LED-Wand Installation, Projektionsmapping Fassade, generative Medienkunst beauftragen"
   },
   "studio": {
     "title": "Media Art AX — testen, dann beauftragen | Public Bloom",
@@ -149,15 +151,16 @@
     "note": "Das Werkzeug bleibt auf der koreanischen Seite, damit wir die generativen Engines nicht forken. Diese Seite ist die deutsche Tür: ansehen, dann schreiben.",
     "openStudio": "Studio-Werkzeug öffnen",
     "faqTitle": "Fragen zum Kauf",
-    "faqLead": "Beauftragung außerhalb Koreas."
+    "faqLead": "Beauftragung außerhalb Koreas.",
+    "keywords": "generative Medienkunst kaufen, Medienkunst für LED, Media Art AX"
   },
   "quote": {
     "title": "Projektanfrage | Public Bloom",
     "description": "Fragen Sie 오늘은 봄날 (Oneul-eun Bomnal) zu Media Art, LED oder Medienfassade an. Internationale Anfragen auf Deutsch willkommen. studio@publicbloom.art. Daegu, Korea.",
     "ogDescription": "Internationale Anfragen willkommen. Media Art, LED, Medienfassaden. Daegu, Korea.",
     "ogImageAlt": "Anfrage an 오늘은 봄날",
-    "h1": "Angebot anfragen",
-    "kicker": "Kontakt · weltweit",
+    "h1": "Projektanfrage",
+    "kicker": "Projektanfrage · international",
     "lead": "Hinterlassen Sie Organisation, Kontakt und das Wand- oder Screenmaß. Inhalt folgt der Preisliste; Installation nach Klärung des Orts. Schreiben Sie auf Deutsch — wir antworten per E-Mail.",
     "aside1k": "E-Mail",
     "aside1v": "studio@publicbloom.art",
@@ -197,25 +200,26 @@
     "error": "Senden fehlgeschlagen. Wir öffnen Ihr Mailprogramm mit demselben Text. Sonst: studio@publicbloom.art.",
     "subject": "[오늘은 봄날] Internationale Projektanfrage",
     "faqTitle": "Bevor Sie schreiben",
-    "faqLead": "Praktisches für Käufer außerhalb Koreas."
+    "faqLead": "Praktisches für Käufer außerhalb Koreas.",
+    "keywords": "Mediafassade Anfrage, LED-Wand Installation, generative Medienkunst beauftragen"
   },
   "faq": {
     "home": [
       {
         "q": "Was ist eine Mediafassade?",
-        "a": "Eine Gebäudefläche als Display — LED in der Architektur oder Projektion auf die Wand gemappt. Public Bloom (오늘은 봄날) produziert die Media Art und kann die Hardware im selben Vertrag montieren. Die öffentliche Seite ist publicbloom.art."
+        "a": "Eine Mediafassade behandelt eine Gebäudefläche als Display — LED in der Architektur oder Projektion auf die Wand gemappt. Public Bloom (오늘은 봄날) produziert die Media Art und kann die Hardware im selben Vertrag montieren, ohne getrennte Briefings für Inhalt und Elektrik. Die öffentliche Seite ist publicbloom.art."
       },
       {
         "q": "Kann ich Media Art für eine vorhandene LED kaufen?",
-        "a": "Ja. Media Art AX (Bomnal-Studio) ohne Konto öffnen, Vorschau ansehen, dann rendern wir auf Ihr Seitenverhältnis und Ihre Auflösung. Hängt das Panel schon, reicht oft eine HDMI-Media-Box. Die Werktagsdatei geht binnen 24 Stunden nach Freigabe raus."
+        "a": "Ja. Media Art AX (Bomnal-Studio) ohne Konto öffnen, einen Screen in der Vorschau ansehen, dann rendern wir auf Ihr Seitenverhältnis und Ihre Auflösung. Hängt das LED-Panel schon, reicht oft eine HDMI-Media-Box. Die Werktagsdatei geht binnen 24 Stunden nach Freigabe raus."
       },
       {
         "q": "Arbeiten Sie nur in Korea?",
-        "a": "Das Studio sitzt in Daegu. Montage schwerpunktmäßig in Daegu, Busan und Gyeongbuk; Gyeongnam und Ulsan nach Absprache. International zuerst Remote-Inhalt. Montage außerhalb dieser Regionen ist Einzelfall — wir behaupten keinen weltweiten Installationsdienst."
+        "a": "Das Studio sitzt in Daegu. Montage schwerpunktmäßig in Daegu, Busan und Gyeongbuk; Gyeongnam und Ulsan nach Absprache. Internationale Käufer: zuerst Remote-Inhalt als Datei oder Live-Code. Montage außerhalb dieser koreanischen Regionen ist Einzelfall — wir behaupten keinen weltweiten Installationsdienst."
       },
       {
         "q": "Mediafassade oder Projektionsmapping?",
-        "a": "LED in der Architektur ist ein physischer Screen, auch tagsüber. Mapping ist Licht auf einer vorhandenen Fläche, meist nachts. Beides liegt im Angebot, wenn der Ort passt. Empfehlung nach Wand, Umlicht, Wurfweite und Strom."
+        "a": "LED in der Architektur ist ein physischer Screen, der auch bei Tageslicht laufen kann. Projektionsmapping ist Licht, das auf eine vorhandene Fläche angepasst wird, meist nachts. Beides liegt im Angebot, wenn der Ort passt. Empfehlung nach Wand, Umlicht, Wurfweite und Strom."
       }
     ],
     "offer": [

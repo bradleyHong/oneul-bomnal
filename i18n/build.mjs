@@ -114,6 +114,7 @@ function head({ lang, pageId, copy, path, type, crumbs }) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${esc(title)}</title>
     <meta name="description" content="${esc(desc)}" />
+    ${copy.keywords ? `<meta name="keywords" content="${esc(copy.keywords)}" />` : ""}
     <meta name="google-site-verification" content="${C.site.verification.google}" />
     <meta name="naver-site-verification" content="${C.site.verification.naver}" />
     <link rel="canonical" href="${url}" />
