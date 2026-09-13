@@ -228,26 +228,10 @@ ${items}
 function scripts(extra = "") {
   return `    <script>
       const siteNav = document.querySelector(".site-nav");
-      const navToggle = document.querySelector(".nav-toggle");
-      const mainNav = document.getElementById("main-nav");
       if (siteNav) {
         window.addEventListener("scroll", () => {
           siteNav.classList.toggle("scrolled", window.scrollY > 40);
         }, { passive: true });
-      }
-      if (navToggle && mainNav) {
-        const openLabel = navToggle.getAttribute("aria-label");
-        navToggle.addEventListener("click", () => {
-          const expanded = navToggle.getAttribute("aria-expanded") === "true";
-          navToggle.setAttribute("aria-expanded", String(!expanded));
-          mainNav.classList.toggle("open", !expanded);
-        });
-        document.addEventListener("keydown", (e) => {
-          if (e.key !== "Escape") return;
-          navToggle.setAttribute("aria-expanded", "false");
-          mainNav.classList.remove("open");
-          navToggle.focus();
-        });
       }
     </script>
 ${extra}
