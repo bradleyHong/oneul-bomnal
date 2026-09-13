@@ -381,7 +381,7 @@
   /* 정사각에 가까운 그림은 칸을 가득 채운다. 큰 화면에서는 온전히 본다. */
   .st-wall-cell[data-fit="cover"] .st-wall-item canvas {
     object-fit: cover;
-    /* 잘라낼 때 오른쪽을 남긴다. 오른쪽 아래 도장(봄날퍼블릭아트)이
+    /* 잘라낼 때 오른쪽을 남긴다. 오른쪽 아래 도장(Artwork)이
        반 토막 나면 실수처럼 보인다. 왼쪽 아래 "시연본" 글씨는 잘려도 된다. */
     object-position: 100% 50%;
   }

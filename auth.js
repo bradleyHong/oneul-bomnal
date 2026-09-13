@@ -56,9 +56,10 @@
     nav.querySelectorAll("[data-auth-link]").forEach((el) => el.remove());
 
     if (!session.loggedIn) {
-      const login = makeLink("./login", "로그인", "nav-auth-login");
-      login.dataset.authLink = "guest";
-      nav.appendChild(login);
+      // 손님에게는 로그인을 걸지 않습니다. 여기는 화면을 보러 온 자리이지
+      // 가입하러 온 자리가 아니고, 메뉴에 로그인이 서 있으면 가입해야
+      // 쓰는 서비스로 읽힙니다. /login 주소는 그대로 살아 있으므로
+      // 회원사와 관리자는 주소로 들어와 로그인하면 아래 메뉴가 붙습니다.
       bindLogout();
       return;
     }

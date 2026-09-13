@@ -1,5 +1,5 @@
 /**
- * 오늘은 봄날 · 봄날 스튜디오 (고객 화면)
+ * 오늘은 봄날 · ArtWork Studio (고객 화면)
  *
  * 흐름
  *   ① 만들고 싶은 장면을 한국어로 적는다
@@ -155,6 +155,10 @@
     /* 느낌 열둘은 studio-gen.js 로 옮겼다. 순서가 작품 번호에 박히므로
        play.html(전용 플레이어)도 같은 목록을 봐야 한다. */
     var SCENES = GEN.SCENES;
+    /* 내놓는 칸만. 번호는 SCENES 자리 그대로 쓰고, 화면에는 이것만 건다.
+       내린 칸도 번호로 불러오면 그대로 그려진다 — 이미 나간 번호다. */
+    var LIVE = GEN.LIVE || SCENES.map(function (s2, i) { return i; });
+    function pickLive() { return LIVE[Math.floor(Math.random() * LIVE.length)]; }
     var CUSTOM = 31;               // 직접 적은 문장. 번호만으로는 되살릴 수 없다.
 
     /* 작품 번호 = 느낌 번호(위 5비트) + 씨앗(아래 19비트).
@@ -170,8 +174,10 @@
          BN3- 3판  + 엔진 78종 (3D·글자·액자·띠그림·색면·낙화까지)
          BN4- 4판  + 식물 5종 + 현대미술 5종
          BN5- 5판  + 벽보 + 얼룩
-         BN6- 6판  내놓을 것만 솎았다 (엔진 52종) */
-    var CODE_V = 7;
+         BN6- 6판  내놓을 것만 솎았다 (엔진 52종)
+         BN7- 7판  활자 넷을 덜고 한글 조판을 세웠다
+         BN8- 8판  성긴 것을 재서 걷고(21종) 어려운 것을 들였다(9종) */
+    var CODE_V = 8;
     function code(idx, seed, v) {
       var n = (((idx & 31) << 19) | (seed & 0x7FFFF)) >>> 0;
       var vv = v || CODE_V;
@@ -248,8 +254,10 @@
     }
 
     function markScene() {
+      /* 버튼 자리(i)와 느낌 번호(idx)가 더는 같지 않다. 내린 칸이
+         있어서다. LIVE 로 옮겨 봐야 표시가 맞는다. */
       Array.prototype.forEach.call(root.querySelectorAll(".st-scene"), function (b, i) {
-        b.classList.toggle("is-on", i === sceneIdx);
+        b.classList.toggle("is-on", LIVE[i] === sceneIdx);
       });
     }
 
@@ -300,11 +308,13 @@
 
     // 느낌 버튼 — 문장을 치지 않아도 계속 만들 수 있어야 한다
     var elScenes = $("[data-st-scenes]", root);
-    SCENES.forEach(function (sc, i) {
+    LIVE.forEach(function (i, n) {
+      var sc = SCENES[i];
       var b = el("button", "st-scene");
       b.type = "button";
-      b.appendChild(el("b", null, sc.ko));
-      b.appendChild(el("i", null, i < 9 ? String(i + 1) : (i === 9 ? "0" : "")));
+      b.appendChild(el("b", null, sc.en || sc.ko));
+      b.appendChild(el("i", null, n < 9 ? String(n + 1) : (n === 9 ? "0" : "")));
+      b.title = sc.ko;
       b.addEventListener("click", function () { elStory.value = ""; make(i); });
       elScenes.appendChild(b);
     });
@@ -314,18 +324,18 @@
     var elRandom = $("[data-st-random]", root);
     if (elRandom) elRandom.addEventListener("click", function () {
       elStory.value = "";
-      make(Math.floor(Math.random() * SCENES.length));
+      make(pickLive());
       if (typeof wallMark === "function") wallMark();
     });
 
     // 숫자키로도 고를 수 있다. 1~9 그리고 0.
     document.addEventListener("keydown", function (e) {
       if (e.target === elStory || /input|textarea|select/i.test(e.target.tagName)) return;
-      if (e.key >= "1" && e.key <= "9") { elStory.value = ""; make(+e.key - 1); }
-      else if (e.key === "0") { elStory.value = ""; make(9); }
+      if (e.key >= "1" && e.key <= "9" && LIVE[+e.key - 1] != null) { elStory.value = ""; make(LIVE[+e.key - 1]); }
+      else if (e.key === "0" && LIVE[9] != null) { elStory.value = ""; make(LIVE[9]); }
       else if (e.key === "r" || e.key === "R" || e.key === "ㄱ") {
         elStory.value = "";
-        make(Math.floor(Math.random() * SCENES.length));
+        make(pickLive());
       }
     });
 
@@ -348,7 +358,7 @@
     var elLoadMsg = $("[data-st-load-msg]", root);
     function loadCode() {
       var p2 = parseCode(elLoad.value);
-      if (!p2) { elLoadMsg.textContent = "BN7-, BN6-, BN5-, BN4-, BN3-, BN2-, BN- 으로 시작하는 번호를 넣어 주세요."; return; }
+      if (!p2) { elLoadMsg.textContent = "BN8-, BN7-, BN6-, BN5-, BN4-, BN3-, BN2-, BN- 으로 시작하는 번호를 넣어 주세요."; return; }
       if (p2.idx === CUSTOM && !(elStory.value || "").trim()) {
         elLoadMsg.textContent = "직접 적으신 문장으로 만든 번호입니다. 그 문장을 아래에 적어 주세요.";
         return;
@@ -472,7 +482,7 @@
             email: email,
             phone: String(d.get("phone") || "").trim(),
             organization: String(d.get("organization") || "").trim(),
-            service: ["미디어아트 제작 (봄날 스튜디오 견적)"],
+            service: ["미디어아트 제작 (ArtWork Studio 견적)"],
             page: "studio",
             message: specText((elStory.value || "").trim()) +
               "\n\n[동의 기록] 개인정보 수집·이용: 동의함 / 광고성 정보 수신: " + marketing
@@ -584,10 +594,10 @@
       wallItems = [];
       /* 느낌을 골고루 돌린다. 같은 느낌 열둘을 보여 주면 "다 비슷하다"가
          된다. 시작 자리를 매번 옮겨 다시 눌러도 같은 열둘이 안 나온다. */
-      var off = Math.floor(Math.random() * SCENES.length);
+      var off = Math.floor(Math.random() * LIVE.length);
       var n = wallCount();
       for (var i = 0; i < n; i++) {
-        var idx = (off + i) % SCENES.length;
+        var idx = LIVE[(off + i) % LIVE.length];
         /* 이미 팔린 번호는 내놓지 않는다. 씨앗이 52만 개라 부딪히는 일이
            드물지만, 부딪히면 다른 씨앗으로 옮긴다.
            끝내 못 피하면 그 칸을 비운다. 처음에는 몇 번 해 보고 그냥
@@ -630,7 +640,7 @@
       c.width = tw;
       c.height = th;
       b.appendChild(c);
-      b.appendChild(el("span", null, SCENES[it.idx].ko));
+      b.appendChild(el("span", null, SCENES[it.idx].en || SCENES[it.idx].ko));
       b.title = SCENES[it.idx].ko + " · 눌러서 크게 보기";
       wrap.appendChild(b);
 

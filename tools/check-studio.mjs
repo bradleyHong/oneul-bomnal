@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 봄날 스튜디오 연결 검증기.
+ * ArtWork Studio 연결 검증기.
  *
  * 그림 엔진(studio-engine.js)과 스튜디오(studio-gen.js)가 어긋나면 화면에는
  * 아무 표시도 나지 않는다. 버튼은 있는데 눌러도 그림이 안 바뀌거나,

@@ -18,7 +18,10 @@
   if (!GEN) return;
 
   /* 스튜디오와 같은 판이어야 한다. 여기서 뽑은 번호를 저기 붙여 넣기 때문이다. */
-  var CODE_V = 7;
+  /* 8판. 성긴 그림을 걷고 어려운 것을 들인 판이다.
+     studio.js 와 반드시 같은 수여야 한다 — 다르면 도구에서 본 화면과
+     스튜디오에서 그 번호로 부른 화면이 다른 그림이 된다. */
+  var CODE_V = 8;
   var PREFIX = "sa:";
 
   /* ── 도구 ─────────────────────────────────────────────────
@@ -113,6 +116,9 @@
    * 적어 준다. 갈아 끼워도 색·씨앗·나머지 값은 그대로다. */
   function spin(tool, ar) {
     var scenes = GEN.SCENES, i, idx, seed, sp;
+    /* 내린 소재(재료가 없어 화면이 비던 넷)는 뽑지 않는다. */
+    var live = GEN.LIVE || scenes.map(function (x, j) { return j; });
+    var pick = function () { return live[Math.floor(Math.random() * live.length)]; };
     /* 이 비율에서 실제로 뽑히는 것만 남긴다. 판을 솎으면 도구 묶음에도
        빠진 이름이 남는데, 거르지 않으면 아래 "갈아 끼우기"가 그 이름을
        되살려 솎아낸 그림이 도구로 다시 나온다. */
@@ -129,7 +135,7 @@
     }
     if (!ok.length) ok = tool.styles.slice();
     for (i = 0; i < 400; i++) {
-      idx = Math.floor(Math.random() * scenes.length);
+      idx = pick();
       seed = newSeed();
       sp = GEN.compose(scenes[idx].text, seed, ar, CODE_V);
       if (ok.indexOf(bare(sp.style)) >= 0) {
@@ -137,7 +143,7 @@
         return { idx: idx, seed: seed, spec: sp, forced: false };
       }
     }
-    idx = Math.floor(Math.random() * scenes.length);
+    idx = pick();
     seed = newSeed();
     sp = GEN.compose(scenes[idx].text, seed, ar, CODE_V);
     var want = PREFIX + ok[Math.floor(Math.random() * ok.length)];
@@ -475,7 +481,7 @@
       shot = s;
       var sz = SIZES[sizeIx];
       shot.ar = sz.w / sz.h;
-      shot.ko = GEN.SCENES[s.idx].ko;
+      shot.ko = GEN.SCENES[s.idx].en || GEN.SCENES[s.idx].ko;
       shot.style = s.spec.style;
       /* 손님이 고른 색·손잡이를 사양에 얹는다. 겹·번짐·알갱이까지 같은
          길로 그려지므로, 여기서 본 화면이 그대로 납품본이 된다. */
@@ -553,7 +559,7 @@
       cv.width = Math.max(64, Math.round(sz.w * sc));
       cv.height = Math.max(64, Math.round(sz.h * sc));
       var g2 = new GEN.Gen(cv);
-      g2.mark = "시연본 · 봄날퍼블릭아트";
+      g2.mark = "Artwork";
       var sp = GEN.compose(GEN.SCENES[shot.idx].text, shot.seed, sz.w / sz.h, CODE_V);
       if (shot.style && GEN.hasStyle(shot.style)) sp.style = shot.style;
       sp.idx = shot.idx; sp.v = CODE_V;

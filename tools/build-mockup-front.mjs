@@ -25,8 +25,15 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const argv = process.argv.slice(2);
 const PORT = argv.includes("--port") ? argv[argv.indexOf("--port") + 1] : "877";
 
-/* 꺼진 화면과 사람을 가르는 밝기. 아래는 화면, 위는 앞에 선 것. */
-const LO = 22;
+/* 화면 색과 이만큼 떨어지면 화면이 아니다(0~255 의 RGB 거리).
+   처음에는 "밝기 22 를 넘으면 사람"으로 갈랐다. 그래서 아이 머리는
+   떼어졌는데 검은 청바지와 그림자는 꺼진 화면보다 밝지 않아 그대로
+   남았고, 작품이 그 위를 덮어 아이 몸이 허리에서 잘렸다. 실제로
+   그 화면을 받았다.
+
+   밝기가 아니라 색으로 가른다. 꺼진 화면은 거의 한 가지 색이라
+   그 색에서 얼마나 떨어졌는지로 재면 어두운 옷도 잡힌다. */
+const DIST = 13;
 /* 이만 못 되는 덩어리는 사람이 아니다 — 화면 테두리의 밝은 실선이나
    압축 잡티다. 덩어리로 세어 걸러 낸다. */
 const MIN_AREA = 150;
@@ -50,7 +57,7 @@ await page.goto(`http://127.0.0.1:${PORT}/`);
 
 const made = [];
 for (const pl of plates) {
-  const out = await page.evaluate(async ({ pl, LO, MIN_AREA, GROW, FEATHER }) => {
+  const out = await page.evaluate(async ({ pl, DIST, MIN_AREA, GROW, FEATHER }) => {
     const img = new Image();
     img.src = pl.image.replace("./", "/");
     await img.decode();
@@ -78,29 +85,70 @@ for (const pl of plates) {
       return c;
     };
 
-    /* ① 씨앗 — 화면 자리 안쪽에서 "꺼진 화면이 아닌" 화소 */
-    const seed = new Uint8Array(W * H);
+    /* ① 화면 자리와 화면 색.
+       꺼진 화면은 거의 한 색이다. 자리 안쪽(가장자리에서 물러난 곳)의
+       중앙값을 그 색으로 삼는다. 평균이 아니라 중앙값이다 — 사람이
+       걸쳐 있으면 평균은 그쪽으로 끌려간다. */
+    const inQuad = new Uint8Array(W * H);
     const bb = polys.map((p) => {
       const xs = p.map((q) => q[0]), ys = p.map((q) => q[1]);
       return [Math.max(0, Math.floor(Math.min(...xs))), Math.min(W, Math.ceil(Math.max(...xs))),
               Math.max(0, Math.floor(Math.min(...ys))), Math.min(H, Math.ceil(Math.max(...ys)))];
     });
-    const inQuad = new Uint8Array(W * H);
     for (let k = 0; k < polys.length; k++) {
       const [x0, x1, y0, y1] = bb[k];
       for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
-        if (!inside(polys[k], x + 0.5, y + 0.5)) continue;
-        const n = y * W + x;
-        inQuad[n] = 1;
-        const i = n * 4;
-        if (d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114 > LO) seed[n] = 1;
+        if (inside(polys[k], x + 0.5, y + 0.5)) inQuad[y * W + x] = 1;
+      }
+    }
+    const sr = [], sg = [], sb = [];
+    for (let n = 0; n < W * H; n++) {
+      if (!inQuad[n]) continue;
+      const i = n * 4;
+      sr.push(d[i]); sg.push(d[i + 1]); sb.push(d[i + 2]);
+    }
+    const mid = (a) => { a.sort((x, y) => x - y); return a[a.length >> 1]; };
+    const SC = [mid(sr), mid(sg), mid(sb)];
+
+    /* ② 바깥에서 물을 붓는다.
+       화면 자리 밖은 전부 "화면이 아닌 것"이다. 거기서 시작해, 화면
+       색과 충분히 떨어진 화소만 밟으며 자리 안으로 흘러 들어간다.
+       바닥에 서서 화면을 가린 사람은 발끝이 자리 밖에 있으므로 물이
+       닿고, 몸 전체가 한 덩어리라 머리끝까지 젖는다. 화면 색에 가까운
+       화소는 물을 막으므로 꺼진 화면은 마른 채로 남는다.
+
+       밝기로 가르던 때와 다른 점이 이것이다 — 어두운 옷도 색이 다르면
+       젖는다. 옷이 어둡다고 잘리지 않는다. */
+    const notScreen = new Uint8Array(W * H);
+    for (let n = 0; n < W * H; n++) {
+      const i = n * 4;
+      const dr = d[i] - SC[0], dg = d[i + 1] - SC[1], db = d[i + 2] - SC[2];
+      if (Math.sqrt(dr * dr + dg * dg + db * db) > DIST) notScreen[n] = 1;
+    }
+    const wet = new Uint8Array(W * H);
+    const stack = [];
+    for (let n = 0; n < W * H; n++) {
+      if (inQuad[n] || !notScreen[n] || wet[n]) continue;
+      wet[n] = 1; stack.push(n);
+    }
+    while (stack.length) {
+      const c = stack.pop();
+      const cx0 = c % W, cy0 = (c / W) | 0;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const nx = cx0 + dx, ny = cy0 + dy;
+        if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue;
+        const m = ny * W + nx;
+        if (wet[m] || !notScreen[m]) continue;
+        wet[m] = 1; stack.push(m);
       }
     }
 
-    /* ② 덩어리로 세어 작은 것은 버린다 */
+    /* ③ 자리 안에서 젖은 것만 남긴다. 자잘한 것은 사람이 아니다. */
+    const seed = new Uint8Array(W * H);
+    for (let n = 0; n < W * H; n++) if (inQuad[n] && wet[n]) seed[n] = 1;
+
     const lab = new Int32Array(W * H).fill(-1);
     const keep = new Uint8Array(W * H);
-    const stack = [];
     for (let n = 0; n < W * H; n++) {
       if (!seed[n] || lab[n] >= 0) continue;
       const cells = [];
@@ -126,11 +174,14 @@ for (const pl of plates) {
       const out = new Uint8Array(W * H);
       for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) {
         const n = y * W + x;
-        if (!inQuad[n]) continue;
         if (mask[n] || mask[n - 1] || mask[n + 1] || mask[n - W] || mask[n + W]) out[n] = 1;
       }
       mask = out;
     }
+    /* 부풀릴 때 화면 자리 안으로 가둬 두었더니, 자리의 아래 모서리가
+       사람을 가로지르는 곳에서 실오라기만 한 띠가 남았다 — 아이 어깨에
+       분홍 줄이 그어졌다. 자리 밖으로 삐져나온 화소는 원래 사진을 그
+       자리에 다시 얹는 것이라 보이지 않는다. 가두지 않는다. */
     for (let e = 0; e < 2; e++) {                 /* 부풀린 만큼 다시 깎아 모양을 지킨다 */
       const out = new Uint8Array(W * H);
       for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) {
@@ -161,7 +212,7 @@ for (const pl of plates) {
     }
     cx.putImageData(dst, 0, 0);
     return { url: cv.toDataURL("image/png"), W, H, kept };
-  }, { pl, LO, MIN_AREA, GROW, FEATHER });
+  }, { pl, DIST, MIN_AREA, GROW, FEATHER });
 
   const name = `assets/mockup/${pl.id}-front.png`;
   const buf = Buffer.from(out.url.split(",")[1], "base64");
