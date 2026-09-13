@@ -460,7 +460,7 @@ function create(canvas, opts) {
                           솔기를 수천 땀 뜬다. 금불은 천불 벽을 한 장씩
                           찍는다. 획마다 그림자를 달면 초당 세 장이 된다. */
                        curlflow: 1, voronoi: 1, pojagi: 1, buddha: 1,
-                       moonjar: 1, celadon: 1, reactdiff: 1 };
+                       moonjar: 1, celadon: 1, reactdiff: 1, motiongfx: 1 };
 
   /* 획이 많지만 번지면 안 되는 것.
      HEAVY_GLOW 에 넣으면 획마다 그림자를 다는 것은 면하지만, 대신 다 그린 뒤
@@ -4435,8 +4435,11 @@ function create(canvas, opts) {
       const gs = Math.max(5, Math.round(Math.min(W, H) / (30 + 26 * (1 - k.density))));
       for (let y = 0; y < H; y += gs) {
         for (let x = 0; x < W; x += gs) {
-          const n = fbm((x / W) * 3.0 + 3, (y / H) * 1.8 - ph * 1.0, 4);
-          const m = fbm((x / W) * 7.5 + 21, (y / H) * 4.2 + ph * 2.0, 3);
+          /* ph 를 직선으로 더하면 한 바퀴 끝에서 무늬가 툭 바뀐다.
+             시간을 원으로 돌려 두 좌표에 나눠 넣으면 제자리로 돌아온다. */
+          const cph = Math.cos(ph * TAU), sph = Math.sin(ph * TAU);
+          const n = fbm((x / W) * 3.0 + 3 + cph * 0.5, (y / H) * 1.8 + 3 + sph * 0.5, 4);
+          const m = fbm((x / W) * 7.5 + 21 + sph * 0.8, (y / H) * 4.2 + 9 + cph * 0.8, 3);
           /* 위로 갈수록 열이 오른다. 밑을 어둡게 두면 그릇이 바닥에 선다. */
           const up = 1 - (y / H) * 0.55;
           /* 색을 문턱으로 갈랐더니 성근 격자 그대로 네모난 금색 덩이가
@@ -4500,7 +4503,8 @@ function create(canvas, opts) {
         const y = yOf(u), hw = halfW(u) * R;
         const g = ctx.createLinearGradient(cx - hw * 1.2, 0, cx + hw * 1.2, 0);
         /* 왼쪽 위에서 빛이 든다. 가장 밝은 자리는 가운데가 아니라 왼쪽 4할. */
-        const mot = 0.5 + 0.5 * fbm(u * 2.2 + 7, ph * 0.6 + sB.a * 4, 3);
+        const mot = 0.5 + 0.5 * fbm(u * 2.2 + 7 + Math.cos(ph * TAU) * 0.3,
+                                    sB.a * 4 + Math.sin(ph * TAU) * 0.3, 3);
         const lit = 0.52 + 0.30 * k.contrast;
         g.addColorStop(0.00, shade(0, lit * 0.34 * (0.8 + mot * 0.4)));
         g.addColorStop(0.34, shade(0, lit * (0.86 + mot * 0.22)));
@@ -4555,7 +4559,7 @@ function create(canvas, opts) {
       for (let i = 0; i < specks; i++) {
         const s = seeds[i % 900];
         const rr = Math.sqrt(s.a) * R * 1.02;
-        const aa = s.b * TAU + ph * 0.10 * (s.c < 0.5 ? 1 : -1);
+        const aa = s.b * TAU + Math.sin(ph * TAU) * 0.10 * (s.c < 0.5 ? 1 : -1);
         const r2 = Math.max(0.5, (0.4 + s.d * 1.5) * S);
         ctx.fillStyle = shade(3, 0.18 + 0.42 * s.c);
         ctx.beginPath();
@@ -4693,7 +4697,9 @@ function create(canvas, opts) {
       const by = cy - Sz * 0.42;
       for (let i = 0; i < rays; i++) {
         const s = seeds[i];
-        const a = (i / rays) * TAU + ph * TAU / rays * 2;
+        /* 한 바퀴에 두 칸씩 밀면 살마다 씨앗이 달라 제자리로 안 온다.
+           밀지 말고 좌우로 흔든다. */
+        const a = (i / rays) * TAU + Math.sin(ph * TAU) * (TAU / rays) * 1.2;
         const len = Sz * (0.75 + 0.75 * (0.5 + 0.5 * Math.sin(i * 2.7 + ph * TAU)) * s.a);
         const wdt = TAU / rays * (0.30 + 0.5 * s.b);
         ctx.beginPath();
@@ -4713,7 +4719,7 @@ function create(canvas, opts) {
       }
       const beads = 48;
       for (let i = 0; i < beads; i++) {
-        const a = (i / beads) * TAU - ph * TAU / beads * 3;
+        const a = (i / beads) * TAU - Math.sin(ph * TAU) * (TAU / beads) * 1.6;
         const rr = Sz * 0.355;
         ctx.beginPath();
         ctx.arc(cx + Math.cos(a) * rr, by + Math.sin(a) * rr, Math.max(1, 2.0 * S), 0, TAU);
@@ -4767,7 +4773,8 @@ function create(canvas, opts) {
       for (let y = 0; y < H; y += gs) {
         for (let x = 0; x < W; x += gs) {
           const n = fbm((x / W) * 2.4 + 5, (y / H) * 2.4 + 9, 4);
-          const g = fbm((x / W) * 6.0 - 3, (y / H) * 6.0 + ph * 0.5, 2);
+          const g = fbm((x / W) * 6.0 - 3 + Math.cos(ph * TAU) * 0.4,
+                        (y / H) * 6.0 + 7 + Math.sin(ph * TAU) * 0.4, 2);
           ctx.fillStyle = shade(0, 0.16 + clamp(n * 0.55 + g * 0.25, 0, 1) * 0.34 * k.contrast);
           ctx.fillRect(x, y, gs + 1, gs + 1);
         }
@@ -4872,7 +4879,9 @@ function create(canvas, opts) {
       }
 
       /* 유약 위를 지나는 빛. 그릇을 돌려 보는 느낌은 이 한 겹이 만든다. */
-      const lx = (ph * 1.6 - 0.3) * W;
+      /* 빛이 판을 가로질렀다가 되돌아온다. 한 방향으로만 지나가게 두면
+         끝에서 처음으로 순간이동한다. */
+      const lx = W * (0.5 - 0.85 * Math.cos(ph * TAU));
       const lg = ctx.createLinearGradient(lx - W * 0.5, 0, lx + W * 0.5, H);
       lg.addColorStop(0.00, tone(4, 0));
       lg.addColorStop(0.50, tone(4, 0.10 * k.glow + 0.04));
@@ -5168,6 +5177,142 @@ function create(canvas, opts) {
       ctx.globalCompositeOperation = "source-over";
     },
 
+    /* ── 98 모션그래픽 ───────────────────────────────────────
+       리모션·애프터이펙트로 만드는 그 화면. 앞의 것들이 자연을 흉내
+       내는 그림이라면 이것은 대놓고 만든 화면이다 — 큰 색면이 미끄러져
+       들어오고, 둥근 도형이 다른 도형으로 바뀌고, 굵은 글자가 한 자씩
+       올라온다. 로비 사이니지에서 제일 많이 팔리는 결이다.
+
+       움직임의 결이 전부다. 등속으로 움직이면 만들다 만 것으로 보인다.
+       들고 날 때 느려지는 곡선(ease-in-out)을 한 군데도 빼지 않는다. */
+    motiongfx(t) {
+      const ph = motionPhase(t) / TAU;
+      const ease = (u) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
+      /* 한 바퀴를 넷으로 나눠 마디를 만든다. 마디마다 다른 일이 일어나야
+         "돌고 있다"가 아니라 "이야기가 있다"가 된다. */
+      const beats = 4;
+      const bi = Math.floor(ph * beats) % beats;
+      const bu = ease((ph * beats) % 1);
+
+      /* ① 바탕 색면. 아래에서 밀려 올라와 화면을 갈아 끼운다. */
+      /* 마디의 앞 6할 동안만 갈아 끼우고 나머지는 머문다. 마디 내내
+         움직이면 쉬는 자리가 없어 화면이 계속 들썩인다. */
+      const wipe = ease(clamp(bu / 0.6, 0, 1));
+      /* 두 색면의 짙기를 다르게 두었더니, 한 바퀴 끝에서 다 덮은 색과
+         다음 바퀴 첫 장의 바탕색이 같은 색인데 짙기만 달라 판 전체가
+         한 번 깜빡였다. 이음매 검사에 85배로 걸렸다. 짙기는 하나로 둔다. */
+      const bgAmt = 0.28 + 0.20 * k.contrast;
+      ctx.fillStyle = shade(bi % 4, bgAmt);
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = shade((bi + 1) % 4, bgAmt);
+      ctx.fillRect(0, H - H * wipe, W, H * wipe + 1);
+
+      /* ② 망점. 색면만 두면 납작하다. 큰 화면에서는 이 결이 살아난다. */
+      const dot = Math.max(4, Math.round(Math.min(W, H) / (26 + 40 * (1 - k.density))));
+      ctx.fillStyle = tone(4, 0.09 + 0.10 * k.contrast);
+      for (let y = dot; y < H; y += dot) {
+        for (let x = ((y / dot) % 2 ? dot * 0.5 : 0) + dot; x < W; x += dot) {
+          /* bu 는 마디 끝에서 1 → 0 으로 튄다. 그 값을 그대로 쓰면
+             망점 크기가 한 바퀴의 이음매에서 툭 바뀐다. 오갔다 돌아오는
+             값으로 바꾼다. */
+          const puls = 0.5 - 0.5 * Math.cos(bu * TAU);
+          const g = clamp((x / W) * 0.8 + (1 - y / H) * 0.5 - puls * 0.4, 0, 1);
+          const r = dot * 0.34 * g;
+          if (r < 0.4) continue;
+          ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+        }
+      }
+
+      /* ③ 도형. 원에서 모난 것으로, 다시 원으로 바뀐다. 꼭짓점 수를
+         바꾸는 대신 모서리 반지름을 오가게 해서 형태가 끊기지 않는다. */
+      const cx = W * 0.5, cy = H * 0.5;
+      const R = Math.min(W, H) * 0.30 * clamp(k.scale, 0.6, 1.5);
+      const sides = 3 + ((bi + 1) % 4) * 2;              /* 3 · 5 · 7 · 9 */
+      /* 마디 안에서 원 → 각 → 원 으로 갔다 돌아온다. 마디가 바뀌는
+         순간에는 늘 원이라, 꼭짓점 수가 바뀌는 것이 안 보인다.
+         한쪽으로만 가게 두었더니(원 → 각) 마디 끝의 각진 삼각형이
+         다음 마디 첫 장의 원으로 튀어, 한 바퀴의 이음매가 벌어졌다. */
+      const round = 0.5 + 0.5 * Math.cos(bu * TAU);      /* 1 → 0 → 1 */
+      const shape = (rr, rot) => {
+        ctx.beginPath();
+        const N = 240;
+        for (let i = 0; i <= N; i++) {
+          const a = (i / N) * TAU + rot;
+          /* 정다각형의 반지름. round 가 1이면 원, 0이면 각진 형태. */
+          const half = Math.PI / sides;
+          const poly = Math.cos(half) / Math.cos(((a % (2 * half)) + 2 * half) % (2 * half) - half);
+          const r = rr * lerp(poly, 1, round);
+          const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+          i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+        }
+        ctx.closePath();
+      };
+      /* 뒤에 같은 형태를 어긋나게 깔면 인쇄물처럼 층이 진다. */
+      ctx.fillStyle = shade(1, 0.46 + 0.30 * k.contrast);
+      shape(R * 1.06, ph * TAU * 0.25 + 0.14); ctx.fill();
+      /* 팔레트가 옅은 쪽으로 쏠려 있으면(봄날 · 겨울밤) tone 을 짙게
+         칠해도 흰 판이 된다. 바탕에서 얼마나 갔는지로 칠하는 shade 를
+         써야 어느 색에서나 형태가 남는다. */
+      const g2 = ctx.createLinearGradient(cx - R, cy - R, cx + R, cy + R);
+      /* 밝은 tone 을 그대로 채우면 흰 판이 된다(봄날 팔레트가 그랬다).
+         짙은 쪽으로 채우고 테두리만 밝게 둘러 형태를 세운다. */
+      g2.addColorStop(0, shade(2, 0.86));
+      g2.addColorStop(1, shade(3, 0.62));
+      ctx.fillStyle = g2;
+      shape(R, ph * TAU * 0.25); ctx.fill();
+      ctx.strokeStyle = shade(0, 0.95);
+      ctx.lineWidth = Math.max(1.5, 3.2 * S);
+      shape(R, ph * TAU * 0.25); ctx.stroke();
+
+      /* ④ 도형을 가로지르는 빛. 판을 닦아 내듯 지나간다. */
+      ctx.save();
+      shape(R, ph * TAU * 0.25); ctx.clip();
+      /* 한 바퀴에 두 번, 판을 가로질러 닦았다가 되돌아온다. 한쪽으로만
+         지나가게 두면 오른쪽 끝에서 왼쪽 끝으로 순간이동한다 — 이음매
+         검사에 78배로 걸렸다. */
+      const sw = lerp(cx - R * 1.4, cx + R * 1.4, 0.5 - 0.5 * Math.cos(ph * TAU * 2));
+      const sg = ctx.createLinearGradient(sw - W * 0.22, 0, sw + W * 0.22, H);
+      sg.addColorStop(0, tone(4, 0));
+      sg.addColorStop(0.5, tone(4, 0.42 * (0.5 + k.glow)));
+      sg.addColorStop(1, tone(4, 0));
+      ctx.fillStyle = sg;
+      ctx.fillRect(cx - R * 1.2, cy - R * 1.2, R * 2.4, R * 2.4);
+      ctx.restore();
+
+      /* ⑤ 궤도를 도는 작은 것들. 마디마다 개수가 바뀐다. */
+      /* 개수를 마디마다 바꿨더니 한 바퀴의 끝(열다섯)과 시작(여섯)이
+         어긋났다. 개수는 붙박이로 두고 크기만 마디에 맞춰 부풀린다. */
+      const orbs = 14;
+      for (let i = 0; i < orbs; i++) {
+        const sd = seeds[i * 7 + 41];
+        const a = (i / orbs) * TAU + ph * TAU * (sd.a < 0.5 ? 1 : -1);
+        const rr = R * (1.28 + 0.34 * sd.b);
+        const s2 = Math.max(2, Math.min(W, H) * (0.008 + 0.016 * sd.c)
+                                * (0.55 + 0.55 * (0.5 - 0.5 * Math.cos(bu * TAU))));
+        ctx.fillStyle = tone(i % 5, 0.55 + 0.35 * sd.d);
+        ctx.beginPath();
+        ctx.arc(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr * 0.86, s2, 0, TAU);
+        ctx.fill();
+      }
+
+      /* ⑥ 굵은 띠 둘. 위와 아래에서 반대로 미끄러진다. 화면 가장자리가
+         비어 있으면 가운데 도형이 떠 보인다. */
+      /* 띠를 한 바퀴에 한 번 지나가게 하되 두 번 그린다 — 한 벌이
+         오른쪽으로 나가는 동안 다른 벌이 왼쪽에서 들어온다. 마디에
+         매어 두었더니 마디 끝마다 둘 다 화면 밖이라 가장자리가 비었다. */
+      const bh = Math.max(6, H * 0.045);
+      const bx = ph * W * 2;
+      ctx.fillStyle = shade(3, 0.70);
+      ctx.fillRect(bx - W * 2, H * 0.085, W, bh);
+      ctx.fillRect(bx, H * 0.085, W, bh);
+      /* 아래 띠는 반대로 간다. 두 벌의 자리를 같은 식으로 적어 두어
+         한 벌이 두 번 그려지고 있었다 — 화면 밖으로 나가면 아래가 통째로
+         비었다. 한 벌을 폭만큼 뒤에 세운다. */
+      ctx.fillStyle = shade(1, 0.62);
+      ctx.fillRect(W - bx, H - H * 0.085 - bh, W, bh);
+      ctx.fillRect(W * 3 - bx, H - H * 0.085 - bh, W, bh);
+    },
+
   };
 
   /* ── 마감 처리 ────────────────────────────────────────────────
@@ -5296,7 +5441,7 @@ const STYLE_LABELS = [
 
   ["moonjar", "달항아리"], ["buddha", "금불"], ["celadon", "청자 상감"],
   ["reactdiff", "반응확산"], ["curlflow", "곡류"], ["voronoi", "세포"],
-  ["pojagi", "조각보"],
+  ["pojagi", "조각보"], ["motiongfx", "모션그래픽"],
 ];
 
 global.StudioArt = {

@@ -162,7 +162,8 @@
     { re: /산호|증식|번식|세포막/,   pal: "심해", style: "sa:reactdiff",  tags: ["산호"] },
     { re: /소용돌이|기류|난류|먹물/, pal: "먹",   style: "sa:curlflow",   tags: ["흐름"] },
     { re: /스테인드|유리창|세포|납선/, pal: "단청", style: "sa:voronoi",   tags: ["유리"] },
-    { re: /조각보|보자기|오방색|색동/, pal: "단청", style: "sa:pojagi",    tags: ["조각보"] }
+    { re: /조각보|보자기|오방색|색동/, pal: "단청", style: "sa:pojagi",    tags: ["조각보"] },
+    { re: /모션그래픽|타이틀|오프닝|광고/, pal: "형광", style: "sa:motiongfx", tags: ["모션그래픽"] }
   ];
 
   /* 분위기 12종 — 속도와 밀도, 선 굵기와 밝기를 함께 정한다.
@@ -443,7 +444,10 @@ var SCENES = [
                 "kaleido", "pointcloud", "mandala", "bloom",
                 "pop", "dotmatrix", "stripe", "blinds", "hardedge"];
   var V8_NEW = ["mosaic", "plasma",
-                "moonjar", "buddha", "celadon", "reactdiff", "curlflow", "voronoi", "pojagi"];
+                "moonjar", "buddha", "celadon", "reactdiff", "curlflow", "voronoi", "pojagi",
+                /* 손님이 "모션그래픽 미디어아트도 좋다"고 했다. 로비
+                   사이니지에서 제일 많이 나가는 결이다. */
+                "motiongfx"];
   var ART_V8 = ART_V7
     .filter(function (id) { return V8_OUT.indexOf(id) < 0; })
     .concat(V8_NEW);
