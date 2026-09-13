@@ -11,20 +11,214 @@
  *
  * 계산은 표준 저정밀 천문 알고리즘입니다. 대구 기준 남중고도가
  * 이론값(90 - 위도 + 적위)과 0.1도 이내로 일치하는 것을 확인했습니다.
+ *
+ * 히어로 실시간 줄은 하늘 레이어·타이포월·공기질 캔버스와 따로 돈다.
+ * 홈에는 그 캔버스가 없어서 예전에는 기온을 읽지 못했고, 하늘 스크립트가
+ * 멈추면 "불러오는 중"이 그대로 남았다. 시각은 즉시 쓰고, 값은 여기서 직접
+ * 받으며, 실패하면 직전 값 또는 다시 불러오기로 남긴다.
  */
 (() => {
   const layer = document.getElementById("skyLayer");
-  if (!layer) return;
+  const statusEl = document.querySelector("[data-live-status]");
+  if (!layer && !statusEl) return;
 
   // 대구 중심 좌표
   const LAT = 35.8714;
   const LON = 128.6014;
   const RAD = Math.PI / 180;
+  const CACHE_KEY = "bomnal-live-v1";
 
   const root = document.documentElement;
   const reduceMotion = window.matchMedia
     ? window.matchMedia("(prefers-reduced-motion: reduce)")
     : { matches: false };
+
+  const fmt = new Intl.DateTimeFormat("ko-KR", {
+    timeZone: "Asia/Seoul",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+
+  const DATE_FMT = new Intl.DateTimeFormat("ko-KR", {
+    timeZone: "Asia/Seoul",
+    month: "long",
+    day: "numeric",
+    weekday: "short",
+  });
+
+  const live = (window.bomnalLive = window.bomnalLive || {});
+
+  const skyKey = (code) => {
+    if (code == null) return null;
+    if (code === 0 || code === 1) return "맑음";
+    if (code === 2) return "구름";
+    if (code === 3) return "흐림";
+    if (code >= 45 && code <= 48) return "안개";
+    if (code >= 71 && code <= 77) return "눈";
+    if (code >= 85 && code <= 86) return "눈";
+    if (code >= 51) return "비";
+    return "구름";
+  };
+
+  const gradeLabel = (pm25) => {
+    if (pm25 <= 15) return "좋음";
+    if (pm25 <= 35) return "보통";
+    if (pm25 <= 75) return "나쁨";
+    return "매우 나쁨";
+  };
+
+  const sleep = (ms) => new Promise((r) => window.setTimeout(r, ms));
+
+  function readCache() {
+    try {
+      const raw = window.localStorage.getItem(CACHE_KEY);
+      if (!raw) return null;
+      const d = JSON.parse(raw);
+      if (!d || typeof d !== "object") return null;
+      return d;
+    } catch {
+      return null;
+    }
+  }
+
+  function writeCache() {
+    try {
+      window.localStorage.setItem(
+        CACHE_KEY,
+        JSON.stringify({
+          at: Date.now(),
+          temp: live.temp,
+          sky: live.sky,
+          pm25: live.pm25,
+          grade: live.grade,
+        })
+      );
+    } catch {
+      /* 비공개 모드 등 */
+    }
+  }
+
+  function applyCache() {
+    if (live.temp != null || live.sky || live.pm25 != null) return false;
+    const d = readCache();
+    if (!d) return false;
+    if (d.temp == null && !d.sky && d.pm25 == null) return false;
+    if (d.temp != null) live.temp = d.temp;
+    if (d.sky) live.sky = d.sky;
+    if (d.pm25 != null) live.pm25 = d.pm25;
+    if (d.grade) live.grade = d.grade;
+    live.fromCache = true;
+    return true;
+  }
+
+  /** 히어로 맨 아랫줄: 시각은 항상. 값·직전 값·실패는 그 뒤에. */
+  function paintStatus() {
+    const el = document.querySelector("[data-live-status]");
+    if (!el) return;
+    const now = new Date();
+    const parts = [`${DATE_FMT.format(now)} ${fmt.format(now)}`];
+    const retry = document.querySelector("[data-live-retry]");
+    const row = el.closest(".home2-now");
+    const hasWeather = live.sky || live.temp != null;
+    const hasAir = live.pm25 != null;
+    let state = "time";
+
+    if (hasWeather) {
+      const t = live.temp != null ? `${Math.round(live.temp)}°C` : "";
+      parts.push(["대구", live.sky, t].filter(Boolean).join(" "));
+      state = live.fromCache ? "cache" : "live";
+    } else if (live.note) {
+      parts.push(`대구 (${live.note})`);
+      state = live.failed ? "fail" : "time";
+    } else if (live.failed) {
+      parts.push("대구 실시간 정보를 불러오지 못했습니다");
+      state = "fail";
+    } else {
+      parts.push("대구");
+    }
+
+    if (hasAir) {
+      parts.push(`초미세먼지 ${Math.round(live.pm25)} ${live.grade || ""}`.trim());
+      if (state === "time") state = live.fromCache ? "cache" : "live";
+    }
+    if (live.fromCache && (hasWeather || hasAir)) parts.push("직전 값");
+
+    el.textContent = parts.join(" · ");
+    if (live.grade) el.dataset.grade = live.grade;
+    else delete el.dataset.grade;
+    if (row) row.dataset.liveState = state;
+    if (retry) retry.hidden = state !== "fail" && !(live.failed && live.fromCache);
+  }
+
+  window.bomnalLiveUpdate = paintStatus;
+
+  async function pullLive() {
+    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,weather_code&timezone=Asia%2FSeoul`;
+    const airUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&current=pm10,pm2_5&timezone=Asia%2FSeoul`;
+    const [wRes, aRes] = await Promise.all([fetch(weatherUrl), fetch(airUrl)]);
+    if (!wRes.ok && !aRes.ok) throw new Error("api");
+    const w = wRes.ok ? await wRes.json() : null;
+    const a = aRes.ok ? await aRes.json() : null;
+    const temp = Number(w?.current?.temperature_2m);
+    const code = Number(w?.current?.weather_code);
+    const pm25 = Number(a?.current?.pm2_5);
+    const pm10 = Number(a?.current?.pm10);
+    if (!Number.isFinite(temp) && !Number.isFinite(pm25)) throw new Error("empty");
+
+    if (Number.isFinite(temp)) live.temp = temp;
+    if (Number.isFinite(code)) live.sky = skyKey(code);
+    if (Number.isFinite(pm25)) {
+      live.pm25 = pm25;
+      live.grade = gradeLabel(pm25);
+    }
+    if (Number.isFinite(pm10)) live.pm10 = pm10;
+    live.fromCache = false;
+    live.failed = false;
+    live.note = "";
+    writeCache();
+    paintStatus();
+    return true;
+  }
+
+  async function loadLiveWithRetry() {
+    live.failed = false;
+    live.note = live.fromCache ? live.note : "";
+    paintStatus();
+    const delays = [0, 1500, 4000, 8000];
+    for (let i = 0; i < delays.length; i += 1) {
+      if (delays[i]) await sleep(delays[i]);
+      try {
+        if (await pullLive()) return true;
+      } catch {
+        /* 다음 간격으로 */
+      }
+    }
+    live.failed = true;
+    if (!live.fromCache && live.temp == null && live.pm25 == null) {
+      live.note = "";
+    }
+    paintStatus();
+    return false;
+  }
+
+  applyCache();
+  paintStatus();
+  loadLiveWithRetry();
+  window.setInterval(loadLiveWithRetry, 10 * 60 * 1000);
+  window.setInterval(paintStatus, 30 * 1000);
+
+  const retryBtn = document.querySelector("[data-live-retry]");
+  if (retryBtn) {
+    retryBtn.addEventListener("click", () => {
+      retryBtn.disabled = true;
+      loadLiveWithRetry().finally(() => {
+        retryBtn.disabled = false;
+      });
+    });
+  }
+
+  if (!layer) return;
 
   const daysSinceJ2000 = (date) => date.getTime() / 86400000 - 10957.5;
 
@@ -73,7 +267,9 @@
     const dec = Math.asin(Math.sin(bet) * Math.cos(e) + Math.cos(bet) * Math.sin(e) * Math.sin(lam));
     const sun = sunEquatorial(d);
     const elong = Math.acos(
-      Math.sin(sun.dec) * Math.sin(dec) + Math.cos(sun.dec) * Math.cos(dec) * Math.cos(sun.ra - ra)
+      Math.min(1, Math.max(-1,
+        Math.sin(sun.dec) * Math.sin(dec) + Math.cos(sun.dec) * Math.cos(dec) * Math.cos(sun.ra - ra)
+      ))
     );
     // 달의 황경이 태양보다 앞서면 차오르는 중(상현)이라 오른쪽이 밝다.
     const ahead = (((lam - sun.lon) / RAD) % 360 + 360) % 360;
@@ -132,50 +328,6 @@
     stars.appendChild(s);
   }
 
-  const fmt = new Intl.DateTimeFormat("ko-KR", {
-    timeZone: "Asia/Seoul",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
-
-
-  // 공기질은 air-art.js가, 기온·하늘은 type-wall.js가 이미 읽어온다.
-  // 같은 값을 또 부르지 않도록 한 곳에 모아 두고, 값이 들어올 때마다 줄을 다시 쓴다.
-  const live = (window.bomnalLive = window.bomnalLive || {});
-
-  const DATE_FMT = new Intl.DateTimeFormat("ko-KR", {
-    timeZone: "Asia/Seoul",
-    month: "long",
-    day: "numeric",
-    weekday: "short",
-  });
-
-  /** 히어로 맨 윗줄: 날짜, 시각, 대구 날씨, 미세먼지와 등급. */
-  function paintStatus() {
-    const el = document.querySelector("[data-live-status]");
-    if (!el) return;
-    const now = new Date();
-    const parts = [`${DATE_FMT.format(now)} ${fmt.format(now)}`];
-
-    if (live.sky || live.temp != null) {
-      const t = live.temp != null ? `${Math.round(live.temp)}°C` : "";
-      parts.push(["대구", live.sky, t].filter(Boolean).join(" "));
-    } else {
-      // 값을 못 받았을 때도 "대구"만 덩그러니 남지 않게 상태를 덧붙인다.
-      parts.push(live.note ? `대구 (${live.note})` : "대구");
-    }
-
-    if (live.pm25 != null) {
-      parts.push(`초미세먼지 ${Math.round(live.pm25)} ${live.grade || ""}`.trim());
-    }
-    el.textContent = parts.join(" · ");
-    if (live.grade) el.dataset.grade = live.grade;
-  }
-
-  // 값이 들어오는 쪽에서 부른다.
-  window.bomnalLiveUpdate = paintStatus;
-
   function paint() {
     const now = new Date();
     const sun = sunPosition(now);
@@ -231,7 +383,7 @@
   let depthQueued = false;
   function paintDepth() {
     depthQueued = false;
-    const hero = document.querySelector(".stage-hero");
+    const hero = document.querySelector(".stage-hero") || document.querySelector(".home2-hero");
     const span = Math.max(1, (hero ? hero.offsetHeight : window.innerHeight) * 0.75);
     const t = clamp(1 - window.scrollY / span, 0, 1);
     // 완전히 지우지 않는다. 옅게 남아야 하늘이 이어져 보인다.
@@ -247,13 +399,19 @@
     { passive: true }
   );
 
-  paint();
-  paintDepth();
-  paintStatus();
-  window.setInterval(paintStatus, 30 * 1000);
+  try {
+    paint();
+    paintDepth();
+  } catch {
+    /* 하늘 그림이 깨져도 실시간 줄은 이미 돌아가고 있다 */
+  }
   // 해는 4분에 1도씩 움직인다. 1분마다 다시 그리면 충분하다.
-  window.setInterval(paint, 60 * 1000);
+  window.setInterval(() => {
+    try { paint(); } catch { /* 한 프레임 실패는 다음 분에 맡긴다 */ }
+  }, 60 * 1000);
   document.addEventListener("visibilitychange", () => {
-    if (!document.hidden) paint();
+    if (!document.hidden) {
+      try { paint(); } catch { /* */ }
+    }
   });
 })();

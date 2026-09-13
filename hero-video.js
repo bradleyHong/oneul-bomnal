@@ -151,9 +151,20 @@
      썸네일을 저장소에 미리 넣어 둘 수가 없다 — 만드는 자리에서는
      vimeo 에 닿지 못한다. 손님의 브라우저는 닿으므로 그 자리에서
      oEmbed 로 받아 건다. 못 받으면 지금까지처럼 색과 글자만 남는다. */
+  /* 업로드 시각·생성기 아이디는 제목이 아니다. 사람이 붙인 이름만 받는다. */
+  function titled(t) {
+    if (!t || typeof t !== "string") return "";
+    t = t.replace(/\s+/g, " ").trim();
+    if (t.length < 2 || t.length > 80) return "";
+    if (/^\d{4}[-./]\d{1,2}[-./]\d{1,2}/.test(t)) return "";
+    if (/^[0-9a-f]{8}-[0-9a-f]{4}-/i.test(t)) return "";
+    if (/higgsfield|untitled|video\s*\d+/i.test(t)) return "";
+    return t;
+  }
+
   function poster(btn) {
     var box = btn.parentNode;
-    if (!box || box.querySelector(".film-poster") || !window.fetch) return;
+    if (!box || !window.fetch) return;
     var id = String(btn.dataset.film || "").replace(/[^0-9]/g, "");
     if (!id) return;
     var key = String(btn.dataset.filmHash || "").replace(/[^0-9a-z]/gi, "");
@@ -161,7 +172,15 @@
     fetch("https://vimeo.com/api/oembed.json?width=960&url=" + encodeURIComponent(page))
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
-        if (!d || !d.thumbnail_url || box.querySelector(".film-poster")) return;
+        if (!d) return;
+        var name = titled(d.title);
+        if (name) {
+          var titleEl = btn.querySelector(".film-name");
+          if (titleEl) titleEl.textContent = name;
+          var out = box.querySelector(".film-out");
+          if (out) out.setAttribute("aria-label", name + " Vimeo에서 보기");
+        }
+        if (!d.thumbnail_url || box.querySelector(".film-poster")) return;
         var img = new Image();
         img.className = "film-poster";
         img.alt = "";
