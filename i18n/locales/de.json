@@ -8,7 +8,7 @@
   },
   "common": {
     "brand": "오늘은 봄날",
-    "brandRomanized": "Oneul-eun Bomnal",
+    "brandRomanized": "Public Bloom · Oneul-eun Bomnal",
     "domain": "publicbloom.art",
     "tagline": "Media-Art-AX-Studio · Frauenunternehmen, Daegu, Korea",
     "skip": "Zum Inhalt",
@@ -46,14 +46,14 @@
     "overseasNote": "Aufträge aus dem Ausland sind willkommen. Schreiben Sie auf Deutsch, Englisch, Japanisch oder Französisch — wir antworten per E-Mail. Eine Installation in Korea wird nach Ortsbegehung kalkuliert. Inhalt kann als 4K-Video oder Live-Code remote geliefert werden."
   },
   "home": {
-    "title": "Codebasierte Media Art, LED und Medienfassade | Oneul-eun Bomnal",
-    "description": "오늘은 봄날 (Oneul-eun Bomnal) ist ein von einer Frau geführtes Media-Art-Studio in Daegu, Korea. Wir schreiben Media Art in Code, installieren LED-Anzeigen und bauen Projektor-Medienfassaden — ein Vertrag. Drei Entwürfe in einer Woche. studio@publicbloom.art",
-    "ogDescription": "Frauengeführtes Media-Art-AX-Studio in Daegu. Codebasierte Werke, LED, Medienfassaden. publicbloom.art",
+    "title": "Medienkunst und LED-Mediafassade — Inhalt und Montage | Public Bloom",
+    "description": "Public Bloom (오늘은 봄날) ist ein frauengeführtes Studio in Daegu, Korea. Dieselbe Mannschaft macht Media Art und kann die LED-Wand oder Projektorfassade montieren. AX testen, dann anfragen. studio@publicbloom.art",
+    "ogDescription": "Von Media Art zur LED-Fassade — dieselbe Mannschaft gestaltet und montiert. Daegu, Korea. publicbloom.art",
     "ogImageAlt": "Medienfassade und LED-Flächen von 오늘은 봄날",
-    "h1": "오늘은 봄날",
-    "kicker": "Daegu, Korea · Medienfassade · LED · generative Kunst",
-    "line": "Wir machen aus Architektur eine Fläche.",
-    "sub": "오늘은 봄날 (Oneul-eun Bomnal) schreibt Media Art in Code und installiert die LED-Wand oder Projektorfassade, die sie zeigt. Ein Studio, ein Vertrag, von Daegu aus.",
+    "h1": "오늘은 봄날 — wir machen aus Räumen Screens",
+    "kicker": "Public Bloom · Daegu, Korea · Medienkunst · LED-Fassade",
+    "line": "Wir machen aus Räumen Screens.",
+    "sub": "Von Media Art zur LED-Fassade — dieselbe Mannschaft schreibt das Bild und kann die Wand setzen. Im Ausland zuerst der Inhalt; Daegu ist Atelier und Baustelle.",
     "entityTitle": "Wer wir sind",
     "entity": "오늘은 봄날 ist ein frauengeführtes Media-Art-AX-Studio in Suseong-gu, Daegu, Republik Korea. Die öffentliche Seite ist publicbloom.art. Wir schneiden kein fertiges Video und gehen: Das Werk ist ein Programm, deshalb lässt sich dieselbe Arbeit erneut in 32:9 auf einer Außen-LED, in 9:16 auf einem Lobbysteelen oder gemappt auf eine Gebäudewand ausgeben. Wetter, Luftqualität oder die Datenbank der Institution können das Bild jeden Tag ändern. Fehlt noch ein Screen, installieren wir LED-Module oder eine Projektor-Medienfassade selbst.",
     "proofTitle": "Was Auftraggeber zuerst wissen wollen",
@@ -65,14 +65,14 @@
     "proof3v": "Behörden und Kulturorte, vor allem Daegu, Busan, Gyeongbuk",
     "proof4k": "Einsatzgebiet",
     "proof4v": "Daegu, Gyeongbuk, Busan, Gyeongnam, Ulsan — andere Regionen nach Absprache",
-    "offerTitle": "Drei Leistungen",
-    "offerLead": "Inhalt und Installation bleiben in einem Gespräch. Sie müssen nicht getrennt ein Videohaus und einen Elektriker briefen.",
-    "o1t": "Codebasierte Media Art",
-    "o1p": "Generative HTML5-Arbeit, auf das vorhandene Panel — oder auf das, das wir setzen. Drei Entwürfe in einer Woche.",
-    "o2t": "LED und Medienfassaden",
-    "o2p": "Lobbywände, Außen-LED, Hochformate, Projektionsmapping. Spezifikation, Lieferung, Statik, Verkabelung.",
-    "o3t": "Bomnal-Studio",
-    "o3p": "Einen Screen ohne Login ausprobieren. Nach Freigabe rendern wir an einem Werktag binnen 24 Stunden auf Ihre Pixel.",
+    "offerTitle": "Drei Angebote",
+    "offerLead": "Media-Art-Produktion, LED- und Fassadenmontage, Media Art AX. Ein Gespräch, nicht Videohaus plus Elektriker.",
+    "o1t": "Media-Art-Produktion",
+    "o1p": "Generative, codebasierte Arbeit auf das vorhandene Panel — oder auf das, das wir setzen. Drei Entwürfe in einer Woche.",
+    "o2t": "LED- und Mediafassaden-Montage",
+    "o2p": "Lobbywände, Außen-LED, Hochformate, Mapping. Spezifikation, Lieferung, Kabel, Statik.",
+    "o3t": "Media Art AX",
+    "o3p": "Einen Screen ohne Login testen. Nach Freigabe rendern wir an einem Werktag binnen 24 Stunden auf Site-Maß. Dann das Angebot anfragen.",
     "methodTitle": "So entsteht die Arbeit",
     "methodLead": "Eine Videodatei ist eine Lieferung. Code ist ein System, das dieselbe Datei in einem anderen Format neu drucken oder vor Ort weiterlaufen kann.",
     "step1": "Wir klären das Site-Spec: Verhältnis, Auflösung, Dauer, Helligkeit.",
@@ -83,11 +83,11 @@
     "refsLead": "Referenzschreiben für Ausschreibungen stellen wir vertragsscharf aus. Das sind ausgeführte Orte, keine erfundenen Preise.",
     "faqTitle": "Häufige Fragen",
     "faqLead": "Kurze, zitierfähige Antworten. Details zur koreanischen Vergabe stehen auf der koreanischen Seite.",
-    "ctaTitle": "Anfragen von überall",
-    "ctaLead": "Nennen Sie Stadt, Wand- oder Screenmaß und ob nur Inhalt oder eine volle Installation nötig ist. Wir antworten auf Deutsch."
+    "ctaTitle": "Zwei Wege",
+    "ctaLead": "Der Hauptweg ist die Projektanfrage. Oder AX öffnen, einen Look wählen, dann schreiben."
   },
   "offer": {
-    "title": "Media Art, LED-Installation und Medienfassade | Oneul-eun Bomnal",
+    "title": "Medienkunst, LED-Montage und Fassade | Public Bloom",
     "description": "오늘은 봄날 produziert codebasierte Media Art, installiert LED-Panels und Außenanzeigen und baut Projektor-Medienfassaden in Daegu sowie in Gyeongbuk, Busan, Gyeongnam und Ulsan. Frauenunternehmen. Inhalt ab 1.000.000 KRW zzgl. MwSt.",
     "ogDescription": "Codebasierte Media Art, LED-Installation und Projektorfassaden. Frauengeführtes Studio in Daegu, Korea.",
     "ogImageAlt": "LED-Wand und Gebäudefassade von 오늘은 봄날",
@@ -126,7 +126,7 @@
     "faqLead": "Antworten, die für sich stehen."
   },
   "studio": {
-    "title": "Bomnal-Studio — Media Art testen und beauftragen | Oneul-eun Bomnal",
+    "title": "Media Art AX — testen, dann beauftragen | Public Bloom",
     "description": "Im Bomnal-Studio testen Sie Media-Art-Screens ohne Konto. Nach Freigabe rendert 오늘은 봄날 auf Ihr Signage-Maß. Käufer im Ausland: studio@publicbloom.art.",
     "ogDescription": "Einen Screen testen, dann einen Site-Render aus Daegu beauftragen. publicbloom.art/studio",
     "ogImageAlt": "Vorschau im Bomnal-Studio",
@@ -152,7 +152,7 @@
     "faqLead": "Beauftragung außerhalb Koreas."
   },
   "quote": {
-    "title": "Angebot anfragen | Media Art und LED | Oneul-eun Bomnal",
+    "title": "Projektanfrage | Public Bloom",
     "description": "Fragen Sie 오늘은 봄날 (Oneul-eun Bomnal) zu Media Art, LED oder Medienfassade an. Internationale Anfragen auf Deutsch willkommen. studio@publicbloom.art. Daegu, Korea.",
     "ogDescription": "Internationale Anfragen willkommen. Media Art, LED, Medienfassaden. Daegu, Korea.",
     "ogImageAlt": "Anfrage an 오늘은 봄날",
@@ -202,28 +202,20 @@
   "faq": {
     "home": [
       {
-        "q": "Was ist 오늘은 봄날 (Oneul-eun Bomnal)?",
-        "a": "오늘은 봄날 ist ein frauengeführtes Media-Art-Studio in Suseong-gu, Daegu, Korea. Die Website ist publicbloom.art. Das Studio schreibt Media Art in Code, produziert über eine KI-gestützte Pipeline und kann die LED oder Projektorfassade installieren. Inhaberin: Park Seongsil. Handelsregister 575-19-00976."
+        "q": "Was ist eine Mediafassade?",
+        "a": "Eine Gebäudefläche als Display — LED in der Architektur oder Projektion auf die Wand gemappt. Public Bloom (오늘은 봄날) produziert die Media Art und kann die Hardware im selben Vertrag montieren. Die öffentliche Seite ist publicbloom.art."
       },
       {
-        "q": "Was heißt „Media Art in Code“?",
-        "a": "Das Bild erzeugt ein Programm, es wird nicht auf einer Timeline geschnitten. Dieselbe freigegebene Arbeit lässt sich in einem anderen Seitenverhältnis und einer anderen Auflösung neu ausgeben. Öffentliche Daten oder eine Institutsdatenbank können denselben Screen jeden Tag anders aussehen lassen. Wer nur eine Datei braucht, bekommt 4K auf Panelmaß."
+        "q": "Kann ich Media Art für eine vorhandene LED kaufen?",
+        "a": "Ja. Media Art AX (Bomnal-Studio) ohne Konto öffnen, Vorschau ansehen, dann rendern wir auf Ihr Seitenverhältnis und Ihre Auflösung. Hängt das Panel schon, reicht oft eine HDMI-Media-Box. Die Werktagsdatei geht binnen 24 Stunden nach Freigabe raus."
       },
       {
-        "q": "Kann ein ausländisches Haus beauftragen?",
-        "a": "Ja. Inhalt lässt sich remote spezifizieren, freigeben und als 4K oder Live-Code liefern. Schreiben Sie an studio@publicbloom.art auf Deutsch, Englisch, Japanisch oder Französisch. LED- oder Projektorinstallation in Korea nach Ortsbegehung. Außerhalb der genannten Regionen Einzelfall."
+        "q": "Arbeiten Sie nur in Korea?",
+        "a": "Das Studio sitzt in Daegu. Montage schwerpunktmäßig in Daegu, Busan und Gyeongbuk; Gyeongnam und Ulsan nach Absprache. International zuerst Remote-Inhalt. Montage außerhalb dieser Regionen ist Einzelfall — wir behaupten keinen weltweiten Installationsdienst."
       },
       {
-        "q": "Warum zählt der Status als Frauenunternehmen in Korea?",
-        "a": "오늘은 봄날 hält das Zertifikat Frauenunternehmen (Nr. 0113-2025-35456) und ist damit für die vorrangige öffentliche Beschaffung in Korea berechtigt. Dazu kommt das Direktproduktionszertifikat Videoproduktion (Nr. 2025-0495-02141) für beschränkte KMU-Ausschreibungen."
-      },
-      {
-        "q": "Wie schnell kommt der erste Entwurf?",
-        "a": "Drei Entwürfe innerhalb einer Woche nach Briefing. Externes Video dauert oft einen Monat oder länger. Nach Freigabe geht der Werktagsrender binnen 24 Stunden raus (Wochenenden und koreanische Feiertage ausgenommen)."
-      },
-      {
-        "q": "Medienfassade oder LED?",
-        "a": "Medienfassade heißt hier Projektoren, gemappt auf eine vorhandene Wand, meist nachts. Ein LED-Display ist ein physischer Screen am Gebäude und kann tagsüber laufen. 오늘은 봄날 baut beides und empfiehlt nach Messung von Wand, Umlicht, Wurfweite und Strom."
+        "q": "Mediafassade oder Projektionsmapping?",
+        "a": "LED in der Architektur ist ein physischer Screen, auch tagsüber. Mapping ist Licht auf einer vorhandenen Fläche, meist nachts. Beides liegt im Angebot, wenn der Ort passt. Empfehlung nach Wand, Umlicht, Wurfweite und Strom."
       }
     ],
     "offer": [
