@@ -100,8 +100,8 @@
 .st-bottom { display: grid; grid-template-columns: 400px 1fr; gap: 26px; margin-top: 30px; align-items: start; }
 @media (max-width: 940px) { .st-bottom { grid-template-columns: 1fr; } }
 
-.st-quote { background: var(--surface); color: #fff; border-radius: 12px; padding: 22px; }
-.st-q-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,.12); font-size: .92rem; }
+.st-quote { background: var(--surface); color: var(--ink); border-radius: 12px; padding: 22px; }
+.st-q-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid rgba(16, 32, 26, 0.108); font-size: .92rem; }
 .st-q-row span { color: var(--faint); }
 .st-q-total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 14px; margin-top: 6px; }
 .st-q-total span { color: var(--faint); font-size: .92rem; }
@@ -428,7 +428,7 @@
   border: 0;
   border-radius: 999px;
   background: rgba(8, 12, 22, 0.62);
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.72);
   font-size: 16px;
   line-height: 1;
   cursor: pointer;
@@ -446,7 +446,7 @@
   padding: 1px 7px;
   border-radius: 999px;
   background: var(--petal);
-  color: #fff;
+  color: var(--ink);
   font-size: 11.5px;
   font-weight: 800;
   vertical-align: middle;
@@ -467,7 +467,7 @@
   padding: 3px 8px;
   border-radius: 999px;
   background: #14203a;
-  color: #fff;
+  color: var(--ink);
   font-size: 11px;
   font-weight: 800;
 }
@@ -574,7 +574,7 @@
   border-radius: 16px;
   background: radial-gradient(118% 92% at 50% 36%, #141821 0%, #0a0c11 56%, #06070a 100%);
   color: #e8ecf3;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.055);
+  box-shadow: inset 0 0 0 1px rgba(16, 32, 26, 0.055);
 }
 
 /* 받침 상자를 걷어낸다. 액자는 캔버스 자신이다. */
@@ -590,7 +590,7 @@
 .st-picked .st-stage canvas {
   border-radius: 2px;
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.14),
+    0 0 0 1px rgba(16, 32, 26, 0.12),
     0 0 70px 10px rgba(214, 226, 255, 0.10),
     0 26px 64px -24px rgba(0, 0, 0, 0.95);
 }
@@ -622,7 +622,7 @@
   background: var(--paper);
   border-radius: 3px;
   padding: 15px 17px;
-  box-shadow: 0 0 38px -8px rgba(255, 255, 255, 0.22);
+  box-shadow: 0 0 38px -8px rgba(16, 32, 26, 0.12);
 }
 .st-picked .st-code-num { color: var(--ink); }
 .st-picked .st-code-note { color: var(--muted); }
@@ -634,7 +634,7 @@
 /* 방금 만든 것들도 어두운 방에 함께 있다 */
 .st-picked .st-hist-wrap { margin-top: 26px; }
 .st-picked .st-hist-item span { color: rgba(232, 236, 243, 0.42); }
-.st-picked .st-hist-item:hover { border-color: rgba(255, 255, 255, 0.28); }
+.st-picked .st-hist-item:hover { border-color: rgba(255, 255, 255, 0.26); }
 .st-picked .st-hist-item.is-on { border-color: var(--edge-glow); }
 .st-picked .st-hist-item.is-on span { color: var(--glow); }
 
@@ -645,8 +645,7 @@
     border-radius: 0;
   }
   .st-picked.is-sheet .st-sheet-close {
-    border-color: rgba(255, 255, 255, 0.22);
-    background: rgba(14, 18, 26, 0.86);
+    border-color: rgba(255, 255, 255, 0.2)    background: rgba(14, 18, 26, 0.86);
     color: #dbe6ff;
   }
   /* 라벨을 폭에 맞춰 편다. 좁은 화면에서 오른쪽에 몰리면 읽기 나쁘다. */

@@ -22,7 +22,7 @@
 /* 언어 바꾸기. 메뉴의 마지막 자리에 테를 둘러 링크가 아니라 스위치로 읽히게. */
 .lang-switch {
   padding: 6px 13px;
-  border: 1px solid var(--edge, rgba(255, 255, 255, 0.22));
+  border: 1px solid var(--edge, rgba(16, 32, 26, 0.198));
   border-radius: 999px;
   font-size: 13px;
   font-weight: 700;
@@ -75,10 +75,12 @@
   justify-items: center;
   gap: 14px;
   text-align: center;
-  background: var(--surface);
+  /* 배경은 styles.css 의 초록 띠 규칙이 가져간다. 여기서 var(--surface) 를
+     쓰면 그 규칙이 초록 판 위에서 새로 정의한 --surface(흰색 8%)를 도로
+     읽어 자기 배경으로 깔아, 초록이 사라지고 흰 글자만 남는다. */
 }
 .en-cta h2 { max-width: 22ch; }
-.en-cta p { max-width: 56ch; color: var(--muted); }
+.en-cta p { max-width: 56ch; }
 .en-cta .subpage-actions { margin-top: 8px; }
 
 /* 영문 푸터는 칸이 넷이다(회사 · 연락처 · 메뉴 · 법적 표기). */
@@ -87,5 +89,5 @@
   margin: 18px 0 0;
   font-size: 12.5px;
   line-height: 1.7;
-  color: var(--faint, rgba(238, 242, 248, 0.56));
+  color: var(--faint, rgba(16, 32, 26, 0.6));
 }
