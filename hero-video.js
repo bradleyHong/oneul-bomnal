@@ -207,8 +207,9 @@
       var f = document.createElement("iframe");
       f.src = VIMEO + "/video/" + id +
               (key ? "?h=" + key + "&" : "?") +
-              (bg ? "background=1&autoplay=1&loop=1&muted=1&autopause=0&dnt=1"
-                  : "autoplay=1&title=0&byline=0&portrait=0&dnt=1");
+              (bg ? "background=1&autoplay=1&loop=1&muted=1&autopause=0&dnt=1&transparent=1"
+                  : "autoplay=1&title=0&byline=0&portrait=0&dnt=1&transparent=1&color=0d1017");
+      f.className = "film-vimeo";
       f.title = name ? name.textContent.trim() : "작업 영상";
       f.setAttribute("frameborder", "0");
       f.setAttribute("allow", "autoplay; fullscreen; picture-in-picture");
