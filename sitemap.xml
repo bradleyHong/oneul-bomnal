@@ -88,6 +88,42 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://publicbloom.art/en</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://publicbloom.art/en/services</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://publicbloom.art/en/works</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://publicbloom.art/en/studio</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://publicbloom.art/en/rental</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://publicbloom.art/en/contact</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://publicbloom.art/%EA%B3%B5%EA%B8%B0%EC%A7%88%EC%9D%84%20%ED%86%B5%ED%95%9C%20%EC%9D%B8%ED%84%B0%EB%A0%89%EC%85%98</loc>
     <lastmod>2026-09-11</lastmod>
     <changefreq>yearly</changefreq>

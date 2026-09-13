@@ -14,7 +14,12 @@
     "verification": {
       "google": "rSP3OWNR2ASouqOrFTis7jWRtWRfvTIaF4xMhFqtWLs",
       "naver": "065ca67de7d3753f1b02bdd17a7036c69ac372f7"
-    }
+    },
+    "langs": [
+      "ko",
+      "en"
+    ],
+    "enBase": "https://publicbloom.art/en"
   },
   "identity": {
     "legalName": "오늘은 봄날",
@@ -630,6 +635,84 @@
       "sitemap": {
         "priority": "0.8",
         "changefreq": "weekly"
+      }
+    },
+    {
+      "path": "/en",
+      "file": "en/index.html",
+      "lang": "en",
+      "altOf": "/",
+      "title": "Media Facade and LED Content Studio in Daegu, Korea | Oneul-eun Bomnal",
+      "description": "Daegu-based media art studio. We write media art as code, so one work re-renders at any ratio and resolution, and we install the LED panels and projectors it runs on.",
+      "h1": "We write screens, and we hang them.",
+      "sitemap": {
+        "priority": "0.9",
+        "changefreq": "weekly"
+      }
+    },
+    {
+      "path": "/en/services",
+      "file": "en/services.html",
+      "lang": "en",
+      "altOf": "/media-facade-content",
+      "title": "Media Facade Content, LED Installation, Media Art AX | Oneul-eun Bomnal",
+      "description": "Media art written as code and re-rendered to your screen spec, LED panel and projector installation carried out in house, and screens wired to live public data. Daegu, Korea.",
+      "h1": "From the concept to the cable",
+      "sitemap": {
+        "priority": "0.8",
+        "changefreq": "monthly"
+      }
+    },
+    {
+      "path": "/en/works",
+      "file": "en/works.html",
+      "lang": "en",
+      "altOf": "/pieces",
+      "title": "Selected Works: Media Facades and LED Walls in Korea | Oneul-eun Bomnal",
+      "description": "Media facades, LED walls and signage content installed at public institutions and cultural venues across Daegu, Busan and Gyeongbuk. About 40 media art works delivered.",
+      "h1": "Screens that are lit right now",
+      "sitemap": {
+        "priority": "0.8",
+        "changefreq": "monthly"
+      }
+    },
+    {
+      "path": "/en/studio",
+      "file": "en/studio.html",
+      "lang": "en",
+      "altOf": "/studio",
+      "title": "ArtWork Studio: Make a Media Art Screen Yourself | Oneul-eun Bomnal",
+      "description": "Pick a generative media art screen, see a five-second watermarked sample at once, and hang it on a photograph of real signage at true scale. No sign-up. From 100,000 won.",
+      "h1": "You choose the screen. We render it.",
+      "sitemap": {
+        "priority": "0.7",
+        "changefreq": "monthly"
+      }
+    },
+    {
+      "path": "/en/rental",
+      "file": "en/rental.html",
+      "lang": "en",
+      "altOf": "/rental",
+      "title": "Media Art Rental: Three Days from 5M Won, Content Included | Oneul-eun Bomnal",
+      "description": "Rent a complete media art kit for an event in Korea: short-throw projector, speaker and player in one case, throwing a 3m by 1.8m screen. Three days from 5,000,000 won.",
+      "h1": "A media art screen where there is no screen",
+      "sitemap": {
+        "priority": "0.7",
+        "changefreq": "monthly"
+      }
+    },
+    {
+      "path": "/en/contact",
+      "file": "en/contact.html",
+      "lang": "en",
+      "altOf": "/quote",
+      "title": "Contact: Start a Media Facade or LED Project | Oneul-eun Bomnal",
+      "description": "Send the wall size, the site and the rough schedule. We reply within 24 hours with a figure and, where needed, Korean public-procurement paperwork. Daegu, Korea.",
+      "h1": "Tell us the wall",
+      "sitemap": {
+        "priority": "0.7",
+        "changefreq": "monthly"
       }
     }
   ],
