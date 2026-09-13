@@ -908,27 +908,81 @@ var SCENES = [
   };
 
   Gen.prototype.watermark = function (ctx, W, H) {
-    /* 계약된 작품을 전용 플레이어에서 틀 때는 도장을 안 찍는다. mark 를 비운다. */
+    /* 계약된 작품을 전용 플레이어에서 틀 때는 도장을 안 찍는다. mark 를 비운다.
+       브라우저는 OS 화면 녹화를 막을 수 없다. 여기서 하는 일은 시안이라는
+       표시를 화면 여러 곳에 남겨, 녹화본이 납품본처럼 보이지 않게 하는 것이다. */
     if (!this.mark) return;
-    /* 1:6 기둥 미리보기처럼 칸이 좁으면 글자가 들어갈 자리가 없어
-       이름이 잘린다. 잘린 이름을 보이느니 안 보이는 편이 낫다.
-       이 크기에서는 가져가 봐야 쓸 데도 없다. */
-    if (W < 96) return;
-    var fs = Math.max(9, Math.round(Math.min(W / 22, H / 22, 26)));
-    ctx.font = "700 " + fs + "px Pretendard, sans-serif";
-    while (fs > 8 && ctx.measureText(this.mark).width > W * 0.82) {
-      fs -= 1;
-      ctx.font = "700 " + fs + "px Pretendard, sans-serif";
+    if (W < 36 || H < 36) return;
+    var key = W + "x" + H + "|" + this.mark;
+    if (!this._wm || this._wmKey !== key) {
+      this._wm = this._wmBuild(W, H);
+      this._wmKey = key;
     }
-    ctx.textAlign = "right";
-    ctx.fillStyle = "rgba(0,0,0,.45)";
-    ctx.fillText(this.mark, W - 15, H - 15);
-    ctx.fillStyle = "rgba(255,255,255,.9)";
-    ctx.fillText(this.mark, W - 16, H - 16);
-    ctx.textAlign = "left";
-    ctx.font = "600 " + Math.round(fs * 0.62) + "px Pretendard, sans-serif";
-    ctx.fillStyle = "rgba(255,255,255,.55)";
-    if (W > 180) ctx.fillText("Sample / 5s", 14, H - 14);
+    ctx.save();
+    ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = 1;
+    ctx.drawImage(this._wm, 0, 0);
+    ctx.restore();
+  };
+
+  /** 한 장으로 만들어 두고 매 프레임은 그 장만 얹는다. */
+  Gen.prototype._wmBuild = function (W, H) {
+    var c = document.createElement("canvas");
+    c.width = W;
+    c.height = H;
+    var g = c.getContext("2d");
+    var min = Math.min(W, H);
+    var phrase = "시안 · 오늘은 봄날 · publicbloom.art";
+    var face = "Pretendard, system-ui, sans-serif";
+
+    g.save();
+    g.translate(W * 0.5, H * 0.5);
+    g.rotate(-0.36);
+    var dfs = Math.max(9, Math.round(min / 13));
+    g.font = "700 " + dfs + "px " + face;
+    g.textAlign = "center";
+    g.textBaseline = "middle";
+    var step = dfs * 3.1;
+    var span = Math.sqrt(W * W + H * H) + step;
+    var line = phrase + "   ·   " + phrase;
+    for (var y = -span; y <= span; y += step) {
+      g.fillStyle = "rgba(0,0,0,0.16)";
+      g.fillText(line, 1, y + 1);
+      g.fillStyle = "rgba(255,255,255,0.20)";
+      g.fillText(line, 0, y);
+    }
+    g.restore();
+
+    if (W >= 110 && H >= 64) {
+      var cfs = Math.max(15, Math.min(42, Math.round(min / 7.2)));
+      g.textAlign = "center";
+      g.textBaseline = "middle";
+      g.font = "800 " + cfs + "px " + face;
+      g.fillStyle = "rgba(0,0,0,0.32)";
+      g.fillText("시안", W * 0.5 + 1, H * 0.5 + 1);
+      g.fillStyle = "rgba(255,255,255,0.46)";
+      g.fillText("시안", W * 0.5, H * 0.5);
+      g.font = "600 " + Math.max(8, Math.round(cfs * 0.34)) + "px " + face;
+      g.fillStyle = "rgba(255,255,255,0.40)";
+      g.fillText("오늘은 봄날 · 5초 시연본", W * 0.5, H * 0.5 + cfs * 0.68);
+    }
+
+    var mfs = Math.max(8, Math.round(min / 16));
+    var pad = Math.max(5, Math.round(min / 36));
+    g.font = "700 " + mfs + "px " + face;
+    function corner(text, x, y, align) {
+      g.textAlign = align;
+      g.textBaseline = y < H * 0.5 ? "top" : "bottom";
+      g.fillStyle = "rgba(0,0,0,0.48)";
+      g.fillText(text, x + (align === "left" ? 1 : -1), y + 1);
+      g.fillStyle = "rgba(255,255,255,0.90)";
+      g.fillText(text, x, y);
+    }
+    corner("시안", pad, pad, "left");
+    corner(this.mark, W - pad, pad, "right");
+    corner("시연본 · 5초", pad, H - pad, "left");
+    if (W >= 160) corner("publicbloom.art", W - pad, H - pad, "right");
+    return c;
   };
 
   function hex2rgb(hex) {

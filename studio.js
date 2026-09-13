@@ -112,7 +112,10 @@
       var pad = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
       var maxW = Math.max(80, (box.clientWidth || 720) - pad);
       var maxH = 420;
-      var sc = Math.min(maxW / p.w, maxH / p.h, 1);
+      /* 시안은 납품 해상도로 그리지 않는다. 화면 녹화를 막지는 못하지만
+         이렇게 작게 두면 녹화본이 납품본이 아님은 바로 보인다. */
+      var DEMO_MAX = 720;
+      var sc = Math.min(maxW / p.w, maxH / p.h, DEMO_MAX / Math.max(p.w, p.h, 1));
       elCanvas.width = Math.round(p.w * sc * 2) / 2;
       elCanvas.height = Math.round(p.h * sc * 2) / 2;
       elCanvas.style.width = Math.round(p.w * sc) + "px";
@@ -238,8 +241,8 @@
         '<p class="st-code-num">' + code(idx, sd, v) + '</p>' +
         '<button type="button" class="st-copy" data-st-copy>번호 복사</button>' +
         '</div>' +
-        '<p class="st-code-note">이 번호가 이 화면의 설계도입니다. ' +
-        '결제하시면 <b>같은 번호로</b> 화면 규격에 맞춰 고화질로 렌더링해 드립니다.</p>' +
+        '<p class="st-code-note">지금 보시는 것은 워터마크가 찍힌 5초 시안입니다. ' +
+        '이 번호가 이 화면의 설계도입니다. 결제하시면 <b>같은 번호로</b> 화면 규격에 맞춰 고화질로 렌더링해 드립니다.</p>' +
         (idx === CUSTOM
           ? '<p class="st-code-sub">직접 적으신 문장으로 만든 번호입니다. 나중에 부르실 때는 문장도 함께 적어 주세요.</p>'
           : '<p class="st-code-sub">번호를 복사해 두시면 언제든 이 화면으로 돌아옵니다.</p>');
@@ -778,6 +781,15 @@
 
     var elWallMore = $("[data-st-wall-more]", root);
     if (elWallMore) elWallMore.addEventListener("click", wallDraw);
+
+    /* 캔버스 우클릭 저장만 막는다. OS 화면 녹화까지 막을 수는 없다. */
+    root.addEventListener("contextmenu", function (e) {
+      var t = e.target;
+      if (!t) return;
+      if (t.tagName === "CANVAS" || (t.closest && t.closest(".st-stage, .st-wall-item, .st-hist-item, .mock"))) {
+        e.preventDefault();
+      }
+    });
 
     elStat.textContent =
       "고르신 화면은 누를 때마다 다시 그립니다. 같은 느낌이라도 매번 다르게 나옵니다.";
