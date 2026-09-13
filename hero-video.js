@@ -191,8 +191,9 @@
     Array.prototype.forEach.call(cards, poster);
   }
 
-  Array.prototype.forEach.call(cards, function (btn) {
-    btn.addEventListener("click", function () {
+  /** 카드 하나를 재생기로 바꾼다.
+      bg 가 참이면 소리 없이 저절로 도는 배경 재생기다. 단추도 로고도 없다. */
+  function open(btn, bg) {
       var box = btn.parentNode;
       if (!box || box.querySelector("iframe")) return;
 
@@ -206,22 +207,31 @@
       var f = document.createElement("iframe");
       f.src = VIMEO + "/video/" + id +
               (key ? "?h=" + key + "&" : "?") +
-              "autoplay=1&title=0&byline=0&portrait=0&dnt=1";
+              (bg ? "background=1&autoplay=1&loop=1&muted=1&autopause=0&dnt=1"
+                  : "autoplay=1&title=0&byline=0&portrait=0&dnt=1");
       f.title = name ? name.textContent.trim() : "작업 영상";
       f.setAttribute("frameborder", "0");
       f.setAttribute("allow", "autoplay; fullscreen; picture-in-picture");
-      f.setAttribute("allowfullscreen", "");
+      if (bg) {
+        /* 배경으로 도는 것은 눌러서 볼 것이 아니다. 초점이 여기 걸리면
+           탭으로 넘어가다 재생기 속에 갇힌다. 옆의 'Vimeo에서 보기' 가
+           제 길이다. */
+        f.setAttribute("tabindex", "-1");
+        f.setAttribute("aria-hidden", "true");
+      } else {
+        f.setAttribute("allowfullscreen", "");
+      }
 
       box.appendChild(f);
       /* 아직 보여 주지 않는다. 재생기가 인사할 때까지 카드가 그대로
          있어야 반쯤 그려진 회색 판이 스치지 않는다. */
-      var m = { box: box, btn: btn, frame: f, moved: false, alive: false };
+      var m = { box: box, btn: btn, frame: f, moved: bg, alive: false };
       mounted.push(m);
 
       /* 인사가 올 때까지 카드는 그대로다. 아무 표시가 없으면 누른 사람은
          눌리지 않았다고 생각하고 또 누른다. 작은 글씨만 바꿔 둔다. */
       var note = btn.querySelector("small");
-      if (note) { m.note = note.textContent; note.textContent = "불러오는 중…"; }
+      if (note && !bg) { m.note = note.textContent; note.textContent = "불러오는 중…"; }
 
       /* 재생기가 인사조차 하지 않으면 거기 아무것도 없는 것이다.
          비공개 영상이거나, 기관 방화벽이 vimeo 를 막았거나, 이 영상의
@@ -240,6 +250,90 @@
         /* 'Vimeo에서 보기' 는 마크업에 늘 들어 있다. 재생 중에만 감춰
            두었던 것이므로 is-playing 을 뗀 것으로 다시 보인다. */
       }, 4500);
-    });
+  }
+
+  Array.prototype.forEach.call(cards, function (btn) {
+    btn.addEventListener("click", function () { open(btn, false); });
   });
+
+  /* ── 저절로 도는 자리 ──────────────────────────────────────
+     첫 화면 아래의 Artwork 셋은 눌러 주기를 기다리지 않는다. 화면에
+     들어오면 소리 없이 돌기 시작한다.
+
+     그래도 셋을 한꺼번에 붙이지는 않는다. 남의 집 재생기 셋이 동시에
+     도는 것은 손전화에서 감당이 안 되고, 무엇보다 첫 화면이 늦어진다.
+     보이는 것만 붙이고, 화면을 벗어나면 떼어 낸다. 다시 들어오면 다시
+     붙는다 — 처음부터 다시 도는 셈인데, 5초짜리 반복이라 티가 안 난다.
+
+     움직임을 줄여 달라고 한 분에게는 붙이지 않는다. 그 화면에서는
+     지금까지처럼 썸네일 위의 재생 단추를 눌러 보시면 된다. */
+  var slow = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
+  var auto = document.querySelectorAll("[data-films-auto] [data-film]");
+  if (auto.length && window.IntersectionObserver && !(slow && slow.matches)) {
+    var io2 = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        var btn = e.target, box = btn.parentNode;
+        if (e.isIntersecting) { open(btn, true); return; }
+        /* 나갔으면 떼어 낸다. 기다리던 시계도 같이 끈다. */
+        var f2 = box && box.querySelector("iframe");
+        if (!f2) return;
+        for (var i = mounted.length - 1; i >= 0; i--) {
+          if (mounted[i].frame !== f2) continue;
+          clearTimeout(mounted[i].timer);
+          mounted.splice(i, 1);
+        }
+        f2.parentNode.removeChild(f2);
+        box.classList.remove("is-playing");
+        btn.removeAttribute("tabindex");
+        btn.removeAttribute("aria-hidden");
+      });
+    }, { rootMargin: "10% 0px" });
+    Array.prototype.forEach.call(auto, function (b) { io2.observe(b); });
+  }
+})();
+
+/*
+ * 실적 흐름.
+ *
+ * 사진 아홉 장을 두 벌 이어 붙여 왼쪽으로 흘린다. 그 자체는 CSS 가 다
+ * 한다. 여기서 하는 일은 하나뿐이다 — 언제 시작할지.
+ *
+ * lazy 로 걸어 둔 사진은 화면 가까이 와야 받아진다. 그런데 이 줄은
+ * 스크롤이 아니라 transform 으로 지나간다. 브라우저는 스크롤할 때
+ * 다시 재지, 애니메이션이 도는 동안 다시 재지 않는다. 그래서 열여덟
+ * 장 중 여섯 장만 받아지고 나머지는 빈 칸으로 지나갔다. 실측했다.
+ *
+ * 줄이 화면 가까이 오면 그때 전부 eager 로 바꿔 받고, 다 받은 뒤에
+ * 흐르기 시작한다. 첫 화면에서는 아무것도 안 받는다.
+ */
+(function () {
+  "use strict";
+
+  var flow = document.querySelector(".ref-flow");
+  if (!flow) return;
+  var imgs = flow.querySelectorAll("img");
+  if (!imgs.length) return;
+
+  function start() {
+    Array.prototype.forEach.call(imgs, function (im) { im.loading = "eager"; });
+    /* 다 받을 때까지 기다린다. 받으면서 흐르면 빈 칸이 지나간다.
+       한 장이라도 끝내 안 오면(느린 망) 2초 뒤 그냥 시작한다. */
+    var left = imgs.length;
+    var went = false;
+    function go() { if (went) return; went = true; flow.classList.add("is-live"); }
+    Array.prototype.forEach.call(imgs, function (im) {
+      if (im.complete && im.naturalWidth) { if (--left <= 0) go(); return; }
+      im.addEventListener("load", function () { if (--left <= 0) go(); });
+      im.addEventListener("error", function () { if (--left <= 0) go(); });
+    });
+    setTimeout(go, 2000);
+  }
+
+  if (!window.IntersectionObserver) { start(); return; }
+  var io = new IntersectionObserver(function (es) {
+    if (!es.some(function (e) { return e.isIntersecting; })) return;
+    io.disconnect();
+    start();
+  }, { rootMargin: "40% 0px" });
+  io.observe(flow);
 })();

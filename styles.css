@@ -2225,14 +2225,22 @@ h1 {
   font-size: 16px;
 }
 
+/* 두 칸으로 벌려 두었더니 왼쪽에 제목 세 줄만 남고 나머지가 통째로
+   비었다. 넓은 화면일수록 제목과 입력칸 사이가 멀어져 한 덩어리로
+   안 읽혔다. 가운데로 모으고 제목을 폼 바로 위에 둔다. */
 .inquiry-section {
   --flower-rotate: -28deg;
   display: grid;
-  grid-template-columns: minmax(0, 0.68fr) minmax(420px, 0.8fr);
-  gap: clamp(34px, 7vw, 100px);
-  align-items: start;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  gap: clamp(20px, 2.6vw, 32px);
   background: var(--surface);
 }
+.inquiry-section > div {
+  width: min(100%, 720px);
+  text-align: center;
+}
+.inquiry-section .contact-form { width: min(100%, 720px); }
 
 .contact-form {
   display: grid;
@@ -4840,6 +4848,128 @@ main .home-hero .primary-link {
 }
 @media (max-width: 620px) {
   .rental-proof { grid-template-columns: 1fr; }
+}
+
+
+/* ── 실적 흐름 (한 줄로 왼쪽으로) ────────────────────────────
+   아홉 장을 한 판에 늘어놓으면 눈이 어디를 볼지 몰라 한 장도 안 본다.
+   한 줄로 세워 흘린다. 같은 목록 두 벌을 이어 붙이고 한 벌만큼(-50%)
+   밀면 되돌아오는 자리가 안 보인다. 벌 수가 둘이라 -50% 다.
+
+   overflow 를 hidden 으로 두면 위쪽 sticky 가 죽는다(한 번 그랬다).
+   clip 을 쓴다. */
+.ref-flow {
+  margin-top: clamp(26px, 3vw, 40px);
+  overflow-x: clip;
+  /* 양 끝을 흐리게 지운다. 잘린 사진이 그냥 끊기면 고장으로 보인다. */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+          mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+}
+
+.mq-track {
+  display: flex;
+  gap: clamp(14px, 1.6vw, 24px);
+  width: max-content;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  animation: mq-drift 68s linear infinite;
+  /* 사진을 다 받은 뒤에 흐른다(hero-video.js 가 is-live 를 건다).
+     받으면서 흐르면 빈 칸이 지나간다. */
+  animation-play-state: paused;
+}
+.ref-flow.is-live .mq-track { animation-play-state: running; }
+.ref-flow.is-live:hover .mq-track,
+.ref-flow.is-live:focus-within .mq-track { animation-play-state: paused; }
+
+@keyframes mq-drift {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+.mq-item { flex: 0 0 auto; }
+.mq-item figure {
+  position: relative;
+  margin: 0;
+  width: clamp(300px, 34vw, 560px);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.5);
+}
+.mq-item img {
+  display: block;
+  width: 100%;
+  /* HTML 의 height 속성이 남아 있으면 브라우저가 그 값을 쓰고
+     aspect-ratio 를 무시한다. auto 로 풀어야 비율이 높이를 정한다. */
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+.mq-item figcaption {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: grid;
+  gap: 2px;
+  padding: 30px 16px 14px;
+  background: linear-gradient(to top, rgba(4, 6, 11, 0.9), rgba(4, 6, 11, 0));
+}
+.mq-item figcaption b {
+  font-size: clamp(14px, 1.35vw, 17px);
+  font-weight: 850;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+.mq-item figcaption span {
+  font-size: clamp(12px, 1.1vw, 13.5px);
+  color: rgba(255, 255, 255, 0.76);
+}
+
+/* 움직임을 줄여 둔 분에게는 안 흐른다. 대신 손으로 밀 수 있게 연다.
+   두 벌이 그대로 있으면 같은 사진이 두 번 나오므로 뒤 벌을 감춘다. */
+@media (prefers-reduced-motion: reduce) {
+  .ref-flow { overflow-x: auto; scrollbar-width: thin; }
+  .mq-track { animation: none; }
+  .mq-item[aria-hidden="true"] { display: none; }
+}
+
+/* ── Artwork 를 앞으로, 크게 ─────────────────────────────────
+   작업 사진 아홉 장보다 움직이는 화면 셋이 먼저다. 사진으로는
+   미디어아트가 무엇인지 전해지지 않는다. */
+.ref-films.is-lead { margin-top: 0; }
+.ref-films.is-lead .ref-films-head {
+  margin-bottom: clamp(14px, 1.6vw, 20px);
+  font-size: clamp(26px, 3.4vw, 44px);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+.ref-films.is-lead .film-grid { gap: clamp(12px, 1.4vw, 20px); }
+.ref-films.is-lead .film { border-radius: 16px; }
+.ref-films.is-lead .film-name { font-size: clamp(15px, 1.4vw, 18px); }
+
+/* 저절로 도는 카드에서는 재생 단추가 필요 없다. 화면이 붙기 전까지만
+   동그라미를 보여 주고, 붙으면 글자만 남긴다. */
+.ref-films.is-lead .film.is-playing .film-ico { display: none; }
+.ref-films.is-lead .film.is-playing .film-card {
+  background: linear-gradient(to top, rgba(4, 6, 11, 0.72) 0%, rgba(4, 6, 11, 0) 46%);
+  pointer-events: none;
+}
+
+/* 넓은 화면에서는 한 편을 크게 세우고 나머지 둘을 옆에 쌓는다.
+   셋을 나란히 두면 저마다 작아져 "크게 보이게"가 안 된다. */
+@media (min-width: 901px) {
+  .ref-films.is-lead .film-grid {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    grid-auto-rows: 1fr;
+  }
+  .ref-films.is-lead .film:first-child { grid-row: span 2; aspect-ratio: 16 / 9; }
+  .ref-films.is-lead .film:not(:first-child) { aspect-ratio: auto; }
+}
+
+@media (max-width: 900px) {
+  .ref-films.is-lead .film-grid { grid-template-columns: 1fr; }
+  .mq-item figure { width: min(78vw, 420px); }
+  .mq-track { animation-duration: 46s; }
 }
 
 /* ── 작업 영상 카드 ──────────────────────────────────────────
