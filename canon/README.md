@@ -29,6 +29,8 @@
 |---|---|
 | `pages[].title` `.description` | 각 HTML의 `<title>`, `<meta name="description">`, og:title, og:description |
 | `pages[]` 전체 | `sitemap.xml`, `llms.txt`의 주요 페이지 목록 |
+| `i18n` | `/en` `/ja` `/fr` `/de` 정적 페이지 (`i18n/locales` → `node i18n/build.mjs`) |
+| `aeo.homeFaq` | 홈 하단 FAQ · FAQPage 스키마 |
 | `identity` | 전 페이지 푸터, index.html의 Organization 스키마, `llms.txt` |
 | `business.scopes` | index.html 사업영역 카드, 각 사업영역 페이지, Service 스키마, `llms.txt` |
 | `business.method` | `/media-facade-content` 페이지, `llms.txt` |

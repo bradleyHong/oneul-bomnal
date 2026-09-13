@@ -2,12 +2,19 @@
 <!-- canon/canon.json에서 생성한다. node tools/build-meta.mjs
      vercel.json의 cleanUrls:true 때문에 .html 주소는 308 리다이렉트를 탄다.
      색인 대상은 확장자 없는 정규 주소로만 제출한다. -->
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://publicbloom.art/</loc>
     <lastmod>2026-09-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://publicbloom.art/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://publicbloom.art/en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://publicbloom.art/ja" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://publicbloom.art/fr" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://publicbloom.art/de" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://publicbloom.art/" />
   </url>
   <url>
     <loc>https://publicbloom.art/media-facade</loc>
@@ -26,6 +33,12 @@
     <lastmod>2026-09-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://publicbloom.art/media-facade-content" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://publicbloom.art/en/offer" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://publicbloom.art/ja/offer" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://publicbloom.art/fr/offer" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://publicbloom.art/de/offer" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://publicbloom.art/media-facade-content" />
   </url>
   <url>
     <loc>https://publicbloom.art/showcase</loc>
@@ -56,6 +69,12 @@
     <lastmod>2026-09-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://publicbloom.art/quote" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://publicbloom.art/en/quote" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://publicbloom.art/ja/quote" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://publicbloom.art/fr/quote" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://publicbloom.art/de/quote" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://publicbloom.art/quote" />
   </url>
   <url>
     <loc>https://publicbloom.art/data-media-art</loc>
@@ -86,6 +105,12 @@
     <lastmod>2026-09-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://publicbloom.art/studio" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://publicbloom.art/en/studio" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://publicbloom.art/ja/studio" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://publicbloom.art/fr/studio" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://publicbloom.art/de/studio" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://publicbloom.art/studio" />
   </url>
   <url>
     <loc>https://publicbloom.art/%EA%B3%B5%EA%B8%B0%EC%A7%88%EC%9D%84%20%ED%86%B5%ED%95%9C%20%EC%9D%B8%ED%84%B0%EB%A0%89%EC%85%98</loc>
@@ -104,5 +129,197 @@
     <lastmod>2026-09-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://publicbloom.art/en</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://publicbloom.art/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://publicbloom.art/en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://publicbloom.art/ja" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://publicbloom.art/fr" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://publicbloom.art/de" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://publicbloom.art/" />
+  </url>
+  <url>
+    <loc>https://publicbloom.art/en/offer</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://publicbloom.art/media-facade-content" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://publicbloom.art/en/offer" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://publicbloom.art/ja/offer" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://publicbloom.art/fr/offer" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://publicbloom.art/de/offer" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://publicbloom.art/media-facade-content" />
+  </url>
+  <url>
+    <loc>https://publicbloom.art/en/studio</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://publicbloom.art/studio" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://publicbloom.art/en/studio" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://publicbloom.art/ja/studio" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://publicbloom.art/fr/studio" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://publicbloom.art/de/studio" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://publicbloom.art/studio" />
+  </url>
+  <url>
+    <loc>https://publicbloom.art/en/quote</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://publicbloom.art/quote" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://publicbloom.art/en/quote" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://publicbloom.art/ja/quote" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://publicbloom.art/fr/quote" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://publicbloom.art/de/quote" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://publicbloom.art/quote" />
+  </url>
+  <url>
+    <loc>https://publicbloom.art/ja</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://publicbloom.art/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://publicbloom.art/en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://publicbloom.art/ja" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://publicbloom.art/fr" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://publicbloom.art/de" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://publicbloom.art/" />
+  </url>
+  <url>
+    <loc>https://publicbloom.art/ja/offer</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://publicbloom.art/media-facade-content" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://publicbloom.art/en/offer" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://publicbloom.art/ja/offer" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://publicbloom.art/fr/offer" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://publicbloom.art/de/offer" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://publicbloom.art/media-facade-content" />
+  </url>
+  <url>
+    <loc>https://publicbloom.art/ja/studio</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://publicbloom.art/studio" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://publicbloom.art/en/studio" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://publicbloom.art/ja/studio" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://publicbloom.art/fr/studio" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://publicbloom.art/de/studio" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://publicbloom.art/studio" />
+  </url>
+  <url>
+    <loc>https://publicbloom.art/ja/quote</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://publicbloom.art/quote" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://publicbloom.art/en/quote" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://publicbloom.art/ja/quote" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://publicbloom.art/fr/quote" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://publicbloom.art/de/quote" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://publicbloom.art/quote" />
+  </url>
+  <url>
+    <loc>https://publicbloom.art/fr</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://publicbloom.art/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://publicbloom.art/en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://publicbloom.art/ja" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://publicbloom.art/fr" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://publicbloom.art/de" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://publicbloom.art/" />
+  </url>
+  <url>
+    <loc>https://publicbloom.art/fr/offer</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://publicbloom.art/media-facade-content" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://publicbloom.art/en/offer" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://publicbloom.art/ja/offer" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://publicbloom.art/fr/offer" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://publicbloom.art/de/offer" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://publicbloom.art/media-facade-content" />
+  </url>
+  <url>
+    <loc>https://publicbloom.art/fr/studio</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://publicbloom.art/studio" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://publicbloom.art/en/studio" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://publicbloom.art/ja/studio" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://publicbloom.art/fr/studio" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://publicbloom.art/de/studio" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://publicbloom.art/studio" />
+  </url>
+  <url>
+    <loc>https://publicbloom.art/fr/quote</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://publicbloom.art/quote" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://publicbloom.art/en/quote" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://publicbloom.art/ja/quote" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://publicbloom.art/fr/quote" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://publicbloom.art/de/quote" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://publicbloom.art/quote" />
+  </url>
+  <url>
+    <loc>https://publicbloom.art/de</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://publicbloom.art/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://publicbloom.art/en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://publicbloom.art/ja" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://publicbloom.art/fr" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://publicbloom.art/de" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://publicbloom.art/" />
+  </url>
+  <url>
+    <loc>https://publicbloom.art/de/offer</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://publicbloom.art/media-facade-content" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://publicbloom.art/en/offer" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://publicbloom.art/ja/offer" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://publicbloom.art/fr/offer" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://publicbloom.art/de/offer" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://publicbloom.art/media-facade-content" />
+  </url>
+  <url>
+    <loc>https://publicbloom.art/de/studio</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://publicbloom.art/studio" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://publicbloom.art/en/studio" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://publicbloom.art/ja/studio" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://publicbloom.art/fr/studio" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://publicbloom.art/de/studio" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://publicbloom.art/studio" />
+  </url>
+  <url>
+    <loc>https://publicbloom.art/de/quote</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://publicbloom.art/quote" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://publicbloom.art/en/quote" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://publicbloom.art/ja/quote" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://publicbloom.art/fr/quote" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://publicbloom.art/de/quote" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://publicbloom.art/quote" />
   </url>
 </urlset>

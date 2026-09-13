@@ -12,6 +12,8 @@
 
 ```bash
 node tools/check-canon.mjs    # 캐논과 실제 파일이 어긋나는지 검사 (커밋 전 필수)
+node i18n/build.mjs           # EN/JA/FR/DE 마케팅 페이지 다시 생성
+node tools/build-meta.mjs     # sitemap · llms.txt · robots · rss
 node tools/check-studio.mjs   # 스튜디오 스타일·색 목록이 엔진과 맞는지 검사
 node tools/build-works.mjs    # 작품 원본 → 고객 공개본 다시 생성
 node tools/build-deck.js         # 캐논 → 영업용 회사소개서 14장

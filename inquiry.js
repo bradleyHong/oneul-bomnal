@@ -40,6 +40,7 @@
       service: data.getAll("service"),
       budget: data.get("budget") || "",
       message: data.get("message") || "",
+      language: data.get("language") || document.documentElement.lang || "ko",
       _honey: data.get("_honey") || "",
       page: location.pathname + location.hash,
     };
@@ -54,11 +55,13 @@
       `이메일: ${payload.email}`,
       `관심 항목: ${payload.service.join(", ") || "선택 없음"}`,
       `희망 대수: ${payload.budget || "미선택"}`,
+      `언어: ${payload.language || "ko"}`,
       "",
       "문의 내용:",
       payload.message || "",
     ].join("\n");
-    const subject = encodeURIComponent("[오늘은 봄날] 공공 프로젝트 문의");
+    const subjectField = form.querySelector('[name="_subject"]');
+    const subject = encodeURIComponent(subjectField?.value || "[오늘은 봄날] 공공 프로젝트 문의");
     window.location.href = `mailto:studio@publicbloom.art?subject=${subject}&body=${encodeURIComponent(body)}`;
   };
 
@@ -72,7 +75,7 @@
 
     if (button) {
       button.disabled = true;
-      button.textContent = "보내는 중…";
+      button.textContent = form.dataset.sending || "보내는 중…";
     }
 
     const payload = collect();
@@ -146,7 +149,8 @@
     }
     show(
       errorBox,
-      "전송이 원활하지 않습니다. 메일 앱을 열어 내용을 담아드릴게요. 열리지 않으면 010-4292-1999로 연락 주세요."
+      form.dataset.error ||
+        "전송이 원활하지 않습니다. 메일 앱을 열어 내용을 담아드릴게요. 열리지 않으면 010-4292-1999로 연락 주세요."
     );
     openMailApp(payload);
   });

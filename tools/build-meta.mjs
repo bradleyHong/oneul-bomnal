@@ -127,6 +127,14 @@ ${refs}
 ${pages}
 - [작품·작업 레퍼런스](${BASE}/#works)
 
+## Other languages / 다국어
+
+오늘은 봄날 (Oneul-eun Bomnal) is a women-owned media-art studio in Daegu, Korea. The public site is publicbloom.art. We make media art with code, install LED displays, and build projector media facades. Overseas buyers may inquire in English, Japanese, French, or German at studio@publicbloom.art.
+
+${C.i18n ? C.i18n.languages.filter((l) => l.code !== "ko").map((l) =>
+  C.i18n.pages.map((p) => `- ${l.label}: ${BASE}${l.prefix}${p.slug ? `/${p.slug}` : ""}`).join("\n")
+).join("\n") : ""}
+
 ## 대표 키워드
 
 ${kw}
@@ -173,21 +181,46 @@ ${items.join("\n")}
 `);
 
 /* ── sitemap.xml ──────────────────────────────────────────── */
+const hrefFor = (lang, page) =>
+  BASE + (lang.code === "ko" ? page.koPath === "/" ? "/" : page.koPath : lang.prefix + (page.slug ? `/${page.slug}` : ""));
+const hreflangXml = (page) =>
+  C.i18n
+    ? C.i18n.languages
+        .map((l) => `    <xhtml:link rel="alternate" hreflang="${l.hreflang}" href="${hrefFor(l, page)}" />`)
+        .concat(`    <xhtml:link rel="alternate" hreflang="x-default" href="${hrefFor(C.i18n.languages[0], page)}" />`)
+        .join("\n")
+    : "";
+
 const rows = [
-  ...C.pages.map((p) => [BASE + (p.path === "/" ? "/" : p.path), p.sitemap]),
-  ...C.artworkPages.map((a) => [BASE + "/" + encodeURI(a.path.replace(/^\//, "")), a.sitemap]),
+  ...C.pages.map((p) => {
+    const i18nPage = C.i18n?.pages.find((x) => x.koPath === p.path || (p.path === "/" && x.id === "home"));
+    return [BASE + (p.path === "/" ? "/" : p.path), p.sitemap, i18nPage];
+  }),
+  ...C.artworkPages.map((a) => [BASE + "/" + encodeURI(a.path.replace(/^\//, "")), a.sitemap, null]),
 ];
+if (C.i18n) {
+  for (const lang of C.i18n.languages.filter((l) => l.code !== "ko")) {
+    for (const page of C.i18n.pages) {
+      rows.push([
+        BASE + lang.prefix + (page.slug ? `/${page.slug}` : ""),
+        { changefreq: "monthly", priority: page.id === "home" ? "0.8" : "0.7" },
+        page,
+      ]);
+    }
+  }
+}
 w("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>
 <!-- canon/canon.json에서 생성한다. node tools/build-meta.mjs
      vercel.json의 cleanUrls:true 때문에 .html 주소는 308 리다이렉트를 탄다.
      색인 대상은 확장자 없는 정규 주소로만 제출한다. -->
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${rows.map(([loc, sm]) => `  <url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${rows.map(([loc, sm, page]) => `  <url>
     <loc>${loc}</loc>
     <lastmod>${TODAY}</lastmod>
     <changefreq>${sm.changefreq}</changefreq>
     <priority>${sm.priority}</priority>
-  </url>`).join("\n")}
+${page ? hreflangXml(page) + "\n" : ""}  </url>`).join("\n")}
 </urlset>
 `);
 

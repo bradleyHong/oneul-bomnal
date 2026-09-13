@@ -16,6 +16,48 @@
       "naver": "065ca67de7d3753f1b02bdd17a7036c69ac372f7"
     }
   },
+  "i18n": {
+    "_comment": "해외 고객용 정적 페이지. 한국어 사이트가 정본이고, EN/JA/FR/DE는 i18n/locales에서 생성한다. node i18n/build.mjs",
+    "defaultLanguage": "ko",
+    "languages": [
+      { "code": "ko", "hreflang": "ko", "ogLocale": "ko_KR", "prefix": "", "label": "한국어", "dir": "ltr" },
+      { "code": "en", "hreflang": "en", "ogLocale": "en_US", "prefix": "/en", "label": "English", "dir": "ltr" },
+      { "code": "ja", "hreflang": "ja", "ogLocale": "ja_JP", "prefix": "/ja", "label": "日本語", "dir": "ltr" },
+      { "code": "fr", "hreflang": "fr", "ogLocale": "fr_FR", "prefix": "/fr", "label": "Français", "dir": "ltr" },
+      { "code": "de", "hreflang": "de", "ogLocale": "de_DE", "prefix": "/de", "label": "Deutsch", "dir": "ltr" }
+    ],
+    "pages": [
+      { "id": "home", "slug": "", "koPath": "/", "koFile": "index.html" },
+      { "id": "offer", "slug": "offer", "koPath": "/media-facade-content", "koFile": "media-facade-content.html" },
+      { "id": "studio", "slug": "studio", "koPath": "/studio", "koFile": "studio.html" },
+      { "id": "quote", "slug": "quote", "koPath": "/quote", "koFile": "quote.html" }
+    ]
+  },
+  "aeo": {
+    "_comment": "AI 답변 인용용 자기완결형 FAQ. 홈에만 두고, 사업영역 페이지 FAQ와 겹치지 않게 정체성·해외문의 중심으로 쓴다.",
+    "homeFaq": [
+      {
+        "q": "미디어파사드란 무엇인가요?",
+        "a": "미디어파사드는 건물 외벽이나 전시장 벽면을 LED 또는 빔프로젝터로 하나의 큰 화면으로 쓰는 방식입니다. 오늘은 봄날은 대구 여성기업으로, 화면에 올릴 미디어아트 콘텐츠와 LED 패널·배선·설치 또는 프로젝션 매핑을 한 계약으로 진행합니다. 콘텐츠 업체와 시공 업체를 나눠 부르지 않아도 됩니다. 공개 사이트는 publicbloom.art 입니다."
+      },
+      {
+        "q": "콘텐츠만 따로 주문할 수 있나요?",
+        "a": "가능합니다. 생성형·코드 기반 미디어아트를 현장 화면 비율과 해상도에 맞춰 다시 출력합니다. 이미 LED 패널이 있으면 HDMI로 미디어박스만 연결해 콘텐츠를 올립니다. 로그인 없이 봄날 스튜디오에서 시연을 본 뒤 확정하면, 평일 24시간 이내에 그 규격 파일로 드립니다."
+      },
+      {
+        "q": "공공기관 발주에 필요한 자격이 있나요?",
+        "a": "여성기업 확인서와 직접생산확인증명서(동영상제작서비스)를 보유해 나라장터·수의계약과 공공기관 우선구매에 대응합니다. 미디어아트 영상 약 40편을 공공기관·문화시설에 납품했습니다. 실적증명서는 문의 시 계약 건별로 보내드립니다."
+      },
+      {
+        "q": "미디어아트 AX는 어떻게 사나요?",
+        "a": "로그인 없이 봄날 스튜디오에서 화면을 고르면 시연본을 바로 봅니다. 확정하면 그 사이니지 규격으로 평일 24시간 이내에 파일을 드립니다. 개인·기업·기관 패키지가 있습니다. 기관 프로젝트는 기관명과 사업영역만 남겨 주시면 연락드립니다."
+      },
+      {
+        "q": "어디서 작업하나요?",
+        "a": "오늘은 봄날은 대구광역시 수성구에 있습니다. 대구·부산·경북 공공·문화 현장을 중심으로 작업했고, 경남·울산까지 시공합니다. 그 외 지역과 해외는 콘텐츠 원격 납품을 우선하고, 설치는 건별로 협의합니다. 영어·일본어·프랑스어·독일어 문의는 studio@publicbloom.art 로 받습니다."
+      }
+    ]
+  },
   "identity": {
     "legalName": "오늘은 봄날",
     "representative": "박성실",
@@ -405,7 +447,7 @@
       "path": "/",
       "file": "index.html",
       "title": "대구 미디어파사드 · LED 전광판 설치 여성기업 | 오늘은 봄날",
-      "description": "오늘은 봄날은 미디어아트 제작 공정을 AI로 옮긴 미디어아트 AX 기업이자 대구 여성기업입니다. 미디어파사드 콘텐츠 제작, LED 패널·LED 전광판 설치, 빔프로젝터 미디어파사드를 한 계약으로 진행합니다. 시안 3종 1주일 이내, 공공기관 우선구매 대상. 대구·경북·부산 전역 시공.",
+      "description": "오늘은 봄날은 미디어아트 제작 공정을 AI로 옮긴 미디어아트 AX 기업이자 대구 여성기업입니다. 미디어파사드 콘텐츠 제작, LED 패널·LED 전광판 설치, 빔프로젝터 미디어파사드를 한 계약으로 진행합니다. 시안 3종 1주일 이내, 공공기관 우선구매 대상. 견적문의 · 봄날 스튜디오 시연. 대구·경북·부산 전역 시공.",
       "h1": "오늘은 봄날",
       "primaryKeywords": [
         "대구 미디어파사드",
