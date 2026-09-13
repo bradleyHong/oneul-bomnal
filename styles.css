@@ -4937,27 +4937,28 @@ main .home-hero .primary-link {
    작업 사진 아홉 장보다 움직이는 화면 셋이 먼저다. 사진으로는
    미디어아트가 무엇인지 전해지지 않는다. */
 .ref-films.is-lead { margin-top: 0; }
-.works-head { margin: 0 0 clamp(18px, 2.2vw, 26px); }
-.works-head .section-kicker { margin-bottom: 10px; }
+.works-head { margin: 0 0 clamp(14px, 1.8vw, 20px); }
+.works-head .section-kicker { margin-bottom: 8px; }
 .works-section .works-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15em 0.55em;
   max-width: none;
-  font-size: clamp(22px, 2.8vw, 34px);
+  font-size: clamp(20px, 2.5vw, 30px);
   font-weight: 800;
   letter-spacing: -0.03em;
-  line-height: 1.1;
+  line-height: 1.2;
 }
-.works-section .works-line {
-  margin-top: 8px;
-  font-size: clamp(16px, 1.7vw, 20px);
+.works-title [lang="en"] {
   font-weight: 600;
+  font-size: 0.78em;
   letter-spacing: -0.02em;
   color: var(--muted);
 }
-.works-section .works-sub {
-  margin-top: 4px;
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--deep);
+.works-sep {
+  font-weight: 500;
+  color: var(--faint);
 }
 .works-section .works-note {
   margin: clamp(14px, 1.8vw, 20px) 0 0;
@@ -5149,7 +5150,7 @@ main .home-hero .primary-link {
   opacity: 0;
   /* 남의 집 재생기는 object-fit 이 안 먹는다. 16:9 칸보다 키워
      가운데를 보여, 흰·회색 레터박스가 칸 밖으로 나가게 한다. */
-  transform: translate(-50%, -50%) scale(1.28);
+  transform: translate(-50%, -50%) scale(1.4);
   /* 투명해도 iframe 은 누름을 받아 간다. 켜지기 전에는 비켜서 있어야
      아래의 단추가 계속 눌린다. */
   pointer-events: none;

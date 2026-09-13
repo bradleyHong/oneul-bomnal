@@ -27,8 +27,8 @@
     <!-- 회사 글꼴. 못 받아도 시스템 글꼴로 그대로 읽힌다(font-display: swap). -->
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" />
-    <link rel="stylesheet" href="./styles.css?v=20260913-visual2" />
-    <link rel="stylesheet" href="./home.css?v=20260913-visual2" />
+    <link rel="stylesheet" href="./styles.css?v=20260913-visual3" />
+    <link rel="stylesheet" href="./home.css?v=20260913-visual3" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="./assets/favicon-180.png" />
     <script type="application/ld+json">
@@ -624,14 +624,15 @@
       </section>
 
       <section class="section works-section" id="works">
-        <!-- Artwork 가 먼저다. 영문 한 줄은 그 화면들의 캡션이고,
-             긴 한글 제목은 두지 않는다. -->
+        <!-- 제목은 한글+영문 한 줄. 그 바로 아래가 영상 세 편이다. -->
         <div class="ref-films is-lead" data-films-auto>
           <header class="works-head">
             <p class="section-kicker">Selected Works</p>
-            <h2 class="works-title">Artwork</h2>
-            <p class="works-line">On screen in Daegu, Busan &amp; Gyeongbuk</p>
-            <p class="works-sub">Installed and screened at public &amp; cultural sites.</p>
+            <h2 class="works-title">
+              <span lang="ko">대구 · 부산 · 경북</span>
+              <span class="works-sep" aria-hidden="true">·</span>
+              <span lang="en">On screen in Daegu, Busan &amp; Gyeongbuk</span>
+            </h2>
           </header>
           <ul class="film-grid">
             <li class="film">
