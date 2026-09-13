@@ -4937,13 +4937,36 @@ main .home-hero .primary-link {
    작업 사진 아홉 장보다 움직이는 화면 셋이 먼저다. 사진으로는
    미디어아트가 무엇인지 전해지지 않는다. */
 .ref-films.is-lead { margin-top: 0; }
-.ref-films.is-lead .ref-films-head {
-  margin-bottom: clamp(14px, 1.6vw, 20px);
-  font-size: clamp(26px, 3.4vw, 44px);
-  font-weight: 900;
+.works-head { margin: 0 0 clamp(14px, 1.8vw, 20px); }
+.works-head .section-kicker { margin-bottom: 8px; }
+.works-section .works-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15em 0.55em;
+  max-width: none;
+  font-size: clamp(20px, 2.5vw, 30px);
+  font-weight: 800;
   letter-spacing: -0.03em;
+  line-height: 1.2;
 }
-.ref-films.is-lead .film-grid { gap: clamp(12px, 1.4vw, 20px); }
+.works-title [lang="en"] {
+  font-weight: 600;
+  font-size: 0.78em;
+  letter-spacing: -0.02em;
+  color: var(--muted);
+}
+.works-sep {
+  font-weight: 500;
+  color: var(--faint);
+}
+.works-section .works-note {
+  margin: clamp(14px, 1.8vw, 20px) 0 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--deep);
+}
+.ref-films.is-lead .film-grid { gap: clamp(10px, 1.2vw, 16px); }
 .ref-films.is-lead .film { border-radius: 16px; }
 .ref-films.is-lead .film-name { font-size: clamp(15px, 1.4vw, 18px); }
 
@@ -4955,21 +4978,37 @@ main .home-hero .primary-link {
   pointer-events: none;
 }
 
-/* 넓은 화면에서는 한 편을 크게 세우고 나머지 둘을 옆에 쌓는다.
-   셋을 나란히 두면 저마다 작아져 "크게 보이게"가 안 된다. */
-@media (min-width: 901px) {
+/* 미디어아트 세 편은 한 가로 줄. 한 편만 키우면 옆 칸 비율이
+   깨져 Vimeo 가 흰 띠를 끼운다. */
+@media (min-width: 701px) {
   .ref-films.is-lead .film-grid {
-    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-    grid-auto-rows: 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-  .ref-films.is-lead .film:first-child { grid-row: span 2; aspect-ratio: 16 / 9; }
-  .ref-films.is-lead .film:not(:first-child) { aspect-ratio: auto; }
+  .ref-films.is-lead .film { aspect-ratio: 16 / 9; }
 }
 
 @media (max-width: 900px) {
-  .ref-films.is-lead .film-grid { grid-template-columns: 1fr; }
   .mq-item figure { width: min(78vw, 420px); }
   .mq-track { animation-duration: 46s; }
+}
+
+/* 좁아도 한 줄로 남긴다. 세로로 쌓이면 썸네일이 포스터가 된다. */
+@media (max-width: 700px) {
+  .works-section { overflow: visible; }
+  .ref-films.is-lead .film-grid {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .ref-films.is-lead .film {
+    flex: 0 0 min(72vw, 320px);
+    aspect-ratio: 16 / 9;
+    scroll-snap-align: start;
+  }
 }
 
 /* ── 작업 영상 카드 ──────────────────────────────────────────
@@ -5005,7 +5044,7 @@ main .home-hero .primary-link {
   aspect-ratio: 16 / 9;
   border-radius: 12px;
   overflow: hidden;
-  background: #0d1017;
+  background: #06080c;
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.54);
 }
 
@@ -5101,13 +5140,17 @@ main .home-hero .primary-link {
    조용히 준비한다. 끝내 안 열리면 카드는 원래 모습으로 남는다. */
 .film iframe {
   position: absolute;
-  inset: 0;
+  top: 50%;
+  left: 50%;
   display: block;
   width: 100%;
   height: 100%;
   border: 0;
-  background: #0d1017;
+  background: #06080c;
   opacity: 0;
+  /* 남의 집 재생기는 object-fit 이 안 먹는다. 16:9 칸보다 키워
+     가운데를 보여, 흰·회색 레터박스가 칸 밖으로 나가게 한다. */
+  transform: translate(-50%, -50%) scale(1.4);
   /* 투명해도 iframe 은 누름을 받아 간다. 켜지기 전에는 비켜서 있어야
      아래의 단추가 계속 눌린다. */
   pointer-events: none;
@@ -5144,39 +5187,71 @@ main .home-hero .primary-link {
 
 /* ── ③ 하는 일 ───────────────────────────────────────────── */
 
+.offer-section .offer-label {
+  max-width: none;
+  margin: 0 0 clamp(22px, 3vw, 36px);
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  color: var(--faint);
+}
+
 .offer-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: clamp(16px, 2vw, 26px);
+  gap: clamp(14px, 1.8vw, 22px);
 }
 .offer-card {
-  display: grid;
+  position: relative;
+  display: flex;
+  flex-direction: column;
   align-content: start;
-  gap: 10px;
-  padding: clamp(22px, 2.4vw, 30px);
+  gap: 12px;
+  min-height: 280px;
+  padding: clamp(22px, 2.4vw, 28px);
   border: 1px solid var(--edge);
-  border-radius: 14px;
-  background: var(--petal);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 42%),
+    var(--petal);
+  overflow: hidden;
+  transition: border-color 180ms ease;
+}
+.offer-card:hover,
+.offer-card:focus-within {
+  border-color: var(--edge-glow);
 }
 .offer-num {
-  font-size: 13px;
-  font-weight: 850;
-  letter-spacing: 0.14em;
-  color: var(--glow);
+  font-size: clamp(40px, 4.6vw, 56px);
+  font-weight: 900;
+  letter-spacing: -0.06em;
+  line-height: 0.9;
+  color: rgba(238, 242, 248, 0.08);
 }
 .offer-card h3 {
   margin: 0;
-  font-size: clamp(19px, 2.2vw, 24px);
-  letter-spacing: -0.02em;
+  font-size: clamp(18px, 2vw, 22px);
+  letter-spacing: -0.025em;
+}
+.offer-card h3 small {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--deep);
 }
 .offer-card > p {
   margin: 0;
   font-size: 15px;
-  line-height: 1.7;
+  line-height: 1.5;
   color: var(--muted);
 }
 .offer-card ul {
-  margin: 6px 0 0;
+  margin: 4px 0 0;
   padding: 0;
   list-style: none;
   display: grid;
@@ -5202,6 +5277,47 @@ main .home-hero .primary-link {
   background: var(--glow-soft);
 }
 .offer-card li a { color: var(--glow); font-weight: 750; }
+
+.offer-card .offer-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: start;
+  gap: 8px;
+  margin-top: 4px;
+  padding-top: 0;
+  border-top: 0;
+}
+.offer-card .offer-chips li {
+  width: auto;
+  padding: 6px 11px;
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 12.5px;
+  line-height: 1.3;
+  color: var(--ink);
+}
+.offer-card .offer-chips li::before { display: none; }
+
+.offer-go {
+  margin-top: auto;
+  padding-top: 8px;
+  color: var(--glow);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+}
+.offer-go::after { content: " →"; }
+.offer-go:hover,
+.offer-go:focus-visible { text-decoration: underline; }
+
+.offer-section .offer-foot {
+  margin: clamp(20px, 2.4vw, 28px) 0 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--deep);
+}
 
 /* ── ④ 실시간 데이터 ─────────────────────────────────────── */
 
@@ -6098,6 +6214,7 @@ main > .section > .section-head .section-kicker {
 .site-nav nav a:active,
 .contact-form button:active,
 .faq-more a:active,
+.studio-jump-btn:active,
 .footer-links a:active {
   transform: scale(0.97);
   transition: transform 100ms ease-out;
