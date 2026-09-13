@@ -38,23 +38,23 @@
   }
 
   /* ── 견적 ─────────────────────────────────────────── */
-  var BASE_PIXELSEC = 3840 * 2160 * 30;     // 4K 30초 = 1크레딧
-  var CREDIT_WON = 1000000;
+  var BASE_PIXELSEC = 3840 * 2160 * 30;     // 4K 30초
+  var BASE_WON = 1000000;                   // 4K 30초 기준 제작비
   /* 전용 플레이어 한 대. 라즈베리파이 5 · 16GB, 작품을 넣고 HDMI 만 꽂으면
      도는 상태로 보낸다. 값이 정해진 물건이라 배수를 안 탄다. */
   var PLAYER_WON = 1500000;
 
   function quote(panel, seconds, opts) {
-    var credits = (panel.w * panel.h * seconds) / BASE_PIXELSEC;
-    credits = Math.max(0.5, Math.round(credits * 10) / 10);
+    var scale = (panel.w * panel.h * seconds) / BASE_PIXELSEC;
+    scale = Math.max(0.5, Math.round(scale * 10) / 10);
     var mult = 1;
     if (opts.asset) mult *= 1.2;
     if (opts.custom) mult *= 1.6;
     if (opts.rush) mult *= 1.5;
-    var render = Math.round(credits * mult * CREDIT_WON / 10000) * 10000;
-    /* 물건은 배수가 아니라 값이 정해져 있다. 렌더 값과 따로 더한다. */
+    var render = Math.round(scale * mult * BASE_WON / 10000) * 10000;
+    /* 물건은 배수가 아니라 값이 정해져 있다. 제작비와 따로 더한다. */
     var player = opts.player ? PLAYER_WON : 0;
-    return { credits: credits, mult: Math.round(mult * 100) / 100, render: render,
+    return { scale: scale, mult: Math.round(mult * 100) / 100, render: render,
              player: player, won: render + player };
   }
 
@@ -112,7 +112,10 @@
       var pad = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
       var maxW = Math.max(80, (box.clientWidth || 720) - pad);
       var maxH = 420;
-      var sc = Math.min(maxW / p.w, maxH / p.h, 1);
+      /* 시안은 납품 해상도로 그리지 않는다. 화면 녹화를 막지는 못하지만
+         이렇게 작게 두면 녹화본이 납품본이 아님은 바로 보인다. */
+      var DEMO_MAX = 720;
+      var sc = Math.min(maxW / p.w, maxH / p.h, DEMO_MAX / Math.max(p.w, p.h, 1));
       elCanvas.width = Math.round(p.w * sc * 2) / 2;
       elCanvas.height = Math.round(p.h * sc * 2) / 2;
       elCanvas.style.width = Math.round(p.w * sc) + "px";
@@ -138,12 +141,12 @@
       elQuote.innerHTML =
         '<div class="st-q-row"><span>화면 규격</span><b>' + p.w + " × " + p.h + '</b></div>' +
         '<div class="st-q-row"><span>재생 길이</span><b>' + sec + '초</b></div>' +
-        '<div class="st-q-row"><span>렌더 크레딧</span><b>' + q.credits + ' 크레딧</b></div>' +
+        '<div class="st-q-row"><span>콘텐츠 제작</span><b>' + comma(q.render) + '원</b></div>' +
         '<div class="st-q-row"><span>옵션 배수</span><b>×' + q.mult + '</b></div>' +
         (q.player ? '<div class="st-q-row"><span>전용 플레이어 1대</span><b>' + comma(q.player) + '원</b></div>' : '') +
         (LAST.o.api ? '<div class="st-q-row"><span>API 연결</span><b>담당자 협의</b></div>' : '') +
         '<div class="st-q-total"><span>예상 금액</span><b>' + comma(q.won) + '원</b></div>' +
-        '<p class="st-q-note">1크레딧 = 4K 30초 기준입니다. 렌더 원가가 화면 넓이와 길이에 비례하므로 금액도 같은 기준으로 계산합니다. 부가세 별도이며, 확정 견적은 담당자 확인 후 발행합니다.</p>';
+        '<p class="st-q-note">4K 30초 기준 100만원입니다. 화면이 넓거나 길면 제작비가 그에 비례합니다. 부가세 별도이며, 확정 견적은 담당자 확인 후 발행합니다.</p>';
     }
 
     var gen = new GEN.Gen(elCanvas);
@@ -238,8 +241,8 @@
         '<p class="st-code-num">' + code(idx, sd, v) + '</p>' +
         '<button type="button" class="st-copy" data-st-copy>번호 복사</button>' +
         '</div>' +
-        '<p class="st-code-note">이 번호가 이 화면의 설계도입니다. ' +
-        '결제하시면 <b>같은 번호로</b> 화면 규격에 맞춰 고화질로 렌더링해 드립니다.</p>' +
+        '<p class="st-code-note">지금 보시는 것은 워터마크가 찍힌 5초 시안입니다. ' +
+        '이 번호가 이 화면의 설계도입니다. 결제하시면 <b>같은 번호로</b> 화면 규격에 맞춰 고화질로 렌더링해 드립니다.</p>' +
         (idx === CUSTOM
           ? '<p class="st-code-sub">직접 적으신 문장으로 만든 번호입니다. 나중에 부르실 때는 문장도 함께 적어 주세요.</p>'
           : '<p class="st-code-sub">번호를 복사해 두시면 언제든 이 화면으로 돌아옵니다.</p>');
@@ -446,7 +449,7 @@
           (LAST.panel.wrap ? " (한 장으로 그려 모서리에서 " + LAST.panel.wrap + "쪽으로 자름 · 면마다 "
                              + Math.round(LAST.panel.w / LAST.panel.wrap) + "×" + LAST.panel.h + ")" : ""),
         "재생 길이: " + LAST.sec + "초",
-        "렌더 크레딧: " + LAST.q.credits + " 크레딧 (옵션 배수 ×" + LAST.q.mult + ") = " + comma(LAST.q.render) + "원",
+        "콘텐츠 제작: " + comma(LAST.q.render) + "원 (옵션 배수 ×" + LAST.q.mult + ")",
         "추가 요청: " + (picked.join(", ") || "없음"),
         "예상 금액: " + comma(LAST.q.won) + "원 (부가세 별도" + (LAST.o.api ? " · API 연결은 별도 협의" : "") + ")"
       ].join("\n");
@@ -778,6 +781,15 @@
 
     var elWallMore = $("[data-st-wall-more]", root);
     if (elWallMore) elWallMore.addEventListener("click", wallDraw);
+
+    /* 캔버스 우클릭 저장만 막는다. OS 화면 녹화까지 막을 수는 없다. */
+    root.addEventListener("contextmenu", function (e) {
+      var t = e.target;
+      if (!t) return;
+      if (t.tagName === "CANVAS" || (t.closest && t.closest(".st-stage, .st-wall-item, .st-hist-item, .mock"))) {
+        e.preventDefault();
+      }
+    });
 
     elStat.textContent =
       "고르신 화면은 누를 때마다 다시 그립니다. 같은 느낌이라도 매번 다르게 나옵니다.";

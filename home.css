@@ -201,6 +201,32 @@ body.home-2026 { background: var(--void); color: var(--ink); }
   background: #7ee2a8; flex: none;
   box-shadow: 0 0 0 3px rgba(126, 226, 168, 0.18);
 }
+.home2-now[data-live-state="cache"] .home2-dot,
+.home2-now[data-live-state="time"] .home2-dot {
+  background: #d4c07a;
+  box-shadow: 0 0 0 3px rgba(212, 192, 122, 0.2);
+}
+.home2-now[data-live-state="fail"] .home2-dot {
+  background: #c9897a;
+  box-shadow: 0 0 0 3px rgba(201, 137, 122, 0.2);
+}
+.live-retry {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  cursor: pointer;
+}
+.live-retry:hover { color: var(--h-white); }
+.live-retry:focus-visible {
+  outline: 2px solid var(--h-white);
+  outline-offset: 3px;
+}
 
 /* ── 작업 색인 ──────────────────────────────────────────── */
 .home2-index {

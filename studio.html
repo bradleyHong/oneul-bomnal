@@ -69,7 +69,7 @@
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" />
 <link rel="stylesheet" href="./styles.css?v=20260913-poster" />
-    <link rel="stylesheet" href="./studio.css?v=20260912-front" />
+    <link rel="stylesheet" href="./studio.css?v=20260913-wm" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
   </head>
   <body class="st-page">
@@ -97,7 +97,7 @@
       <section class="st-grid">
         <!-- 좌: 입력 -->
         <div class="st-panelbox">
-          <label class="st-label" for="stPanel">어느 화면에 트시나요</label>
+          <label class="st-label" for="stPanel">어느 화면에 쓰시나요</label>
           <p class="st-help">규격을 바꾸면 그 비율에 어울리는 화면으로 다시 보여 드립니다.</p>
           <select id="stPanel" data-st-panel></select>
           <div class="st-size">
@@ -125,7 +125,7 @@
           </div>
 
           <button type="button" class="st-go" data-st-go>고른 화면 다시 그리기</button>
-          <p class="st-stat" data-st-stat>라이브러리를 불러오는 중…</p>
+          <p class="st-stat" data-st-stat>규격을 고르시면 그 비율에 맞는 화면이 아래에 뜹니다.</p>
 
           <!-- 적는 일은 선택으로 내린다.
                맨 앞에 두면 "무엇을 원하는지 당신이 정하라"는 뜻이 되고,
@@ -173,6 +173,7 @@
             </button>
             <div class="st-stage">
               <canvas data-st-canvas width="720" height="405" aria-label="시연본 미리보기"></canvas>
+              <p class="st-demo-tag">시안 · 오늘은 봄날 · 워터마크가 찍힌 5초 시연본 · 납품본이 아닙니다</p>
             </div>
             <div class="st-chips" data-st-chips></div>
             <p class="st-cuts-title">이 화면의 작품 번호</p>
@@ -287,8 +288,8 @@
 
     <script src="./studio-meshes.js?v=20260905-mesh3" defer></script>
     <script src="./studio-engine.js?v=20260910-89" defer></script>
-    <script src="./studio-gen.js?v=20260910-89" defer></script>
+    <script src="./studio-gen.js?v=20260913-wm" defer></script>
 <script src="./mockup.js?v=20260912-front" defer></script>
-    <script src="./studio.js?v=20260905-v4" defer></script>
+    <script src="./studio.js?v=20260913-wm" defer></script>
   </body>
 </html>

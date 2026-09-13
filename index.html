@@ -23,12 +23,13 @@
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="alternate" type="application/rss+xml" title="오늘은 봄날 RSS" href="https://publicbloom.art/rss.xml" />
     <link rel="preconnect" href="https://api.open-meteo.com" />
+    <link rel="preconnect" href="https://air-quality-api.open-meteo.com" />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <!-- 회사 글꼴. 못 받아도 시스템 글꼴로 그대로 읽힌다(font-display: swap). -->
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" />
     <link rel="stylesheet" href="./styles.css?v=20260913-poster" />
-    <link rel="stylesheet" href="./home.css?v=20260912-type" />
+    <link rel="stylesheet" href="./home.css?v=20260913-live" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="./assets/favicon-180.png" />
     <script type="application/ld+json">
@@ -468,7 +469,7 @@
                       "@id": "https://publicbloom.art/#service-box-rental",
                       "name": "미디어아트 박스 대여",
                       "serviceType": "행사용 미디어아트 장비 대여",
-                      "description": "걸 화면이 없는 야외·야간 행사에 5,000안시 단초점 빔프로젝터와 스피커, 봄날 플레이어를 한 벌로 빌려 드립니다. 3m × 1.8m 상영, 3일부터 대여합니다. 전원만 꽂으면 자동으로 재생되고, 트실 영상이 없으면 기관의 이야기로 미디어아트를 만들어 넣어 드립니다.",
+                      "description": "걸 화면이 없는 야외·야간 행사에 5,000안시 단초점 빔프로젝터와 스피커, 봄날 플레이어를 한 벌로 빌려 드립니다. 3m × 1.8m 상영, 3일부터 대여합니다. 전원만 꽂으면 자동으로 재생되고, 쓰실 영상이 없으면 기관의 이야기로 미디어아트를 만들어 넣어 드립니다.",
                       "provider": {
                             "@id": "https://publicbloom.art/#organization"
                       },
@@ -610,7 +611,8 @@
 
         <p class="home2-now">
           <span class="home2-dot" aria-hidden="true"></span>
-          <span class="live-status" data-live-status>대구 실시간 정보를 불러오는 중</span>
+          <span class="live-status" data-live-status>대구</span>
+          <button type="button" class="live-retry" data-live-retry hidden>다시 불러오기</button>
         </p>
       </section>
 
@@ -844,7 +846,7 @@
             <ul>
               <li>로그인 없이 5초 시연본 바로 확인</li>
               <li>확정 후 평일 24시간 이내 납품 (휴일·공휴일 제외)</li>
-              <li>개인 10만원부터 · 기관 패키지 390 · 900만원</li>
+              <li>개인 10만원부터 · 기관 패키지 390만원 · 900만원</li>
               <li>나라장터 · 수의계약으로 공공 발주 대응</li>
             </ul>
             <p class="offer-more"><a href="./studio">ArtWork Studio 열어 보기</a></p>
@@ -978,9 +980,9 @@
       window.addEventListener("hashchange", scrollToCurrentHash);
 
     </script>
-    <script src="./sky.js?v=20260821-clean"></script>
+    <script src="./sky.js?v=20260913-live"></script>
     <script src="./air-art.js?v=20260821-clean"></script>
-    <script src="./hero-video.js?v=20260913-auto" defer></script>
+    <script src="./hero-video.js?v=20260913-titles" defer></script>
     <script src="./type-wall.js?v=20260821-clean"></script>
     <script src="./regional-live-data.js?v=20260823-perf"></script>
     <script>
