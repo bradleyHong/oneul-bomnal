@@ -553,7 +553,7 @@
       cv.width = Math.max(64, Math.round(sz.w * sc));
       cv.height = Math.max(64, Math.round(sz.h * sc));
       var g2 = new GEN.Gen(cv);
-      g2.mark = "시연본 · 봄날퍼블릭아트";
+      g2.mark = "Artwork";
       var sp = GEN.compose(GEN.SCENES[shot.idx].text, shot.seed, sz.w / sz.h, CODE_V);
       if (shot.style && GEN.hasStyle(shot.style)) sp.style = shot.style;
       sp.idx = shot.idx; sp.v = CODE_V;

@@ -1,4 +1,4 @@
-/* 봄날 스튜디오 · 생성 엔진
+/* ArtWork Studio · 생성 엔진
  *
  * 화면을 코드로 그린다. 사진을 합성하지 않는다.
  *
@@ -133,7 +133,29 @@
     { re: /형광|사이버|글리치|디지털|비비드/,      pal: "형광", style: "grid", tags: ["사이버"] },
     { re: /빛줄기|조명|반짝|보케|번짐|글로우/,     pal: null, style: "bloom", tags: ["빛"] },
     { re: /기둥형|세로형|줄기|흘러내리/,           pal: null, style: "column", tags: ["세로"] },
-    { re: /입자|먼지|알갱이|파티클/,               pal: null, style: "particle", tags: ["입자"] }
+    { re: /입자|먼지|알갱이|파티클/,               pal: null, style: "particle", tags: ["입자"] },
+
+    /* 여기서부터는 뒤에 붙인 소재다. 앞의 것이 이미 고른 색·그림은
+       덮어쓰지 않으므로(아래 forEach 가 첫 것만 잡는다) 위 열다섯 줄이
+       읽던 문장은 하나도 달라지지 않는다. 그림 이름에 sa: 를 붙이는
+       것은 6판부터 후보가 엔진 그림뿐이기 때문이다. 접두어 없이 적으면
+       fit 목록에 없어서 낱말이 고른 그림이 그냥 버려진다. */
+    { re: /대숲|대나무/,             pal: "숲",   style: "sa:bamboo",     tags: ["대숲"] },
+    { re: /잎맥/,                    pal: "숲",   style: "sa:leafvein",   tags: ["잎맥"] },
+    { re: /갈대/,                    pal: "흙",   style: "sa:reed",       tags: ["갈대"] },
+    { re: /꽃잎|꽃눈/,               pal: "봄빛", style: "sa:petalfall",  tags: ["꽃"] },
+    { re: /한글|자모|조판/,          pal: "먹",   style: "sa:hangul",     tags: ["한글"] },
+    { re: /등고선|지형도/,           pal: "흙",   style: "sa:topo",       tags: ["지형"] },
+    { re: /회로|골격/,               pal: "형광", style: "sa:circuit",    tags: ["회로"] },
+    { re: /한지/,                    pal: "흙",   style: "sa:hanji",      tags: ["한지"] },
+    { re: /유화|붓자국|붓결/,        pal: "노을", style: "sa:impasto",    tags: ["회화"] },
+    { re: /명암|고전 회화/,          pal: "먹",   style: "sa:chiaroscuro", tags: ["회화"] },
+    { re: /계단식|층층/,             pal: "흙",   style: "sa:terrace",    tags: ["지형"] },
+    { re: /씨실|날실|직조/,          pal: "단청", style: "sa:weave",      tags: ["직조"] },
+    { re: /결정|광물|크리스탈/,      pal: "청자", style: "sa:crystal",    tags: ["결정"] },
+    { re: /오로라/,                  pal: "안개", style: "sa:aurora",     tags: ["오로라"] },
+    { re: /심해|빛기둥/,             pal: "심해", style: "sa:ocean",      tags: ["심해"] },
+    { re: /낙화|불꽃/,               pal: "노을", style: "sa:nakhwa",     tags: ["낙화"] }
   ];
 
   /* 분위기 12종 — 속도와 밀도, 선 굵기와 밝기를 함께 정한다.
@@ -158,19 +180,46 @@
    * studio.js(고르는 화면)와 play.html(전용 플레이어)이 같은 목록을 본다.
    * 둘이 어긋나면 같은 번호가 다른 그림이 된다. */
 var SCENES = [
-    { ko: "봄빛 리본",   text: "로비 미디어월에 걸 봄바람 빛 리본, 따뜻하고 화사하게" },
-    { ko: "바다 물결",   text: "바다와 파도, 잔잔하게 흐르는 로비 화면" },
-    { ko: "겨울 눈",     text: "겨울 밤 도심 전광판, 눈송이 내리는 화면, 차분하게" },
-    { ko: "전통 단청",   text: "고분군 야간 포토존, 전통 색감으로 웅장하게" },
-    { ko: "도시 야경",   text: "도시 야경 네온 전광판, 경쾌하게" },
-    { ko: "우주 별빛",   text: "우주와 별빛, 고요하게 흐르는 밤하늘" },
-    { ko: "숲 초록",     text: "숲과 나무, 초록빛으로 산뜻하게" },
-    { ko: "노을",        text: "노을 지는 저녁, 은은하게" },
-    { ko: "수묵 여백",   text: "수묵 담백한 여백, 묵직하게" },
-    { ko: "형광 사이버", text: "형광 사이버 글리치, 강렬하게" },
-    { ko: "안개 하늘",   text: "안개 낀 하늘과 바람결, 몽환적으로" },
-    { ko: "빛 번짐",     text: "빛줄기 번짐, 은은하고 잔잔하게" }
+    { ko: "봄빛 리본",   en: "Spring Ribbon", text: "로비 미디어월에 걸 봄바람 빛 리본, 따뜻하고 화사하게" },
+    { ko: "바다 물결",   en: "Ocean Wave",    text: "바다와 파도, 잔잔하게 흐르는 로비 화면" },
+    { ko: "겨울 눈",     en: "Winter Snow",   text: "겨울 밤 도심 전광판, 눈송이 내리는 화면, 차분하게" },
+    { ko: "전통 단청",   en: "Dancheong",     text: "고분군 야간 포토존, 전통 색감으로 웅장하게" },
+    { ko: "도시 야경",   en: "Night City",    text: "도시 야경 네온 전광판, 경쾌하게", off: true },
+    { ko: "우주 별빛",   en: "Starfield",     text: "우주와 별빛, 고요하게 흐르는 밤하늘", off: true },
+    { ko: "숲 초록",     en: "Deep Forest",   text: "숲과 나무, 초록빛으로 산뜻하게" },
+    { ko: "노을",        en: "Sunset",        text: "노을 지는 저녁, 은은하게" },
+    { ko: "수묵 여백",   en: "Ink Wash",      text: "수묵 담백한 여백, 묵직하게" },
+    { ko: "형광 사이버", en: "Neon Cyber",    text: "형광 사이버 글리치, 강렬하게" },
+    { ko: "안개 하늘",   en: "Mist Sky",      text: "안개 낀 하늘과 바람결, 몽환적으로", off: true },
+    { ko: "빛 번짐",     en: "Bloom",         text: "빛줄기 번짐, 은은하고 잔잔하게", off: true },
+
+    /* 6판까지 열둘로 버텼는데, 열둘 중 넷이 안개·빛처럼 재료가 없는
+       낱말이라 어느 스타일로 풀어도 화면이 비었다. 그 넷을 내리고
+       (off — 이미 나간 번호는 그대로 그려야 하므로 칸은 남긴다)
+       손으로 짜야 나오는 소재를 뒤에 붙인다. 느낌 번호는 5비트라
+       서른한 칸까지 쓸 수 있고 31번은 직접 적은 문장 자리다. */
+    { ko: "대숲",        en: "Bamboo Grove",  text: "바람에 흔들리는 대숲, 빽빽하고 잔잔하게" },
+    { ko: "잎맥",        en: "Leaf Vein",     text: "잎맥이 갈라져 뻗는 화면, 촘촘하고 정갈하게" },
+    { ko: "갈대밭",      en: "Reed Field",    text: "갈대밭이 바람에 눕는 저녁, 묵직하게" },
+    { ko: "꽃눈",        en: "Petal Fall",    text: "꽃잎이 흩날려 쌓이는 화면, 화사하게" },
+    { ko: "한글 조판",   en: "Hangul Type",   text: "한글 자모로 짠 조판, 정갈하고 묵직하게" },
+    { ko: "등고선",      en: "Topography",    text: "등고선 지형도가 겹쳐 흐르는 화면, 촘촘하고 차분하게" },
+    { ko: "회로",        en: "Circuit",       text: "회로처럼 얽힌 도시 골격, 강렬하게" },
+    { ko: "한지 결",     en: "Hanji Layers",  text: "한지 결이 겹쳐 쌓인 화면, 은은하고 묵직하게" },
+    { ko: "유화 붓결",   en: "Impasto",       text: "두껍게 올린 유화 붓자국, 강렬하게" },
+    { ko: "고전 명암",   en: "Chiaroscuro",   text: "고전 회화의 깊은 명암, 웅장하게" },
+    { ko: "계단 지형",   en: "Terraces",      text: "층층이 쌓인 계단식 지형, 묵직하게" },
+    { ko: "직조",        en: "Weave",         text: "씨실과 날실이 짜이는 직조, 촘촘하게" },
+    { ko: "결정",        en: "Crystal",       text: "결정이 자라나는 광물 단면, 선명하고 강렬하게" },
+    { ko: "오로라",      en: "Aurora",        text: "극지의 오로라가 흐르는 밤, 몽환적으로" },
+    { ko: "심해",        en: "Ocean Deep",    text: "심해의 물결과 빛기둥, 고요하고 묵직하게" },
+    { ko: "낙화",        en: "Nakhwa",        text: "낙화, 불꽃이 줄지어 떨어지는 밤, 웅장하게" }
     ];
+
+  /* 화면에 내놓는 칸만 추린 자리표. 번호(idx)는 그대로 두고 보여 줄
+     것만 고른다. 고르는 화면·미리보기 벽·무작위가 모두 이걸 본다. */
+  var LIVE = SCENES.map(function (s2, i) { return s2.off ? -1 : i; })
+                   .filter(function (i) { return i >= 0; });
 
   /* 엔진을 붙이기 전부터 있던 그림들.
    *
@@ -432,7 +481,7 @@ var SCENES = [
     this.spec = null;
     this.raf = 0;
     this.t0 = 0;
-    this.mark = "봄날퍼블릭아트";
+    this.mark = "Artwork";
   }
 
   Gen.prototype.set = function (spec) {
@@ -800,9 +849,9 @@ var SCENES = [
     /* 계약된 작품을 전용 플레이어에서 틀 때는 도장을 안 찍는다. mark 를 비운다. */
     if (!this.mark) return;
     /* 1:6 기둥 미리보기처럼 칸이 좁으면 글자가 들어갈 자리가 없어
-       "…픽아트"로 잘린다. 잘린 이름을 보이느니 안 보이는 편이 낫다.
+       이름이 잘린다. 잘린 이름을 보이느니 안 보이는 편이 낫다.
        이 크기에서는 가져가 봐야 쓸 데도 없다. */
-    if (W < 130) return;
+    if (W < 96) return;
     var fs = Math.max(9, Math.round(Math.min(W / 22, H / 22, 26)));
     ctx.font = "700 " + fs + "px Pretendard, sans-serif";
     while (fs > 8 && ctx.measureText(this.mark).width > W * 0.82) {
@@ -817,7 +866,7 @@ var SCENES = [
     ctx.textAlign = "left";
     ctx.font = "600 " + Math.round(fs * 0.62) + "px Pretendard, sans-serif";
     ctx.fillStyle = "rgba(255,255,255,.55)";
-    if (W > 260) ctx.fillText("시연본 · 5초 반복", 14, H - 14);
+    if (W > 180) ctx.fillText("Sample / 5s", 14, H - 14);
   };
 
   function hex2rgb(hex) {
@@ -1290,7 +1339,7 @@ var SCENES = [
   };
 
   global.BomnalGen = {
-    compose: compose, Gen: Gen, SCENES: SCENES,
+    compose: compose, Gen: Gen, SCENES: SCENES, LIVE: LIVE,
     /* 색판. 도구에서 손님이 색을 고를 때 쓴다.
        PALETTES 는 제비뽑기에도 쓰이므로 순서를 못 바꾼다.
        EXTRA 는 손으로 고를 때만 쓰는 덤이다. */
