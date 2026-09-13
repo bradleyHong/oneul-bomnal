@@ -6286,3 +6286,172 @@ body.site-page:not(.home-2026) .site-nav {
 .api-kit-head button {
   min-height: 36px;
 }
+
+/* ════════════════════════════════════════════════════════════════
+   타이포그래피 — 명조로 말하고 고딕으로 읽힌다
+   ════════════════════════════════════════════════════════════════
+
+   여태 제목도 본문도 한 글꼴(Pretendard)에 굵기만 달랐다. 굵게 키운
+   고딕은 또렷하지만 어느 회사나 쓰는 얼굴이라, 미디어아트를 파는 자리에
+   걸어 두면 화면만 예쁘고 글은 평범해 보인다.
+
+   전시장이 오래 쓰는 짝을 가져온다 — 제목은 명조, 본문은 고딕.
+   한글 제목은 Noto Serif KR, 로마자 제목과 kicker 는 Instrument Serif.
+   둘 다 열린 글꼴이고 구글 폰트가 쓰는 글자의 조각만 내려보낸다.
+
+   굵기는 낮춘다. 명조를 900 으로 키우면 획이 서로 붙어 뭉갠다.
+   500 이 이 크기에서 가장 또렷하다. 대신 크기를 키우고 자간을 조인다 —
+   큰 글자일수록 자간이 벌어져 보이므로 크기에 따라 다르게 준다.
+
+   본문과 단추, 표, 입력칸은 그대로 고딕이다. 읽는 자리와 누르는 자리는
+   또렷한 편이 낫다. */
+
+:root {
+  --font-display:
+    "Instrument Serif",
+    "Noto Serif KR",
+    ui-serif, Georgia, "Apple SD Gothic Neo", serif;
+
+  /* 크기 사다리. 화면 폭을 따라 늘되 양 끝에서 멈춘다. */
+  --t-display: clamp(46px, 8.4vw, 112px);
+  --t-hero:    clamp(36px, 5.6vw, 78px);
+  --t-h2:      clamp(28px, 4.2vw, 56px);
+  --t-h3:      clamp(19px, 1.9vw, 25px);
+  --t-lead:    clamp(17px, 1.9vw, 21px);
+  --t-body:    clamp(15px, 1.55vw, 17.5px);
+  --t-small:   clamp(13px, 1.15vw, 14px);
+}
+
+/* 명조를 거는 자리. 제목과 kicker 뿐이다. */
+h1,
+h2,
+.section-kicker,
+.kicker,
+.ref-films-head,
+.subpage-hero h1,
+.section-head h2 {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-synthesis-weight: none;   /* 없는 굵기를 브라우저가 흉내 내면 뭉갠다 */
+}
+
+h1,
+h2,
+.section-head h2,
+.subpage-hero h1 {
+  font-weight: 500;
+  text-wrap: balance;
+}
+
+/* 자간. 한글 명조는 로마자 산세리프와 반대다 — 조이면 획이 서로
+   닿아 낱자가 한 덩어리로 뭉갠다. 처음에 -0.035em 을 줬더니 "오늘은"이
+   한 글자로 읽혔다. 한글에는 거의 조이지 않고, 로마자만 있는 제목
+   (영문 페이지·Artwork)에서만 아래에서 따로 조인다. */
+h1 {
+  font-size: var(--t-display);
+  line-height: 1.04;
+  letter-spacing: -0.014em;
+}
+
+.subpage-hero h1 {
+  font-size: var(--t-hero);
+  line-height: 1.1;
+  letter-spacing: -0.013em;
+}
+
+.section h2,
+.section-head h2 {
+  font-size: var(--t-h2);
+  line-height: 1.2;
+  letter-spacing: -0.012em;
+}
+
+/* kicker — 이탤릭 명조 한 줄. 대문자로 벌려 쓰던 것을 되돌린다.
+   대문자 자간 놀이는 어느 랜딩에나 있고, 이탤릭 명조는 전시 도록의 결이다. */
+.kicker,
+.section-kicker {
+  margin: 0 0 14px;
+  font-size: clamp(15px, 1.7vw, 19px);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0.005em;
+  color: var(--glow);
+  opacity: 0.92;
+}
+
+/* 세 번째 제목은 고딕으로 둔다. 목록의 머리라 또렷한 편이 낫다. */
+h3 {
+  font-size: var(--t-h3);
+  font-weight: 750;
+  line-height: 1.36;
+  letter-spacing: -0.022em;
+  text-wrap: balance;
+}
+
+/* 본문. 줄 끝에 낱말 하나만 남는 것을 브라우저가 알아서 막는다. */
+.section p,
+.section li,
+.subpage-hero p {
+  text-wrap: pretty;
+}
+
+.section p,
+.section li {
+  font-size: var(--t-body);
+  line-height: 1.72;
+}
+
+/* 숫자는 자리를 맞춘다. 표에서 값이 위아래로 어긋나면 견적서로 안 읽힌다. */
+.spec-table td,
+.spec-table th,
+.subpage-hero aside span,
+.st-q-row,
+.st-q-total,
+.price-table td,
+.trust-badges li,
+.home2-cred li {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* 히어로의 큰 문장. 명조로 바뀌면 줄 사이가 좁아 보이므로 조금 연다. */
+.home-hero h1,
+.home2-title {
+  line-height: 1.02;
+}
+
+.home-hero .home-tagline,
+.subpage-hero p {
+  font-size: var(--t-lead);
+  line-height: 1.74;
+}
+
+/* Artwork 처럼 로마자만 있는 제목은 이탤릭을 쓰지 않는다.
+   정자 명조가 작품 묶음 이름에 맞는다. */
+.ref-films-head {
+  font-weight: 400;
+  font-style: normal;
+  letter-spacing: -0.028em;
+}
+
+/* 명조는 얇아서 어두운 바탕에서 번져 보인다. 획을 또렷하게 남긴다. */
+h1, h2, .section-head h2, .subpage-hero h1, .ref-films-head {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* 손전화에서는 자간을 조금 푼다. 작은 화면에서 -0.035em 은 글자가 겹친다. */
+@media (max-width: 640px) {
+  h1 { letter-spacing: -0.008em; }
+  .subpage-hero h1 { letter-spacing: -0.008em; }
+  .section h2, .section-head h2 { letter-spacing: -0.006em; }
+}
+
+/* 로마자만 있는 제목은 조여야 제 모양이다. 영문 페이지와 Artwork 처럼
+   한글이 섞이지 않는 자리에서만 건다. */
+:lang(en) h1,
+:lang(en) .subpage-hero h1 { letter-spacing: -0.032em; line-height: 1.0; }
+:lang(en) h2,
+:lang(en) .section h2,
+:lang(en) .section-head h2 { letter-spacing: -0.026em; line-height: 1.1; }
+:lang(en) h3 { letter-spacing: -0.018em; }
