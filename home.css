@@ -335,29 +335,32 @@ body.home-2026 .site-nav.scrolled {
 /* 메뉴는 두 얼굴이다. 첫 화면(어두운 작품) 위에서는 흰 글씨, 스크롤해서
    흰 유리판이 되면 먹빛. 한 색으로 두면 둘 중 하나에서 안 보인다 —
    종이로 뒤집었을 때 실제로 첫 화면 메뉴가 통째로 사라졌다. */
-body.home-2026.site-page .brand strong,
-body.home-2026.site-page .site-nav nav a { color: var(--h-white); }
-body.home-2026.site-page .brand span { color: var(--h-mute); }
-body.home-2026.site-page .site-nav nav a:hover { color: var(--h-white); }
-body.home-2026.site-page .nav-toggle span { background: var(--h-white); }
-body.home-2026 .site-nav nav a.is-cta {
+/* 흰 글씨 메뉴는 어두운 첫 화면이 실제로 깔린 쪽에서만이다.
+   home-2026 만 보고 걸었더니 /pieces 처럼 그 클래스만 빌려 쓰는 흰 쪽에서
+   메뉴가 통째로 사라졌다. 그 쪽은 body 에 dark-hero 를 안 단다. */
+body.dark-hero.site-page .brand strong,
+body.dark-hero.site-page .site-nav nav a { color: var(--h-white); }
+body.dark-hero.site-page .brand span { color: var(--h-mute); }
+body.dark-hero.site-page .site-nav nav a:hover { color: var(--h-white); }
+body.dark-hero.site-page .nav-toggle span { background: var(--h-white); }
+body.dark-hero .site-nav nav a.is-cta {
   border: 1px solid rgba(255, 255, 255, 0.34);
   border-radius: 999px;
   padding: 7px 16px;
 }
-body.home-2026 .site-nav nav a.is-cta:hover { background: rgba(255, 255, 255, 0.14); border-color: var(--h-white); }
+body.dark-hero .site-nav nav a.is-cta:hover { background: rgba(255, 255, 255, 0.14); border-color: var(--h-white); }
 
-body.home-2026.site-page .site-nav.scrolled .brand strong,
-body.home-2026.site-page .site-nav.scrolled nav a { color: var(--ink); }
-body.home-2026.site-page .site-nav.scrolled .brand span { color: var(--deep); }
-body.home-2026.site-page .site-nav.scrolled .nav-toggle span { background: var(--ink); }
-body.home-2026 .site-nav.scrolled nav a.is-cta {
-  border-color: var(--sa-green);
-  color: var(--sa-green);
+body.dark-hero.site-page .site-nav.scrolled .brand strong,
+body.dark-hero.site-page .site-nav.scrolled nav a { color: var(--ink); }
+body.dark-hero.site-page .site-nav.scrolled .brand span { color: var(--deep); }
+body.dark-hero.site-page .site-nav.scrolled .nav-toggle span { background: var(--ink); }
+body.dark-hero .site-nav.scrolled nav a.is-cta {
+  border-color: var(--rx-green);
+  color: var(--rx-green);
 }
-body.home-2026 .site-nav.scrolled nav a.is-cta:hover {
-  background: var(--sa-green);
-  color: var(--sa-ink);
+body.dark-hero .site-nav.scrolled nav a.is-cta:hover {
+  background: var(--rx-green);
+  color: var(--rx-ink);
 }
 
 /* 본문은 흰 바탕에서 다시 읽힌다 */
@@ -586,11 +589,19 @@ body.home-2026 main > .section { background: var(--paper); }
 
 /* 작품 페이지(/pieces)에서 쓰는 타일 구역.
    랜딩에서는 첫 화면 바로 아래에 검은 띠로 붙지만, 여기서는 본문 한가운데
-   놓이므로 위아래 여백만 줄이고 바탕은 페이지를 따른다. */
+   놓이므로 위아래 여백만 줄이고 바탕은 페이지를 따른다.
+
+   바탕을 페이지에 맡기면 글자도 페이지를 따라야 한다. 종이로 뒤집으면서
+   여기만 흰 글자가 남아 흰 판에 흰 글씨가 됐다 — 설명 한 문단과 작품
+   이름이 통째로 안 보였다. */
 .subpage-main .home2-index {
   background: transparent;
+  color: var(--ink);
   padding-top: clamp(18px, 3vh, 34px);
 }
+.subpage-main .home2-index-head p { color: var(--deep); }
+.subpage-main .home2-cap b { color: var(--ink); }
+.subpage-main .home2-cap span { color: var(--faint); }
 
 /* ── 첫 화면을 글자로 짓는다 ─────────────────────────────────
    배경은 우리가 만든 영상이 돈다. 그 위에 얹는 글자가 굵은 고딕이면

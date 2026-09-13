@@ -34,9 +34,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Noto+Serif+KR:wght@400;500;600;700&amp;display=swap" />
-    <link rel="stylesheet" href="./styles.css?v=20260914-paper" />
-    <link rel="stylesheet" href="./en.css?v=20260914-paper" />
-    <link rel="stylesheet" href="./home.css?v=20260914-paper" />
+    <link rel="stylesheet" href="./styles.css?v=20260914-rolex" />
+    <link rel="stylesheet" href="./en.css?v=20260914-rolex" />
+    <link rel="stylesheet" href="./home.css?v=20260914-rolex" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="./assets/favicon-180.png" />
     <script type="application/ld+json">
@@ -549,7 +549,7 @@
     }
     </script>
   </head>
-  <body class="site-page home-2026">
+  <body class="site-page home-2026 dark-hero">
     <a class="skip-link" href="#main-content">본문 바로가기</a>
         <header class="site-nav">
       <a class="brand" href="#top" aria-label="오늘은 봄날 홈">
@@ -560,7 +560,7 @@
            나머지는 본문 "더 보기"에서 간다. -->
       <nav id="main-nav" aria-label="주요 메뉴">
         <a href="./#works">작업</a>
-        <a href="./pieces">작품</a>
+        <a href="./#artwork">작품</a>
         <a href="./#service">사업영역</a>
         <a href="./studio">스튜디오</a>
         <a href="./company">회사소개</a>
@@ -633,16 +633,23 @@
         </ul>
       </section>
 
-      <section class="section works-section" id="works">
-        <div class="section-head">
-          <p class="section-kicker">Selected Works</p>
-          <h2>대구 · 부산 · 경북에서 켜져 있는 화면들</h2>
-          <p>공공기관·문화시설 현장에 설치하고 상영한 작업입니다.</p>
-        </div>
 
+      <!-- ④ 상영관 ─────────────────────────────────────────
+           작품 영상을 실적 사진과 한 구역에 두었더니, 사진 아홉 장에
+           묻혀 "레퍼런스 위에 얹은 덤"으로 읽혔다. 파는 것은 사진이
+           아니라 저 화면이다. 구역을 따로 내주고 판을 어둡게 깐다 —
+           빛나는 그림 뒤가 희면 그림이 안 뜬다.
+
+           흰 종이 → 초록 띠 → 어두운 상영관 → 다시 흰 종이.
+           색이 두 번 꺾이는 자리라 눈이 여기서 멈춘다. -->
+      <section class="artwork-stage" id="artwork" aria-labelledby="artwork-h">
+        <div class="artwork-stage-head">
+          <p class="section-kicker">Artwork</p>
+          <h2 id="artwork-h">저희가 만든 화면입니다</h2>
+          <p>사진으로는 미디어아트가 무엇인지 전해지지 않습니다. 화면에 들어오면 저절로 돕니다.</p>
+        </div>
         <div class="ref-films is-lead" data-films-auto>
-          <h3 class="ref-films-head">Artwork</h3>
-          <ul class="film-grid">
+                    <ul class="film-grid">
             <li class="film">
               <button class="film-card" type="button"
                       data-film="1226023996" data-film-hash="4497c29ab4">
@@ -680,6 +687,15 @@
                  aria-label="Untitled 03 Vimeo에서 보기">Vimeo에서 보기</a>
             </li>
           </ul>
+        </div>
+
+      </section>
+
+      <section class="section works-section" id="works">
+        <div class="section-head">
+          <p class="section-kicker">Selected Works</p>
+          <h2>어디에 걸렸는가</h2>
+          <p>공공기관·문화시설 현장에 설치하고 상영한 작업입니다.</p>
         </div>
 
         <!-- 실적 흐름 ───────────────────────────────────────
