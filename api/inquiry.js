@@ -55,6 +55,7 @@ function normalize(raw) {
     services: (Array.isArray(services) ? services : services ? [services] : []).map(clean),
     budget: clean(raw.budget),
     message: clean(raw.message),
+    language: clean(raw.language),
     page: clean(raw.page),
   };
 }
@@ -67,6 +68,7 @@ function asText(d, receivedAt) {
     `이메일: ${d.email}`,
     `관심 항목: ${d.services.join(", ") || "선택 없음"}`,
     `희망 대수: ${d.budget || "미선택"}`,
+    `언어: ${d.language || "ko"}`,
     "",
     "문의 내용:",
     d.message || "(내용 없음)",

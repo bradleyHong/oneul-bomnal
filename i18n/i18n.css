@@ -1,0 +1,96 @@
+/* Language switcher + locale-page extras.
+   Lives outside styles.css so Korean UX edits stay clear of this PR. */
+
+.i18n-switch {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+  margin-left: auto;
+  padding: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+}
+
+.i18n-switch a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 28px;
+  padding: 0 7px;
+  border-radius: 999px;
+  color: inherit;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  opacity: 0.72;
+}
+
+.i18n-switch a:hover,
+.i18n-switch a:focus-visible {
+  opacity: 1;
+  outline: none;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.i18n-switch a[aria-current="true"] {
+  opacity: 1;
+  background: rgba(125, 178, 255, 0.22);
+  color: var(--ink, #eef2f8);
+}
+
+body.site-page .i18n-switch,
+.st-nav .i18n-switch {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.st-nav .i18n-switch {
+  margin-left: 12px;
+}
+
+body.home-2026:not(.scrolled) .i18n-switch,
+body.home-2026 .site-nav:not(.scrolled) .i18n-switch {
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.i18n-page .i18n-roman {
+  margin: 0 0 10px;
+  color: var(--glow);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.i18n-refs {
+  margin: 0;
+  padding-left: 1.2em;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.i18n-refs li + li {
+  margin-top: 8px;
+}
+
+html[lang="en"] .faq-item p,
+html[lang="fr"] .faq-item p,
+html[lang="de"] .faq-item p,
+html[lang="en"] .answer-block p,
+html[lang="fr"] .answer-block p,
+html[lang="de"] .answer-block p {
+  word-break: normal;
+}
+
+@media (max-width: 860px) {
+  .i18n-switch {
+    margin-left: 8px;
+  }
+  .i18n-switch a {
+    min-width: 28px;
+    height: 26px;
+    padding: 0 5px;
+    font-size: 10px;
+  }
+}

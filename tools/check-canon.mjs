@@ -91,11 +91,23 @@ for (const a of C.artworkPages) {
   const want = decodeURI(BASE + a.path);
   if (!locs.includes(want)) fail(`sitemap.xml에 작품 페이지 ${want} 없음`);
 }
+const i18nUrls = [];
+if (C.i18n) {
+  for (const lang of C.i18n.languages.filter((l) => l.code !== "ko")) {
+    for (const page of C.i18n.pages) {
+      i18nUrls.push(decodeURI(BASE + lang.prefix + (page.slug ? `/${page.slug}` : "")));
+    }
+  }
+}
 const known = new Set([
   ...C.pages.map((p) => decodeURI(BASE + (p.path === "/" ? "/" : p.path))),
   ...C.artworkPages.map((a) => decodeURI(BASE + a.path)),
+  ...i18nUrls,
 ]);
 for (const l of locs) if (!known.has(l)) fail(`sitemap.xml에 캐논에 없는 주소: ${l}`);
+for (const u of i18nUrls) {
+  if (!locs.includes(u)) fail(`sitemap.xml에 다국어 주소 ${u} 없음`);
+}
 
 /* ── 3. robots.txt: 그룹마다 차단이 반복돼 있는가 ─────────────── */
 const robots = read("robots.txt");
@@ -168,6 +180,62 @@ const vercelignore = has(".vercelignore") ? read(".vercelignore") : "";
 if (!vercelignore.includes("works/_source")) fail(".vercelignore에 works/_source/ 가 없다 — 작품 원본이 웹에 올라간다");
 const vercel = JSON.parse(read("vercel.json"));
 if (!JSON.stringify(vercel).includes("/works/")) fail("vercel.json에 /works/ 헤더 규칙이 없다");
+
+/* ── 8. 다국어 페이지와 한국어 hreflang ───────────────────── */
+if (C.i18n) {
+  for (const lang of C.i18n.languages.filter((l) => l.code !== "ko")) {
+    const pack = join(root, "i18n/locales", `${lang.code}.json`);
+    if (!has(`i18n/locales/${lang.code}.json`)) {
+      fail(`i18n 언어팩 없음: i18n/locales/${lang.code}.json`);
+      continue;
+    }
+    const L = JSON.parse(readFileSync(pack, "utf8"));
+    for (const page of C.i18n.pages) {
+      const file = `${lang.code}/${page.slug ? `${page.slug}.html` : "index.html"}`;
+      if (!has(file)) { fail(`다국어 페이지 없음: ${file} (node i18n/build.mjs)`); continue; }
+      const html = read(file);
+      const wantTitle = L[page.id]?.title;
+      const t = attr(html, /<title>([^<]*)<\/title>/i);
+      if (wantTitle && t !== wantTitle) fail(`${file}: title이 언어팩과 다르다`);
+      const wantDesc = L[page.id]?.description;
+      const d = metaName(html, "description");
+      if (wantDesc && d !== wantDesc) fail(`${file}: description이 언어팩과 다르다`);
+      const canonical = attr(html, /<link\s+rel="canonical"\s+href="([^"]*)"/i);
+      const wantCan = BASE + lang.prefix + (page.slug ? `/${page.slug}` : "");
+      if (canonical !== wantCan) fail(`${file}: canonical이 ${wantCan} 여야 하는데 ${canonical}`);
+      if (!html.includes(`lang="${lang.hreflang}"`)) fail(`${file}: html lang=${lang.hreflang} 없음`);
+      for (const other of C.i18n.languages) {
+        if (!html.includes(`hreflang="${other.hreflang}"`)) fail(`${file}: hreflang=${other.hreflang} 없음`);
+      }
+      const h1 = html.match(/<h1[^>]*>/gi) || [];
+      if (h1.length !== 1) fail(`${file}: h1이 ${h1.length}개`);
+      if (!html.includes("FAQPage")) warn(`${file}: FAQPage 스키마 없음`);
+    }
+  }
+
+  const koHreflang = {
+    "index.html": "/",
+    "quote.html": "/quote",
+    "studio.html": "/studio",
+    "media-facade-content.html": "/offer",
+  };
+  for (const [file] of Object.entries(koHreflang)) {
+    if (!has(file)) continue;
+    const html = read(file);
+    for (const lang of C.i18n.languages) {
+      if (!html.includes(`hreflang="${lang.hreflang}"`)) fail(`${file}: hreflang=${lang.hreflang} 없음`);
+    }
+    if (!html.includes("i18n/switch.js")) warn(`${file}: 언어 전환 스크립트 없음`);
+  }
+}
+
+if (C.aeo?.homeFaq) {
+  const home = pageHtml.get("/") || (has("index.html") ? read("index.html") : "");
+  for (const item of C.aeo.homeFaq) {
+    if (!home.includes(item.q)) fail(`index.html: AEO FAQ 질문 없음 — ${item.q}`);
+    if (!home.includes(item.a.slice(0, 40))) fail(`index.html: AEO FAQ 답변 없음 — ${item.q}`);
+  }
+}
 
 /* ── 결과 ────────────────────────────────────────────────── */
 for (const w of warns) console.log(`  경고  ${w}`);
