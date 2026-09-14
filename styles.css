@@ -45,6 +45,13 @@
   --rx-pale:   #eaf1ed;   /* 초록 기운의 아주 옅은 면 */
   --rx-ink:    #f4f8f6;   /* 초록 판 위의 글자 */
 
+  /* 제목 색. 먹빛으로 두면 어느 회사 홈페이지와도 같은 얼굴이다.
+     명조 제목을 병초록으로 세우면 색 하나로 브랜드가 선다. 읽는 글이
+     아니라 부르는 글이라 색을 입어도 안 무겁다.
+     흰 종이(#f7f5f0) 위에서 7.8:1 — 큰 글자 기준을 한참 넘는다.
+     어두운 무대와 초록 띠에서는 그 구역이 이 값을 갈아 끼운다. */
+  --head: #006039;
+
   --mist: rgba(255, 255, 255, 0.68);
 
   /* 작품이 걸리는 자리는 밝은 판에서도 어둡게 남긴다. 빛나는 그림 뒤가
@@ -4180,9 +4187,12 @@ main,
 :root {
   /* 같은 이유로 이 셋도 팔레트로 접는다. 선택자는 그대로 두고 값만
      옮기면 되므로, 이 장치를 쓰는 규칙을 찾아다닐 필요가 없다.
-     후광은 지운다 — 바탕 밝기가 더는 흔들리지 않아 받칠 것이 없고,
-     글자마다 붙은 번짐은 어둠 위에서 지저분하기만 하다. */
-  --sky-ink: var(--ink);
+     후광은 지운다. 바탕 밝기가 더는 흔들리지 않아 받칠 것이 없고,
+     글자마다 붙은 번짐은 어둠 위에서 지저분하기만 하다.
+     제목은 --head 를 그대로 물려받는다. 이 토큰은 쓰이는 자리에서
+     풀리므로, 초록 띠나 어두운 무대 안에서는 그쪽 --head 를 따라
+     밝은 쪽으로 넘어간다. */
+  --sky-ink: var(--head);
   --sky-ink-soft: var(--muted);
   --sky-ink-accent: var(--glow);
   --sky-halo: transparent;
@@ -6350,6 +6360,8 @@ body.site-page:not(.home-2026) .site-nav {
 h1,
 h2,
 .section-kicker,
+h1,
+h2,
 .kicker,
 .ref-films-head,
 .subpage-hero h1,
@@ -6363,6 +6375,7 @@ h1,
 h2,
 .section-head h2,
 .subpage-hero h1 {
+  color: var(--head);
   font-weight: 500;
   text-wrap: balance;
 }
@@ -6392,23 +6405,25 @@ h1 {
 
 /* kicker — 이탤릭 명조 한 줄. 대문자로 벌려 쓰던 것을 되돌린다.
    대문자 자간 놀이는 어느 랜딩에나 있고, 이탤릭 명조는 전시 도록의 결이다. */
+/* kicker 는 뒤로 물린다. 제목이 초록이 되었으니 둘 다 초록이면 층이
+   없어진다. 작은 이름표는 조용한 먹빛으로 두고, 앞의 짧은 실선만
+   초록으로 남겨 둘을 잇는다. */
 .kicker,
 .section-kicker {
   margin: 0 0 14px;
-  font-size: clamp(15px, 1.7vw, 19px);
+  font-size: clamp(14px, 1.5vw, 17px);
   font-style: italic;
   font-weight: 400;
   letter-spacing: 0.005em;
-  color: var(--glow);
-  opacity: 0.92;
+  color: var(--deep);
 }
 
 /* 세 번째 제목은 고딕으로 둔다. 목록의 머리라 또렷한 편이 낫다. */
 h3 {
   font-size: var(--t-h3);
-  font-weight: 750;
-  line-height: 1.36;
-  letter-spacing: -0.022em;
+  font-weight: 700;
+  line-height: 1.38;
+  letter-spacing: -0.018em;
   text-wrap: balance;
 }
 
@@ -6494,6 +6509,7 @@ h1, h2, .section-head h2, .subpage-hero h1, .ref-films-head {
 .home2-cred {
   background: var(--rx-green);
   color: var(--rx-ink);
+  --head: var(--rx-ink);
   --edge: rgba(255, 255, 255, 0.20);
   --edge-soft: rgba(255, 255, 255, 0.12);
   --ink: var(--rx-ink);
@@ -6506,14 +6522,13 @@ h1, h2, .section-head h2, .subpage-hero h1, .ref-films-head {
   --raise: rgba(255, 255, 255, 0.13);
 }
 
-.band-green h1,
-.band-green h2,
+/* 초록 판 위에서는 제목도 글도 밝은 쪽이다. --head 를 갈아 끼워 뒀으니
+   h1·h2 는 저절로 따라오고, h3 와 굵은 이름만 여기서 맞춘다. */
 .band-green h3,
-.en-cta h2,
 .home2-cred b { color: var(--rx-ink); }
 
 .band-green .section-kicker,
-.en-cta .section-kicker { color: #b6dcc6; }
+.en-cta .section-kicker { color: rgba(242, 248, 244, 0.82); }
 
 /* 초록 판 위의 단추. 흰 알약이 가장 또렷하다 — 초록 위에 초록을 얹으면
    눌러야 할 자리가 안 보인다. */
@@ -6570,6 +6585,7 @@ h1, h2, .section-head h2, .subpage-hero h1, .ref-films-head {
    "여기부터 다른 것"으로 읽힌다. 안쪽 여백만 본문과 맞춘다. */
 .artwork-stage {
   --ink: var(--stage-ink);
+  --head: var(--stage-ink);
   --muted: rgba(244, 247, 250, 0.8);
   --deep: rgba(244, 247, 250, 0.7);
   --edge: rgba(255, 255, 255, 0.16);
@@ -6587,7 +6603,6 @@ h1, h2, .section-head h2, .subpage-hero h1, .ref-films-head {
 }
 .artwork-stage-head h2 {
   margin: 0;
-  color: var(--stage-ink);
   font-size: clamp(30px, 4.4vw, 60px);
 }
 .artwork-stage-head p:not(.section-kicker) {
@@ -6597,7 +6612,7 @@ h1, h2, .section-head h2, .subpage-hero h1, .ref-films-head {
   font-size: var(--t-body);
   line-height: 1.72;
 }
-.artwork-stage .section-kicker { color: #6fd39b; }
+.artwork-stage .section-kicker { color: rgba(244, 247, 250, 0.76); }
 .artwork-stage .section-kicker::before { background: #6fd39b; }
 
 .artwork-stage .ref-films { margin: 0 auto; max-width: 1180px; }
@@ -6625,4 +6640,158 @@ h1, h2, .section-head h2, .subpage-hero h1, .ref-films-head {
 @media (max-width: 760px) {
   .artwork-stage .film-grid { grid-template-columns: 1fr; }
   .artwork-stage .film:first-child { grid-column: auto; }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   패널에 걸어 보기
+   ════════════════════════════════════════════════════════════════
+   실제 LED 화면 사진 위에 우리 영상을 원근 그대로 눕혀 얹는다.
+   눕히는 계산은 panel-preview.js 가 하고, 여기서는 자리와 결만 잡는다. */
+.panel-section { background: var(--paper); }
+
+.panel-wrap { max-width: 1180px; margin: 0 auto; }
+
+.panel-stage {
+  position: relative;
+  border-radius: 16px;
+  /* 눕힌 재생기가 사진 밖으로 삐져나온다. hidden 을 쓰면 위쪽 sticky 가
+     죽으므로 clip 으로 자른다. */
+  overflow: clip;
+  background: var(--stage);
+  box-shadow: 0 24px 60px rgba(16, 32, 26, 0.18);
+}
+.panel-photo {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* 눕혀 얹는 재생기. 왼쪽 위 모서리를 기준으로 행렬을 건다. */
+.panel-screen {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  background: #0e1116;
+  overflow: hidden;
+}
+.panel-screen iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  /* 재생기가 못 붙으면 흰 판이 뜬다. 밝은 사진 위에서 그건 고장으로
+     보인다. 꺼진 화면 색을 밑에 깔아 둔다. */
+  background: #0e1116;
+}
+
+.panel-cap {
+  margin: 12px 0 0;
+  font-size: var(--t-small);
+  color: var(--deep);
+}
+
+/* 고르는 줄. 화면 하나, 영상 하나. */
+.panel-picks {
+  display: grid;
+  gap: 10px;
+  margin-top: clamp(16px, 2vw, 24px);
+}
+.panel-pick-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.panel-pick-row > span {
+  min-width: 3.2em;
+  font-size: var(--t-small);
+  font-weight: 800;
+  color: var(--faint);
+}
+.panel-pick-row button {
+  padding: 9px 16px;
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease, color 150ms ease;
+}
+.panel-pick-row button:hover { border-color: var(--rx-green); color: var(--rx-green); }
+.panel-pick-row button.is-on {
+  border-color: var(--rx-green);
+  background: var(--rx-green);
+  color: var(--rx-ink);
+}
+
+/* 제작 공정 넷. 값을 묻기 전에 무엇을 하는지 먼저 읽히는 자리다. */
+.panel-flow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  margin: clamp(20px, 2.6vw, 30px) 0 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--edge);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--edge);
+  counter-reset: flow;
+}
+.panel-flow li {
+  display: grid;
+  gap: 5px;
+  padding: clamp(16px, 2vw, 22px);
+  background: var(--surface);
+  font-size: var(--t-small);
+  line-height: 1.6;
+  color: var(--deep);
+}
+.panel-flow b {
+  display: block;
+  font-size: clamp(15px, 1.5vw, 17px);
+  font-weight: 800;
+  color: var(--ink);
+}
+.panel-flow b::before {
+  counter-increment: flow;
+  content: "0" counter(flow);
+  display: block;
+  margin-bottom: 4px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--rx-green);
+}
+
+@media (max-width: 860px) {
+  .panel-flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 480px) {
+  .panel-flow { grid-template-columns: 1fr; }
+  .panel-pick-row > span { min-width: 100%; }
+}
+
+/* ── 올라오며 드러나기 ──────────────────────────────────────
+   감추는 것은 panel-preview.js 가 붙이는 will-in 클래스다. 스크립트가
+   막히면 클래스가 안 붙고 글은 처음부터 보인다. CSS 로 먼저 감추면
+   스크립트가 죽었을 때 페이지가 백지가 된다. */
+.will-in {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  transition: opacity 620ms cubic-bezier(0.22, 1, 0.36, 1) var(--in-delay, 0ms),
+              transform 620ms cubic-bezier(0.22, 1, 0.36, 1) var(--in-delay, 0ms);
+  will-change: opacity, transform;
+}
+.will-in.is-in {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  .will-in { opacity: 1; transform: none; transition: none; }
 }

@@ -549,9 +549,10 @@ body.home-2026 main > .section { background: var(--paper); }
   margin: 0;
   padding: 0;
   display: grid;
-  /* auto-fit 으로 두었더니 넓은 화면에서 여덟이 한 줄로 서서, 칸마다
-     글자 두 줄만 든 얇은 띠가 됐다. 넉넉한 칸 넷으로 묶어 두 줄로 세운다. */
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  /* 칸이 여섯이다. 넷으로 묶으면 두 칸이 비어 회색 덩이가 남는다 —
+     인터랙티브와 코드로 만든 작품을 접으면서 실제로 그렇게 났다.
+     여섯은 셋씩 두 줄이 딱 맞는다. */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1px;
   background: var(--line, rgba(16, 32, 26, 0.12));
   border: 1px solid var(--line, rgba(16, 32, 26, 0.108));
@@ -582,6 +583,9 @@ body.home-2026 main > .section { background: var(--paper); }
 }
 @media (max-width: 980px) {
   .more-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .more-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {
   .more-grid a { padding: 16px 16px; min-height: 0; }

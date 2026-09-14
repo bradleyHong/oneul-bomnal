@@ -80,7 +80,7 @@ ${JSON.stringify(ld, null, 6)}
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Noto+Serif+KR:wght@400;500;600;700&amp;display=swap" />
-    <link rel="stylesheet" href="${A}styles.css?v=20260914-rolex" />
+    <link rel="stylesheet" href="${A}styles.css?v=20260914-serif" />
     <link rel="stylesheet" href="${A}en.css?v=20260914-rolex" />
     <link rel="icon" href="${A}assets/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="${A}assets/favicon-180.png" />
