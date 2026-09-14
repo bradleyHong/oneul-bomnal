@@ -30,7 +30,7 @@
 .st-nav-tools a:hover { text-decoration: underline; }
 
 .st-main { max-width: 1240px; margin: 0 auto; padding: 34px 28px 70px; }
-.st-h1 { font-size: 2rem; font-weight: 800; margin: 0 0 10px; letter-spacing: -.01em; }
+.st-h1 { font-size: 2.3rem; font-weight: 500; margin: 0 0 10px; letter-spacing: -.012em; }
 .st-lead { margin: 0 0 28px; color: var(--st-body); line-height: 1.68; max-width: 900px; }
 .st-lead b { color: var(--st-ink); }
 
