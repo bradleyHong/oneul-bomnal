@@ -281,9 +281,12 @@ ${aside}      </section>`;
 }
 
 function foot() {
+  /* 자격증 번호는 꼬리에 적지 않는다. 손님이 확인할 길은 발급기관의 조회
+     시스템이고, 실제로 필요한 자리는 입찰 서류다. 공개해서 얻는 것은 없고
+     상호·주소와 함께 긁어 가는 사칭 고지서의 재료가 된다. */
   const cred = C.identity.credentials
-    .map((c) => `${c.name === "여성기업 확인서" ? "Women-Owned Business" : c.name === "직접생산확인증명서" ? "Direct Production" : c.name === "비디오물제작업 신고증" ? "Video Production Business" : "Independent Broadcast Producer"} ${c.number}`)
-    .join(" · ");
+    .map((c) => (c.name === "여성기업 확인서" ? "Women-Owned Business" : c.name === "직접생산확인증명서" ? "Direct Production Certificate" : c.name === "비디오물제작업 신고증" ? "Video Production Business" : "Independent Broadcast Producer"))
+    .join(" · ") + " — certificates issued on request";
   return `    </main>
 
     <footer class="site-footer" aria-label="Contact">

@@ -22,7 +22,10 @@ const w = (f, s) => { writeFileSync(join(root, f), s); console.log(`  ${f}`); };
 
 /* ── llms.txt ─────────────────────────────────────────────── */
 const creds = I.credentials
-  .map((c) => `- ${c.name} ${c.number}${c.valid ? ` (유효 ${c.valid})` : ""}`).join("\n");
+  /* 번호는 적지 않는다. AI 검색이 인용해야 할 것은 "무엇을 가졌는가"이지
+     그 번호가 아니다. 번호는 상호·주소와 함께 긁혀 사칭 고지서의 재료가
+     된다. 사본은 문의 시 보낸다. */
+  .map((c) => `- ${c.name} 보유${c.valid ? ` (유효 ${c.valid})` : ""}`).join("\n");
 // 사업영역 개수는 캐논에서 센다. 손으로 적어 두면 캐논에 하나 더할 때마다 어긋난다.
 const COUNT_KO = (n) => (["영", "한", "두", "세", "네", "다섯", "여섯", "일곱", "여덟", "아홉", "열"][n] ?? String(n)) + " 가지";
 const scopes = B.scopes.map((s, i) =>
