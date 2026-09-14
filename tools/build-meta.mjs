@@ -22,7 +22,10 @@ const w = (f, s) => { writeFileSync(join(root, f), s); console.log(`  ${f}`); };
 
 /* ── llms.txt ─────────────────────────────────────────────── */
 const creds = I.credentials
-  .map((c) => `- ${c.name} ${c.number}${c.valid ? ` (유효 ${c.valid})` : ""}`).join("\n");
+  /* 번호는 적지 않는다. AI 검색이 인용해야 할 것은 "무엇을 가졌는가"이지
+     그 번호가 아니다. 번호는 상호·주소와 함께 긁혀 사칭 고지서의 재료가
+     된다. 사본은 문의 시 보낸다. */
+  .map((c) => `- ${c.name} 보유${c.valid ? ` (유효 ${c.valid})` : ""}`).join("\n");
 // 사업영역 개수는 캐논에서 센다. 손으로 적어 두면 캐논에 하나 더할 때마다 어긋난다.
 const COUNT_KO = (n) => (["영", "한", "두", "세", "네", "다섯", "여섯", "일곱", "여덟", "아홉", "열"][n] ?? String(n)) + " 가지";
 const scopes = B.scopes.map((s, i) =>
@@ -36,7 +39,15 @@ const works = C.artworks.filter((a) => a.public)
   .map((a) => `- **${a.name}** (${a.ratio}): ${a.description}`).join("\n");
 const refs = B.proof.references.map((r) => `- ${r}`).join("\n");
 const diffs = B.differentiators.map((d) => `- ${d}`).join("\n");
-const pages = C.pages.filter((p) => p.h1).map((p) => `- [${p.h1}](${BASE}${p.path})`).join("\n");
+/* 한국어 쪽과 영문 쪽을 갈라 적는다. 한 줄로 이어 붙이면 AI 검색이
+   같은 회사의 영문판인지 다른 회사인지 알 수 없다. 영문 쪽에는 어떤
+   한국어 쪽의 번역인지도 같이 적는다. */
+const koPages = C.pages.filter((p) => p.h1 && p.lang !== "en")
+  .map((p) => `- [${p.h1}](${BASE}${p.path})`).join("\n");
+const enPages = C.pages.filter((p) => p.h1 && p.lang === "en")
+  .map((p) => `- [${p.h1}](${BASE}${p.path})`
+            + (p.altOf ? ` — English edition of ${BASE}${p.altOf === "/" ? "/" : p.altOf}` : "")).join("\n");
+const pages = koPages;
 const kw = [...C.keywords.primary, ...C.keywords.secondary, ...C.keywords.brand].join(", ");
 
 w("llms.txt", `# 오늘은 봄날 (publicbloom.art)
@@ -126,6 +137,14 @@ ${refs}
 
 ${pages}
 - [작품·작업 레퍼런스](${BASE}/#works)
+
+## English site
+
+같은 회사의 영문판입니다. 사실관계는 한국어 쪽이 정본이며, 아래 주소는
+그것을 영어로 옮긴 것입니다. This is the English edition of the same
+company. The Korean pages above are authoritative; these are translations.
+
+${enPages}
 
 ## 대표 키워드
 

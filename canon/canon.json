@@ -14,7 +14,12 @@
     "verification": {
       "google": "rSP3OWNR2ASouqOrFTis7jWRtWRfvTIaF4xMhFqtWLs",
       "naver": "065ca67de7d3753f1b02bdd17a7036c69ac372f7"
-    }
+    },
+    "langs": [
+      "ko",
+      "en"
+    ],
+    "enBase": "https://publicbloom.art/en"
   },
   "identity": {
     "legalName": "오늘은 봄날",
@@ -36,27 +41,32 @@
         "name": "여성기업 확인서",
         "number": "제0113-2025-35456호",
         "valid": "2025.11.07 ~ 2028.11.06",
-        "meaning": "공공기관 우선구매 대상"
+        "meaning": "공공기관 우선구매 대상",
+        "public": false
       },
       {
         "name": "직접생산확인증명서",
         "number": "제2025-0495-02141호",
         "valid": "2025.10.29 ~ 2027.10.28",
-        "meaning": "동영상제작서비스 · 중소기업자간 경쟁입찰 참여"
+        "meaning": "동영상제작서비스 · 중소기업자간 경쟁입찰 참여",
+        "public": false
       },
       {
         "name": "비디오물제작업 신고증",
         "number": "제2025-000019호",
         "valid": "",
-        "meaning": "영상물 제작업 등록"
+        "meaning": "영상물 제작업 등록",
+        "public": false
       },
       {
         "name": "방송영상독립제작사 신고증",
         "number": "제12235호",
         "valid": "",
-        "meaning": "방송영상 독립제작사"
+        "meaning": "방송영상 독립제작사",
+        "public": false
       }
-    ]
+    ],
+    "_credentialsNote": "증명서 번호는 화면에 내지 않는다. 손님이 확인할 길은 발급기관의 조회 시스템이고, 실제로 필요한 자리는 견적·입찰 서류다. 공개해서 얻는 것은 없고, 상호·주소와 함께 긁어 가는 사칭 고지서와 스팸의 재료가 된다. 사본은 문의 시 보낸다. 이 파일은 .vercelignore 에 있어 웹에 안 올라간다."
   },
   "business": {
     "oneLiner": "미디어아트를 AI와 코드로 만드는 미디어아트 AX 기업입니다. 고객이 직접 만든 화면을 사이니지 패널 규격에 맞춰 고화질로 렌더링해 드리고, LED 패널·전광판 설치와 빔프로젝터 미디어파사드까지 한 계약으로 끝내는 대구 여성기업입니다.",
@@ -218,8 +228,10 @@
         "detail": "웹 제작 업체나 템플릿 서비스에 맡기지 않고 Claude·ChatGPT를 써서 직접 짠 HTML입니다. 화면 구성부터 작품을 얹는 방식까지 우리가 손대는 구조라, 고객이 요청한 화면이나 문구를 다른 회사 일정에 맞출 필요 없이 그날 반영합니다. 미디어아트를 코드로 만드는 방식과 같은 원리입니다."
       },
       {
+        "id": "box-rental",
         "title": "미디어아트 박스 대여",
-        "body": "걸 화면이 없는 야외·야간 행사에 단초점 빔과 스피커, 플레이어를 한 벌로 빌려 드립니다. 3일부터, 3m × 1.8m 상영. 전원만 꽂으면 켜집니다."
+        "_comment": "여기 키 이름이 body 였다. 다른 여섯은 detail 이라 llms.txt 생성기가 이 칸만 undefined 로 찍었다.",
+        "detail": "걸 화면이 없는 야외·야간 행사에 단초점 빔과 스피커, 플레이어를 한 벌로 빌려 드립니다. 기본 3일 500만원에 기관 맞춤 콘텐츠 제작과 설치·철거가 들어 있고, 설치는 행사 하루 전날 나가 마쳐 둡니다. 나흘째부터는 콘텐츠가 이미 만들어져 있으므로 빔프로젝터와 장비 대여분만 하루 100만원을 받습니다. 3m × 1.8m 상영, 전원만 꽂으면 켜집니다."
       }
     ],
     "dataIntegration": {
@@ -303,10 +315,17 @@
       ],
       "installNote": "LED 패널·전광판 설치와 빔프로젝터 미디어파사드 시공은 벽면 크기와 현장 조건에 따라 달라져 실측 후 산정합니다.",
       "rental": {
-        "_comment": "한 벌을 통째로 빌려주는 구성. 콘텐츠 납품과 달리 기간·장소·설치 방식으로 값이 정해져 정찰가를 적지 않는다.",
+        "_comment": "한 벌을 통째로 빌려주는 구성. 기본 3일에 콘텐츠 제작까지 묶어 정찰가를 적는다. 나흘째부터는 콘텐츠가 이미 만들어져 있으므로 장비 대여분만 받는다.",
         "name": "미디어아트 박스 대여",
         "minimumDays": 3,
-        "minimumLabel": "3일부터",
+        "minimumLabel": "기본 3일",
+        "basePrice": 5000000,
+        "basePriceLabel": "기본 3일 500만원",
+        "basePriceIncludes": "콘텐츠 제작 · 설치 · 철거 포함",
+        "extraDayPrice": 1000000,
+        "extraDayLabel": "이후 하루당 100만원",
+        "extraDayNote": "나흘째부터는 콘텐츠가 이미 만들어져 있으므로 빔프로젝터와 장비 대여분만 받습니다.",
+        "installNote": "설치는 행사 하루 전날 나가 마쳐 둡니다.",
         "screen": "3m × 1.8m",
         "kit": [
           "5,000안시 단초점 빔프로젝터 · 천장 설치 또는 바닥 설치",
@@ -314,7 +333,7 @@
           "봄날 플레이어 · 미니 PC · 전원만 켜면 자동 재생"
         ],
         "contentNote": "트실 영상이 없으면 기관의 이야기를 받아 미디어아트로 만들어 넣어 드립니다. 이미 있는 영상은 화면 규격에 맞춰 다시 출력해 담아 드립니다.",
-        "priceNote": "대여 기간과 장소, 설치 방식에 따라 달라져 실측·일정 확인 후 산정합니다.",
+        "priceNote": "기본 3일 500만원(콘텐츠 제작 포함), 나흘째부터 하루 100만원. 설치 장소와 방식에 따라 달라지는 부분은 일정 확인 후 산정합니다.",
         "proof": "2026 고령 국가유산 야행 미디어 포토존에 실제로 나간 구성입니다."
       }
     }
@@ -594,8 +613,8 @@
     {
       "path": "/rental",
       "file": "rental.html",
-      "title": "미디어아트 렌탈 · 행사용 미디어아트 박스 대여 | 대구 여성기업 오늘은 봄날",
-      "description": "야외·야간 행사에 미디어아트 한 벌을 통째로 빌려 드립니다. 5,000안시 단초점 빔프로젝터와 스피커, 봄날 플레이어 구성으로 3m × 1.8m 상영, 3일부터 대여합니다. 트실 영상이 없으면 기관의 이야기로 미디어아트를 만들어 넣어 드립니다. 대구 여성기업, 공공기관 우선구매 대상.",
+      "title": "미디어아트 렌탈 · 기본 3일 500만원 (콘텐츠 포함) | 대구 여성기업 오늘은 봄날",
+      "description": "야외·야간 행사에 미디어아트 한 벌을 통째로 빌려 드립니다. 5,000안시 단초점 빔프로젝터와 스피커, 봄날 플레이어 구성으로 3m × 1.8m 상영. 기본 3일 500만원에 콘텐츠 제작이 들어 있고, 나흘째부터 하루 100만원입니다. 대구 여성기업, 공공기관 우선구매 대상.",
       "h1": "미디어아트 렌탈 · 행사용 미디어아트 박스 대여",
       "primaryKeywords": [
         "미디어아트 렌탈",
@@ -621,6 +640,84 @@
       "sitemap": {
         "priority": "0.8",
         "changefreq": "weekly"
+      }
+    },
+    {
+      "path": "/en",
+      "file": "en/index.html",
+      "lang": "en",
+      "altOf": "/",
+      "title": "Media Facade and LED Content Studio in Daegu, Korea | Oneul-eun Bomnal",
+      "description": "Daegu-based media art studio. We write media art as code, so one work re-renders at any ratio and resolution, and we install the LED panels and projectors it runs on.",
+      "h1": "We write screens, and we hang them.",
+      "sitemap": {
+        "priority": "0.9",
+        "changefreq": "weekly"
+      }
+    },
+    {
+      "path": "/en/services",
+      "file": "en/services.html",
+      "lang": "en",
+      "altOf": "/media-facade-content",
+      "title": "Media Facade Content, LED Installation, Media Art AX | Oneul-eun Bomnal",
+      "description": "Media art written as code and re-rendered to your screen spec, LED panel and projector installation carried out in house, and screens wired to live public data. Daegu, Korea.",
+      "h1": "From the concept to the cable",
+      "sitemap": {
+        "priority": "0.8",
+        "changefreq": "monthly"
+      }
+    },
+    {
+      "path": "/en/works",
+      "file": "en/works.html",
+      "lang": "en",
+      "altOf": "/pieces",
+      "title": "Selected Works: Media Facades and LED Walls in Korea | Oneul-eun Bomnal",
+      "description": "Media facades, LED walls and signage content installed at public institutions and cultural venues across Daegu, Busan and Gyeongbuk. About 40 media art works delivered.",
+      "h1": "Screens that are lit right now",
+      "sitemap": {
+        "priority": "0.8",
+        "changefreq": "monthly"
+      }
+    },
+    {
+      "path": "/en/studio",
+      "file": "en/studio.html",
+      "lang": "en",
+      "altOf": "/studio",
+      "title": "ArtWork Studio: Make a Media Art Screen Yourself | Oneul-eun Bomnal",
+      "description": "Pick a generative media art screen, see a five-second watermarked sample at once, and hang it on a photograph of real signage at true scale. No sign-up. From 100,000 won.",
+      "h1": "You choose the screen. We render it.",
+      "sitemap": {
+        "priority": "0.7",
+        "changefreq": "monthly"
+      }
+    },
+    {
+      "path": "/en/rental",
+      "file": "en/rental.html",
+      "lang": "en",
+      "altOf": "/rental",
+      "title": "Media Art Rental: Three Days from 5M Won, Content Included | Oneul-eun Bomnal",
+      "description": "Rent a complete media art kit for an event in Korea: short-throw projector, speaker and player in one case, throwing a 3m by 1.8m screen. Three days from 5,000,000 won.",
+      "h1": "A media art screen where there is no screen",
+      "sitemap": {
+        "priority": "0.7",
+        "changefreq": "monthly"
+      }
+    },
+    {
+      "path": "/en/contact",
+      "file": "en/contact.html",
+      "lang": "en",
+      "altOf": "/quote",
+      "title": "Contact: Start a Media Facade or LED Project | Oneul-eun Bomnal",
+      "description": "Send the wall size, the site and the rough schedule. We reply within 24 hours with a figure and, where needed, Korean public-procurement paperwork. Daegu, Korea.",
+      "h1": "Tell us the wall",
+      "sitemap": {
+        "priority": "0.7",
+        "changefreq": "monthly"
       }
     }
   ],

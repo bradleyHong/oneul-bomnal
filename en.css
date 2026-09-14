@@ -1,0 +1,93 @@
+/* 영문 사이트의 덧칠.
+   화면 모양은 한국어 쪽 styles.css 를 그대로 쓴다. 영문만 다른 디자인으로
+   두면 사이트가 둘이 되고, 고칠 때마다 두 번 고쳐야 한다. 여기 있는 것은
+   글자가 로마자뿐일 때만 필요한 조정과, 한국어 쪽에 없는 칸 두 개다. */
+
+/* 로마자만 있는 문단은 한글 규칙(낱말 단위로 안 쪼개기)이 필요 없다.
+   오히려 긴 단어에서 줄이 안 넘어가 한 줄이 삐져나온다. */
+.en-page h1,
+.en-page h2,
+.en-page h3,
+.en-page p,
+.en-page li,
+.en-page dd { word-break: normal; hyphens: auto; }
+
+/* 로마자 본문은 한글보다 한 뼘 좁아야 읽힌다. 한 줄 65~75자. */
+.en-page .subpage-hero p,
+.en-page .section-head p,
+.en-page .answer-block { max-width: 68ch; }
+.en-page .step-list li,
+.en-page .faq-item p { max-width: 74ch; }
+
+/* 언어 바꾸기. 메뉴의 마지막 자리에 테를 둘러 링크가 아니라 스위치로 읽히게. */
+.lang-switch {
+  padding: 6px 13px;
+  border: 1px solid var(--edge, rgba(16, 32, 26, 0.198));
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0;
+  white-space: nowrap;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+.lang-switch:hover,
+.lang-switch:focus-visible {
+  border-color: var(--glow, #7db2ff);
+  background: rgba(125, 178, 255, 0.14);
+}
+
+/* 실적 사진 격자. 한국어 쪽은 흘러가는 줄이지만 여기서는 한 판에 편다 —
+   처음 온 해외 담당자는 지나가는 사진이 아니라 목록을 보고 싶어 한다. */
+.en-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: clamp(14px, 1.6vw, 22px);
+}
+.en-grid figure {
+  position: relative;
+  margin: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.5);
+}
+.en-grid img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+.en-grid figcaption {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: grid;
+  gap: 2px;
+  padding: 34px 16px 14px;
+  background: linear-gradient(to top, rgba(4, 6, 11, 0.9), rgba(4, 6, 11, 0));
+}
+.en-grid figcaption b { font-size: clamp(14px, 1.3vw, 16px); font-weight: 800; color: #fff; }
+.en-grid figcaption span { font-size: 13px; color: rgba(255, 255, 255, 0.74); }
+
+/* 페이지 끝의 부름. 가운데로 모으고 위아래로 넉넉히 띄운다. */
+.en-cta {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  text-align: center;
+  /* 배경은 styles.css 의 초록 띠 규칙이 가져간다. 여기서 var(--surface) 를
+     쓰면 그 규칙이 초록 판 위에서 새로 정의한 --surface(흰색 8%)를 도로
+     읽어 자기 배경으로 깔아, 초록이 사라지고 흰 글자만 남는다. */
+}
+.en-cta h2 { max-width: 22ch; }
+.en-cta p { max-width: 56ch; }
+.en-cta .subpage-actions { margin-top: 8px; }
+
+/* 영문 푸터는 칸이 넷이다(회사 · 연락처 · 메뉴 · 법적 표기). */
+.en-page .site-footer .footer-legal {
+  grid-column: 1 / -1;
+  margin: 18px 0 0;
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--faint, rgba(16, 32, 26, 0.6));
+}

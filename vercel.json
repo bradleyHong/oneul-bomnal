@@ -24,7 +24,7 @@
       ]
     },
     {
-      "source": "/(|media-facade|led-install|media-facade-content|showcase|company|quote|data-media-art|landing)",
+      "source": "/(|media-facade|led-install|media-facade-content|showcase|company|quote|data-media-art|landing|rental|pieces|interactive|ai-video|en|en/services|en/works|en/studio|en/rental|en/contact)",
       "headers": [
         {
           "key": "Cache-Control",

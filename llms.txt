@@ -100,7 +100,7 @@
 
 ### 미디어아트 박스 대여
 
-undefined
+걸 화면이 없는 야외·야간 행사에 단초점 빔과 스피커, 플레이어를 한 벌로 빌려 드립니다. 기본 3일 500만원에 기관 맞춤 콘텐츠 제작과 설치·철거가 들어 있고, 설치는 행사 하루 전날 나가 마쳐 둡니다. 나흘째부터는 콘텐츠가 이미 만들어져 있으므로 빔프로젝터와 장비 대여분만 하루 100만원을 받습니다. 3m × 1.8m 상영, 전원만 꽂으면 켜집니다.
 
 ## 어떻게 만드나
 
@@ -150,10 +150,10 @@ undefined
 
 ## 인증·자격
 
-- 여성기업 확인서 제0113-2025-35456호 (유효 2025.11.07 ~ 2028.11.06)
-- 직접생산확인증명서 제2025-0495-02141호 (유효 2025.10.29 ~ 2027.10.28)
-- 비디오물제작업 신고증 제2025-000019호
-- 방송영상독립제작사 신고증 제12235호
+- 여성기업 확인서 보유 (유효 2025.11.07 ~ 2028.11.06)
+- 직접생산확인증명서 보유 (유효 2025.10.29 ~ 2027.10.28)
+- 비디오물제작업 신고증 보유
+- 방송영상독립제작사 신고증 보유
 
 ## 납품 실적과 현장 레퍼런스
 
@@ -202,6 +202,19 @@ undefined
 - [미디어아트 렌탈 · 행사용 미디어아트 박스 대여](https://publicbloom.art/rental)
 - [마음에 드는 화면을 고르세요](https://publicbloom.art/studio)
 - [작품·작업 레퍼런스](https://publicbloom.art/#works)
+
+## English site
+
+같은 회사의 영문판입니다. 사실관계는 한국어 쪽이 정본이며, 아래 주소는
+그것을 영어로 옮긴 것입니다. This is the English edition of the same
+company. The Korean pages above are authoritative; these are translations.
+
+- [We write screens, and we hang them.](https://publicbloom.art/en) — English edition of https://publicbloom.art/
+- [From the concept to the cable](https://publicbloom.art/en/services) — English edition of https://publicbloom.art/media-facade-content
+- [Screens that are lit right now](https://publicbloom.art/en/works) — English edition of https://publicbloom.art/pieces
+- [You choose the screen. We render it.](https://publicbloom.art/en/studio) — English edition of https://publicbloom.art/studio
+- [A media art screen where there is no screen](https://publicbloom.art/en/rental) — English edition of https://publicbloom.art/rental
+- [Tell us the wall](https://publicbloom.art/en/contact) — English edition of https://publicbloom.art/quote
 
 ## 대표 키워드
 
