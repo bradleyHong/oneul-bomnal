@@ -1465,10 +1465,10 @@ h1 {
   justify-content: center;
   min-height: 34px;
   padding: 0 13px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid var(--edge);
   border-radius: 999px;
   background: var(--petal);
-  color: rgba(238, 242, 248, 0.86);
+  color: var(--ink);
   font: inherit;
   font-size: 13px;
   font-weight: 950;
@@ -1486,7 +1486,7 @@ h1 {
 .region-quick-links a:hover,
 .live-action:hover {
   transform: translateY(-1px);
-  border-color: rgba(255, 255, 255, 0.24);
+  border-color: var(--edge-glow);
   background: var(--surface);
 }
 
@@ -1495,16 +1495,16 @@ h1 {
   gap: 8px;
   margin-top: 20px;
   padding: 14px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--edge-soft);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.14);
-  color: rgba(238, 242, 248, 0.78);
+  background: var(--raise);
+  color: var(--deep);
   font-size: 13px;
   line-height: 1.55;
 }
 
 .live-readout strong {
-  color: rgba(238, 242, 248, 0.92);
+  color: var(--ink);
   font-size: 12px;
 }
 
@@ -5974,7 +5974,7 @@ main > .section > .section-head .section-kicker {
 
 .photo-strip figcaption {
   padding: 10px 12px 12px;
-  color: #cfd6e4;
+  color: var(--deep);
   font-size: 12.5px;
   line-height: 1.55;
   background: var(--petal);
@@ -5982,7 +5982,7 @@ main > .section > .section-head .section-kicker {
 
 .photo-strip figcaption b {
   display: block;
-  color: #fff;
+  color: var(--ink);
   font-size: 13.5px;
   font-weight: 800;
   margin-bottom: 2px;
@@ -6011,13 +6011,13 @@ main > .section > .section-head .section-kicker {
 .mock-shot figcaption {
   padding: 12px 16px 14px;
   background: var(--petal);
-  color: #cfd6e4;
+  color: var(--deep);
   font-size: 13px;
   line-height: 1.6;
 }
 
 .mock-shot figcaption b {
-  color: #fff;
+  color: var(--ink);
   font-weight: 800;
 }
 

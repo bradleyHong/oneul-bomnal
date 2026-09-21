@@ -80,7 +80,7 @@ ${JSON.stringify(ld, null, 6)}
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Noto+Serif+KR:wght@400;500;600;700&amp;display=swap" />
-    <link rel="stylesheet" href="${A}styles.css?v=20260914-serif" />
+    <link rel="stylesheet" href="${A}styles.css?v=20260921-fix" />
     <link rel="stylesheet" href="${A}en.css?v=20260914-rolex" />
     <link rel="icon" href="${A}assets/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="${A}assets/favicon-180.png" />
@@ -286,7 +286,7 @@ function foot() {
      상호·주소와 함께 긁어 가는 사칭 고지서의 재료가 된다. */
   const cred = C.identity.credentials
     .map((c) => (c.name === "여성기업 확인서" ? "Women-Owned Business" : c.name === "직접생산확인증명서" ? "Direct Production Certificate" : c.name === "비디오물제작업 신고증" ? "Video Production Business" : "Independent Broadcast Producer"))
-    .join(" · ") + " — certificates issued on request";
+    .join(" · ");
   return `    </main>
 
     <footer class="site-footer" aria-label="Contact">
@@ -319,7 +319,16 @@ ${E.nav.map((n) => `        <a href="${n.path}">${esc(n.label)}</a>`).join("\n")
 /* ── 굽기 ─────────────────────────────────────────────────── */
 mkdirSync(join(root, "en"), { recursive: true });
 const made = [];
+/* 설명문(meta description)은 canon.json 이 정본이다. en.json 에도 같은
+   문장을 두면 한쪽만 고쳤을 때 구운 결과와 캐논이 어긋난다. 실제로 그렇게
+   어긋나 검증이 6건 터졌다. 여기서 캐논 값을 덮어씌워 한 곳만 남긴다. */
+const CANON_DESC = new Map(
+  (C.pages || []).filter((x) => x.lang === "en").map((x) => [x.path, x.description]),
+);
 for (const p of E.pages) {
+  const cd = CANON_DESC.get(p.path);
+  if (!cd) throw new Error(`${p.path}: canon.json 의 pages 에 영문 항목이 없다`);
+  p.description = cd;
   const body = (p.sections || [])
     .map((s) => {
       const fn = BLOCK[s.type];
