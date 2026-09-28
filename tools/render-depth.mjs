@@ -59,8 +59,14 @@ function ffmpegPath() {
   throw new Error("libx264 가 든 ffmpeg 가 없다 — pip install imageio-ffmpeg");
 }
 
+/* 커밋 번호에 "작업본에 안 올린 수정이 있었다"는 표시를 같이 적는다.
+   안 적으면 NOTES 의 번호로 되돌아가도 같은 영상이 안 나올 수 있다. */
 function commitHash() {
-  try { return execSync("git rev-parse --short HEAD", { cwd: root }).toString().trim(); } catch { return "?"; }
+  try {
+    const h = execSync("git rev-parse --short HEAD", { cwd: root }).toString().trim();
+    const dirty = execSync("git status --porcelain -- depth tools/render-depth.mjs", { cwd: root }).toString().trim();
+    return dirty ? h + " + 커밋 전 수정" : h;
+  } catch { return "?"; }
 }
 
 function nextNumber() {
