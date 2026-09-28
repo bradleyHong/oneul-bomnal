@@ -457,13 +457,40 @@ var SCENES = [
      판을 나누는 그림이라 비율을 안 탄다. */
   var ART_TALL_V8 = keptIn(ART_TALL, ART_V8).concat(V8_NEW);
   var ART_WIDE_V8 = keptIn(ART_WIDE, ART_V8).concat(V8_NEW);
-  var FIT = {
+  var FIT_V8 = {
     tall:  withPrefix(ART_TALL_V8),
     wide:  withPrefix(ART_WIDE_V8),
     even:  withPrefix(ART_V8)
   };
+
+  /* ── 9판 · 미디어파사드 ─────────────────────────────────────
+   * 손님 말이 맞았다. 8판까지는 가까이서 보는 화면을 그렸다. 선이 가늘고
+   * 물체가 작고 대비가 낮다. 로비 사이니지에서는 그럴듯한데, 건물에 걸면
+   * 십 미터 밖에서 아무것도 안 보인다. 돈을 받고 파는 화면이라면 그건
+   * 미완성이다.
+   *
+   * 그래서 파사드를 보고 넷을 새로 그렸다. 규칙은 넷이다 —
+   *   가장 작은 요소도 짧은 변의 1% 보다 크게
+   *   덩어리는 불투명하게, 빛은 더하기로
+   *   한 바퀴에 큰 사건 하나
+   *   깊이는 겹으로
+   * 빛기둥(beam)은 안개 속의 빛줄기, 먹번짐(inkbloom)은 물에 푸는 먹,
+   * 비단(silk)은 뒤에서 빛을 받는 천, 덩어리(monolith)는 지나가는 큰 판이다.
+   * 넷 다 16:9 · 32:9 띠 · 1:6 기둥에서 같은 무게로 선다.
+   *
+   * 8판 목록은 FIT_V8 로 얼려 둔다. 이미 나간 번호(BN- ~ BN8-)는 옛
+   * 목록으로 그리므로 담아 둔 화면도 팔린 화면도 하나도 안 바뀐다. */
+  var V9_NEW = ["beam", "inkbloom", "silk", "monolith"];
+  var ART_V9 = ART_V8.concat(V9_NEW);
+  var ART_TALL_V9 = ART_TALL_V8.concat(V9_NEW);
+  var ART_WIDE_V9 = ART_WIDE_V8.concat(V9_NEW);
+  var FIT = {
+    tall:  withPrefix(ART_TALL_V9),
+    wide:  withPrefix(ART_WIDE_V9),
+    even:  withPrefix(ART_V9)
+  };
   var FITS = { 1: FIT_V1, 2: FIT_V2, 3: FIT_V3, 4: FIT_V4, 5: FIT_V5, 6: FIT_V6,
-               7: FIT_V7, 8: FIT };
+               7: FIT_V7, 8: FIT_V8, 9: FIT };
 
   /* ── 문장 읽기 ────────────────────────────────────────────
    * 낱말은 방향만 잡는다. 고정하지 않는다.

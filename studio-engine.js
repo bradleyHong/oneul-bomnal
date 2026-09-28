@@ -434,7 +434,10 @@ function create(canvas, opts) {
    * 이 스타일들은 획마다 그림자를 달지 않고, 다 그린 뒤 번짐을 한 번만
    * 얹는다. 4분의 1 크기로 흐리게 떠서 더하는 방식이라 값이 거의 안 든다.
    * 그림은 거의 같고 속도는 수십 배 빨라진다. */
-  const HEAVY_GLOW = { ripple: 1, thread: 1, smoke: 1, magnet: 1, neonsign: 1,
+  /* 겹을 여러 장 덮어 그리는 그림은 반드시 여기 들어와야 한다. 겹마다
+     shadowBlur 로 테두리 빛이 붙으면 스물넷을 겹칠 때 등고선 지도가 된다. */
+  const HEAVY_GLOW = { beam: 1, silk: 1, inkbloom: 1, monolith: 1,
+                       ripple: 1, thread: 1, smoke: 1, magnet: 1, neonsign: 1,
                        constellation: 1, flock: 1, rain: 1, oscillo: 1, moire: 1,
                        /* VJ 풍도 같은 병에 걸렸다. 만화경 353→4.4ms(80배),
                           폭발 118→3.3(36배), 터널 69→4.3(16배),
@@ -5313,6 +5316,481 @@ function create(canvas, opts) {
       ctx.fillRect(W * 3 - bx, H - H * 0.085 - bh, W, bh);
     },
 
+    /* ── 미디어파사드 넉 점 ─────────────────────────────────────
+       건물 외벽은 50m 밖에서, 밤에, 한참을 본다. 그 앞에서 무너지는
+       것들이 있다 — 가는 선은 안 보이고, 작은 알갱이는 먼지가 되고,
+       검은 자리가 넓으면 꺼진 화면으로 읽힌다. 화면 안에서 예쁘던 것이
+       벽에서는 고장 난 것처럼 보인다.
+
+       그래서 이 넉 점은 규칙을 달리 잡았다.
+         · 가장 작은 요소도 짧은 변의 1% 보다 크게
+         · 덩어리는 불투명하게, 빛은 더하기로 — 중간 회색을 안 쓴다
+         · 한 바퀴에 큰 사건 하나. 잘게 움직이면 멀리서 떨림으로 보인다
+         · 깊이는 겹으로. 겹마다 속도가 달라야 벽이 두꺼워 보인다 */
+
+    /* 99 빛기둥 — 안개를 가르는 빛.
+       파사드에서 가장 멀리까지 가는 그림이다. 형태가 하나뿐이고 크고
+       느리다. 기둥은 가장자리를 흐릴 수 없으므로(4K 에서 blur 는 비싸다)
+       같은 기둥을 폭만 넓혀 세 번 겹쳐 그린다. 가운데가 밝고 가장자리가
+       옅어져 부피가 생긴다. */
+    beam(t) {
+      const ph = t / DUR;
+      const short = Math.min(W, H);
+
+      /* 안개 — 위가 짙고 아래로 갈수록 걷힌다 */
+      const hz = ctx.createLinearGradient(0, 0, 0, H);
+      hz.addColorStop(0, shade(3, 0.22));
+      hz.addColorStop(0.55, shade(3, 0.07));
+      hz.addColorStop(1, shade(3, 0.17));
+      ctx.fillStyle = hz;
+      ctx.fillRect(0, 0, W, H);
+
+      const n = 3 + Math.round(k.density * 5);
+      const apexY = -H * 0.22;
+      ctx.globalCompositeOperation = ADD;
+
+      /* 겹이 셋이다. 먼 겹은 넓고 옅고 느리게, 앞 겹은 좁고 밝고 빠르게. */
+      const LAY = [
+        { w: 2.6, a: 0.11, sp: 0.6, tone: 2 },
+        { w: 1.5, a: 0.19, sp: 0.85, tone: 1 },
+        { w: 1.0, a: 0.32, sp: 1.0, tone: 0 }
+      ];
+      for (let L = 0; L < LAY.length; L++) {
+        const ly = LAY[L];
+        for (let i = 0; i < n; i++) {
+          const s = seeds[(i * 11 + 500) % seeds.length];
+          const apexX = W * ((i + 0.5) / n + (s.a - 0.5) * 0.10);
+          /* 한 바퀴에 한 번 좌우로 쓸고 돌아온다. 큰 사건 하나다. */
+          const swing = Math.sin(ph * TAU + s.b * TAU) * (0.22 + s.c * 0.20) * ly.sp;
+          const half = short * (0.055 + s.d * 0.075) * ly.w * clamp(k.scale, 0.6, 1.5);
+          const foot = W * (i + 0.5) / n + swing * W * 0.5;
+          /* 밝기도 한 바퀴에 한 번 숨을 쉰다. 기둥마다 박자가 다르다. */
+          const puls = 0.55 + 0.45 * Math.sin(ph * TAU * (1 + Math.floor(s.a * 2)) + s.c * TAU);
+          const g = ctx.createLinearGradient(apexX, apexY, foot, H * 1.05);
+          g.addColorStop(0, tone(ly.tone, Math.min(0.95, ly.a * 1.5 * puls * k.contrast)));
+          g.addColorStop(0.45, tone(ly.tone, ly.a * puls * k.contrast));
+          g.addColorStop(1, tone(ly.tone, 0));
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.moveTo(apexX - half * 0.12, apexY);
+          ctx.lineTo(apexX + half * 0.12, apexY);
+          ctx.lineTo(foot + half, H * 1.05);
+          ctx.lineTo(foot - half, H * 1.05);
+          ctx.closePath();
+          ctx.fill();
+        }
+      }
+
+      /* 바닥에 고이는 빛. 기둥이 닿는 자리만 밝다. */
+      for (let i = 0; i < n; i++) {
+        const s = seeds[(i * 11 + 500) % seeds.length];
+        const swing = Math.sin(ph * TAU + s.b * TAU) * (0.22 + s.c * 0.20);
+        const foot = W * (i + 0.5) / n + swing * W * 0.5;
+        const R = short * (0.16 + s.d * 0.12);
+        const g2 = ctx.createRadialGradient(foot, H, 0, foot, H, R);
+        g2.addColorStop(0, tone(0, 0.30 * k.glow + 0.10));
+        g2.addColorStop(1, tone(0, 0));
+        ctx.fillStyle = g2;
+        ctx.fillRect(foot - R, H - R, R * 2, R);
+      }
+
+      /* 먼지. 벽에서 보이려면 알갱이가 아니라 반딧불이만 해야 한다. */
+      const m = 40 + Math.round(k.density * 70);
+      ctx.fillStyle = tone(0, 0.35 + 0.35 * k.glow);
+      ctx.beginPath();
+      for (let i = 0; i < m; i++) {
+        const s = seeds[(i * 3 + 512) % seeds.length];
+        const cyc = 1 + Math.floor(s.c * 2);
+        const u = (s.b + ph * cyc) % 1;
+        const x = s.a * W + Math.sin(u * TAU + s.d * TAU) * W * 0.03;
+        const y = (1 - u) * H * 1.1 - H * 0.05;
+        const r = Math.max(short * 0.0035, S * (1.6 + s.d * 3.2));
+        ctx.moveTo(x + r, y);
+        ctx.arc(x, y, r, 0, TAU);
+      }
+      ctx.fill();
+      ctx.globalCompositeOperation = "source-over";
+    },
+
+    /* 100 먹번짐 — 세 방울이 벽을 먹는다.
+       수묵을 옅게 그리면 파사드에서 사라진다. 반대로 간다 — 큰 덩어리가
+       한 바퀴 동안 번졌다 스민다. 가장자리는 종이에 스밀 때처럼 손가락
+       모양으로 갈라진다(점성 손가락). 안쪽만 밝게 두는 것이 핵심이다.
+       덩어리 전체가 밝으면 벽에 걸었을 때 그림이 아니라 조명이 된다. */
+    inkbloom(t) {
+      const ph = t / DUR;
+      const short = Math.min(W, H);
+      /* 짧은 변으로 잡으면 32:9 띠에서 가운데만 차고, 대각선으로 잡으면
+         화면을 통째로 덮는다. 넓이의 제곱근이 어느 비율에서나 맞는다. */
+      const base = Math.sqrt(W * H);
+      /* 가로로 긴 화면에서는 옆으로, 세로로 긴 화면에서는 위아래로
+         늘어난다. 한 쪽으로만 늘리면 기둥 화면에서 방울이 점이 된다. */
+      const ar = W / H;
+      const stretch = clamp(Math.pow(ar, 0.38), 0.55, 1.75);
+      const squash = clamp(Math.pow(1 / ar, 0.38), 0.55, 1.75);
+      const vert = H > W;
+      const N = 200;
+
+      /* 큰 것 하나에 따르는 것 둘. 시차를 두어 한 바퀴 동안 화면이 비지
+         않게 하되, 언제나 큰 것 하나가 그림을 끈다. */
+      /* p 는 긴 쪽을 따라, q 는 짧은 쪽을 가로질러 놓는 자리다. */
+      const D0 = [
+        { s: 0, off: 0.00, r: 1.00, p: 0.30 + seeds[520].a * 0.40, q: 0.36 + seeds[520].b * 0.26 },
+        { s: 1, off: 0.36, r: 0.46, p: 0.08 + seeds[521].a * 0.26, q: 0.28 + seeds[521].b * 0.42 },
+        { s: 2, off: 0.68, r: 0.33, p: 0.66 + seeds[524].a * 0.28, q: 0.32 + seeds[524].b * 0.40 }
+      ];
+      const DROPS = D0.map((d) => ({ s: d.s, off: d.off, r: d.r,
+        x: vert ? d.q : d.p, y: vert ? d.p : d.q }));
+      /* 겹 스물넷. 겹이 적으면 등고선 지도처럼 단이 보인다. 밝기는
+         안쪽으로 제곱해서 올라가 — 밝은 자리는 반지름의 이십 퍼센트
+         안쪽에만 있고 화면의 대부분은 검게 남는다. */
+      const NR = 24;
+      const RING = [];
+      for (let r = 0; r < NR; r++) {
+        const f = r / (NR - 1);                        /* 0 바깥 ~ 1 안쪽 */
+        const sc = 1 - Math.pow(f, 0.92) * 0.90;
+        const ti = f > 0.90 ? 0 : (f > 0.74 ? 1 : (f > 0.46 ? 2 : 3));
+        /* 바깥 겹은 밝기가 0 이라 바탕에 그대로 녹는다. 가장자리에 선이
+           생기지 않고 물에 풀리듯 사라진다. */
+        RING.push([sc, ti, Math.pow(f, 1.6)]);
+      }
+
+      /* 가장자리 모양. 둥근 몸에서 가는 실이 뻗는다 — 번짐은 꽃잎이
+         아니라 실이다. 세제곱으로 눌러 실을 가늘고 길게 뽑는다.
+         잡음 밭 위를 한 바퀴 돌아 이음매가 맞는다. */
+      const edge = (d, a, sc) => {
+        const ca = Math.cos(a), sa = Math.sin(a);
+        const big = fbm(ca * 1.6 + d.ox + d.s * 4.7, sa * 1.6 + d.oy, 3);
+        const fin = fbm(ca * 7.5 + d.ox * 2 + d.s * 9.1, sa * 7.5 + d.oy * 2, 2);
+        const tend = Math.pow(clamp(fin * 1.35, 0, 1), 2.2);
+        /* 실은 바깥 겹에서 길고 안쪽에서 짧다. 다만 sc 를 곱한 뒤에도
+           겹의 순서가 뒤집히지 않게 계수를 잡는다 — 뒤집히면 안쪽 겹이
+           바깥으로 삐져나와 등고선 지도가 된다. */
+        return 0.72 + big * 0.28 + tend * 0.62 * (0.55 + 0.45 * sc);
+      };
+
+      for (const d of DROPS) {
+        const u0 = ((ph + d.off) % 1 + 1) % 1;
+        /* 먹이 종이에 닿는 순간이 제일 빠르다. 곧게 키우면 기계가
+           커지는 것처럼 보인다. 빠르게 퍼지고, 머물고, 천천히 스민다. */
+        const u = u0 < 0.26 ? Math.pow(u0 / 0.26, 0.5)
+                : (u0 < 0.70 ? 1 : 1 - Math.pow((u0 - 0.70) / 0.30, 1.7));
+        if (u <= 0.004) continue;
+        d.ox = Math.cos(u0 * TAU) * 0.5;
+        d.oy = Math.sin(u0 * TAU) * 0.5;
+        const R = base * (0.30 + seeds[520 + d.s].c * 0.09) * d.r * clamp(k.scale, 0.7, 1.4) * u;
+        const cx = W * d.x, cy = H * d.y;
+        const sq = squash * (0.88 + seeds[521 + d.s].a * 0.22);
+
+        /* 방울이 겹칠 때 뒤 방울의 어두운 바깥 겹이 앞 방울의 밝은 속을
+           덮어 구멍을 낸다. 밝은 쪽만 남기면 물에서 먹이 섞이듯 합쳐진다. */
+        ctx.globalCompositeOperation = "lighten";
+        for (const [sc, ti, amt] of RING) {
+          ctx.fillStyle = shade(ti, Math.min(1, amt * k.contrast));
+          ctx.beginPath();
+          for (let i = 0; i <= N; i++) {
+            const a = (i / N) * TAU;
+            const rr = R * sc * edge(d, a, sc);
+            const x = cx + Math.cos(a) * rr * stretch, y = cy + Math.sin(a) * rr * sq;
+            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+          }
+          ctx.closePath();
+          ctx.fill();
+        }
+        ctx.globalCompositeOperation = "source-over";
+
+        /* 젖은 자리의 테. 먹이 마르며 가장자리에 고인 선이다.
+           바깥 겹은 바탕에 녹아 보이지 않으니, 아직 색이 남은 자리에 둔다. */
+        ctx.globalCompositeOperation = ADD;
+        ctx.strokeStyle = tone(0, (0.03 + 0.07 * k.glow) * (0.5 + d.r * 0.5));
+        ctx.lineWidth = Math.max(1.5, short * 0.0035);
+        ctx.beginPath();
+        for (let i = 0; i <= N; i++) {
+          const a = (i / N) * TAU;
+          const rr = R * 0.62 * edge(d, a, 0.62);
+          const x = cx + Math.cos(a) * rr * stretch, y = cy + Math.sin(a) * rr * sq;
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.stroke();
+        ctx.globalCompositeOperation = "source-over";
+
+        /* 튄 자국. 큰 것만 남긴다 — 작은 점은 벽에서 먼지다. */
+        if (d.s === 0) {
+          const sp = 4 + Math.round(k.density * 6);
+          ctx.globalCompositeOperation = "lighten";
+          ctx.fillStyle = shade(2, 0.34 * k.contrast);
+          ctx.beginPath();
+          for (let i = 0; i < sp; i++) {
+            const s = seeds[(i * 5 + 530) % seeds.length];
+            const a = s.a * TAU;
+            const dd = R * (1.02 + s.b * 0.34);
+            const rr = Math.max(short * 0.005, short * (0.006 + s.c * 0.013) * u);
+            const px = cx + Math.cos(a) * dd * stretch, py = cy + Math.sin(a) * dd * sq;
+            ctx.moveTo(px + rr, py);
+            ctx.arc(px, py, rr, 0, TAU);
+          }
+          ctx.fill();
+          ctx.globalCompositeOperation = "source-over";
+        }
+      }
+    },
+
+    /* 101 비단 — 뒤에서 빛을 받는 천.
+       파사드에 거는 화면 중에 제일 오래 봐도 안 물리는 것이 천이다.
+       주름은 적고 넓어야 한다 — 잔주름을 많이 넣으면 천이 아니라
+       줄무늬가 된다. 좌우로 갈수록 어두워져야 원통으로 말린 천이 된다.
+       물리 시늉(Verlet)은 프레임을 순서대로 밟아야 해서 되감으면
+       어긋난다 — 여기서는 시간의 순수한 함수로 주름을 만든다.
+       되감아도, 건너뛰어도 같은 그림이다. */
+    silk(t) {
+      const ph = t / DUR;
+      const short = Math.min(W, H);
+      const wideK = clamp(W / H / (16 / 9), 0.4, 2.6);
+      const NU = Math.round(clamp(52 + k.density * 40, 36, 96) * clamp(wideK, 0.7, 2.0));
+      /* 세로 칸은 화면 높이에 맞춰 늘린다. 칸 수를 고정하면 4K 에서
+         한 칸이 70픽셀이 되어 계단이 그대로 보인다. 마루가 비스듬히
+         서 있어서, 줄이 두꺼우면 그 경계가 통째로 계단이 된다. */
+      const NV = Math.round(clamp(H / 7, 56, 240));
+      const amp = (0.085 + seeds[530].a * 0.05) * clamp(k.scale, 0.6, 1.4);
+      /* 주름 셋. 마루가 적고 넓다. 잔주름을 많이 넣으면 천이 아니라
+         줄무늬가 된다. 주기는 전부 한 바퀴의 정수분의 일이다. */
+      const F = [
+        { k: 2 + Math.floor(seeds[530].b * 2), c: 1, a: 1.00, p: seeds[530].c * TAU },
+        { k: 5 + Math.floor(seeds[530].d * 2), c: 1, a: 0.34, p: seeds[531].a * TAU },
+        { k: 9 + Math.floor(seeds[531].b * 3), c: 2, a: 0.12, p: seeds[531].c * TAU }
+      ];
+      /* 주름이 세로로 곧으면 천이 아니라 판자다. 아래로 내려가며 결이
+         옆으로 밀려야 골이 휘고, 늘어진 천으로 읽힌다. 다만 uv 로 재면
+         띠 화면에서 각도가 눕는다 — 화면에서 본 기울기가 같도록
+         가로세로비로 나눠 준다. 안 그러면 사선 줄무늬가 된다. */
+      const leanK = (0.07 + seeds[531].d * 0.08) * clamp(H / W * (16 / 9), 0.22, 1.6);
+      const zAt = (uu, vv) => {
+        let z = 0;
+        const lean = vv * leanK;
+        for (const f of F) {
+          z += f.a * Math.sin((uu + lean * (1 + f.k * 0.05)) * TAU * f.k + f.c * ph * TAU + f.p);
+        }
+        /* 세로로도 한 번 크게 물결친다. 매달린 자리가 팽팽하고 아래가 깊다. */
+        z += 0.5 * Math.sin(vv * TAU * 0.85 + ph * TAU + seeds[530].c * TAU);
+        return z * amp * (0.30 + vv * 0.95);
+      };
+      /* 천이 좌우로 말려 들어간다. 가장자리가 어두워야 평면이 아니라
+         부피로 보인다. 이 한 줄이 벽지와 천을 가른다. */
+      const roll = (uu) => 0.26 + 0.74 * Math.pow(Math.sin(Math.PI * clamp(uu, 0, 1)), 0.62);
+      /* 한 바퀴에 한 번, 빛이 천을 가로질러 지나간다. 줄로 그으면 빗살
+         무늬가 되니 밝기에 섞어 넣는다 — 면이 밝아져야 윤기다. */
+      const swp = ph % 1;
+      const sheenAt = (uu) => {
+        const d = ((uu - swp + 1.5) % 1) - 0.5;
+        return Math.exp(-(d * d) / 0.010);
+      };
+
+      /* 높이를 한 번만 재서 격자에 담는다. 칸마다 다시 재면 같은 값을
+         네 번씩 계산하게 되고, 단으로 묶어 칠하면 계단이 보인다. */
+      const ZG = new Float32Array((NU + 1) * (NV + 1));
+      for (let j = 0; j <= NV; j++) {
+        for (let i = 0; i <= NU; i++) ZG[j * (NU + 1) + i] = zAt(i / NU, j / NV);
+      }
+      /* 색은 하나로 이어 올린다 — 색을 갈아타면 천이 아니라 사탕 줄무늬다.
+         아흔여섯 단이면 벽에서 이어진 면으로 읽힌다. */
+      const NB = 96;
+      const cols = new Array(NB);
+      /* 색을 단 단위로 갈아타면 그 경계가 격자 모양 계단으로 드러난다.
+         세 색 사이를 이어서 섞고, 대비는 곱이 아니라 지수로 준다 —
+         곱으로 주면 위쪽 십여 단이 전부 같은 흰색으로 눌러붙는다. */
+      const hx = (i) => {
+        const n = parseInt(TONES[((i % TONES.length) + TONES.length) % TONES.length].slice(1), 16);
+        return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+      };
+      const TT = [hx(2), hx(1), hx(0)];
+      const gam = 2.2 / clamp(k.contrast, 0.5, 1.8);
+      for (let b = 0; b < NB; b++) {
+        const f = b / (NB - 1);
+        const a = Math.pow(f, gam);
+        const hp = clamp((f - 0.50) / 0.50, 0, 1) * 2;
+        const i0 = Math.min(1, Math.floor(hp)), fr = hp - i0;
+        const c0 = TT[i0], c1 = TT[i0 + 1];
+        cols[b] = "rgb(" +
+          Math.round(BGRGB[0] + (c0[0] + (c1[0] - c0[0]) * fr - BGRGB[0]) * a) + "," +
+          Math.round(BGRGB[1] + (c0[1] + (c1[1] - c0[1]) * fr - BGRGB[1]) * a) + "," +
+          Math.round(BGRGB[2] + (c0[2] + (c1[2] - c0[2]) * fr - BGRGB[2]) * a) + ")";
+      }
+      /* z 가 클수록 뒤로 물러난다. 아주 조금만 — 천이지 상자가 아니다. */
+      const X = (u, z) => W * (0.5 + (u - 0.5) * (1 - z * 0.45));
+      const Y = (v, z) => H * (0.02 + v * 0.98) - z * short * 0.10;
+
+      /* 가로로는 칸마다 색을 바꾸지 않고, 한 줄을 통째로 그라데이션으로
+         칠한다. 칸 색을 그대로 쓰면 4K 에서 칸 하나가 30픽셀이라 마루
+         가장자리에 계단이 선다. 그라데이션은 칸 사이를 이어 준다. */
+      for (let j = 0; j < NV; j++) {
+        const v0 = j / NV, v1 = (j + 1) / NV;
+        const r0 = j * (NU + 1), r1 = (j + 1) * (NU + 1);
+        const g = ctx.createLinearGradient(0, 0, W, 0);
+        for (let i = 0; i <= NU; i++) {
+          const um = i / NU;
+          const ia = Math.max(0, i - 1), ib = Math.min(NU, i + 1);
+          const du = (ZG[r0 + ib] - ZG[r0 + ia]) * NU / (ib - ia);
+          const dv = (ZG[r1 + i] - ZG[r0 + i]) * NV;
+          const sh = Math.tanh(du * 0.32 - dv * 0.14);
+          const raw = (0.5 + 0.5 * sh) * roll(um)
+            + 0.20 * sheenAt(um) * Math.max(0, sh) * (0.4 + k.glow);
+          /* 위쪽은 어깨를 눕혀 1 에 닿지 않게 한다. 눌러붙으면 마루가
+             흰 덩어리가 되고 가장자리에 계단이 선다. */
+          const lit = raw < 0.8 ? clamp(raw, 0, 1)
+            : 0.8 + 0.2 * (1 - Math.exp(-(raw - 0.8) * 5));
+          g.addColorStop(um, cols[Math.floor(lit * (NB - 0.001))]);
+        }
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        for (let i = 0; i <= NU; i++) {
+          const z = ZG[r0 + i], x = X(i / NU, z), y = Y(v0, z);
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        for (let i = NU; i >= 0; i--) {
+          const z = ZG[r1 + i];
+          ctx.lineTo(X(i / NU, z), Y(v1, z) + 1);
+        }
+        ctx.closePath();
+        ctx.fill();
+      }
+    },
+
+    /* 102 덩어리 — 지나가는 큰 판.
+       파사드 앞을 지나는 사람은 화면을 오래 안 본다. 몇 초 보고 지나간다.
+       그 몇 초에 남는 것은 무늬가 아니라 실루엣이다. 그래서 큰 판을
+       앞뒤로 세워 천천히 지나가게 한다. 판은 어둡고 모서리만 빛을 받는다.
+       멀수록 작고 느리게, 가까울수록 크고 빠르게 — 그래야 벽이 두꺼워진다.
+       폭은 제곱으로 벌린다. 같은 폭이 늘어서면 울타리로 보인다. */
+    monolith(t) {
+      const ph = t / DUR;
+      const short = Math.min(W, H);
+      const wideK = clamp(W / H / (16 / 9), 0.5, 3);
+
+      /* 뒤 하늘. 아래가 밝아야 판의 실루엣이 선다. 하늘 전체를 밝히면
+         판이 안 서고 벽지가 된다 — 빛은 지평 한 자리에만 둔다. */
+      const sky = ctx.createLinearGradient(0, 0, 0, H);
+      sky.addColorStop(0, shade(3, 0.02));
+      sky.addColorStop(0.58, shade(3, 0.10));
+      sky.addColorStop(1, shade(2, 0.30 * k.contrast));
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, W, H);
+      const hx = 0.5 + (seeds[542].a - 0.5) * 0.5;
+      const hg = ctx.createRadialGradient(W * hx, H * 1.02, 0, W * hx, H * 1.02, Math.max(W, H) * 0.5);
+      hg.addColorStop(0, tone(0, 0.20 + 0.30 * k.glow));
+      hg.addColorStop(0.45, tone(0, 0.06 + 0.10 * k.glow));
+      hg.addColorStop(1, tone(0, 0));
+      ctx.globalCompositeOperation = ADD;
+      ctx.fillStyle = hg;
+      ctx.fillRect(0, 0, W, H);
+      ctx.globalCompositeOperation = "source-over";
+
+      /* 판은 두 무리다. 뒤에 안개에 잠긴 얇은 것들이 도시처럼 서 있고,
+         앞에 아주 큰 것 몇이 느리게 지나간다. 앞의 것이 새카맣고
+         뒤의 것이 뿌예야 벽이 두꺼워진다(공기 원근). */
+      const nFar = Math.round((8 + k.density * 9) * clamp(wideK, 1.0, 1.8));
+      const nNear = Math.round((3 + k.density * 3) * clamp(wideK, 0.9, 1.4));
+      const slabs = [];
+      for (let i = 0; i < nFar + nNear; i++) {
+        const far = i < nFar;
+        const s = seeds[(i * 7 + 540) % seeds.length];
+        const s2 = seeds[(i * 7 + 541) % seeds.length];
+        const z = far ? 1.9 + s.a * 1.7 : 0.28 + s.a * 0.80;
+        /* 가까울수록 빠르다. 다만 한 바퀴에 정수 번 지나가야 한다 —
+           소수 번 지나가면 끝 장에서 첫 장으로 넘어갈 때 판이 툭 튄다.
+           우리가 파는 것은 5초 완전 루프다. */
+        const cyc = far ? 1 : 2 + Math.floor(s.c * 2);
+        const u = ((s.b + ph * cyc) % 1 + 1) % 1;
+        const wid = far ? (0.05 + Math.pow(s2.a, 1.8) * 0.18)
+                        : (0.10 + Math.pow(s2.a, 1.7) * 0.36);
+        const hh = H * (far ? 0.30 + s2.b * 0.75 : 1.10 + s2.b * 1.10) / (0.35 + z * 0.42);
+        slabs.push({ z: z, far: far,
+          x: (u * 1.7 - 0.35) * W,
+          w: short * wid / ((far ? 0.35 : 0.55) + z * 0.5) * clamp(k.scale, 0.6, 1.5),
+          /* 앞의 것은 화면 위아래로 빠져나간다. 액자 안에 얌전히 든 판은
+             벽에서 모형처럼 보인다. 잘려야 크게 느껴진다. */
+          h: hh,
+          /* 뒤의 것은 바닥에 박혀 있어야 한다. 밑변을 지평에 걸어
+             위로만 키운다 — 공중에 뜬 판은 도시가 아니라 스티커다. */
+          y: far ? H * (0.97 + s2.c * 0.06) - hh / 2
+                 : H * (0.56 + (s2.c - 0.5) * 0.30),
+          lean: (s2.d - 0.5) * (far ? 0.02 : 0.08),
+          /* 앞 판 몇에는 빛이 새는 틈이 있다. 같은 사각형만 지나가면 지겹다. */
+          slit: (!far && s.d > 0.55) ? 0.20 + s.d * 0.45 : 0,
+          lit: s.c });
+      }
+      slabs.sort((a, b) => b.z - a.z);                     /* 먼 것부터 */
+
+      for (const o of slabs) {
+        const fog = clamp(1 - (o.z - 0.28) / 3.4, 0.08, 1);
+        const x0 = o.x - o.w / 2, x1 = o.x + o.w / 2;
+        const yTop = o.y - o.h / 2, yBot = o.y + o.h / 2;
+        if (x1 < -o.w * 0.2 || x0 > W + o.w * 0.2) continue;
+        /* 몸통 — 먼 것은 안개에 뿌옇게 잠기고 가까운 것은 새카맣다 */
+        const bg = ctx.createLinearGradient(0, yTop, 0, yBot);
+        const amtTop = 0.02 + Math.pow(1 - fog, 1.5) * 0.30;
+        bg.addColorStop(0, shade(3, clamp(amtTop, 0, 1)));
+        bg.addColorStop(1, shade(3, clamp(amtTop + 0.10 * (1 - fog) + 0.02, 0, 1)));
+        ctx.fillStyle = bg;
+        ctx.beginPath();
+        ctx.moveTo(x0 + o.lean * o.w, yTop);
+        ctx.lineTo(x1 + o.lean * o.w, yTop);
+        ctx.lineTo(x1, yBot);
+        ctx.lineTo(x0, yBot);
+        ctx.closePath();
+        ctx.fill();
+        /* 빛을 받는 옆면 한 장. 판을 판으로 보이게 하는 것이 이 면이다.
+           멀리 있는 것에는 안 붙인다 — 붙이면 전부 반짝여 깊이가 죽는다. */
+        if (!o.far) {
+          const sw = o.w * (0.05 + o.lit * 0.10);
+          const sg = ctx.createLinearGradient(x1, 0, x1 + sw, 0);
+          sg.addColorStop(0, shade(o.lit > 0.66 ? 0 : 1, clamp((0.34 + o.lit * 0.55) * k.contrast, 0, 1)));
+          sg.addColorStop(1, shade(1, clamp((0.12 + o.lit * 0.24) * k.contrast, 0, 1)));
+          ctx.fillStyle = sg;
+          ctx.beginPath();
+          ctx.moveTo(x1 + o.lean * o.w, yTop);
+          ctx.lineTo(x1 + o.lean * o.w + sw, yTop + o.h * 0.02);
+          ctx.lineTo(x1 + sw, yBot - o.h * 0.015);
+          ctx.lineTo(x1, yBot);
+          ctx.closePath();
+          ctx.fill();
+          /* 판을 가르는 틈. 뒤에서 빛이 샌다. */
+          if (o.slit > 0) {
+            const sx = x0 + o.w * o.slit;
+            const sww = Math.max(short * 0.004, o.w * 0.012);
+            ctx.globalCompositeOperation = ADD;
+            const gl = ctx.createLinearGradient(sx - sww * 3, 0, sx + sww * 4, 0);
+            gl.addColorStop(0, tone(0, 0));
+            gl.addColorStop(0.5, tone(0, clamp(0.34 * (0.4 + k.glow), 0, 0.9)));
+            gl.addColorStop(1, tone(0, 0));
+            ctx.fillStyle = gl;
+            ctx.fillRect(sx - sww * 3, yTop, sww * 7, o.h);
+            ctx.globalCompositeOperation = "source-over";
+          }
+        }
+        /* 모서리. 세로 한 줄과, 화면 안에 들어온 윗변 한 줄.
+           윗변이 보여야 늘어선 판이 스카이라인으로 읽힌다. */
+        ctx.strokeStyle = tone(0, clamp((o.far ? 0.10 : 0.26 + o.lit * 0.44) * (o.far ? 1 : 1), 0, 0.92));
+        ctx.lineWidth = Math.max(short * 0.0026, S * 1.4);
+        ctx.beginPath();
+        ctx.moveTo(x1 + o.lean * o.w, yTop);
+        ctx.lineTo(x1, yBot);
+        if (yTop > 0) {
+          ctx.moveTo(x0 + o.lean * o.w, yTop);
+          ctx.lineTo(x1 + o.lean * o.w, yTop);
+        }
+        ctx.stroke();
+        /* 바닥에 닿은 자리. 그림자가 없으면 판이 공중에 뜬 그림이 된다. */
+        if (yBot < H) {
+          const g3 = ctx.createLinearGradient(0, yBot, 0, yBot + o.w * 0.4);
+          g3.addColorStop(0, "rgba(0,0,0," + (0.5 * fog) + ")");
+          g3.addColorStop(1, "rgba(0,0,0,0)");
+          ctx.fillStyle = g3;
+          ctx.fillRect(x0 - o.w * 0.12, yBot, o.w * 1.24, o.w * 0.4);
+        }
+      }
+    },
+
   };
 
   /* ── 마감 처리 ────────────────────────────────────────────────
@@ -5442,6 +5920,8 @@ const STYLE_LABELS = [
   ["moonjar", "달항아리"], ["buddha", "금불"], ["celadon", "청자 상감"],
   ["reactdiff", "반응확산"], ["curlflow", "곡류"], ["voronoi", "세포"],
   ["pojagi", "조각보"], ["motiongfx", "모션그래픽"],
+
+  ["beam", "빛기둥"], ["inkbloom", "먹번짐"], ["silk", "비단"], ["monolith", "덩어리"],
 ];
 
 global.StudioArt = {
