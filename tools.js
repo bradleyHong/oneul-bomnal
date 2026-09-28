@@ -218,6 +218,16 @@
     return !hit;
   }
 
+  /* ── 바깥으로 ─────────────────────────────────────────────
+   * 만들기 화면(make.js)이 같은 묶음·규격·설정표를 쓴다. 두 벌로 적어
+   * 두면 한쪽만 고쳐져 도구에서 본 화면과 만들기에서 본 화면이 갈린다.
+   * 특히 설정표는 우리가 4K 로 뽑을 때 쓰는 줄이라 갈리면 납품이 어긋난다. */
+  global.BomnalToolset = {
+    TOOLS: TOOLS, SIZES: SIZES, KNOBS: KNOBS, MOVE_KNOBS: MOVE_KNOBS, TEX_KNOBS: TEX_KNOBS,
+    MOTIONS: MOTIONS, DURS: DURS, CODE_V: CODE_V, PREFIX: PREFIX,
+    spin: spin, sheetOf: sheetOf, code: code, bare: bare
+  };
+
   /* ── 화면 ─────────────────────────────────────────────── */
   document.addEventListener("DOMContentLoaded", function () {
     var root = document.getElementById("tools");
