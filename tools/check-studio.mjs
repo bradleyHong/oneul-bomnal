@@ -123,7 +123,8 @@ for (const key of ["ART_TALL", "ART_WIDE"]) {
    한 번 뚫렸다 — #25 가 판을 안 올리고 8종을 넣어 담아 둔 화면이 바뀌었다.
    그래서 이제는 "지금 나가 있는 판의 수"도 같이 본다: 배포된 판에
    스타일을 더하려면 판을 올려야 한다. */
-const ERAS = [[56, "weave"], [78, "nakhwa"], [88, "renaissance"], [89, "flyposter"], [90, "hangul"]];
+const ERAS = [[56, "weave"], [78, "nakhwa"], [88, "renaissance"], [89, "flyposter"], [90, "hangul"],
+              [98, "motiongfx"], [102, "monolith"]];
 for (const [count, last] of ERAS) {
   if (listed.length < count) {
     fails.push(`엔진 스타일이 ${listed.length}종이다. ${count}종 판보다 적다 (지운 것이 있다)`);

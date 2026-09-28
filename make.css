@@ -1,0 +1,281 @@
+/* 봄날 만들기 — 화면 하나, 버튼 넷.
+ *
+ * 규칙 하나만 지킨다. 처음 들어온 사람의 눈에 들어오는 순서가
+ *   ① 그림  ② 다시  ③ 이 화면 받기
+ * 이어야 한다. 그 사이에 설명도 손잡이도 끼우지 않는다. 글은 아래로
+ * 내린다 — 읽고 싶은 사람만 읽으면 된다. */
+
+.mk-main {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 18px 16px 72px;
+}
+
+/* ── 그림 ─────────────────────────────────────────────── */
+.mk-stage {
+  background: #000;
+  border: 1px solid var(--st-line);
+  border-radius: 14px;
+  padding: 10px 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.mk-stage canvas {
+  display: block;
+  max-width: 100%;
+  border-radius: 8px;
+  background: #000;
+}
+.mk-stage-foot {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+/* 검은 판 위에 얹히는 글자다. 본문 색을 그대로 쓰면 어둠에 묻혀
+   작품 번호가 안 읽힌다 — 번호는 손님이 우리에게 불러 줄 것이다. */
+.mk-code { font-size: .82rem; color: rgba(232, 238, 252, .62); letter-spacing: .01em; }
+.mk-code b { color: #f2f5fb; font-size: .92rem; letter-spacing: .04em; }
+.mk-heart {
+  border: 1px solid rgba(232, 238, 252, .28); background: rgba(232, 238, 252, .06);
+  color: rgba(232, 238, 252, .82);
+  border-radius: 999px; padding: 6px 13px; font: inherit; font-size: .8rem; cursor: pointer;
+}
+.mk-heart:hover { border-color: rgba(232, 238, 252, .5); }
+.mk-heart.is-on { border-color: #f2f5fb; color: #f2f5fb; }
+
+/* ── 손잡이 넷 ─────────────────────────────────────────
+   손가락으로 누르는 자리다. 작게 만들면 스무 번 누를 것을 두 번 누르고
+   나간다. 높이는 어느 화면에서나 56px 아래로 내리지 않는다. */
+.mk-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 12px 0 0;
+}
+.mk-b {
+  min-height: 62px;
+  border: 1px solid var(--edge);
+  background: var(--surface);
+  color: var(--st-ink);
+  border-radius: 12px;
+  padding: 8px 6px;
+  font: inherit;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  line-height: 1.25;
+}
+.mk-b:hover { border-color: var(--st-blue); }
+.mk-b.is-main { background: var(--st-pale); border-color: var(--st-blue); }
+.mk-b-ko { font-weight: 700; font-size: 1rem; }
+.mk-b-sub {
+  font-size: .72rem; color: var(--st-gray); text-align: center;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── 담아 둔 화면 ───────────────────────────────────────
+   만든 것이 쌓여 보여야 "내 자리"가 된다. 안 담으셨으면 아예 안 뜬다 —
+   빈 칸을 보여 주는 것은 "여기 아직 아무것도 없다"고 적어 두는 것과 같다. */
+.mk-kept { margin-top: 12px; }
+.mk-kept[hidden] { display: none; }
+.mk-kept-ttl { margin: 0 0 6px; font-size: .82rem; color: var(--st-gray); }
+.mk-kept-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.mk-kept-row button {
+  flex: 0 0 auto; border: 1px solid var(--edge); background: #000; padding: 0;
+  border-radius: 8px; cursor: pointer; line-height: 0; overflow: hidden;
+}
+.mk-kept-row button:hover { border-color: var(--st-blue); }
+.mk-kept-row canvas { display: block; width: 116px; height: 66px; }
+
+/* ── 접어 둔 줄 둘 ─────────────────────────────────────── */
+.mk-rows { display: grid; gap: 8px; margin-top: 8px; }
+.mk-row {
+  width: 100%; text-align: left; font: inherit; cursor: pointer;
+  border: 1px solid var(--edge); background: transparent; color: var(--st-ink);
+  border-radius: 12px; padding: 12px 14px;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.mk-row:hover { border-color: var(--st-blue); }
+.mk-row b { font-size: .95rem; }
+.mk-row span { font-size: .8rem; color: var(--st-gray); }
+
+/* ── 주 버튼 하나 ───────────────────────────────────────── */
+.mk-get {
+  width: 100%; margin-top: 14px; min-height: 58px;
+  border: 0; border-radius: 12px; cursor: pointer;
+  background: var(--st-blue); color: var(--void);
+  font: inherit; font-size: 1.05rem; font-weight: 800; letter-spacing: -.01em;
+}
+.mk-get:hover { filter: brightness(1.08); }
+
+.mk-foot { margin: 14px 0 0; font-size: .84rem; color: var(--st-gray); line-height: 1.7; }
+.mk-foot b { color: var(--st-body); }
+
+/* 글은 아래로. 그림을 먼저 보여 준 다음에 설명한다. */
+.mk-h1 { font-size: 1.45rem; font-weight: 800; margin: 42px 0 8px; letter-spacing: -.01em; }
+.mk-lead { margin: 0; color: var(--st-body); line-height: 1.7; max-width: 760px; }
+.mk-lead b { color: var(--st-ink); }
+
+/* ── 덮개 ───────────────────────────────────────────────
+   고르는 일은 전부 여기서 일어난다. 좁은 화면에서는 아래에서 올라오고,
+   넓은 화면에서는 가운데 뜬다. */
+.mk-sheet { position: fixed; inset: 0; z-index: 40; display: flex; }
+.mk-sheet[hidden] { display: none; }
+.mk-sheet-bg { position: absolute; inset: 0; background: rgba(0, 0, 0, .62); border: 0; }
+.mk-sheet-in {
+  position: relative;
+  margin: auto auto 0;
+  width: 100%;
+  max-width: 720px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--st-line);
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
+}
+@media (min-width: 720px) {
+  .mk-sheet-in { margin: auto; border-radius: 16px; max-height: 84vh; }
+}
+.mk-sheet-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 16px 18px; border-bottom: 1px solid var(--st-line);
+}
+.mk-sheet-head h2 { margin: 0; font-size: 1.05rem; font-weight: 800; }
+.mk-sheet-x {
+  border: 1px solid var(--edge); background: transparent; color: var(--st-body);
+  border-radius: 999px; padding: 6px 14px; font: inherit; font-size: .84rem; cursor: pointer;
+}
+.mk-sheet-body { padding: 16px 18px 26px; overflow: auto; }
+body.mk-locked { overflow: hidden; }
+
+.mk-note { margin: 0 0 12px; font-size: .84rem; color: var(--st-gray); line-height: 1.65; }
+.mk-h3 { margin: 20px 0 8px; font-size: .92rem; font-weight: 700; }
+.mk-h3:first-child { margin-top: 0; }
+
+/* ── 칩 ─────────────────────────────────────────────────── */
+.mk-chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.mk-chip {
+  border: 1px solid var(--edge); background: transparent; color: var(--st-ink);
+  border-radius: 10px; padding: 11px 12px; font: inherit; cursor: pointer;
+  text-align: left; display: flex; flex-direction: column; gap: 3px; min-height: 58px;
+}
+.mk-chip:hover { border-color: var(--st-blue); }
+.mk-chip.is-on { border-color: var(--st-blue); background: var(--st-pale); }
+.mk-chip b { font-size: .92rem; font-weight: 700; }
+.mk-chip span { font-size: .75rem; color: var(--st-gray); line-height: 1.4; }
+
+/* ── 색 ─────────────────────────────────────────────────── */
+.mk-pals { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 8px; }
+.mk-pal {
+  border: 1px solid var(--edge); background: transparent; color: var(--st-ink);
+  border-radius: 10px; padding: 8px; font: inherit; cursor: pointer; text-align: left;
+}
+.mk-pal:hover { border-color: var(--st-blue); }
+.mk-pal.is-on { border-color: var(--st-blue); background: var(--st-pale); }
+.mk-pal-bar {
+  display: flex; gap: 3px; align-items: center; height: 26px;
+  border-radius: 6px; padding: 0 6px; margin-bottom: 6px;
+}
+.mk-pal-bar i { width: 12px; height: 12px; border-radius: 3px; display: block; }
+.mk-pal-name { font-size: .76rem; color: var(--st-body); }
+
+.mk-mine { margin-top: 18px; }
+.mk-mine-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.mk-mine-row input[type="color"] {
+  width: 52px; height: 40px; padding: 0; border: 1px solid var(--edge);
+  border-radius: 8px; background: var(--void); cursor: pointer;
+}
+.mk-mine-hex { margin: 8px 0; }
+.mk-mine-hex input {
+  width: 100%; box-sizing: border-box; border: 1px solid var(--edge); border-radius: 8px;
+  padding: 10px 12px; font: inherit; background: var(--void); color: var(--st-ink);
+}
+
+/* ── 손잡이 슬라이더 ───────────────────────────────────── */
+.mk-knob { display: block; margin: 0 0 14px; }
+.mk-knob-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.mk-knob-head b { font-size: .88rem; }
+.mk-knob-val { font-size: .78rem; color: var(--st-gray); }
+.mk-knob input[type="range"] { width: 100%; margin: 4px 0 2px; accent-color: var(--st-blue); }
+.mk-knob-help { font-size: .74rem; color: var(--st-gray); }
+
+/* ── 내 데이터 ─────────────────────────────────────────── */
+.mk-live-row { display: flex; gap: 8px; margin-bottom: 10px; }
+.mk-live-col { flex-direction: column; }
+.mk-live-row select, .mk-live-row input {
+  flex: 1; min-width: 0; box-sizing: border-box;
+  border: 1px solid var(--edge); border-radius: 8px; padding: 10px 12px;
+  font: inherit; background: var(--void); color: var(--st-ink);
+}
+.mk-live-out { margin: 10px 0; font-size: .86rem; color: var(--st-body); line-height: 1.6; }
+.mk-live-acts { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ── 받기 ───────────────────────────────────────────────── */
+.mk-get-head {
+  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  padding-bottom: 12px; border-bottom: 1px solid var(--st-line); margin-bottom: 14px;
+}
+.mk-get-head b { letter-spacing: .04em; }
+.mk-get-head span { font-size: .82rem; color: var(--st-gray); }
+.mk-get-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.mk-btn {
+  border: 1px solid var(--edge); background: var(--surface); color: var(--st-ink);
+  border-radius: 10px; padding: 11px 16px; font: inherit; font-size: .9rem;
+  cursor: pointer; text-decoration: none; display: inline-block;
+}
+.mk-btn:hover { border-color: var(--st-blue); }
+.mk-btn.is-primary { background: var(--st-blue); color: var(--void); border-color: var(--st-blue); font-weight: 700; }
+.mk-btn[disabled] { opacity: .55; cursor: default; }
+
+.mk-price { display: grid; gap: 6px; }
+.mk-price-row {
+  display: grid; grid-template-columns: 1fr auto; gap: 2px 12px;
+  padding: 10px 12px; border: 1px solid var(--edge); border-radius: 10px;
+}
+.mk-price-row b { font-size: .9rem; }
+.mk-price-val { font-size: .95rem; font-weight: 700; color: var(--st-blue); text-align: right; }
+.mk-price-sub { grid-column: 1 / -1; font-size: .76rem; color: var(--st-gray); }
+
+.mk-form { margin-top: 22px; }
+.mk-field { display: block; margin-bottom: 10px; }
+.mk-field span { display: block; font-size: .82rem; margin-bottom: 5px; color: var(--st-body); }
+.mk-field input, .mk-field textarea {
+  width: 100%; box-sizing: border-box; border: 1px solid var(--edge); border-radius: 8px;
+  padding: 10px 12px; font: inherit; background: var(--void); color: var(--st-ink);
+}
+.mk-field textarea { resize: vertical; line-height: 1.55; }
+.mk-consent { display: flex; gap: 8px; align-items: flex-start; margin: 12px 0 14px; }
+.mk-consent input { margin-top: 3px; flex: 0 0 auto; }
+.mk-consent span { font-size: .78rem; color: var(--st-gray); line-height: 1.55; }
+.mk-form-msg { margin: 10px 0 0; font-size: .84rem; color: var(--st-body); min-height: 1.2em; }
+
+.mk-sheetline { margin-top: 20px; }
+.mk-sheetline summary { cursor: pointer; font-size: .84rem; color: var(--st-gray); }
+.mk-sheetline pre {
+  white-space: pre-wrap; word-break: break-all; font-size: .72rem; line-height: 1.55;
+  background: var(--void); border: 1px solid var(--edge); border-radius: 8px;
+  padding: 10px 12px; margin: 8px 0 0; color: var(--st-body);
+}
+
+@media (max-width: 520px) {
+  .mk-main { padding: 12px 12px 64px; }
+  /* 좁은 화면에서는 머리글 부제가 두 줄로 접혀 차림표를 밀어낸다.
+     이름과 갈 곳만 남긴다. */
+  .mk-page .st-nav { padding: 12px 14px; }
+  .mk-page .st-brand span { display: none; }
+  .mk-page .st-nav-tools { gap: 12px; }
+  .mk-b-ko { font-size: .94rem; }
+  .mk-h1 { font-size: 1.28rem; }
+}

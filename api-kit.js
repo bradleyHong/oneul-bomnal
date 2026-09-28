@@ -63,6 +63,10 @@
     ].join("\n");
   }
 
+  /* 만들기 화면(make.js)이 같은 지역표와 같은 주소를 쓴다. 두 벌로
+     적어 두면 한쪽만 고쳐져 안내한 주소와 실제로 부르는 주소가 갈린다. */
+  window.BomnalApiKit = { PLACES: PLACES, urls: urls };
+
   function ready(fn) {
     if (document.readyState !== "loading") fn();
     else document.addEventListener("DOMContentLoaded", fn);

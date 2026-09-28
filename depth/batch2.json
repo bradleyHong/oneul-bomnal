@@ -1,0 +1,12 @@
+{
+  "_comment": "목록 2차. 연등 · 빛터널 · 산수. node tools/render-depth.mjs --batch depth/batch2.json",
+  "preset": "catalog",
+  "len": [30],
+  "jobs": [
+    { "scene": "lanterns",  "seed": 2604121, "pal": 0 },
+    { "scene": "tunnel",    "seed": 2604122, "pal": 0 },
+    { "scene": "lanterns",  "seed": 2604123, "pal": 2 },
+    { "scene": "tunnel",    "seed": 2604124, "pal": 1 },
+    { "scene": "mountains", "seed": 2604125, "pal": 1 }
+  ]
+}
