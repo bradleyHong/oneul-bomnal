@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>깊이 · 코드로 그린 3D | 오늘은 봄날</title>
+<style>
+  html, body { margin: 0; background: #050505; overflow: hidden; }
+  canvas { display: block; width: 100vw; height: 100vh; object-fit: contain; }
+  .err { position: fixed; inset: 0; color: #f3efe6; font: 13px/1.6 ui-monospace, monospace;
+         padding: 20px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<!-- 장면은 전부 코드다. 모델 파일도 텍스처 이미지도 없다. -->
+<script src="./common.glsl.js"></script>
+<script src="./engine.js"></script>
+<script src="./scenes/index.js"></script>
+<script>
+/* 주소로 전부 정한다. 렌더 스크립트도 사람도 같은 주소를 연다.
+     ?scene=chrome&seed=4821937&pal=0&w=1920&h=1080&fps=30&dur=5&aa=2&capture=1 */
+(function () {
+  var q = new URLSearchParams(location.search);
+  var opts = {
+    scene: q.get("scene") || "chrome",
+    seed: +q.get("seed") || 4821937,
+    pal: q.has("pal") ? (isNaN(+q.get("pal")) ? q.get("pal") : +q.get("pal")) : 0,
+    w: +q.get("w") || 1280, h: +q.get("h") || 720,
+    fps: +q.get("fps") || 30, dur: +q.get("dur") || 5,
+    aa: +q.get("aa") || 1
+  };
+  var cv = document.getElementById("c");
+  try {
+    var d = Depth.create(cv, opts);
+    window.renderFrame = d.renderFrame;
+    window.__DEPTH__ = { total: d.totalFrames, palette: d.palette, seedValues: d.seedValues, opts: opts };
+    window.__READY__ = true;
+    if (!q.get("capture")) {
+      /* 미리보기. 프레임 번호로만 간다 — 렌더와 같은 그림이 같은 순서로 나온다. */
+      var f = 0;
+      (function loop() { d.renderFrame(f++); requestAnimationFrame(loop); })();
+    }
+  } catch (e) {
+    window.__ERROR__ = String(e && e.message || e);
+    var p = document.createElement("pre"); p.className = "err"; p.textContent = window.__ERROR__;
+    document.body.appendChild(p);
+  }
+})();
+</script>
+</body>
+</html>

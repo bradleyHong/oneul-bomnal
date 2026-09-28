@@ -1,0 +1,22 @@
+{
+  "_comment": "목록 1차. 장면 여덟 · 색판 둘씩. 1080p · 30fps · 5초 완전 루프 + 30초 이어 붙인 판. node tools/render-depth.mjs --batch depth/batch.json",
+  "preset": "catalog",
+  "len": [30],
+  "jobs": [
+    { "scene": "ocean",     "seed": 2604101, "pal": 0 },
+    { "scene": "colonnade", "seed": 2604102, "pal": 0 },
+    { "scene": "ribbon",    "seed": 2604103, "pal": 0 },
+    { "scene": "gyroid",    "seed": 2604104, "pal": 0 },
+    { "scene": "moonjar",   "seed": 2604105, "pal": 0 },
+    { "scene": "crystal",   "seed": 2604106, "pal": 1 },
+    { "scene": "chrome",    "seed": 2604107, "pal": 0 },
+    { "scene": "ocean",     "seed": 2604111, "pal": 3 },
+    { "scene": "colonnade", "seed": 2604112, "pal": 1 },
+    { "scene": "ribbon",    "seed": 2604113, "pal": 1 },
+    { "scene": "gyroid",    "seed": 2604114, "pal": 1 },
+    { "scene": "moonjar",   "seed": 2604115, "pal": 3 },
+    { "scene": "crystal",   "seed": 2604116, "pal": 0 },
+    { "scene": "chrome",    "seed": 2604117, "pal": 2 },
+    { "scene": "stones",    "seed": 2604108, "pal": 0 }
+  ]
+}
