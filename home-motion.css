@@ -1,0 +1,266 @@
+/* 첫 화면의 아나모픽 모서리와, 스크롤에 붙는 나타남.
+ *
+ * 애플 홈페이지의 결을 따랐다. 규칙은 넷이다.
+ *   ① 움직이는 것은 transform 과 opacity 뿐 — 합성기가 혼자 처리한다
+ *   ② 큰 글자는 자간을 죄고(−0.02em 부터), 줄간은 좁게
+ *   ③ 떠 있는 판은 불투명한 띠가 아니라 뒤가 비치는 재질로
+ *   ④ 움직임·투명도·대비를 줄여 달라는 설정을 셋 다 따로 듣는다
+ */
+
+/* ── 첫 화면 · 아나모픽 모서리 ─────────────────────────────
+   기둥 두 면에 같은 영상을 두 번 걸면 화면 두 대로 보이고, 한 장으로
+   그려 모서리에서 잘라 걸면 기둥 하나가 된다. 그 차이를 첫 화면이
+   직접 해 보인다. 스크롤하면 모서리가 펴져 띠 한 장이 된다. */
+.home2-hero.is-anam {
+  display: block;
+  /* 붙박이(sticky)는 위쪽 어느 조상이든 스크롤 상자면 풀린다.
+     본 규칙의 overflow: hidden 이 바로 그것이라, 여기서 열어 주고
+     잘라 내는 일은 안쪽 무대가 맡는다. */
+  overflow: visible;
+  /* 모서리가 펴지는 것을 보려면 그동안 무대가 붙어 있어야 한다.
+     첫 화면 한 바퀴에 조금 더. 그 이상은 "언제 끝나나" 가 된다. */
+  min-height: 178svh;
+  background: var(--h-ink);
+}
+.home2-hero.is-anam .anam-sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.anam {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  /* 눈의 자리. 사람 키 높이에서 모서리를 본다 — 가운데에 두면
+     건축 도면처럼 보이고, 조금 위에서 봐야 서 있는 기둥이 된다. */
+  perspective: 1180px;
+  perspective-origin: 50% 44%;
+  /* 엔진이 못 붙어도 첫 화면이 완성되어 보이도록 바탕을 칠해 둔다. */
+  background:
+    radial-gradient(120% 90% at 50% 16%, #17223c 0%, #0a0e17 60%, var(--h-ink) 100%);
+}
+
+.anam-box {
+  --open: 46deg;
+  --lit: 1;
+  --ry: 0deg;
+  --rx: 0deg;
+  --sc: 1;
+  position: absolute;
+  /* 무대 가운데에 기둥 하나. 화면 높이의 62% 를 차지한다 —
+     글자가 앉을 아래쪽을 비워 둔다. */
+  left: 50%;
+  top: 46%;
+  /* 접혀 있을 때는 두 면이 비스듬해 좁아 보이고, 펴지면 이 폭 그대로
+     화면을 채운다. 접힌 상태에 맞춰 잡으면 펴진 뒤가 허전하다. */
+  width: min(84vw, 1180px);
+  height: min(58svh, 540px);
+  margin: 0;
+  transform-style: preserve-3d;
+  transform:
+    translate(-50%, -50%)
+    rotateX(var(--rx))
+    rotateY(var(--ry))
+    scale(var(--sc));
+  will-change: transform;
+}
+
+.anam-face {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  backface-visibility: hidden;
+  background: #000;
+}
+/* 두 면은 가운데 모서리를 사이에 두고 각자 제 축으로 돈다.
+   왼쪽 면은 오른쪽 변을 축으로, 오른쪽 면은 왼쪽 변을 축으로 —
+   그래야 모서리 한 줄이 어긋나지 않고 딱 맞는다. */
+.anam-face.is-l {
+  left: 0;
+  transform-origin: 100% 50%;
+  transform: rotateY(var(--open));
+}
+.anam-face.is-r {
+  left: 50%;
+  transform-origin: 0 50%;
+  transform: rotateY(calc(var(--open) * -1));
+}
+.anam-face canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* 빛이 한쪽에서 든다. 두 면이 똑같이 밝으면 종이를 접은 것으로 보이고,
+   한쪽이 조금 어두워야 부피가 선다. */
+.anam-face.is-l::after,
+.anam-face.is-r::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* 다 펴지면 두 면은 한 장이다. 그때까지 남아 있으면 가운데가 V 자로
+     어두워져 이어 붙인 자국이 된다. 펴지는 만큼 같이 걷는다. */
+  opacity: var(--lit, 1);
+}
+.anam-face.is-l::after { background: linear-gradient(90deg, rgba(0,0,0,.46), rgba(0,0,0,0)); }
+.anam-face.is-r::after { background: linear-gradient(90deg, rgba(0,0,0,0), rgba(0,0,0,.30)); }
+
+/* 바닥에 비친 빛. 기둥이 공중에 뜬 그림이 되지 않게 받쳐 준다. */
+.anam-floor {
+  position: absolute;
+  left: 50%;
+  top: 78%;
+  width: min(86vw, 1180px);
+  height: 26svh;
+  transform: translateX(-50%);
+  background: radial-gradient(60% 100% at 50% 0%, rgba(120, 160, 230, .16), rgba(0, 0, 0, 0) 72%);
+  filter: blur(14px);
+  pointer-events: none;
+}
+
+/* 글자 뒤를 눌러 준다. 빛나는 그림 위의 흰 글자는 그냥은 안 읽힌다. */
+.home2-hero.is-anam .anam::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(6, 8, 12, .62) 0%, rgba(6, 8, 12, .10) 30%,
+                    rgba(6, 8, 12, .52) 72%, rgba(6, 8, 12, .92) 100%);
+}
+
+/* 모서리가 다 펴지면 글자가 비켜난다. 다음 칸으로 넘어가는 자리다. */
+.home2-hero.is-anam .home2-body {
+  --out: 0;
+  transform: translate3d(0, calc(var(--out) * -28px), 0);
+  opacity: calc(1 - var(--out));
+  will-change: transform, opacity;
+}
+
+.anam-hint {
+  position: absolute;
+  left: var(--h-pad);
+  bottom: clamp(10px, 1.4vh, 18px);
+  z-index: 2;
+  margin: 0;
+  font-size: clamp(10px, .82vw, 12px);
+  letter-spacing: .06em;
+  color: rgba(232, 238, 252, .5);
+}
+
+/* ── 상영관 칸 ─────────────────────────────────────────────
+   첫 화면에서 배경으로 깔려 있던 작업 영상을 제 칸으로 내보낸다.
+   어둡게 깔고 한 편만 보여 준다 — 애플이 제품 하나에 한 칸을 쓰는 것과
+   같은 이유다. 두 개를 한 칸에 두면 둘 다 안 본다. */
+.reel {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  background: var(--h-ink);
+  color: var(--h-white);
+  isolation: isolate;
+}
+.reel-body {
+  position: relative;
+  z-index: 2;
+  padding: 0 var(--h-pad) clamp(26px, 4vh, 44px);
+  max-width: 1180px;
+}
+.reel-body h2 {
+  margin: 8px 0 0;
+  font-size: clamp(1.6rem, 4vw, 3.2rem);
+  line-height: 1.06;
+  letter-spacing: -0.03em;     /* 큰 글자일수록 자간을 죈다 */
+  font-weight: 800;
+  color: var(--h-white);
+}
+.reel-body .section-kicker { color: var(--h-dim); }
+.reel .home2-credit { position: static; margin-top: 14px; }
+
+/* ── 스크롤에 붙는 나타남 ──────────────────────────────────
+   올라오면서 떠오른다. 값은 하나뿐이고(24px) 순서만 어긋나게 준다 —
+   칸마다 다른 연출을 넣으면 사이트가 아니라 슬라이드쇼가 된다.
+   되돌아 올라갈 때 다시 숨기지 않는다. 읽던 글이 사라지는 것은
+   연출이 아니라 고장이다. */
+[data-rise] {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+  /* 되튐 없이 한 번에 가라앉는 곡선. 손으로 잡는 것이 아니라
+     지나가며 보는 것이라 용수철까지 갈 일이 아니다. */
+  transition:
+    opacity 620ms cubic-bezier(.22, .61, .36, 1),
+    transform 620ms cubic-bezier(.22, .61, .36, 1);
+  transition-delay: calc(var(--rise-i, 0) * 70ms);
+  will-change: transform, opacity;
+}
+[data-rise].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── 떠 있는 차림표 ───────────────────────────────────────
+   불투명한 띠가 화면 위쪽 한 줄을 통째로 먹는 대신, 뒤가 비치는
+   재질로 띄운다. 내용이 그 밑으로 흘러 지나간다. */
+body.home-2026 .site-nav {
+  background: rgba(10, 14, 23, .58);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border-bottom: 1px solid rgba(232, 238, 252, .10);
+  transition: background 300ms ease, border-color 300ms ease;
+}
+/* 첫 화면 위에서는 아예 비워 둔다. 화면 가득한 작품 위에 띠가 얹히면
+   그 띠가 제일 먼저 보인다. */
+body.home-2026 .site-nav.is-top {
+  background: rgba(10, 14, 23, .14);
+  border-bottom-color: transparent;
+}
+
+@media (max-width: 720px) {
+  .anam-box { width: min(92vw, 640px); height: min(46svh, 360px); }
+  .home2-hero.is-anam { min-height: 162svh; }
+  .anam-hint { display: none; }
+}
+
+/* ── 덜어 내기 ─────────────────────────────────────────────
+   줄여 달라는 설정은 셋 다 따로 듣는다. 움직임을 줄이는 것과
+   투명도를 줄이는 것은 다른 요청이다. */
+@media (prefers-reduced-motion: reduce) {
+  .home2-hero.is-anam { min-height: 100svh; }
+  .home2-hero.is-anam .anam-sticky { position: static; height: 100svh; }
+  .anam-box { transform: translate(-50%, -50%) !important; }
+  .anam-face.is-l, .anam-face.is-r { transform: none !important; }
+  .anam-face.is-l::after, .anam-face.is-r::after { background: none; }
+  .home2-hero.is-anam .home2-body { transform: none !important; opacity: 1 !important; }
+  /* 안 펴지는데 "내려가면 펴집니다"라고 적어 두면 거짓말이 된다. */
+  .anam-hint-scroll { display: none; }
+  [data-rise] { transform: none; transition: opacity 260ms ease; }
+  [data-rise].is-in { transform: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  body.home-2026 .site-nav,
+  body.home-2026 .site-nav.is-top {
+    background: var(--h-ink);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+@media (prefers-contrast: more) {
+  body.home-2026 .site-nav,
+  body.home-2026 .site-nav.is-top {
+    background: #05070c;
+    border-bottom-color: rgba(232, 238, 252, .5);
+  }
+  .anam-hint { color: rgba(232, 238, 252, .82); }
+}
