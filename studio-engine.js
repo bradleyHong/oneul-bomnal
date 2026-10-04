@@ -460,7 +460,8 @@ function create(canvas, opts) {
                           솔기를 수천 땀 뜬다. 금불은 천불 벽을 한 장씩
                           찍는다. 획마다 그림자를 달면 초당 세 장이 된다. */
                        curlflow: 1, voronoi: 1, pojagi: 1, buddha: 1,
-                       moonjar: 1, celadon: 1, reactdiff: 1, motiongfx: 1 };
+                       moonjar: 1, celadon: 1, reactdiff: 1, motiongfx: 1,
+                       galleryveil: 1 };
 
   /* 획이 많지만 번지면 안 되는 것.
      HEAVY_GLOW 에 넣으면 획마다 그림자를 다는 것은 면하지만, 대신 다 그린 뒤
@@ -703,6 +704,133 @@ function create(canvas, opts) {
   }
 
   const STYLES = {
+
+    /* 00 빛의 베일 — 첫 화면 대표작용.
+       무작위 효과를 줄이고, 큰 벽에서 천천히 흐르는 회화적 결을 먼저
+       보여 주기 위한 스타일이다. */
+    galleryveil(t) {
+      const ph = motionPhase(t);
+      const diag = Math.sqrt(W * W + H * H);
+      const cx = W * 0.5, cy = H * 0.52;
+      let g = ctx.createRadialGradient(cx, cy, 0, cx, cy, diag * 0.58);
+      g.addColorStop(0, tone(0, 0.18));
+      g.addColorStop(0.38, tone(1, 0.055));
+      g.addColorStop(0.72, "rgba(0,0,0,0)");
+      g.addColorStop(1, tone(2, 0.10));
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.save();
+      ctx.globalCompositeOperation = ADD;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+
+      const veils = 5 + Math.round(k.density * 4);
+      for (let v = 0; v < veils; v++) {
+        const s = seeds[(v * 5) % seeds.length];
+        const top = H * (0.12 + 0.70 * s.a);
+        const height = H * (0.10 + 0.18 * s.b) * k.scale;
+        const drift = Math.sin(ph * (v % 2 ? 1 : -1) + s.c * TAU) * W * 0.035 * k.speed;
+        ctx.beginPath();
+        for (let p = 0; p <= 84; p++) {
+          const u = p / 84;
+          const x = -W * 0.10 + u * W * 1.20 + drift;
+          const y = top
+            + Math.sin(u * TAU * 1.5 + ph + s.b * TAU) * height * 0.36
+            + Math.sin(u * TAU * 3 - ph * 2 + s.d * TAU) * height * 0.10;
+          if (p) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+        }
+        for (let p = 84; p >= 0; p--) {
+          const u = p / 84;
+          const x = -W * 0.10 + u * W * 1.20 + drift;
+          const y = top + height
+            + Math.sin(u * TAU * 1.5 + ph + s.b * TAU) * height * 0.24
+            + Math.sin(u * TAU * 4 + ph * 2 + s.a * TAU) * height * 0.08;
+          ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        g = ctx.createLinearGradient(0, top, W, top + height);
+        g.addColorStop(0, tone(v, 0.018));
+        g.addColorStop(0.5, tone(v + 1, 0.060 + 0.030 * k.accent));
+        g.addColorStop(1, tone(v + 2, 0.012));
+        ctx.fillStyle = g;
+        ctx.fill();
+      }
+
+      const strands = 18 + Math.round(k.density * 16);
+      for (let i = 0; i < strands; i++) {
+        const s = seeds[i % seeds.length];
+        const tilt = (-0.16 + s.a * 0.32) + Math.sin(ph + s.b * TAU) * 0.025;
+        const baseY = H * (0.16 + 0.70 * ((i + s.c) / strands));
+        const amp = H * (0.028 + 0.065 * s.d) * k.scale;
+        const drift = Math.sin(ph * (i % 2 ? 1 : -1) + s.a * TAU) * W * 0.045 * k.speed;
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(tilt);
+        ctx.translate(-cx, -cy);
+
+        ctx.beginPath();
+        for (let p = 0; p <= 96; p++) {
+          const u = p / 96;
+          const x = -W * 0.16 + u * W * 1.32 + drift;
+          const y = baseY
+            + Math.sin(u * TAU * 2 + ph * (i % 3 + 1) + s.b * TAU) * amp
+            + Math.sin(u * TAU * 5 - ph * 2 + s.c * TAU) * amp * 0.18;
+          if (p) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+        }
+        ctx.strokeStyle = tone(i, 0.034 + 0.028 * k.contrast);
+        ctx.lineWidth = (10 + 22 * s.b) * S * (0.52 + k.weight * 0.24);
+        ctx.stroke();
+
+        ctx.globalAlpha = 0.72;
+        ctx.strokeStyle = tone(i + 1, 0.10 + 0.10 * k.accent);
+        ctx.lineWidth = (0.55 + 1.35 * s.c) * S;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+
+        if (i % 3 === 0) {
+          ctx.strokeStyle = tone(i + 3, 0.050);
+          ctx.lineWidth = (0.45 + s.d) * S;
+          for (let b = 0; b < 3; b++) {
+            const u0 = (s.a + b * 0.19) % 1;
+            const x0 = -W * 0.16 + u0 * W * 1.32 + drift;
+            const y0 = baseY + Math.sin(u0 * TAU * 2 + ph + s.b * TAU) * amp;
+            ctx.beginPath();
+            ctx.moveTo(x0, y0);
+            ctx.quadraticCurveTo(
+              x0 + W * (0.06 + s.c * 0.06),
+              y0 + H * (-0.08 + s.d * 0.16),
+              x0 + W * (0.14 + s.b * 0.10),
+              y0 + H * (-0.03 + s.a * 0.10)
+            );
+            ctx.stroke();
+          }
+        }
+        ctx.restore();
+      }
+
+      const flecks = 160 + Math.round(k.density * 170);
+      for (let i = 0; i < flecks; i++) {
+        const s = seeds[(i * 7) % seeds.length];
+        const x = ((s.a + 0.026 * Math.sin(ph + i)) % 1) * W;
+        const y = ((s.b + 0.014 * Math.cos(ph * 2 + i)) % 1) * H;
+        const r = (0.25 + s.c * 1.25) * S;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, TAU);
+        ctx.fillStyle = tone(i, 0.035 + 0.090 * s.d);
+        ctx.fill();
+      }
+
+      ctx.globalCompositeOperation = "source-over";
+      g = ctx.createLinearGradient(0, 0, 0, H);
+      g.addColorStop(0, "rgba(0,0,0,0.30)");
+      g.addColorStop(0.44, "rgba(0,0,0,0)");
+      g.addColorStop(1, "rgba(0,0,0,0.40)");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+    },
 
     /* 01 미니멀 — 여백이 주인공. 선 몇 개와 원 하나. */
     minimal(t) {
@@ -5441,7 +5569,7 @@ const STYLE_LABELS = [
 
   ["moonjar", "달항아리"], ["buddha", "금불"], ["celadon", "청자 상감"],
   ["reactdiff", "반응확산"], ["curlflow", "곡류"], ["voronoi", "세포"],
-  ["pojagi", "조각보"], ["motiongfx", "모션그래픽"],
+  ["pojagi", "조각보"], ["motiongfx", "모션그래픽"], ["galleryveil", "빛의 베일"],
 ];
 
 global.StudioArt = {

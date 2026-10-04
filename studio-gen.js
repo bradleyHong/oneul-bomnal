@@ -457,13 +457,20 @@ var SCENES = [
      판을 나누는 그림이라 비율을 안 탄다. */
   var ART_TALL_V8 = keptIn(ART_TALL, ART_V8).concat(V8_NEW);
   var ART_WIDE_V8 = keptIn(ART_WIDE, ART_V8).concat(V8_NEW);
-  var FIT = {
+  var FIT_V8 = {
     tall:  withPrefix(ART_TALL_V8),
     wide:  withPrefix(ART_WIDE_V8),
     even:  withPrefix(ART_V8)
   };
+  var V9_NEW = ["galleryveil"];
+  var ART_V9 = ART_V8.concat(V9_NEW);
+  var FIT = {
+    tall:  withPrefix(ART_TALL_V8.concat(V9_NEW)),
+    wide:  withPrefix(ART_WIDE_V8.concat(V9_NEW)),
+    even:  withPrefix(ART_V9)
+  };
   var FITS = { 1: FIT_V1, 2: FIT_V2, 3: FIT_V3, 4: FIT_V4, 5: FIT_V5, 6: FIT_V6,
-               7: FIT_V7, 8: FIT };
+               7: FIT_V7, 8: FIT_V8, 9: FIT };
 
   /* ── 문장 읽기 ────────────────────────────────────────────
    * 낱말은 방향만 잡는다. 고정하지 않는다.
