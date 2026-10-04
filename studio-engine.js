@@ -834,22 +834,33 @@ function create(canvas, opts) {
 
     /* 01 미니멀 — 여백이 주인공. 선 몇 개와 원 하나. */
     minimal(t) {
-      const n = 3 + Math.round(k.density * 9);
+      const ar = W / H;
+      const portraitK = clamp((1 - ar) * 0.85, 0, 0.58);
+      const n = 7 + Math.round(k.density * (9 + portraitK * 8));
       const ph = motionPhase(t);
-      ctx.lineWidth = 1.4 * S * k.contrast;
+      ctx.lineWidth = (1.85 + portraitK * 1.15) * S * k.contrast;
       for (let i = 0; i < n; i++) {
         const s = seeds[i];
-        const y = H * (0.18 + 0.64 * s.a);
-        const w = W * (0.12 + 0.5 * s.b);
-        const x = W * 0.5 - w / 2 + Math.sin(ph + s.c * TAU) * W * 0.03 * k.speed;
-        ctx.strokeStyle = inkA(0.16 + 0.5 * s.d * k.contrast);
+        const y = H * (0.16 + 0.68 * s.a);
+        const w = W * (0.18 + 0.54 * s.b) * (1 - portraitK * 0.22);
+        const x = W * 0.5 - w / 2 + Math.sin(ph + s.c * TAU) * W * 0.028 * k.speed;
+        ctx.strokeStyle = inkA(0.22 + 0.56 * s.d * k.contrast);
         ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + w, y); ctx.stroke();
       }
-      const r = Math.min(W, H) * (0.06 + 0.06 * Math.sin(ph));
+      const r = Math.min(W, H) * (0.075 + 0.065 * Math.sin(ph));
       ctx.beginPath();
       ctx.arc(W * 0.5, H * 0.5, Math.abs(r), 0, TAU);
       ctx.strokeStyle = tone(2, 0.7 * k.accent + 0.2);
-      ctx.lineWidth = 2.2 * S; ctx.stroke();
+      ctx.lineWidth = (2.7 + portraitK * 1.6) * S; ctx.stroke();
+      if (ar < 0.74 || ar > 1.55) {
+        ctx.strokeStyle = tone(1, 0.18 + 0.12 * k.accent);
+        ctx.lineWidth = Math.max(1, S * 1.2);
+        const m = Math.min(W, H) * 0.10;
+        ctx.beginPath();
+        ctx.moveTo(W * 0.5, m);
+        ctx.lineTo(W * 0.5, H - m);
+        ctx.stroke();
+      }
     },
 
     /* 02 맥시멀 — 층층이 쌓는다. 밀도가 성격이다. */
@@ -1103,26 +1114,34 @@ function create(canvas, opts) {
 
     /* 12 에디토리얼 — 잡지 지면. 굵은 규칙선과 넓은 여백. */
     editorial(t) {
+      const ar = W / H;
+      const portraitK = clamp((1 - ar) * 0.95, 0, 0.68);
       const ph = motionPhase(t);
-      const m = Math.min(W, H) * 0.1;
+      const m = Math.min(W, H) * (0.075 + portraitK * 0.025);
       ctx.strokeStyle = inkA(0.5 * k.contrast);
-      ctx.lineWidth = 2.4 * S;
+      ctx.lineWidth = (2.6 + portraitK) * S;
       ctx.strokeRect(m, m, W - m * 2, H - m * 2);
-      const cols = 2 + Math.round(k.density * 5);
+      const cols = Math.max(2, Math.round(2 + k.density * 5 - portraitK * 2));
+      const rows = 3 + Math.round(portraitK * 5);
       ctx.lineWidth = 1 * S;
       for (let i = 1; i < cols; i++) {
         const x = m + ((W - m * 2) * i) / cols;
         ctx.strokeStyle = inkA(0.16);
         ctx.beginPath(); ctx.moveTo(x, m); ctx.lineTo(x, H - m); ctx.stroke();
       }
-      const bars = 3 + Math.round(k.density * 9);
+      for (let i = 1; i < rows; i++) {
+        const y = m + ((H - m * 2) * i) / rows;
+        ctx.strokeStyle = inkA(0.11 + portraitK * 0.08);
+        ctx.beginPath(); ctx.moveTo(m, y); ctx.lineTo(W - m, y); ctx.stroke();
+      }
+      const bars = 4 + Math.round(k.density * (9 + portraitK * 5));
       for (let i = 0; i < bars; i++) {
         const s = seeds[i + 30];
         const y = m + (H - m * 2) * (0.08 + 0.84 * s.a);
-        const w = (W - m * 2) * (0.1 + 0.5 * s.b);
+        const w = (W - m * 2) * (0.18 + 0.50 * s.b);
         const x = m + (W - m * 2 - w) * ((s.c + ph / TAU * k.speed * 0.2) % 1);
         ctx.fillStyle = i === 0 ? tone(1, 0.85) : inkA(0.12 + 0.4 * s.d * k.contrast);
-        ctx.fillRect(x, y, w, Math.min(H, W) * (i === 0 ? 0.045 : 0.012) * k.scale);
+        ctx.fillRect(x, y, w, Math.min(H, W) * (i === 0 ? 0.055 : 0.017 + portraitK * 0.008) * k.scale);
       }
     },
 
@@ -2853,9 +2872,14 @@ function create(canvas, opts) {
        판을 가로지르는 빛줄기가 지나간 자리만 밝아진다. */
     pdu(t) {
       const ph = t / DUR;
+      const ar = W / H;
+      const portrait = ar < 0.75;
       const n = 3 + Math.floor(seeds[720].a * 3);
-      const cols = n * 6 - 1, rows = 7;
-      const cw = Math.min(W * 0.76 / cols, H * 0.52 / rows) * clamp(k.scale, 0.7, 1.2);
+      const lines = portrait ? Math.min(3, n) : 1;
+      const perLine = Math.ceil(n / lines);
+      const cols = perLine * 6 - 1, rows = lines * 8 - 1;
+      const cw = Math.min(W * (portrait ? 0.84 : 0.76) / cols,
+                          H * (portrait ? 0.70 : 0.52) / rows) * clamp(k.scale, 0.7, 1.2);
       const ox = (W - cols * cw) / 2, oy = (H - rows * cw) / 2;
       const band = ph * (cols + rows + 8) - 4;
       const R = cw / 2, LW = Math.max(1.2, cw * 0.30);
@@ -2868,10 +2892,13 @@ function create(canvas, opts) {
         for (let r = 0; r < 7; r++) {
           for (let c = 0; c < 5; c++) {
             if (!on(c, r)) continue;
-            const cx = li * 6 + c;
-            const x = ox + cx * cw, y = oy + r * cw;
+            const line = Math.floor(li / perLine);
+            const col = li % perLine;
+            const cx = col * 6 + c;
+            const gy = line * 8 + r;
+            const x = ox + cx * cw, y = oy + gy * cw;
             const mx = x + R, my = y + R;
-            const lit = Math.abs(cx + r - band) < 2.2;
+            const lit = Math.abs(cx + gy - band) < 2.2;
             ctx.strokeStyle = ctx.fillStyle = lit
               ? tone(0, 0.55 + 0.45 * k.accent)
               : tone(2, 0.20 + 0.42 * k.contrast);

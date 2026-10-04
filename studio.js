@@ -494,8 +494,9 @@
     }
 
     elPanel.addEventListener("change", function () {
+      var old = spec ? { idx: spec.idx, seed: spec.seed, v: spec.v, style: spec.style } : null;
       syncPanel();
-      if (spec) make();          // 비율이 바뀌면 어울리는 그림도 달라진다
+      if (old) make(old.idx, old.seed, true, old.v, old.style);
       wallDraw();                // 보여 주는 열두 장도 그 비율로 다시 그린다
     });
     formatButtons.forEach(function (b) {
