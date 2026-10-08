@@ -21,7 +21,8 @@
   var PANELS = [
     { id: "wide169", name: "가로형 · 로비 미디어월", w: 3840, h: 2160, note: "16:9" },
     { id: "vert916", name: "세로형 · 안내 사이니지", w: 1080, h: 1920, note: "9:16" },
-    { id: "ultra329", name: "와이드형 · 외벽 전광판", w: 3840, h: 960, note: "32:9" },
+    { id: "ultra329", name: "긴 화면 · 외벽 전광판", w: 3840, h: 960, note: "32:9" },
+    { id: "unknown", name: "잘 모르겠음 · 상담 때 확인", w: 3840, h: 2160, note: "상담 필요", unknown: true },
     { id: "column16", name: "기둥형 · 세로 긴 화면", w: 340, h: 2040, note: "1:6" },
     /* 두 면 기둥. 한 장으로 그려 모서리에서 반씩 잘라 건다.
        면마다 따로 돌리면 기둥 하나가 아니라 화면 두 대로 보인다. */
@@ -71,7 +72,10 @@
     var elH = $("[data-st-h]", root);
     var elSec = $("[data-st-sec]", root);
     var elGo = $("[data-st-go]", root);
+    var elReset = $("[data-st-reset]", root);
     var elCanvas = $("[data-st-canvas]", root);
+    var elPause = $("[data-st-pause]", root);
+    var elFocus = $("[data-st-focus]", root);
     var elCuts = $("[data-st-cuts]", root);
     var elQuote = $("[data-st-quote]", root);
     var elStat = $("[data-st-stat]", root);
@@ -82,6 +86,148 @@
     var elHist = $("[data-st-hist]", root);
     var elHistWrap = $("[data-st-hist-wrap]", root);
     var LAST = null;
+    var formatButtons = Array.prototype.slice.call(root.querySelectorAll("[data-st-format]"));
+    var selectedArtwork = null;
+    var ART_KEY = "bomnal.artCompare.v1";
+    var compareArts = [];
+    try {
+      compareArts = JSON.parse(localStorage.getItem(ART_KEY) || "[]") || [];
+      if (!Array.isArray(compareArts)) compareArts = [];
+    } catch (e) { compareArts = []; }
+
+    function artFrom(node) {
+      if (!node) return null;
+      return {
+        id: node.getAttribute("data-art-id") || "",
+        title: node.getAttribute("data-art-title") || "",
+        kind: node.getAttribute("data-art-kind") || "",
+        img: node.getAttribute("data-art-img") || "",
+        alt: node.getAttribute("data-art-alt") || "",
+        space: node.getAttribute("data-art-space") || "",
+        mood: node.getAttribute("data-art-mood") || "",
+        ratio: node.getAttribute("data-art-ratio") || "",
+        custom: node.getAttribute("data-art-custom") || "",
+        desc: node.getAttribute("data-art-desc") || ""
+      };
+    }
+
+    function sameArt(a, b) { return a && b && a.id === b.id; }
+
+    function artSave() {
+      try { localStorage.setItem(ART_KEY, JSON.stringify(compareArts.slice(0, 12))); }
+      catch (e) { /* 사생활 보호 모드면 이번 방문에만 비교한다 */ }
+    }
+
+    function artSummary() {
+      if (!selectedArtwork) return "";
+      return selectedArtwork.title + " · " + selectedArtwork.kind;
+    }
+
+    function renderCompare() {
+      var wrap = $("[data-art-compare-wrap]", root);
+      var list = $("[data-art-compare-list]", root);
+      if (!wrap || !list) return;
+      wrap.hidden = compareArts.length === 0;
+      list.innerHTML = "";
+      compareArts.forEach(function (art) {
+        var item = el("button", "st-compare-item");
+        item.type = "button";
+        item.setAttribute("data-art-id", art.id);
+        item.innerHTML =
+          '<img src="' + art.img + '" alt="" loading="lazy" decoding="async" />' +
+          '<span><b>' + art.title + '</b><small>' + art.kind + '</small></span>';
+        item.addEventListener("click", function () {
+          selectArtwork(art, true);
+        });
+        list.appendChild(item);
+      });
+      Array.prototype.forEach.call(root.querySelectorAll("[data-art-compare]"), function (btn) {
+        btn.textContent = selectedArtwork && compareArts.some(function (a) { return sameArt(a, selectedArtwork); })
+          ? "비교에서 빼기" : "비교에 담기";
+      });
+    }
+
+    function selectArtwork(art, scrollToDetail) {
+      if (!art || !art.id) return;
+      selectedArtwork = art;
+      var img = $("[data-art-image]", root);
+      if (img) {
+        img.src = art.img;
+        img.alt = art.alt || art.title;
+      }
+      var fields = [
+        ["[data-art-kind]", art.kind],
+        ["[data-art-title]", art.title],
+        ["[data-art-desc]", art.desc],
+        ["[data-art-space]", art.space],
+        ["[data-art-mood]", art.mood],
+        ["[data-art-ratio]", art.ratio],
+        ["[data-art-custom]", art.custom]
+      ];
+      fields.forEach(function (row) {
+        var target = $(row[0], root);
+        if (target) target.textContent = row[1] || "";
+      });
+      Array.prototype.forEach.call(root.querySelectorAll("[data-art-select]"), function (btn) {
+        btn.classList.toggle("is-on", btn.getAttribute("data-art-id") === art.id);
+        btn.setAttribute("aria-pressed", btn.getAttribute("data-art-id") === art.id ? "true" : "false");
+      });
+      renderCompare();
+      updateQuote();
+      if (scrollToDetail) {
+        var detail = $("[data-art-detail]", root);
+        if (detail && detail.scrollIntoView) detail.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+
+    function checkedText(group) {
+      var n = group && group.querySelector("input:checked");
+      return n ? n.value : "";
+    }
+
+    function customerPrefs() {
+      return {
+        place: checkedText($("[data-st-place]", root)),
+        mood: checkedText($("[data-st-mood]", root)),
+        color: checkedText($("[data-st-color]", root))
+      };
+    }
+
+    Array.prototype.forEach.call(root.querySelectorAll("[data-art-select]"), function (btn) {
+      btn.setAttribute("aria-pressed", btn.classList.contains("is-on") ? "true" : "false");
+      btn.addEventListener("click", function () {
+        selectArtwork(artFrom(btn), true);
+      });
+    });
+    var firstArt = root.querySelector("[data-art-select].is-on") || root.querySelector("[data-art-select]");
+    if (firstArt) selectArtwork(artFrom(firstArt), false);
+    var elArtQuote = $("[data-art-quote]", root);
+    if (elArtQuote) {
+      elArtQuote.addEventListener("click", function () {
+        updateQuote();
+        var q = document.getElementById("quote");
+        if (q && q.scrollIntoView) q.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+    var elArtCompare = $("[data-art-compare]", root);
+    if (elArtCompare) {
+      elArtCompare.addEventListener("click", function () {
+        if (!selectedArtwork) return;
+        var before = compareArts.length;
+        compareArts = compareArts.filter(function (a) { return !sameArt(a, selectedArtwork); });
+        if (compareArts.length === before) compareArts.unshift(selectedArtwork);
+        if (compareArts.length > 12) compareArts.pop();
+        artSave();
+        renderCompare();
+      });
+    }
+    var elArtBack = $("[data-art-back]", root);
+    if (elArtBack) {
+      elArtBack.addEventListener("click", function () {
+        var list = $("[data-art-list]", root);
+        if (list && list.scrollIntoView) list.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
 
     PANELS.forEach(function (p, i) {
       var o = el("option", null, p.name + "  (" + p.note + " · " + p.w + "×" + p.h + ")");
@@ -97,6 +243,21 @@
         return { name: "직접 입력", w: Math.max(64, +elW.value || 1920), h: Math.max(64, +elH.value || 1080), note: "custom" };
       }
       return PANELS[+elPanel.value];
+    }
+
+    function panelIndexById(id) {
+      for (var i = 0; i < PANELS.length; i++) {
+        if (PANELS[i].id === id) return i;
+      }
+      return -1;
+    }
+
+    function syncFormatButtons() {
+      var p = currentPanel();
+      formatButtons.forEach(function (b) {
+        b.classList.toggle("is-on", p && b.getAttribute("data-st-format") === p.id);
+        b.setAttribute("aria-pressed", p && b.getAttribute("data-st-format") === p.id ? "true" : "false");
+      });
     }
 
     function syncPanel() {
@@ -117,6 +278,7 @@
       elCanvas.height = Math.round(p.h * sc * 2) / 2;
       elCanvas.style.width = Math.round(p.w * sc) + "px";
       elCanvas.style.height = Math.round(p.h * sc) + "px";
+      syncFormatButtons();
       updateQuote();
     }
 
@@ -134,9 +296,13 @@
       var p = currentPanel(), sec = Math.max(5, +elSec.value || 30);
       var q = quote(p, sec, opts());
       // 견적서 메일에 지금 화면의 설정을 그대로 실어 보내기 위해 마지막 값을 들고 있는다.
-      LAST = { panel: p, sec: sec, q: q, o: opts() };
+      LAST = { panel: p, sec: sec, q: q, o: opts(), prefs: customerPrefs() };
       elQuote.innerHTML =
+        (selectedArtwork ? '<div class="st-q-row"><span>선택 작품</span><b>' + artSummary() + '</b></div>' : '') +
         '<div class="st-q-row"><span>화면 규격</span><b>' + p.w + " × " + p.h + '</b></div>' +
+        (p.unknown ? '<div class="st-q-row"><span>규격 확인</span><b>상담 때 확인</b></div>' : '') +
+        '<div class="st-q-row"><span>장소</span><b>' + (LAST.prefs.place || "선택 없음") + '</b></div>' +
+        '<div class="st-q-row"><span>선호색(상담용)</span><b>' + (LAST.prefs.color || "선택 없음") + '</b></div>' +
         '<div class="st-q-row"><span>재생 길이</span><b>' + sec + '초</b></div>' +
         '<div class="st-q-row"><span>렌더 크레딧</span><b>' + q.credits + ' 크레딧</b></div>' +
         '<div class="st-q-row"><span>옵션 배수</span><b>×' + q.mult + '</b></div>' +
@@ -151,6 +317,9 @@
     var sceneIdx = 0;
     var history = [];              // 방금 만든 화면들. 좋은 것이 지나가 버리면 안 된다.
     var HISTORY_MAX = 8;
+    var reduceMotion = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    var isPaused = reduceMotion;
+    var focusOn = false;
 
     /* 느낌 열둘은 studio-gen.js 로 옮겼다. 순서가 작품 번호에 박히므로
        play.html(전용 플레이어)도 같은 목록을 봐야 한다. */
@@ -176,8 +345,9 @@
          BN5- 5판  + 벽보 + 얼룩
          BN6- 6판  내놓을 것만 솎았다 (엔진 52종)
          BN7- 7판  활자 넷을 덜고 한글 조판을 세웠다
-         BN8- 8판  성긴 것을 재서 걷고(21종) 어려운 것을 들였다(9종) */
-    var CODE_V = 8;
+         BN8- 8판  성긴 것을 재서 걷고(21종) 어려운 것을 들였다(9종)
+         BN9- 9판  첫 화면 대표작용 빛의 베일을 들였다 */
+    var CODE_V = 9;
     function code(idx, seed, v) {
       var n = (((idx & 31) << 19) | (seed & 0x7FFFF)) >>> 0;
       var vv = v || CODE_V;
@@ -197,6 +367,28 @@
 
     function storyOf(idx) {
       return idx === CUSTOM ? (elStory.value || "").trim() : SCENES[idx].text;
+    }
+
+    function prefsLine() {
+      var p = customerPrefs();
+      return [
+        p.place ? "장소: " + p.place : null,
+        p.mood ? "분위기: " + p.mood : null,
+        p.color ? "선호색: " + p.color : null
+      ].filter(Boolean).join(" · ");
+    }
+
+    function syncViewControls() {
+      var picked = $("[data-st-picked]", root);
+      if (elPause) {
+        elPause.textContent = isPaused ? "재생" : "일시정지";
+        elPause.setAttribute("aria-pressed", isPaused ? "true" : "false");
+      }
+      if (elFocus) {
+        elFocus.textContent = focusOn ? "정보 보기" : "감상 모드";
+        elFocus.setAttribute("aria-pressed", focusOn ? "true" : "false");
+      }
+      if (picked) picked.classList.toggle("is-focus", focusOn);
     }
 
     /* 주소의 설정표로 처음 한 번 그릴 때만 그 줄을 살려 둔다. */
@@ -219,7 +411,15 @@
       if (style && GEN.hasStyle(style)) spec.style = style;
       spec.idx = idx;
       spec.v = v;
-      gen.set(spec).start();
+      isPaused = false;
+      gen.set(spec);
+      if (reduceMotion) {
+        gen.draw(1.7);
+        isPaused = true;
+      } else {
+        gen.start();
+      }
+      syncViewControls();
       /* 고른 화면을 '현장에 걸어보기'(mockup.js)가 받아 간다. 거기서는
          같은 사양을 면마다 제 비율로 다시 그린다. 여기서 그린 한 장을
          늘려 붙이는 것이 아니다. */
@@ -232,6 +432,8 @@
 
       elChips.innerHTML = "";
       spec.tags.forEach(function (t) { elChips.appendChild(el("span", "st-chip", t)); });
+      var pref = prefsLine();
+      if (pref) elChips.appendChild(el("span", "st-chip st-chip-soft", pref));
 
       elCuts.innerHTML =
         '<div class="st-code-head">' +
@@ -244,7 +446,7 @@
           ? '<p class="st-code-sub">직접 적으신 문장으로 만든 번호입니다. 나중에 부르실 때는 문장도 함께 적어 주세요.</p>'
           : '<p class="st-code-sub">번호를 복사해 두시면 언제든 이 화면으로 돌아옵니다.</p>');
 
-      elGo.textContent = "고른 화면 다시 그리기";
+      elGo.textContent = "작품 다시 보기";
       updateQuote();
       /* 어느 경로로 만들었든 큰 화면은 같은 방식으로 연다.
          칸을 눌렀을 때만 열어 두었더니, 번호로 불러오거나 기록을 누르거나
@@ -292,15 +494,73 @@
     }
 
     elPanel.addEventListener("change", function () {
+      var old = spec ? { idx: spec.idx, seed: spec.seed, v: spec.v, style: spec.style } : null;
       syncPanel();
-      if (spec) make();          // 비율이 바뀌면 어울리는 그림도 달라진다
+      if (old) make(old.idx, old.seed, true, old.v, old.style);
       wallDraw();                // 보여 주는 열두 장도 그 비율로 다시 그린다
+    });
+    formatButtons.forEach(function (b) {
+      b.addEventListener("click", function () {
+        var id = b.getAttribute("data-st-format");
+        var idx = panelIndexById(id);
+        if (idx >= 0) {
+          elPanel.value = String(idx);
+          elPanel.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+      });
     });
     [elW, elH, elSec].forEach(function (n) { n.addEventListener("input", updateQuote); });
     Array.prototype.forEach.call(root.querySelectorAll("[data-st-opt]"), function (n) {
       n.addEventListener("change", updateQuote);
     });
+    Array.prototype.forEach.call(root.querySelectorAll("[data-st-place] input, [data-st-mood] input, [data-st-color] input"), function (n) {
+      n.addEventListener("change", function () {
+        updateQuote();
+        if (spec) {
+          elChips.innerHTML = "";
+          spec.tags.forEach(function (t) { elChips.appendChild(el("span", "st-chip", t)); });
+          var pref = prefsLine();
+          if (pref) elChips.appendChild(el("span", "st-chip st-chip-soft", pref));
+        }
+      });
+    });
     elGo.addEventListener("click", function () { make(); });
+    if (elReset) {
+      elReset.addEventListener("click", function () {
+        Array.prototype.forEach.call(root.querySelectorAll("input[type='radio']"), function (n) {
+          n.checked = n.defaultChecked;
+        });
+        Array.prototype.forEach.call(root.querySelectorAll("[data-st-opt]"), function (n) {
+          n.checked = false;
+        });
+        elStory.value = "";
+        elPanel.value = "0";
+        elW.value = 3840;
+        elH.value = 2160;
+        elSec.value = 30;
+        spec = null;
+        history = [];
+        elChips.innerHTML = "";
+        elCuts.innerHTML = "";
+        if (elHist) elHist.innerHTML = "";
+        if (elHistWrap) elHistWrap.hidden = true;
+        compareArts = [];
+        artSave();
+        var first = root.querySelector("[data-art-select]");
+        if (first) selectArtwork(artFrom(first), false);
+        renderCompare();
+        var picked = $("[data-st-picked]", root);
+        if (picked) {
+          picked.hidden = true;
+          picked.classList.remove("is-sheet");
+        }
+        document.body.classList.remove("st-sheet-open");
+        syncPanel();
+        wallDraw();
+        heartDraw();
+        elStat.textContent = "처음 상태로 돌렸습니다. 작품을 다시 골라 주세요.";
+      });
+    }
     elStory.addEventListener("keydown", function (e) {
       if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) make(CUSTOM);
     });
@@ -321,18 +581,27 @@
 
     /* 표식 하나가 없어졌다고 나머지 화면이 통째로 죽으면 안 된다.
        실제로 버튼을 옮기다가 여기서 멈춰 고르는 자리가 빈 채로 떴다. */
-    var elRandom = $("[data-st-random]", root);
-    if (elRandom) elRandom.addEventListener("click", function () {
+    Array.prototype.forEach.call(root.querySelectorAll("[data-st-random]"), function (elRandom) {
+      elRandom.addEventListener("click", function () {
       elStory.value = "";
       make(pickLive());
       if (typeof wallMark === "function") wallMark();
+      });
     });
 
     // 숫자키로도 고를 수 있다. 1~9 그리고 0.
     document.addEventListener("keydown", function (e) {
       if (e.target === elStory || /input|textarea|select/i.test(e.target.tagName)) return;
-      if (e.key >= "1" && e.key <= "9" && LIVE[+e.key - 1] != null) { elStory.value = ""; make(LIVE[+e.key - 1]); }
-      else if (e.key === "0" && LIVE[9] != null) { elStory.value = ""; make(LIVE[9]); }
+      if (e.key >= "1" && e.key <= "9" && wallItems[+e.key - 1]) {
+        var it = wallItems[+e.key - 1];
+        elStory.value = "";
+        make(it.idx, it.seed, false, it.v, it.style);
+      }
+      else if (e.key === "0" && wallItems[9]) {
+        var it0 = wallItems[9];
+        elStory.value = "";
+        make(it0.idx, it0.seed, false, it0.v, it0.style);
+      }
       else if (e.key === "r" || e.key === "R" || e.key === "ㄱ") {
         elStory.value = "";
         make(pickLive());
@@ -343,7 +612,7 @@
     root.addEventListener("click", function (e) {
       var b = e.target.closest("[data-st-copy]");
       if (!b || !spec) return;
-      var txt = code(spec.idx, spec.seed);
+      var txt = code(spec.idx, spec.seed, spec.v);
       var done = function () { b.textContent = "복사했습니다"; setTimeout(function () { b.textContent = "번호 복사"; }, 1600); };
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(txt).then(done, function () { prompt("이 번호를 복사해 두세요", txt); });
@@ -358,7 +627,7 @@
     var elLoadMsg = $("[data-st-load-msg]", root);
     function loadCode() {
       var p2 = parseCode(elLoad.value);
-      if (!p2) { elLoadMsg.textContent = "BN8-, BN7-, BN6-, BN5-, BN4-, BN3-, BN2-, BN- 으로 시작하는 번호를 넣어 주세요."; return; }
+      if (!p2) { elLoadMsg.textContent = "BN9-, BN8-, BN7-, BN6-, BN5-, BN4-, BN3-, BN2-, BN- 으로 시작하는 번호를 넣어 주세요."; return; }
       if (p2.idx === CUSTOM && !(elStory.value || "").trim()) {
         elLoadMsg.textContent = "직접 적으신 문장으로 만든 번호입니다. 그 문장을 아래에 적어 주세요.";
         return;
@@ -428,21 +697,29 @@
     function specText(story) {
       if (!LAST) return "(견적을 계산하기 전에 보내셨습니다)";
       var picked = [];
-      var art = spec ? code(spec.idx, spec.seed) : null;
+      var art = spec ? code(spec.idx, spec.seed, spec.v) : null;
       if (LAST.o.asset) picked.push("기관 로고·이미지 반영");
       if (LAST.o.custom) picked.push("커스텀 스타일 요청");
       if (LAST.o.rush) picked.push("당일 급행");
       if (LAST.o.player) picked.push("전용 플레이어 1대 (라즈베리파이 5 · 16GB, 작품 설치 후 배송, " + comma(PLAYER_WON) + "원)");
       if (LAST.o.api) picked.push("API 연결 (작품을 주소로 불러오기 · HTML 전달, 협의)");
+      var compared = compareArts.map(function (a) { return a.title + " (" + a.kind + ")"; }).join(", ");
       return [
+        "선택 작품 참고: " + (selectedArtwork ? selectedArtwork.title + " / " + selectedArtwork.kind : "(없음)"),
+        "선택 작품 설명: " + (selectedArtwork ? selectedArtwork.desc : "(없음)"),
+        "비교에 담은 작품: " + (compared || "(없음)"),
         "작품 번호: " + (art || "(만들기 전)"),
         "원하시는 화면: " + (story || "(적지 않으심)"),
+        "고객 선택 장소: " + (LAST.prefs && LAST.prefs.place ? LAST.prefs.place : "선택 없음"),
+        "고객 선택 분위기: " + (LAST.prefs && LAST.prefs.mood ? LAST.prefs.mood : "선택 없음"),
+        "고객 선택 선호색(상담용): " + (LAST.prefs && LAST.prefs.color ? LAST.prefs.color : "선택 없음"),
         "엔진 설정(사내 확인용): " + (spec ? spec.style + " / " + spec.palette.id : "-"),
         /* 이 줄 하나면 담당자가 그 자리에서 4K 를 뽑는다.
              node tools/render-studio.mjs "<이 줄>" --name <이름> --dur <초>
            손님이 도구에서 손본 값까지 전부 담겨 있다. */
         "재현용 파라미터: " + (SHEET || specLine()),
         "화면 규격: " + LAST.panel.name + " " + LAST.panel.w + "×" + LAST.panel.h +
+          (LAST.panel.unknown ? " (정확한 규격은 상담 때 확인)" : "") +
           (LAST.panel.wrap ? " (한 장으로 그려 모서리에서 " + LAST.panel.wrap + "쪽으로 자름 · 면마다 "
                              + Math.round(LAST.panel.w / LAST.panel.wrap) + "×" + LAST.panel.h + ")" : ""),
         "재생 길이: " + LAST.sec + "초",
@@ -507,25 +784,39 @@
      * 그걸 글로 설명하려고 부른 게 아니다. 잘못 적었다고 탓할 수도 없다.
      * 그래서 기본 경로를 "적기"에서 "고르기"로 바꿨다.
      *
-     * 열두 장을 한 번에 그린다. 열두 장을 다 움직이면 노트북 팬이 도니
-     * 한 장씩 정지 화면으로만 그린다. 고른 것만 움직인다. */
-    /* 좁은 화면에서 열두 칸은 여섯 줄이 되어 그것만으로 화면 세 개
-       분량이다. 절반만 내놓고 "다른 화면 보기"로 넘기게 한다. */
-    /* 손전화도 열두 장. 여섯 장으로 줄였던 것은 칸이 비율대로라 길게
-       쌓였기 때문인데, 이제 칸이 정사각이라 두 줄 여섯 칸이면 된다.
-       뽑을 것이 적으면 하트 누를 것도 적다. */
-    function wallCount() { return 12; }
+     * 무작위 열두 장을 한꺼번에 보여 주면 좋은 그림과 약한 그림이 같은
+     * 무게로 섞인다. 첫 화면은 대표작 세 점만 세우고, 선택한 것만 움직인다. */
+    function wallCount() {
+      var page = CURATED_WALL[curatedPage % CURATED_WALL.length];
+      return page ? page.length : 0;
+    }
     var elWall = $("[data-st-wall]", root);
     var wallItems = [];
+    var curatedPage = 0;
+    var CURATED_WALL = [
+      [
+        { idx: 0, seed: 0x51c23, style: "sa:galleryveil", title: "Veil Current", caption: "빛의 베일 · 로비 미디어월" },
+        { idx: 14, seed: 0x62a91, style: "sa:galleryveil", title: "Reed Nocturne", caption: "저녁 갈대 · 휴게 라운지" },
+        { idx: 1, seed: 0x44be2, style: "sa:ocean", title: "Blue Field", caption: "깊은 바다 · 긴 화면" }
+      ],
+      [
+        { idx: 27, seed: 0x2f8c1, style: "sa:pojagi", title: "Color Field", caption: "조각보 색면 · 포토존" },
+        { idx: 29, seed: 0x399a4, style: "sa:curlflow", title: "Ink Stream", caption: "먹의 흐름 · 세로 화면" },
+        { idx: 9, seed: 0x5b7d0, style: "sa:motiongfx", title: "Signal Opening", caption: "모션그래픽 · 이벤트홀" }
+      ]
+    ];
 
     /* ── 이미 팔린 번호 ───────────────────────────────────────
      *
-     * 한 화면을 두 곳에 팔면 안 된다. 기관 A의 로비에 걸린 화면이 기관 B의
-     * 외벽에도 걸려 있으면, 우리가 판 것이 "그 화면"이 아니었다는 뜻이 된다.
+     * 한 번호를 두 고객에게 확정 납품하지 않는 쪽으로 간다. 지금 화면에서
+     * 클릭하거나 하트로 담는 것은 관심 표시일 뿐이고, 영구 제외가 아니다.
+     * 계약·구매 확정 기준은 운영 정책과 서버 작업에서 따로 정해야 한다.
      *
-     * 목록은 sold-codes.json 이고 결제가 확정되면 tools/mark-sold.mjs 로
-     * 채운다. 못 읽어도 화면은 그냥 돈다. 목록을 못 읽었다고 스튜디오가
-     * 멈추면 팔 수 있는 것까지 못 판다. */
+     * 목록은 sold-codes.json 이고 운영자가 확정된 작품 번호를 채운다.
+     * 이 로컬 화면은 그 번호와 완전히 같은 코드만 추천에서 뺀다. 비슷한
+     * 씨앗·스타일까지 막는 시각 유사성 판정은 별도 백엔드/검수 범위다.
+     * 못 읽어도 화면은 그냥 돈다. 목록을 못 읽었다고 스튜디오가 멈추면
+     * 팔 수 있는 것까지 못 판다. */
     var soldSet = null;                 /* null = 아직 못 읽음 */
     function isSold(idx, seed, v) {
       if (!soldSet) return false;
@@ -592,30 +883,26 @@
       var ar = pn.w / pn.h;
       elWall.innerHTML = "";
       wallItems = [];
-      /* 느낌을 골고루 돌린다. 같은 느낌 열둘을 보여 주면 "다 비슷하다"가
-         된다. 시작 자리를 매번 옮겨 다시 눌러도 같은 열둘이 안 나온다. */
-      var off = Math.floor(Math.random() * LIVE.length);
+      var curated = CURATED_WALL[curatedPage % CURATED_WALL.length] || CURATED_WALL[0];
       var n = wallCount();
       for (var i = 0; i < n; i++) {
-        var idx = LIVE[(off + i) % LIVE.length];
-        /* 이미 팔린 번호는 내놓지 않는다. 씨앗이 52만 개라 부딪히는 일이
-           드물지만, 부딪히면 다른 씨앗으로 옮긴다.
-           끝내 못 피하면 그 칸을 비운다. 처음에는 몇 번 해 보고 그냥
-           내놓게 두었는데, 그러면 이미 판 화면을 다시 내미는 셈이다.
-           열한 칸을 보여 주는 편이 낫다. 여기서 무한히 돌면 화면이 멈춘다. */
-        var seed = newSeed();
-        var tries = 0;
-        while (tries < 12 && isSold(idx, seed, CODE_V)) { seed = newSeed(); tries++; }
-        if (isSold(idx, seed, CODE_V)) continue;
-        var it = { idx: idx, seed: seed, ar: ar, v: CODE_V };
+        var base = curated[i % curated.length];
+        var it = {
+          idx: base.idx,
+          seed: base.seed,
+          ar: ar,
+          v: CODE_V,
+          style: base.style,
+          title: base.title,
+          caption: base.caption
+        };
+        if (isSold(it.idx, it.seed, CODE_V)) continue;
         wallItems.push(it);
         elWall.appendChild(wallCell(it));
       }
-      /* 열두 칸이 모두 팔린 번호에 걸리는 일은 씨앗이 52만 개라 거의 없다.
-         그래도 빈 자리만 덩그러니 두면 고장 난 화면으로 보인다. */
       if (!wallItems.length) {
         var none = el("p", "st-help");
-        none.textContent = "지금은 보여 드릴 화면을 찾지 못했습니다. “다른 화면 보기”를 한 번 더 눌러 주세요.";
+        none.textContent = "지금 묶음의 작품은 모두 확정된 번호입니다. 다른 큐레이션을 눌러 주세요.";
         elWall.appendChild(none);
       }
       wallMark();
@@ -640,8 +927,8 @@
       c.width = tw;
       c.height = th;
       b.appendChild(c);
-      b.appendChild(el("span", null, SCENES[it.idx].en || SCENES[it.idx].ko));
-      b.title = SCENES[it.idx].ko + " · 눌러서 크게 보기";
+      b.appendChild(el("span", null, it.title || SCENES[it.idx].en || SCENES[it.idx].ko));
+      b.title = (it.caption || SCENES[it.idx].ko) + " · 눌러서 크게 보기";
       wrap.appendChild(b);
 
       var one = new GEN.Gen(c);
@@ -776,11 +1063,35 @@
       }
     });
 
+    if (elPause) {
+      elPause.addEventListener("click", function () {
+        if (!spec) return;
+        if (isPaused) {
+          gen.start();
+          isPaused = false;
+        } else {
+          gen.stop();
+          isPaused = true;
+        }
+        syncViewControls();
+      });
+    }
+
+    if (elFocus) {
+      elFocus.addEventListener("click", function () {
+        focusOn = !focusOn;
+        syncViewControls();
+      });
+    }
+
     var elWallMore = $("[data-st-wall-more]", root);
-    if (elWallMore) elWallMore.addEventListener("click", wallDraw);
+    if (elWallMore) elWallMore.addEventListener("click", function () {
+      curatedPage = (curatedPage + 1) % CURATED_WALL.length;
+      wallDraw();
+    });
 
     elStat.textContent =
-      "고르신 화면은 누를 때마다 다시 그립니다. 같은 느낌이라도 매번 다르게 나옵니다.";
+      "처음에는 검수한 대표작만 보여드립니다. 확정된 작품 번호는 다시 추천하지 않습니다.";
     syncPanel();
     wallDraw();
     heartDraw();
