@@ -42,7 +42,8 @@
 }
 .st-nav-tools a:hover { text-decoration: underline; }
 @media (max-width: 640px) {
-  .st-nav { flex-wrap: wrap; gap: 8px 16px; padding: 12px 18px; }
+  .st-nav { flex-wrap: wrap; gap: 8px 14px; padding: 12px 18px; }
+  .st-nav-tools { flex-wrap: wrap; gap: 8px 14px; }
 }
 
 .av-page {

@@ -1,5 +1,5 @@
 {
-  "_comment": "영문 사이트의 글. tools/build-en.mjs 가 이걸로 en/*.html 을 굽는다. 손으로 en/ 안을 고치지 말고 여기를 고친 뒤 다시 구울 것. 사실관계(값·기간·자격번호)는 canon.json 이 정본이며 여기서는 그것을 영어로 옮겨 적기만 한다 — 두 곳이 어긋나면 canon.json 이 맞다.",
+  "_comment": "영문 사이트의 글. tools/build-en.mjs 가 이걸로 en/*.html 을 굽는다. 손으로 en/ 안을 고치지 말고 여기를 고친 뒤 다시 구울 것. 사실관계(값·기간·자격번호)는 canon.json 이 정본이며 여기서는 그것을 영어로 옮겨 적기만 한다. 두 곳이 어긋나면 canon.json 이 맞다.",
   "brand": "Oneul-eun Bomnal",
   "brandNote": "봄날 (Bomnal) means 'a spring day'.",
   "tagline": "We turn rooms into screens.",
@@ -40,10 +40,10 @@
         "changefreq": "weekly"
       },
       "title": "Media Facade and LED Content Studio in Daegu, Korea | Oneul-eun Bomnal",
-      "description": "Daegu-based media art studio. We write media art as code, so one work re-renders at any ratio and resolution, and we install the LED panels and projectors it runs on.",
+      "description": "Daegu media art studio. We write media art as code, so one work re-renders at any ratio and resolution, and we install the LED panels and projectors it runs on.",
       "kicker": "Media Facade · Generative Art · Daegu",
       "h1": "We write screens, and we hang them.",
-      "lead": "Most studios hand over a video file. We hand over a work that can be re-rendered — because we build media art in code, not in an editing timeline. Then we install the LED panel or the projector it runs on, under the same contract.",
+      "lead": "Most studios hand over a video file. We hand over a work that can be re-rendered, because we build media art in code, not in an editing timeline. Then we install the LED panel or the projector it runs on, under the same contract.",
       "actions": [
         {
           "href": "/en/works",
@@ -94,7 +94,7 @@
             {
               "n": "02",
               "h3": "LED panels and media facades",
-              "p": "We size the system, supply it, and install it ourselves — including structural work and cabling. Projection mapping falls under the same contract.",
+              "p": "We size the system, supply it, and install it ourselves, including structural work and cabling. Projection mapping falls under the same contract.",
               "ul": [
                 "LED panel and signboard specification, supply, installation",
                 "Structural reinforcement, cabling, on-site survey",
@@ -164,7 +164,7 @@
         },
         {
           "type": "note",
-          "html": "<b>Working with us from outside Korea.</b> Correspondence, concepts and delivery notes are handled in English. Contracts, tax invoices and public-procurement paperwork are issued under Korean law — for Korean clients we issue an electronic tax invoice only. Installation work is carried out in person across Daegu, Gyeongbuk, Busan, Gyeongnam and Ulsan; content-only delivery has no geographic limit."
+          "html": "<b>Working with us from outside Korea.</b> Correspondence, concepts and delivery notes are handled in English. Contracts, tax invoices and public-procurement paperwork are issued under Korean law. For Korean clients we issue an electronic tax invoice only. Installation work is carried out in person across Daegu, Gyeongbuk, Busan, Gyeongnam and Ulsan; content-only delivery has no geographic limit."
         },
         {
           "type": "cta",
@@ -193,7 +193,7 @@
         "changefreq": "monthly"
       },
       "title": "Media Facade Content, LED Installation, Media Art AX | Oneul-eun Bomnal",
-      "description": "Media art written as code and re-rendered to your screen spec, LED panel and projector installation carried out in house, and screens wired to live public data. Daegu, Korea.",
+      "description": "Media art written as code and re-rendered to your screen spec, LED and projector installation carried out in house, screens wired to live data. Daegu, Korea.",
       "kicker": "Services",
       "h1": "From the concept to the cable",
       "lead": "A media facade fails in the gap between the people who make the content and the people who mount the screen. We do both, so there is no gap to fall into.",
@@ -223,7 +223,7 @@
           "items": [
             {
               "b": "Step 01 · Survey",
-              "p": "We measure the surface — ratio, resolution, viewing distance, ambient brightness, and what the wall is made of. For projection we confirm throw distance and the mapping surface."
+              "p": "We measure the surface: ratio, resolution, viewing distance, ambient brightness, and what the wall is made of. For projection we confirm throw distance and the mapping surface."
             },
             {
               "b": "Step 02 · Concepts",
@@ -321,15 +321,15 @@
             },
             {
               "q": "Why does it matter that it is code?",
-              "a": "Because every screen is a different shape. A work written in code is re-exported at 32:9, 16:9 and 9:16 from one source and pushed to 4K or 5K. A delivered video file has to be remade whenever the screen changes. Our works are also deterministic — the same seed on the same canvas always produces the same frames — so the approved concept and the delivered work cannot drift apart."
+              "a": "Because every screen is a different shape. A work written in code is re-exported at 32:9, 16:9 and 9:16 from one source and pushed to 4K or 5K. A delivered video file has to be remade whenever the screen changes. Our works are also deterministic: the same seed on the same canvas always produces the same frames, so the approved concept and the delivered work cannot drift apart."
             },
             {
               "q": "Can the screen show live data?",
-              "a": "Yes. Public APIs and institutional databases are wired into the work, so the same piece reads differently each day — air quality, weather, visitor counts, whatever the institution already collects. Ordinary signage players cannot do this; they play a fixed playlist. This runs on a player we set up."
+              "a": "Yes. Public APIs and institutional databases are wired into the work, so the same piece reads differently each day: air quality, weather, visitor counts, whatever the institution already collects. Ordinary signage players cannot do this; they play a fixed playlist. This runs on a player we set up."
             },
             {
               "q": "Do you work outside Daegu?",
-              "a": "Installation is carried out in person across Daegu, Gyeongbuk, Busan, Gyeongnam and Ulsan. Beyond that we arrange it around the travel schedule. Content-only delivery has no geographic limit — the file arrives by download."
+              "a": "Installation is carried out in person across Daegu, Gyeongbuk, Busan, Gyeongnam and Ulsan. Beyond that we arrange it around the travel schedule. Content-only delivery has no geographic limit. The file arrives by download."
             },
             {
               "q": "We already have a panel. Can you just supply content?",
@@ -360,7 +360,7 @@
         "changefreq": "monthly"
       },
       "title": "Selected Works: Media Facades and LED Walls in Korea | Oneul-eun Bomnal",
-      "description": "Media facades, LED walls and signage content installed at public institutions and cultural venues across Daegu, Busan and Gyeongbuk. About 40 media art works delivered.",
+      "description": "Media facades, LED walls and signage content installed at public and cultural venues across Daegu, Busan and Gyeongbuk. About 40 media art works delivered.",
       "kicker": "Selected Works",
       "h1": "Screens that are lit right now",
       "lead": "Installed and screened at public institutions and cultural venues across Daegu, Busan and Gyeongbuk. About forty media art works delivered to date; certificates of performance are available on request.",
@@ -504,7 +504,7 @@
         "changefreq": "monthly"
       },
       "title": "ArtWork Studio: Make a Media Art Screen Yourself | Oneul-eun Bomnal",
-      "description": "Pick a generative media art screen, see a five-second watermarked sample at once, and hang it on a photograph of real signage at true scale. No sign-up. From 100,000 won.",
+      "description": "Pick a generative media art screen, see a five-second sample at once, and hang it on a photograph of real signage at true scale. No sign-up. From 100,000 won.",
       "kicker": "ArtWork Studio",
       "h1": "You choose the screen. We render it.",
       "lead": "No sign-up, no account. Screens we have already built are shown to you; pick one you like. A five-second watermarked sample appears at once, and you can hang it on a photograph of real signage to judge the scale before you buy.",
@@ -545,7 +545,7 @@
           "items": [
             {
               "b": "Pick a screen",
-              "p": "Thirty-odd subjects — a bamboo grove, a moon jar, an inlaid celadon, a golden Buddha wall, a reaction-diffusion field. Press again and the same subject comes back different. Nothing is a stock loop."
+              "p": "Thirty-odd subjects: a bamboo grove, a moon jar, an inlaid celadon, a golden Buddha wall, a reaction-diffusion field. Press again and the same subject comes back different. Nothing is a stock loop."
             },
             {
               "b": "Set the panel",
@@ -553,7 +553,7 @@
             },
             {
               "b": "Hang it on a wall",
-              "p": "Your choice is mapped onto photographs of real signage — a city hall board, a lobby column, a two-sided column, a building frontage — at true scale, so you can see how large it actually reads."
+              "p": "Your choice is mapped onto photographs of real signage: a city hall board, a lobby column, a two-sided column, a building frontage, at true scale, so you can see how large it actually reads."
             },
             {
               "b": "Approve and receive",
@@ -591,11 +591,11 @@
         },
         {
           "type": "note",
-          "html": "<b>A note on language.</b> ArtWork Studio's own interface is currently in Korean. The controls are largely visual — you press a tile, you get a screen — and every work carries a number you can quote back to us in English. If you would rather not use the tool at all, describe what you want on the contact page and we will send concepts instead."
+          "html": "<b>A note on language.</b> ArtWork Studio's own interface is currently in Korean. The controls are largely visual: you press a tile, you get a screen. Every work carries a number you can quote back to us in English. If you would rather not use the tool at all, describe what you want on the contact page and we will send concepts instead."
         },
         {
           "type": "note",
-          "html": "<b>Everything is drawn by our code.</b> No photographs or video are composited in. Works that show three-dimensional form take vertex coordinates from public-domain (CC0) models and redraw them as lines and points in our own code — no one else's image is ever output. Samples shown in the tool are not stored and may not be used commercially."
+          "html": "<b>Everything is drawn by our code.</b> No photographs or video are composited in. Works that show three-dimensional form take vertex coordinates from public-domain (CC0) models and redraw them as lines and points in our own code. No one else's image is ever output. Samples shown in the tool are not stored and may not be used commercially."
         },
         {
           "type": "cta",
@@ -624,7 +624,7 @@
         "changefreq": "monthly"
       },
       "title": "Media Art Rental: Three Days from 5M Won, Content Included | Oneul-eun Bomnal",
-      "description": "Rent a complete media art kit for an event in Korea: short-throw projector, speaker and player in one case, throwing a 3m by 1.8m screen. Three days from 5,000,000 won.",
+      "description": "Rent a media art kit for an event in Korea: short-throw projector, speaker and player in one case, throwing a 3m by 1.8m screen. Three days from 5,000,000 won.",
       "kicker": "Media Art Rental",
       "h1": "A media art screen where there is no screen",
       "lead": "A short-throw projector, a speaker and a player travel in one case. Plug in one cable and a 3m by 1.8m media art screen stands where there was a bare wall. When the event ends we take it away.",
@@ -678,7 +678,7 @@
             ],
             [
               "Base rental",
-              "3 days, ₩5,000,000 — bespoke content, installation and strike included. We install the day before the event."
+              "3 days, ₩5,000,000. Bespoke content, installation and strike included. We install the day before the event."
             ],
             [
               "Extra day",
@@ -720,7 +720,7 @@
           "items": [
             {
               "q": "What does it cost?",
-              "a": "₩5,000,000 for a base rental of three days. That includes media art made for your institution and both installation and strike, so there is no separate content commission. We install the day before the event. Each further day is ₩1,000,000 — the content already exists by then, so only the projector and equipment are charged. That is why the per-day cost falls on multi-day festivals."
+              "a": "₩5,000,000 for a base rental of three days. That includes media art made for your institution and both installation and strike, so there is no separate content commission. We install the day before the event. Each further day is ₩1,000,000. The content already exists by then, so only the projector and equipment are charged. That is why the per-day cost falls on multi-day festivals."
             },
             {
               "q": "Why is three days the minimum?",
@@ -740,7 +740,7 @@
             },
             {
               "q": "Where do you travel?",
-              "a": "Daegu and Gyeongbuk first, then Busan, Gyeongnam and Ulsan — we install and strike in person. Beyond that we arrange it around the travel schedule."
+              "a": "Daegu and Gyeongbuk first, then Busan, Gyeongnam and Ulsan. We install and strike in person. Beyond that we arrange it around the travel schedule."
             }
           ]
         },
@@ -767,7 +767,7 @@
         "changefreq": "monthly"
       },
       "title": "Contact: Start a Media Facade or LED Project | Oneul-eun Bomnal",
-      "description": "Send the wall size, the site and the rough schedule. We reply within 24 hours with a figure and, where needed, Korean public-procurement paperwork. Daegu, Korea.",
+      "description": "Send the wall size, the site and the rough schedule. We reply within 24 hours with a figure and, where needed, public-procurement paperwork. Daegu, Korea.",
       "kicker": "Contact",
       "h1": "Tell us the wall",
       "lead": "Its size, where it is, and roughly when it has to be lit. That is enough to come back with a number. We reply within 24 hours.",
@@ -805,7 +805,7 @@
             },
             {
               "b": "The date",
-              "p": "When it has to be lit. If it is an event rather than a permanent installation, say so — a rental may cost less than an installation."
+              "p": "When it has to be lit. If it is an event rather than a permanent installation, say so. A rental may cost less than an installation."
             },
             {
               "b": "Who you are",
@@ -843,7 +843,7 @@
         },
         {
           "type": "note",
-          "html": "<b>Write in English.</b> Correspondence, concepts and delivery notes are handled in English. The Korean enquiry form is linked below if you would rather use it, but an email to <a href=\"mailto:studio@publicbloom.art\">studio@publicbloom.art</a> reaches the same desk — and it is the person who makes the work who answers."
+          "html": "<b>Write in English.</b> Correspondence, concepts and delivery notes are handled in English. The Korean enquiry form is linked below if you would rather use it, but an email to <a href=\"mailto:studio@publicbloom.art\">studio@publicbloom.art</a> reaches the same desk, and it is the person who makes the work who answers."
         },
         {
           "type": "cta",
