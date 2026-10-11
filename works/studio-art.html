@@ -43,6 +43,7 @@ const inst = StudioArt.create(document.getElementById("c"), {
   motion: q.get("motion") || "drift",
   symmetry: Math.floor(num("symmetry", 1)),
   invert: q.get("invert") === "1",
+  finish: q.get("finish") || "",
 });
 
 /* render-studio.mjs 가 이 둘을 부른다. 이름을 바꾸면 납품 렌더가 멈춘다. */

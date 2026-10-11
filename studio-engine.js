@@ -266,6 +266,9 @@ const DEFAULTS = {
   style: "aurora", palette: "ink",
   density: 50, speed: 50, scale: 50, contrast: 50, glow: 35, grain: 18,
   motion: "drift", symmetry: 1, invert: false, accent: 60, bare: false,
+  /* "luxe" 면 고급 마감을 얹는다. 비우면 예전 그림 그대로다.
+     기존 작품 번호가 다른 그림이 되면 안 되므로 기본은 끈다. */
+  finish: "",
 };
 
 /** 캔버스 하나에 그림 한 벌을 만든다. 반환값의 renderFrame(n)만 부르면 된다. */
@@ -5505,6 +5508,92 @@ function create(canvas, opts) {
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
   }
 
+  /* ── 고급 마감 (finish=luxe) ─────────────────────────────────
+     코드로 그린 그림이 "정돈된 도형"에서 멈추는 이유는 세 가지다.
+     빛이 번지지 않고, 앞뒤 깊이가 없고, 색이 디지털로 딱 떨어진다.
+     그래서 세 겹을 얹는다.
+       ① 깊이  같은 그림을 크게·흐리게 깔아 먼 겹을 만들고 그 위에 선명한 겹을 겹친다
+       ② 빛    밝은 곳만 골라 두 크기로 번지게 한다 (작은 번짐 + 큰 후광)
+       ③ 색    위에서 비추는 따뜻한 빛과 아래로 가라앉는 차가운 그늘, 채도는 조금 눌러 필름처럼
+     전부 결정론적이다. 같은 프레임 번호는 언제나 같은 그림이다. */
+  let luxeBuf = null, luxeSmall = null, luxeTiny = null;
+  function luxeCanvas(c, w, h) {
+    if (!c || c.width !== w || c.height !== h) { c = document.createElement("canvas"); c.width = w; c.height = h; }
+    return c;
+  }
+  function applyLuxe() {
+    luxeBuf = luxeCanvas(luxeBuf, W, H);
+    const lb = luxeBuf.getContext("2d");
+    lb.globalCompositeOperation = "copy";
+    lb.filter = "none";
+    lb.drawImage(canvas, 0, 0);
+
+    // ① 깊이: 바탕을 다시 깔고, 크게 키운 흐린 그림을 먼 겹으로 둔다
+    ctx.save();
+    ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = BG;
+    ctx.fillRect(0, 0, W, H);
+    ctx.filter = "blur(" + Math.max(2, Math.round(H * 0.018)) + "px) saturate(0.85)";
+    ctx.globalAlpha = 0.38;
+    const z = 1.14;
+    ctx.drawImage(luxeBuf, -W * (z - 1) / 2, -H * (z - 1) / 2, W * z, H * z);
+    ctx.filter = "none";
+    // 선명한 겹을 screen 으로 얹는다. 바탕이 어두워 더하기처럼 쌓이되 하얗게 타지 않는다.
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = "screen";
+    ctx.drawImage(luxeBuf, 0, 0);
+
+    // ② 빛: 어두운 곳은 눌러 버리고 밝은 곳만 남긴 뒤 두 크기로 번지게 한다
+    const sw = Math.max(64, Math.round(W / 4)), sh = Math.max(36, Math.round(H / 4));
+    luxeSmall = luxeCanvas(luxeSmall, sw, sh);
+    const sx = luxeSmall.getContext("2d");
+    sx.globalCompositeOperation = "copy";
+    sx.filter = "brightness(0.85) contrast(2.4) blur(" + Math.max(1, Math.round(sw / 90)) + "px)";
+    sx.drawImage(luxeBuf, 0, 0, sw, sh);
+    sx.filter = "none";
+    ctx.globalCompositeOperation = "screen";
+    ctx.globalAlpha = 0.24 + k.glow * 0.26;
+    ctx.drawImage(luxeSmall, 0, 0, W, H);
+
+    const tw = Math.max(32, Math.round(W / 12)), th = Math.max(18, Math.round(H / 12));
+    luxeTiny = luxeCanvas(luxeTiny, tw, th);
+    const tx = luxeTiny.getContext("2d");
+    tx.globalCompositeOperation = "copy";
+    tx.filter = "blur(" + Math.max(2, Math.round(tw / 14)) + "px)";
+    tx.drawImage(luxeSmall, 0, 0, tw, th);
+    tx.filter = "none";
+    ctx.globalAlpha = 0.20 + k.glow * 0.20;
+    ctx.drawImage(luxeTiny, 0, 0, W, H);
+
+    // ③ 색: 위에서 내려오는 따뜻한 빛, 아래로 가라앉는 차가운 그늘
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = "soft-light";
+    const lg = ctx.createLinearGradient(0, 0, 0, H);
+    lg.addColorStop(0, "rgba(255,214,170,0.38)");
+    lg.addColorStop(0.55, "rgba(128,128,128,0)");
+    lg.addColorStop(1, "rgba(30,44,70,0.55)");
+    ctx.fillStyle = lg;
+    ctx.fillRect(0, 0, W, H);
+    // 한쪽 위에서 비스듬히 드는 빛. 자리는 시드가 정한다.
+    const lx = seeds[7].a < 0.5 ? W * 0.18 : W * 0.82;
+    const rg = ctx.createRadialGradient(lx, -H * 0.1, 0, lx, -H * 0.1, Math.max(W, H) * 0.9);
+    rg.addColorStop(0, "rgba(255,226,190,0.10)");
+    rg.addColorStop(1, "rgba(255,226,190,0)");
+    ctx.globalCompositeOperation = "screen";
+    ctx.fillStyle = rg;
+    ctx.fillRect(0, 0, W, H);
+    /* 마지막으로 검정을 다시 가라앉힌다. 번짐과 깊이 겹이 바탕을 들뜨게
+       만드는데, 고급스러움은 깊은 검정에서 나온다. 어두운 곳만 누르고
+       밝은 곳은 거의 건드리지 않는 곡선이다(밝기 곱 + 대비). */
+    luxeBuf.getContext("2d").drawImage(canvas, 0, 0);
+    ctx.globalCompositeOperation = "copy";
+    ctx.filter = "contrast(1.12) brightness(0.96)";
+    ctx.drawImage(luxeBuf, 0, 0);
+    ctx.filter = "none";
+    ctx.restore();
+  }
+
   /* ── 프레임 ──────────────────────────────────────────────────
      n번째 프레임을 그린다. 같은 n은 언제나 같은 그림이다. */
   function renderFrame(n) {
@@ -5547,7 +5636,9 @@ function create(canvas, opts) {
     if (k.glow > 0.02 && heavy && NO_BLOOM[P.style] !== 1) applyBloom(0.22 + k.glow * 0.5);
 
     if (!P.bare) {
+      if (P.finish === "luxe") applyLuxe();
       applyVignette();
+      if (P.finish === "luxe") applyVignette();
       applyGrain();
     }
   }
