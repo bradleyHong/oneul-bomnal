@@ -297,19 +297,23 @@
       var q = quote(p, sec, opts());
       // 견적서 메일에 지금 화면의 설정을 그대로 실어 보내기 위해 마지막 값을 들고 있는다.
       LAST = { panel: p, sec: sec, q: q, o: opts(), prefs: customerPrefs() };
+      /* 값은 화면에 보이지 않는다. 금액은 담당자가 주문을 보고 정해 메일로 보낸다.
+         손님에게는 "내가 무엇을 골랐는가"만 한눈에 보이면 된다. */
+      var extras = [];
+      if (LAST.o.asset) extras.push("로고·이미지 넣기");
+      if (LAST.o.custom) extras.push("색·분위기 새로 맞추기");
+      if (LAST.o.rush) extras.push("당일 받기");
+      if (LAST.o.player) extras.push("전용 플레이어");
+      if (LAST.o.api) extras.push("API 연결");
       elQuote.innerHTML =
-        (selectedArtwork ? '<div class="st-q-row"><span>선택 작품</span><b>' + artSummary() + '</b></div>' : '') +
-        '<div class="st-q-row"><span>화면 규격</span><b>' + p.w + " × " + p.h + '</b></div>' +
-        (p.unknown ? '<div class="st-q-row"><span>규격 확인</span><b>상담 때 확인</b></div>' : '') +
+        '<p class="st-q-title">주문 내용</p>' +
+        (selectedArtwork ? '<div class="st-q-row"><span>작품</span><b>' + artSummary() + '</b></div>' : '') +
+        '<div class="st-q-row"><span>화면</span><b>' + (p.unknown ? "사진 보고 맞춤" : p.w + " × " + p.h) + '</b></div>' +
+        '<div class="st-q-row"><span>길이</span><b>' + sec + '초 반복</b></div>' +
         '<div class="st-q-row"><span>장소</span><b>' + (LAST.prefs.place || "선택 없음") + '</b></div>' +
-        '<div class="st-q-row"><span>선호색(상담용)</span><b>' + (LAST.prefs.color || "선택 없음") + '</b></div>' +
-        '<div class="st-q-row"><span>재생 길이</span><b>' + sec + '초</b></div>' +
-        '<div class="st-q-row"><span>렌더 크레딧</span><b>' + q.credits + ' 크레딧</b></div>' +
-        '<div class="st-q-row"><span>옵션 배수</span><b>×' + q.mult + '</b></div>' +
-        (q.player ? '<div class="st-q-row"><span>전용 플레이어 1대</span><b>' + comma(q.player) + '원</b></div>' : '') +
-        (LAST.o.api ? '<div class="st-q-row"><span>API 연결</span><b>담당자 협의</b></div>' : '') +
-        '<div class="st-q-total"><span>예상 금액</span><b>' + comma(q.won) + '원</b></div>' +
-        '<p class="st-q-note">1크레딧 = 4K 30초 기준입니다. 렌더 원가가 화면 넓이와 길이에 비례하므로 금액도 같은 기준으로 계산합니다. 부가세 별도이며, 확정 견적은 담당자 확인 후 발행합니다.</p>';
+        '<div class="st-q-row"><span>분위기 · 색</span><b>' + [LAST.prefs.mood, LAST.prefs.color].filter(Boolean).join(" · ") + '</b></div>' +
+        (extras.length ? '<div class="st-q-row"><span>추가</span><b>' + extras.join(", ") + '</b></div>' : '') +
+        '<p class="st-q-note">금액은 주문을 받고 평일 하루 안에 메일로 알려 드립니다.</p>';
     }
 
     var gen = new GEN.Gen(elCanvas);
@@ -701,7 +705,7 @@
       if (LAST.o.asset) picked.push("기관 로고·이미지 반영");
       if (LAST.o.custom) picked.push("커스텀 스타일 요청");
       if (LAST.o.rush) picked.push("당일 급행");
-      if (LAST.o.player) picked.push("전용 플레이어 1대 (라즈베리파이 5 · 16GB, 작품 설치 후 배송, " + comma(PLAYER_WON) + "원)");
+      if (LAST.o.player) picked.push("전용 플레이어 1대 (라즈베리파이 5 · 16GB, 작품 설치 후 배송)");
       if (LAST.o.api) picked.push("API 연결 (작품을 주소로 불러오기 · HTML 전달, 협의)");
       var compared = compareArts.map(function (a) { return a.title + " (" + a.kind + ")"; }).join(", ");
       return [
@@ -712,7 +716,7 @@
         "원하시는 화면: " + (story || "(적지 않으심)"),
         "고객 선택 장소: " + (LAST.prefs && LAST.prefs.place ? LAST.prefs.place : "선택 없음"),
         "고객 선택 분위기: " + (LAST.prefs && LAST.prefs.mood ? LAST.prefs.mood : "선택 없음"),
-        "고객 선택 선호색(상담용): " + (LAST.prefs && LAST.prefs.color ? LAST.prefs.color : "선택 없음"),
+        "고객 선택 색: " + (LAST.prefs && LAST.prefs.color ? LAST.prefs.color : "선택 없음"),
         "엔진 설정(사내 확인용): " + (spec ? spec.style + " / " + spec.palette.id : "-"),
         /* 이 줄 하나면 담당자가 그 자리에서 4K 를 뽑는다.
              node tools/render-studio.mjs "<이 줄>" --name <이름> --dur <초>
@@ -723,9 +727,12 @@
           (LAST.panel.wrap ? " (한 장으로 그려 모서리에서 " + LAST.panel.wrap + "쪽으로 자름 · 면마다 "
                              + Math.round(LAST.panel.w / LAST.panel.wrap) + "×" + LAST.panel.h + ")" : ""),
         "재생 길이: " + LAST.sec + "초",
-        "렌더 크레딧: " + LAST.q.credits + " 크레딧 (옵션 배수 ×" + LAST.q.mult + ") = " + comma(LAST.q.render) + "원",
         "추가 요청: " + (picked.join(", ") || "없음"),
-        "예상 금액: " + comma(LAST.q.won) + "원 (부가세 별도" + (LAST.o.api ? " · API 연결은 별도 협의" : "") + ")"
+        "",
+        "── 사내 참고 (손님에게 보이지 않음) ──",
+        "공식 산정가: 렌더 " + LAST.q.credits + "크레딧 × 배수 " + LAST.q.mult + " = " + comma(LAST.q.render) + "원" +
+          (LAST.q.player ? " + 플레이어 " + comma(LAST.q.player) + "원" : "") +
+          " → 합계 " + comma(LAST.q.won) + "원 (부가세 별도" + (LAST.o.api ? " · API 별도 협의" : "") + ")"
       ].join("\n");
     }
 
@@ -736,18 +743,42 @@
       else elMsg.removeAttribute("data-tone");
     }
 
+    /* 기관이면 세금계산서, 매장이면 카드·계좌이체. 고른 쪽 칸만 보인다. */
+    function syncBuyer() {
+      if (!elForm) return;
+      var shop = (elForm.querySelector('input[name="buyer"]:checked') || {}).value === "shop";
+      Array.prototype.forEach.call(elForm.querySelectorAll("[data-st-only]"), function (n) {
+        n.hidden = n.getAttribute("data-st-only") !== (shop ? "shop" : "org");
+      });
+      var lab = elForm.querySelector("[data-st-org-label]");
+      if (lab) lab.textContent = shop ? "매장 · 상호" : "기관명";
+    }
+    if (elForm) {
+      Array.prototype.forEach.call(elForm.querySelectorAll('input[name="buyer"]'), function (r) { r.addEventListener("change", syncBuyer); });
+      syncBuyer();
+    }
+
     if (elForm) {
       elForm.addEventListener("submit", function (e) {
         e.preventDefault();
         var d = new FormData(elForm);
         var name = String(d.get("name") || "").trim();
         var email = String(d.get("email") || "").trim();
+        var org = String(d.get("organization") || "").trim();
+        var phone = String(d.get("phone") || "").trim();
+        var isShop = d.get("buyer") === "shop";
 
-        if (!name) { say("이름을 적어 주세요.", "err"); return; }
+        if (!org) { say(isShop ? "매장 이름을 적어 주세요." : "기관명을 적어 주세요.", "err"); return; }
+        if (!name) { say("담당자 이름을 적어 주세요.", "err"); return; }
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { say("이메일 주소를 다시 확인해 주세요.", "err"); return; }
-        if (!d.get("consentRequired")) { say("견적 회신을 위한 수집 동의가 필요합니다.", "err"); return; }
+        if (phone.replace(/\D/g, "").length < 9) { say("연락처를 적어 주세요. 급한 확인은 전화로 드립니다.", "err"); return; }
+        if (!d.get("consentRequired")) { say("주문 처리를 위한 수집 동의가 필요합니다.", "err"); return; }
 
         var marketing = d.get("consentMarketing") ? "동의함" : "동의하지 않음";
+        var buyerLine = isShop
+          ? "주문자: 매장·개인 / 결제 희망: " + (d.get("pay") || "카드 (결제 링크)")
+          : "주문자: 기관·기업 / 결제: 세금계산서" +
+            (String(d.get("bizNo") || "").trim() ? " / 사업자등록번호 " + String(d.get("bizNo")).trim() : " / 사업자등록번호 미기재");
         elSend.disabled = true;
         say("보내는 중…");
 
@@ -757,18 +788,19 @@
           body: JSON.stringify({
             name: name,
             email: email,
-            phone: String(d.get("phone") || "").trim(),
-            organization: String(d.get("organization") || "").trim(),
-            service: ["미디어아트 제작 (ArtWork Studio 견적)"],
+            phone: phone,
+            organization: org,
+            service: [isShop ? "작품 주문 · 매장/개인 (ArtWork Studio)" : "작품 주문 · 기관/기업 (ArtWork Studio)"],
             page: "studio",
-            message: specText((elStory.value || "").trim()) +
+            message: buyerLine + "\n\n" + specText((elStory.value || "").trim()) +
               "\n\n[동의 기록] 개인정보 수집·이용: 동의함 / 광고성 정보 수신: " + marketing
           })
         })
           .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json().catch(function () { return {}; }); })
           .then(function () {
             elForm.reset();
-            say("접수했습니다. 적어 주신 주소로 견적서를 보내드리겠습니다. (평일 기준)", "ok");
+            syncBuyer();
+            say("주문을 받았습니다. 평일 하루 안에 적어 주신 메일(" + email + ")로 금액과 결제 방법을 보내 드립니다.", "ok");
           })
           .catch(function () {
             elSend.disabled = false;
