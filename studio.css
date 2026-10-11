@@ -1616,3 +1616,56 @@
     transform: none;
   }
 }
+
+/* ── 주문 (2026-10) ─────────────────────────────────────
+   가격은 화면에 없다. 고른 것을 요약해 보여 주고, 기관/매장을 골라
+   그쪽 결제 방법에 맞는 칸만 보여 준다. */
+
+.st-q-title { margin: 0 0 10px; font-weight: 700; color: var(--st-ink); }
+.st-order-lead { margin: 0 0 20px; color: var(--st-body); line-height: 1.7; }
+.st-order-lead b { color: var(--st-ink); }
+
+.st-buyer {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  margin: 0 0 18px; padding: 0; border: 0;
+}
+.st-buyer legend { margin-bottom: 8px; font-size: .9rem; font-weight: 600; color: var(--st-ink); }
+.st-buyer label {
+  position: relative; display: block; cursor: pointer;
+  border: 1px solid var(--st-line); border-radius: 10px; padding: 14px 16px;
+  background: var(--surface);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+/* 라디오 원은 숨기고 카드 전체를 선택 상태로 보여 준다. 키보드 포커스는 남긴다. */
+.st-buyer input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.st-buyer span { display: grid; gap: 3px; }
+.st-buyer b { color: var(--st-ink); font-size: .98rem; }
+.st-buyer small { color: var(--st-gray); font-size: .82rem; }
+.st-buyer label:has(input:checked) { border-color: var(--st-blue); box-shadow: 0 0 0 1px var(--st-blue) inset; }
+.st-buyer label:has(input:focus-visible) { outline: 2px solid var(--st-blue); outline-offset: 2px; }
+
+.st-pay { margin: 4px 0 14px; padding: 0; border: 0; display: grid; gap: 8px; }
+.st-pay legend { margin-bottom: 6px; font-size: .9rem; font-weight: 600; color: var(--st-ink); }
+.st-pay label { display: flex; align-items: center; gap: 8px; font-size: .92rem; color: var(--st-body); }
+[data-st-only][hidden] { display: none !important; }
+
+.st-after {
+  margin: 22px 0 0; padding: 0; list-style: none; counter-reset: st-after;
+  display: grid; gap: 10px;
+}
+.st-after li {
+  counter-increment: st-after; position: relative; padding-left: 34px;
+  font-size: .9rem; line-height: 1.6; color: var(--st-body);
+}
+.st-after li::before {
+  content: counter(st-after); position: absolute; left: 0; top: 1px;
+  width: 22px; height: 22px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: .75rem; font-weight: 700; color: var(--st-blue);
+  border: 1px solid var(--st-blue);
+}
+.st-after b { display: block; color: var(--st-ink); }
+
+@media (max-width: 560px) {
+  .st-buyer { grid-template-columns: 1fr; }
+}
