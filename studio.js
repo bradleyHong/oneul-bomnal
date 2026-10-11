@@ -107,7 +107,9 @@
         mood: node.getAttribute("data-art-mood") || "",
         ratio: node.getAttribute("data-art-ratio") || "",
         custom: node.getAttribute("data-art-custom") || "",
-        desc: node.getAttribute("data-art-desc") || ""
+        desc: node.getAttribute("data-art-desc") || "",
+        /* 진열 작품을 그대로 다시 뽑는 설정. 주문 메일에 실어 담당자가 바로 렌더한다. */
+        spec: node.getAttribute("data-art-spec") || ""
       };
     }
 
@@ -711,6 +713,9 @@
       return [
         "선택 작품 참고: " + (selectedArtwork ? selectedArtwork.title + " / " + selectedArtwork.kind : "(없음)"),
         "선택 작품 설명: " + (selectedArtwork ? selectedArtwork.desc : "(없음)"),
+        (selectedArtwork && selectedArtwork.spec
+          ? "진열 작품 재현용: node tools/render-studio.mjs \"" + selectedArtwork.spec + "&w=" + LAST.panel.w + "&h=" + LAST.panel.h + "\" --dur " + LAST.sec
+          : "진열 작품 재현용: (현장 사진이라 해당 없음)"),
         "비교에 담은 작품: " + (compared || "(없음)"),
         "작품 번호: " + (art || "(만들기 전)"),
         "원하시는 화면: " + (story || "(적지 않으심)"),
