@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>오늘은 봄날 TV</title>
+    <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="preconnect" href="https://player.vimeo.com" />
+    <link rel="stylesheet" href="./tv.css?v=20261012-1" />
+  </head>
+  <body>
+    <!-- 작품이 도는 자리. 두 겹을 번갈아 써서 날이 바뀔 때 검은 화면 없이 넘긴다. -->
+    <main class="tv-stage" data-tv-stage aria-label="오늘의 미디어아트">
+      <div class="tv-layer is-on" data-tv-layer></div>
+      <div class="tv-layer" data-tv-layer></div>
+    </main>
+
+    <!-- 작품 이름. 새 작품이 뜰 때 잠깐 보였다가 사라진다. -->
+    <p class="tv-caption" data-tv-caption hidden></p>
+
+    <!-- 처음 화면: 오늘의 작품을 보여 주고 전체화면을 켠다 -->
+    <section class="tv-panel" data-tv-panel hidden>
+      <p class="tv-brand">오늘은 봄날 TV</p>
+      <p class="tv-date" data-tv-date></p>
+      <h1 class="tv-title" data-tv-title>오늘의 작품을 불러오는 중</h1>
+      <p class="tv-sub" data-tv-sub></p>
+      <div class="tv-actions">
+        <button type="button" class="tv-go" data-tv-go>화면 켜기</button>
+        <button type="button" class="tv-pick" data-tv-pick hidden>화면 고르기</button>
+      </div>
+      <ul class="tv-screens" data-tv-screens hidden></ul>
+      <p class="tv-hint">켜진 뒤에는 화면을 두 번 누르면 전체화면이 풀립니다.</p>
+    </section>
+
+    <!-- 입장 열쇠 -->
+    <section class="tv-panel" data-tv-gate hidden>
+      <p class="tv-brand">오늘은 봄날 TV</p>
+      <h1 class="tv-title">입장 코드를 넣어 주세요</h1>
+      <p class="tv-sub" data-tv-gate-msg>구독하실 때 받으신 코드입니다.</p>
+      <form class="tv-gate-form" data-tv-gate-form>
+        <input type="text" name="k" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="입장 코드" required />
+        <button type="submit" class="tv-go">들어가기</button>
+      </form>
+      <p class="tv-hint">코드가 없으시면 <a href="./studio">스튜디오</a>나 010-4292-1999로 문의해 주세요.</p>
+    </section>
+
+    <aside class="tv-diag" data-tv-diag hidden aria-label="재생 상태"></aside>
+
+    <script src="./tv.js?v=20261012-1" defer></script>
+  </body>
+</html>

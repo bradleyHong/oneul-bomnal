@@ -1,0 +1,90 @@
+/* 오늘은 봄날 TV — 로비 화면 한 장. 작품 말고는 아무것도 보이지 않는 것이 기본이다. */
+html, body {
+  margin: 0; height: 100%; overflow: hidden;
+  background: #000; color: #f3efe6;
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Malgun Gothic", sans-serif;
+}
+body.is-playing { cursor: none; }
+
+.tv-stage { position: fixed; inset: 0; background: #000; }
+.tv-layer {
+  position: absolute; inset: 0; overflow: hidden;
+  opacity: 0; transition: opacity 2.4s ease;
+  pointer-events: none;
+}
+.tv-layer.is-on { opacity: 1; }
+
+/* 화면 비율이 영상과 달라도 빈 띠 없이 채운다 (object-fit: cover 와 같은 셈) */
+.tv-layer iframe {
+  position: absolute; top: 50%; left: 50%; border: 0;
+  width: 100vw; height: 56.25vw; min-height: 100vh; min-width: 177.78vh;
+  transform: translate(-50%, -50%);
+}
+.tv-layer.is-portrait iframe {
+  width: 56.25vh; height: 100vh; min-width: 100vw; min-height: 177.78vw;
+}
+
+.tv-caption {
+  position: fixed; left: 3vw; bottom: 3vh; margin: 0;
+  font-size: clamp(12px, 1.05vw, 20px); letter-spacing: .04em;
+  color: rgba(255, 248, 236, .78); text-shadow: 0 1px 12px rgba(0, 0, 0, .6);
+  opacity: 0; transition: opacity 1.6s ease; pointer-events: none;
+}
+.tv-caption.is-on { opacity: 1; }
+.tv-caption small { margin-left: .6em; opacity: .7; }
+
+/* 처음 화면 */
+.tv-panel {
+  position: fixed; inset: 0; z-index: 5;
+  display: grid; place-content: center; justify-items: center; gap: 14px;
+  padding: 24px; text-align: center;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,.35), rgba(0,0,0,.82));
+  backdrop-filter: blur(2px);
+}
+.tv-panel[hidden] { display: none; }
+.tv-brand { margin: 0; font-size: 13px; letter-spacing: .32em; text-transform: uppercase; color: #c9b48a; }
+.tv-date { margin: 0; font-size: 14px; color: rgba(243,239,230,.6); }
+.tv-title { margin: 0; font-size: clamp(28px, 4.6vw, 64px); font-weight: 700; letter-spacing: -.02em; }
+.tv-sub { margin: 0; max-width: 46ch; font-size: 15px; line-height: 1.7; color: rgba(243,239,230,.72); }
+.tv-actions { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; justify-content: center; }
+.tv-go, .tv-pick {
+  font: inherit; font-size: 16px; font-weight: 700; cursor: pointer;
+  min-height: 52px; padding: 0 28px; border-radius: 999px;
+  border: 1px solid #c9b48a; transition: background .2s ease, color .2s ease;
+}
+.tv-go { background: #c9b48a; color: #14110b; }
+.tv-go:hover { background: #dcc89c; }
+.tv-pick { background: transparent; color: #f3efe6; }
+.tv-pick:hover { background: rgba(201,180,138,.14); }
+.tv-go:focus-visible, .tv-pick:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+.tv-screens { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 8px; min-width: min(420px, 90vw); }
+.tv-screens button {
+  width: 100%; font: inherit; text-align: left; cursor: pointer;
+  display: flex; justify-content: space-between; gap: 16px;
+  padding: 14px 18px; border-radius: 12px;
+  background: rgba(255,255,255,.06); color: #f3efe6; border: 1px solid rgba(255,255,255,.14);
+}
+.tv-screens button:hover, .tv-screens button.is-picked { border-color: #c9b48a; background: rgba(201,180,138,.14); }
+.tv-screens small { color: rgba(243,239,230,.6); }
+.tv-hint { margin: 8px 0 0; font-size: 13px; color: rgba(243,239,230,.5); }
+.tv-hint a { color: #c9b48a; }
+
+.tv-gate-form { display: flex; gap: 8px; margin-top: 8px; }
+.tv-gate-form input {
+  font: inherit; font-size: 18px; letter-spacing: .12em; text-align: center;
+  min-height: 52px; width: min(280px, 60vw); padding: 0 16px; border-radius: 999px;
+  background: rgba(255,255,255,.08); color: #fff; border: 1px solid rgba(255,255,255,.2);
+}
+
+.tv-diag {
+  position: fixed; top: 2vh; left: 2vw; z-index: 9; width: min(420px, 90vw);
+  padding: 18px 20px; border-radius: 12px; font-size: 13px; line-height: 1.6;
+  background: rgba(8,8,8,.9); color: #e8e4da; box-shadow: 0 20px 50px rgba(0,0,0,.6);
+}
+.tv-diag div { display: flex; justify-content: space-between; gap: 16px; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,.07); }
+.tv-diag span { opacity: .6; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tv-layer, .tv-caption { transition: none; }
+}
