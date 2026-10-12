@@ -27,7 +27,7 @@
 
   var state = {
     key: "", program: null, active: 0, playingId: "",
-    lastTick: 0, readyAt: 0, reloads: 0, errors: [], screen: null,
+    lastTick: 0, readyAt: 0, ticked: false, reloads: 0, errors: [], screen: null,
   };
 
   /* ── 열쇠 ──────────────────────────────────────────────── */
@@ -132,6 +132,7 @@
     state.playingId = p.item.vimeo;
     state.lastTick = Date.now();
     state.readyAt = Date.now();
+    state.ticked = false;
     showCaption(p.item);
   }
 
@@ -176,7 +177,7 @@
     } else if (d.event === "timeupdate") {
       if (state.pending && state.pending.frame.contentWindow === src) commit();
       if (layers[state.active].querySelector("iframe") &&
-          layers[state.active].querySelector("iframe").contentWindow === src) state.lastTick = Date.now();
+          layers[state.active].querySelector("iframe").contentWindow === src) { state.lastTick = Date.now(); state.ticked = true; }
     } else if (d.event === "error") {
       note("비메오 오류: " + ((d.data && d.data.message) || "알 수 없음"));
     }
@@ -184,6 +185,9 @@
 
   setInterval(function () {
     if (!state.playingId || document.visibilityState !== "visible") return;
+    /* 신호를 한 번도 받지 못한 화면은 감시하지 않는다. 신호를 못 보내는 환경에서
+       멀쩡히 도는 영상을 1분마다 다시 띄우는 것이 멈춘 화면보다 더 나쁘다. */
+    if (!state.ticked) return;
     if (Date.now() - state.readyAt < 30000) return;
     if (Date.now() - state.lastTick > STALL_MS) reloadCurrent("재생 멈춤");
   }, 10000);
