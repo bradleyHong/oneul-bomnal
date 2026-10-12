@@ -31,7 +31,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Noto+Serif+KR:wght@400;500;600;700&amp;display=swap" />
-    <link rel="stylesheet" href="./styles.css?v=20260914-rolex" />
+    <link rel="stylesheet" href="./styles.css?v=20261012-nav" />
     <link rel="stylesheet" href="./ai-video.css?v=20260911-dark" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="./assets/favicon-180.png" />
@@ -118,18 +118,44 @@
     </script>
   </head>
   <body class="av-page">
-    <header class="st-nav">
-      <div class="st-brand">
-        <strong>AI 미디어아트 영상 제작</strong>
-        <span>오늘은 봄날 · 대구 여성기업</span>
-      </div>
-      <div class="st-nav-tools">
-        <a href="./">홈페이지</a>
-        <a href="./pieces">코드로 만든 작품</a>
-        <a href="./interactive">인터랙티브 아트</a>
-        <a href="./studio">ArtWork Studio</a>
-        <a href="#order">의뢰하기</a>
-      </div>
+    <header class="site-nav">
+      <a class="brand" href="./"><strong>오늘은 봄날</strong><span>미디어아트 · 대구 여성기업</span></a>
+      <nav id="main-nav" aria-label="주요 메뉴">
+        <div class="nav-group">
+          <a class="nav-top" href="./media-facade">설치</a>
+          <div class="nav-sub">
+            <a href="./media-facade">미디어파사드 설치</a>
+            <a href="./led-install">LED 전광판 설치</a>
+            <a href="./media-facade-cost">설치 비용 안내</a>
+            <a href="./led-rental">LED 패널 렌탈</a>
+            <a href="./rental">미디어아트 렌탈</a>
+            <a href="./#works">설치 실적</a>
+          </div>
+        </div>
+        <div class="nav-group">
+          <a class="nav-top" href="./media-facade-content">콘텐츠 제작</a>
+          <div class="nav-sub">
+            <a href="./media-facade-content">미디어파사드 콘텐츠</a>
+            <a href="./ai-video">AI 영상 제작</a>
+            <a href="./data-media-art">데이터 미디어아트</a>
+            <a href="./interactive">인터랙티브 아트</a>
+            <a href="./showcase">화면 종류별 예시</a>
+          </div>
+        </div>
+        <div class="nav-group">
+          <a class="nav-top" href="./pieces">작품</a>
+          <div class="nav-sub">
+            <a href="./pieces">코드로 만든 작품</a>
+            <a href="./studio">작품 고르고 주문하기</a>
+          </div>
+        </div>
+        <a href="./company">회사소개</a>
+        <a class="is-cta" href="./quote">견적문의</a>
+        <a class="lang-switch" href="/en" hreflang="en" lang="en">EN</a>
+      </nav>
+      <button class="nav-toggle" aria-label="메뉴 열기" aria-expanded="false" aria-controls="main-nav">
+        <span></span><span></span><span></span>
+      </button>
     </header>
 
     <main class="av-main">
@@ -335,5 +361,18 @@
     </main>
 
     <script src="./ai-video.js?v=20260906" defer></script>
+      <script>
+      /* 모바일 메뉴 열고 닫기 — 다른 페이지의 site-pages.js 와 같은 동작 */
+      (function () {
+        var t = document.querySelector('.nav-toggle'), n = document.getElementById('main-nav');
+        if (!t || !n) return;
+        function set(open) { t.setAttribute('aria-expanded', String(open)); n.classList.toggle('open', open); t.setAttribute('aria-label', open ? '메뉴 닫기' : '메뉴 열기'); }
+        t.addEventListener('click', function () { set(t.getAttribute('aria-expanded') !== 'true'); });
+        n.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', function () { set(false); }); });
+        document.addEventListener('click', function (e) { if (!t.contains(e.target) && !n.contains(e.target)) set(false); });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && t.getAttribute('aria-expanded') === 'true') { set(false); t.focus(); } });
+      })();
+    </script>
+
   </body>
 </html>

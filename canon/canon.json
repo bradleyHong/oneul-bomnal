@@ -351,6 +351,26 @@
         "contentNote": "트실 영상이 없으면 기관의 이야기를 받아 미디어아트로 만들어 넣어 드립니다. 이미 있는 영상은 화면 규격에 맞춰 다시 출력해 담아 드립니다.",
         "priceNote": "기본 3일 500만원(콘텐츠 제작 포함), 나흘째부터 하루 100만원. 설치 장소와 방식에 따라 달라지는 부분은 일정 확인 후 산정합니다.",
         "proof": "2026 고령 국가유산 야행 미디어 포토존에 실제로 나간 구성입니다."
+      },
+      "ledWallRental": {
+        "_comment": "2026-11 시작. 스탠드형 LED 패널(여울ICT 공급, P1.86 GOB 640×1920) 6장을 이어 한 화면으로 빌려준다. 콘텐츠는 오늘은 봄날 작품을 무료로 틀고, 기관 영상 제작은 별도 문의.",
+        "name": "LED 월 렌탈",
+        "startsOn": "2026-11-01",
+        "panels": 6,
+        "screen": "3.84m × 1.92m (170인치급)",
+        "resolution": "2064 × 1032",
+        "panelSpec": "P1.86 GOB · 640 × 1920mm · 실내용",
+        "dayPrice": 2500000,
+        "dayPriceLabel": "하루 250만원 (부가세 포함)",
+        "extraDayPrice": 700000,
+        "extraDayLabel": "이틀째부터 하루 70만원",
+        "weekPrice": 6500000,
+        "weekLabel": "1주일(7일) 650만원",
+        "vat": "모든 값 부가세 포함",
+        "page": "/led-rental",
+        "dayPriceIncludes": "설치 · 철거 · 재생 PC 포함",
+        "contentNote": "오늘은 봄날 미디어아트는 렌탈 기간 동안 무료. 기관 홍보 영상 제작은 별도 문의.",
+        "purchase": "같은 패널 구매 상담 가능"
       }
     }
   },
@@ -672,6 +692,22 @@
         "priority": "0.9",
         "changefreq": "monthly"
       }
+    },
+    {
+     "path": "/led-rental",
+     "file": "led-rental.html",
+     "title": "대구 LED 패널 렌탈 · 170인치급 LED 월 하루 250만원 | 여성기업 오늘은 봄날",
+     "description": "대구 LED 패널 렌탈. 스탠드형 LED 패널 6장을 이어 170인치급(3.84m × 1.92m) 화면을 세웁니다. 하루 250만원(부가세 포함)에 설치·철거와 재생 PC가 들어 있고, 1주일은 650만원입니다. 오늘은 봄날 미디어아트는 무료, 패널 구매도 상담합니다.",
+     "h1": "대구 LED 패널 렌탈 · 170인치급 LED 월",
+     "primaryKeywords": [
+      "대구 LED 패널 렌탈",
+      "LED 전광판 렌탈",
+      "행사 LED 대여"
+     ],
+     "sitemap": {
+      "priority": "0.9",
+      "changefreq": "monthly"
+     }
     },
     {
       "path": "/studio",
