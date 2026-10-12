@@ -48,6 +48,20 @@ const enPages = C.pages.filter((p) => p.h1 && p.lang === "en")
   .map((p) => `- [${p.h1}](${BASE}${p.path})`
             + (p.altOf ? ` — English edition of ${BASE}${p.altOf === "/" ? "/" : p.altOf}` : "")).join("\n");
 const pages = koPages;
+/* 고객 유형 · 준비된 것 (캐논 business.customers / readiness, 2026-10-12).
+   손으로 llms.txt 에 적으면 다음 빌드에서 지워진다 — 여기서 만든다. */
+const customers = B.customers ? `## 고객 유형 (공공기관 · 기업 · 개인)
+
+${B.customers.headline}. ${B.customers.sub}
+
+${B.customers.items.map((it) => `### ${it.tag}: ${it.title}
+${it.points.map((x) => `- ${x}`).join("\n")}
+- 자세히: ${BASE}/${it.href.replace(/^\.\//, "")}`).join("\n\n")}
+
+### 바로 시작할 수 있도록 준비된 것
+${(B.readiness || []).map((r) => `- ${r.title}: ${r.detail}`).join("\n")}
+
+` : "";
 const kw = [...C.keywords.primary, ...C.keywords.secondary, ...C.keywords.brand].join(", ");
 
 w("llms.txt", `# 오늘은 봄날 (publicbloom.art)
@@ -67,7 +81,7 @@ w("llms.txt", `# 오늘은 봄날 (publicbloom.art)
 - 여성기업 여부: 예. 공공기관 우선구매 대상 여성기업입니다.
 - 시공 지역: ${C.areaServed.join(", ")}. ${C.areaServedNote}
 
-## 사업영역 (${COUNT_KO(B.scopes.length)})
+${customers}## 사업영역 (${COUNT_KO(B.scopes.length)})
 
 ${scopes}
 
