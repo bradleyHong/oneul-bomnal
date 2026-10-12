@@ -653,3 +653,23 @@ body.home-2026 main > .section { background: var(--paper); }
   .home2-word { letter-spacing: -0.006em; }
   .home2-line { letter-spacing: -0.004em; }
 }
+
+/* 고객 유형 섹션의 "준비된 것" 목록 — canon business.readiness (2026-10-12) */
+.customers-section .offer-num { font-size: 0.78rem; letter-spacing: 0.04em; }
+.ready-list {
+  list-style: none;
+  margin: clamp(28px, 4vw, 44px) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.12));
+  background: var(--line, rgba(0, 0, 0, 0.12));
+  border-radius: 14px;
+  overflow: hidden;
+}
+.ready-list li { background: var(--paper, #fff); padding: 20px 22px; }
+.ready-list b { display: block; font-size: 0.98rem; font-weight: 750; color: var(--ink, #111); }
+.ready-list span { display: block; margin-top: 6px; font-size: 0.86rem; line-height: 1.6; color: var(--muted, #555); }
+@media (max-width: 900px) { .ready-list { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .ready-list { grid-template-columns: 1fr; } }
