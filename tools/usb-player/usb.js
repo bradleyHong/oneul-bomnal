@@ -14,6 +14,9 @@
  *
  * 주소 뒤에 붙이는 설정
  *   ?hours=08-20   그 시간에만 켠다
+ *   ?daily=1       매일 한 편만 하루 종일 반복한다. 날짜가 바뀌면 다음 편으로 넘어간다
+ *                  (오늘은 봄날 TV: "오늘의 작품"). 어느 편인지는 날짜로 정해서,
+ *                  껐다 켜도 그날의 작품은 같다
  *   ?fit=cover&rotate=90&fliph=1   화면 맞추기를 미리 지정 (저장값보다 우선)
  */
 (function () {
@@ -48,6 +51,19 @@
   var started = null;
   var lastError = null;
   var hours = null;
+  /* 매일 모드. 목록 전체가 아니라 오늘의 한 편만 틀고, 날짜가 바뀌면 갈아탄다. */
+  var daily = new URLSearchParams(location.search).get("daily") === "1";
+  var fullList = [];
+  var dayShown = -1;
+  function today() {
+    // 상자 시계 기준 날짜. 자정이 기준이 된다.
+    var d = new Date();
+    return Math.floor((d.getTime() - d.getTimezoneOffset() * 60000) / 86400000);
+  }
+  function pickToday(items) {
+    if (!daily || items.length < 2) return items;
+    return [items[today() % items.length]];
+  }
   var sleeping = false;
 
   /* ── 저장된 화면 설정 ─────────────────────────────────── */
@@ -221,9 +237,12 @@
       .then(function (r) { return r.json(); })
       .then(function (j) {
         meta = { label: j.label, cached: !!j.cached, mounted: !!j.mounted };
-        if (j.rev === rev) { renderDiag(); return; }
+        var dayChanged = daily && dayShown !== today();
+        if (j.rev === rev && !dayChanged) { renderDiag(); return; }
         rev = j.rev;
-        list = j.items || [];
+        fullList = j.items || [];
+        dayShown = today();
+        list = pickToday(fullList);
         idx = -1;
         fails = 0;
         started = null;
@@ -243,7 +262,7 @@
     var cur = list[idx];
     var rows = [
       ["USB", meta.mounted ? (meta.label || "연결됨") : (meta.cached ? "없음 (복사본 재생)" : "없음")],
-      ["재생 목록", list.length + "편"],
+      ["재생 목록", daily ? "매일 한 편 · 전체 " + fullList.length + "편 중 오늘" : list.length + "편"],
       ["지금", cur ? (idx + 1) + " / " + list.length + " · " + cur.name : "없음"],
       ["화면", view.fit + " · " + view.rotate + "° · 좌우" + (view.flipH === "1" ? "반전" : "정상")
         + " · 상하" + (view.flipV === "1" ? "반전" : "정상")],

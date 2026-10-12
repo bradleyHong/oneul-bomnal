@@ -172,7 +172,25 @@
       <!-- Vercel 방문 통계(Web Analytics) — 두 회사 매일 브리핑용, 2026-10-12. 쿠키 없음 -->
     <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
     <script defer src="/_vercel/insights/script.js"></script>
-</head>
+    <!-- Google 애널리틱스 (오늘은 봄날 · publicbloom.art) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5GVT2JZ9RT"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5GVT2JZ9RT');
+      /* 마케팅 성과 보고용 클릭 기록: 전화·메일·견적문의 버튼.
+         폼을 안 쓰고 바로 전화하는 담당자가 많아 폼 접수만 세면 성과가 작게 잡힌다. */
+      document.addEventListener('click', function (e) {
+        var a = e.target && e.target.closest ? e.target.closest('a') : null;
+        if (!a) return;
+        var h = a.getAttribute('href') || '';
+        if (h.indexOf('tel:') === 0) gtag('event', 'contact_click', { method: 'phone' });
+        else if (h.indexOf('mailto:') === 0) gtag('event', 'contact_click', { method: 'email' });
+        else if (h.indexOf('quote') !== -1 || h.indexOf('/contact') !== -1) gtag('event', 'quote_cta_click', { link_text: (a.textContent || '').trim().slice(0, 30) });
+      }, true);
+    </script>
+  </head>
   <body class="site-page">
     <a class="skip-link" href="#main-content">본문 바로가기</a>
     <header class="site-nav">
@@ -290,7 +308,7 @@
         <div class="faq-list">
           <article class="faq-item">
             <h3>미디어아트 렌탈 비용이 얼마인가요?</h3>
-            <p><strong>기본 3일에 500만원</strong>입니다. 여기에 기관 맞춤 미디어아트 제작과 설치·철거가 들어 있어, 따로 콘텐츠 제작을 발주하실 필요가 없습니다. 설치는 행사 하루 전날 나가 마쳐 둡니다. <strong>나흘째부터는 하루 100만원</strong>입니다. 콘텐츠는 이미 만들어져 있으므로 연장분은 빔프로젝터와 장비 대여값만 받습니다. 축제처럼 여러 날 이어지는 행사일수록 하루 단가가 내려가는 것은 그래서입니다.</p>
+            <p><strong>기본 3일에 500만원</strong>입니다. 여기에 기관 맞춤 미디어아트 제작과 설치·철거가 들어 있어, 따로 콘텐츠 제작을 발주하실 필요가 없습니다. 설치는 행사 하루 전날 나가 마쳐 둡니다. <strong>나흘째부터는 하루 100만원</strong>입니다. 콘텐츠는 이미 만들어져 있으므로 연장분은 빔프로젝터와 장비 대여값만 받습니다. 축제처럼 여러 날 이어지는 행사일수록 하루 단가가 내려가는 것은 그래서입니다. 벽이 더 크거나 상설 설치라면 <a href="./media-facade-cost">미디어파사드 설치 비용 안내</a>를 참고해 주세요.</p>
           </article>
           <article class="faq-item">
             <h3>왜 3일이 기본인가요?</h3>

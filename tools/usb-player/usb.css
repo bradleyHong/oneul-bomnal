@@ -137,3 +137,7 @@ body.hide-cursor { cursor: none; }
 @media (prefers-reduced-motion: reduce) {
   .layer { transition: none; }
 }
+
+/* hidden 속성을 CSS 의 display 가 덮어쓰지 않게 한다. 이게 없으면
+   영상이 도는 동안에도 "USB를 꽂아 주세요"가 화면을 가린다. */
+[hidden] { display: none !important; }
