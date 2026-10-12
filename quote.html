@@ -188,7 +188,25 @@
       <!-- Vercel 방문 통계(Web Analytics) — 두 회사 매일 브리핑용, 2026-10-12. 쿠키 없음 -->
     <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
     <script defer src="/_vercel/insights/script.js"></script>
-</head>
+    <!-- Google 애널리틱스 (오늘은 봄날 · publicbloom.art) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5GVT2JZ9RT"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5GVT2JZ9RT');
+      /* 마케팅 성과 보고용 클릭 기록: 전화·메일·견적문의 버튼.
+         폼을 안 쓰고 바로 전화하는 담당자가 많아 폼 접수만 세면 성과가 작게 잡힌다. */
+      document.addEventListener('click', function (e) {
+        var a = e.target && e.target.closest ? e.target.closest('a') : null;
+        if (!a) return;
+        var h = a.getAttribute('href') || '';
+        if (h.indexOf('tel:') === 0) gtag('event', 'contact_click', { method: 'phone' });
+        else if (h.indexOf('mailto:') === 0) gtag('event', 'contact_click', { method: 'email' });
+        else if (h.indexOf('quote') !== -1 || h.indexOf('/contact') !== -1) gtag('event', 'quote_cta_click', { link_text: (a.textContent || '').trim().slice(0, 30) });
+      }, true);
+    </script>
+  </head>
   <body class="site-page">
     <a class="skip-link" href="#main-content">본문 바로가기</a>
     <header class="site-nav">
@@ -276,7 +294,7 @@
         <div class="faq-list">
           <article class="faq-item">
             <h3>미디어아트 사이니지 도입 비용은 얼마인가요?</h3>
-            <p>콘텐츠 제작은 정찰가입니다. 단품 1편 100만원, 사계절 4편 390만원, 1년 10편 커스텀 900만원(부가세 별도)이며 화면 규격만 알려주시면 그대로 진행합니다. 설치·시공은 현장 실측 후 산정합니다. 벽면 크기, 화면 대수, 기존 패널 유무, 연동할 데이터 범위에 따라 단가가 달라지기 때문입니다. 미디어파사드는 프로젝터 설치와 매핑, 상영 운영이 한 금액에 포함되고, LED 패널은 패널 공급·설치와 콘텐츠 제작·교체가 함께 포함됩니다. 기관명과 설치 장소, 벽면 또는 화면 크기를 남겨주시면 회계연도 기준 견적서와 직접생산확인증명서를 함께 발행해 드립니다.</p>
+            <p>콘텐츠 제작은 정찰가입니다. 단품 1편 100만원, 사계절 4편 390만원, 1년 10편 커스텀 900만원(부가세 별도)이며 화면 규격만 알려주시면 그대로 진행합니다. 설치·시공은 현장 실측 후 산정합니다. 벽면 크기, 화면 대수, 기존 패널 유무, 연동할 데이터 범위에 따라 단가가 달라지기 때문입니다. 미디어파사드는 프로젝터 설치와 매핑, 상영 운영이 한 금액에 포함되고, LED 패널은 패널 공급·설치와 콘텐츠 제작·교체가 함께 포함됩니다. 기관명과 설치 장소, 벽면 또는 화면 크기를 남겨주시면 회계연도 기준 견적서와 직접생산확인증명서를 함께 발행해 드립니다. 미디어파사드라면 <a href="./media-facade-cost">빔프로젝터 사양별 비용 안내</a>를 먼저 보셔도 좋습니다.</p>
           </article>
           <article class="faq-item">
             <h3>미디어파사드는 어떤 방식으로 설치하나요?</h3>

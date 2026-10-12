@@ -63,7 +63,25 @@
       <!-- Vercel 방문 통계(Web Analytics) — 두 회사 매일 브리핑용, 2026-10-12. 쿠키 없음 -->
     <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
     <script defer src="/_vercel/insights/script.js"></script>
-</head>
+    <!-- Google 애널리틱스 (오늘은 봄날 · publicbloom.art) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5GVT2JZ9RT"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5GVT2JZ9RT');
+      /* 마케팅 성과 보고용 클릭 기록: 전화·메일·견적문의 버튼.
+         폼을 안 쓰고 바로 전화하는 담당자가 많아 폼 접수만 세면 성과가 작게 잡힌다. */
+      document.addEventListener('click', function (e) {
+        var a = e.target && e.target.closest ? e.target.closest('a') : null;
+        if (!a) return;
+        var h = a.getAttribute('href') || '';
+        if (h.indexOf('tel:') === 0) gtag('event', 'contact_click', { method: 'phone' });
+        else if (h.indexOf('mailto:') === 0) gtag('event', 'contact_click', { method: 'email' });
+        else if (h.indexOf('quote') !== -1 || h.indexOf('/contact') !== -1) gtag('event', 'quote_cta_click', { link_text: (a.textContent || '').trim().slice(0, 30) });
+      }, true);
+    </script>
+  </head>
   <body class="site-page">
     <a class="skip-link" href="#main-content">본문 바로가기</a>
     <header class="site-nav">

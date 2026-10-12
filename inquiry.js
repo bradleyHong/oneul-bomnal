@@ -90,6 +90,14 @@
     }
 
     if (sent) {
+      // 마케팅 성과 보고용. 애널리틱스에서 '주요 이벤트'로 지정해 둔 이름이다.
+      if (typeof window.gtag === "function") {
+        window.gtag("event", "generate_lead", {
+          lead_source: "inquiry_form",
+          page_name: location.pathname,
+          service: (payload.service || []).join(", ") || "(선택 없음)",
+        });
+      }
       form.reset();
       show(successBox);
       if (button) {
@@ -153,6 +161,10 @@
 
   // formsubmit이 _next로 되돌려보낸 경우에도 성공 문구를 보여준다.
   if (new URLSearchParams(location.search).get("sent") === "1") {
+    // formsubmit 을 거쳐 돌아온 경우도 접수 1건이다.
+    if (typeof window.gtag === "function") {
+      window.gtag("event", "generate_lead", { lead_source: "inquiry_form_fallback", page_name: location.pathname });
+    }
     show(successBox);
     try {
       sessionStorage.removeItem("bomnal_inquiry_draft");

@@ -19,6 +19,7 @@
     python3 server.py --dir /mnt/usb  # 마운트 위치를 직접 지정
 """
 import argparse
+import urllib.parse
 import json
 import mimetypes
 import os
@@ -110,7 +111,7 @@ def scan(path):
             continue
         out.append({
             "name": name,
-            "url": "/media/" + name,
+            "url": "/media/" + urllib.parse.quote(name),
             "size": size,
             "kind": "image" if name.lower().endswith(IMAGE_EXT) else "video",
         })
@@ -264,7 +265,9 @@ class Handler(BaseHTTPRequestHandler):
         self.do_GET()
 
     def do_GET(self):
-        path = self.path.split("?", 1)[0]
+        # 주소의 한글·띄어쓰기는 %E1%84… 로 바뀌어 온다. 풀지 않으면 한글 이름의
+        # 영상을 하나도 찾지 못한다. 손님 USB 의 파일 이름은 대개 한글이다.
+        path = urllib.parse.unquote(self.path.split("?", 1)[0])
         if path in ("/", "/index.html"):
             self._asset("index.html", "text/html; charset=utf-8")
         elif path == "/usb.css":

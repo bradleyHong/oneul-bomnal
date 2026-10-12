@@ -803,6 +803,13 @@
         })
           .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json().catch(function () { return {}; }); })
           .then(function () {
+            if (typeof window.gtag === "function") {
+              window.gtag("event", "generate_lead", {
+                lead_source: "studio_order",
+                buyer_type: isShop ? "shop" : "org",
+                artwork: selectedArtwork ? selectedArtwork.title : "(생성 작품)",
+              });
+            }
             elForm.reset();
             syncBuyer();
             say("주문을 받았습니다. 평일 하루 안에 적어 주신 메일(" + email + ")로 금액과 결제 방법을 보내 드립니다.", "ok");

@@ -203,7 +203,25 @@
       <!-- Vercel 방문 통계(Web Analytics) — 두 회사 매일 브리핑용, 2026-10-12. 쿠키 없음 -->
     <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
     <script defer src="/_vercel/insights/script.js"></script>
-</head>
+    <!-- Google 애널리틱스 (오늘은 봄날 · publicbloom.art) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5GVT2JZ9RT"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5GVT2JZ9RT');
+      /* 마케팅 성과 보고용 클릭 기록: 전화·메일·견적문의 버튼.
+         폼을 안 쓰고 바로 전화하는 담당자가 많아 폼 접수만 세면 성과가 작게 잡힌다. */
+      document.addEventListener('click', function (e) {
+        var a = e.target && e.target.closest ? e.target.closest('a') : null;
+        if (!a) return;
+        var h = a.getAttribute('href') || '';
+        if (h.indexOf('tel:') === 0) gtag('event', 'contact_click', { method: 'phone' });
+        else if (h.indexOf('mailto:') === 0) gtag('event', 'contact_click', { method: 'email' });
+        else if (h.indexOf('quote') !== -1 || h.indexOf('/contact') !== -1) gtag('event', 'quote_cta_click', { link_text: (a.textContent || '').trim().slice(0, 30) });
+      }, true);
+    </script>
+  </head>
   <body class="site-page">
     <a class="skip-link" href="#main-content">본문 바로가기</a>
     <header class="site-nav">
@@ -264,7 +282,7 @@
         <div class="section-head">
           <p class="section-kicker">Process</p>
           <h2>미디어파사드는 어떤 순서로 진행되나요?</h2>
-          <p>실측 없이 견적을 내면 대부분 틀립니다. 현장을 먼저 보고 대수와 밝기를 정합니다.</p>
+          <p>실측 없이 견적을 내면 대부분 틀립니다. 현장을 먼저 보고 대수와 밝기를 정합니다. 비용이 어떻게 정해지는지는 <a href="./media-facade-cost">미디어파사드 설치 비용 안내</a>에 정리해 두었습니다.</p>
         </div>
         <ol class="step-list">
           <li><b>STEP 01</b><h3>현장 실측</h3><p>벽면 크기와 굴곡, 주변 조도, 관람 동선, 확보 가능한 전기 용량을 잽니다. 이 값으로 프로젝터 대수·밝기·설치 위치가 정해집니다.</p></li>

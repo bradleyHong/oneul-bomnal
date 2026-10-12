@@ -14,6 +14,8 @@ set -euo pipefail
 APP_DIR=/opt/bomnal-usb
 PORT="${PORT:-8080}"
 HOURS="${HOURS:-}"              # 예: HOURS=08-20 bash install.sh
+DAILY="${DAILY:-}"              # 예: DAILY=1 → 매일 한 편만 하루 종일 (오늘은 봄날 TV)
+WINDOW_POS="${WINDOW_POS:-}"    # 예: WINDOW_POS=1920,0 → 두 번째 HDMI 화면에 띄운다
 RUN_USER="${SUDO_USER:-$(id -un)}"
 SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -52,7 +54,12 @@ systemctl enable --now bomnal-usb.service
 
 echo "▸ 켜면 바로 재생되도록 등록"
 URL="http://127.0.0.1:$PORT/"
-[[ -n "$HOURS" ]] && URL="$URL?hours=$HOURS"
+Q=""
+[[ -n "$HOURS" ]] && Q="${Q:+$Q&}hours=$HOURS"
+[[ -n "$DAILY" ]] && Q="${Q:+$Q&}daily=1"
+[[ -n "$Q" ]] && URL="$URL?$Q"
+POS_FLAG=""
+[[ -n "$WINDOW_POS" ]] && POS_FLAG="--window-position=$WINDOW_POS"
 
 AUTOSTART_DIR="/home/$RUN_USER/.config/autostart"
 install -d -o "$RUN_USER" -g "$RUN_USER" "$AUTOSTART_DIR"
@@ -70,7 +77,7 @@ Exec=$CHROME_BIN --kiosk --incognito --noerrdialogs --disable-infobars \\
   --disable-features=Translate,MediaSessionService \\
   --check-for-update-interval=31536000 \\
   --disable-session-crashed-bubble --disable-pinch --overscroll-history-navigation=0 \\
-  "$URL"
+  $POS_FLAG "$URL"
 X-GNOME-Autostart-enabled=true
 EOF
 chown "$RUN_USER":"$RUN_USER" "$AUTOSTART_DIR/bomnal-usb.desktop"
