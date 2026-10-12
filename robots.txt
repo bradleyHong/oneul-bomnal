@@ -20,6 +20,8 @@ Disallow: /mediabox
 Disallow: /mediabox.html
 Disallow: /player
 Disallow: /player.html
+Disallow: /tv
+Disallow: /tv.html
 Disallow: /art-spring
 Disallow: /art-spring.html
 Disallow: /art-air
@@ -50,6 +52,8 @@ Disallow: /mediabox
 Disallow: /mediabox.html
 Disallow: /player
 Disallow: /player.html
+Disallow: /tv
+Disallow: /tv.html
 Disallow: /art-spring
 Disallow: /art-spring.html
 Disallow: /art-air
@@ -80,6 +84,8 @@ Disallow: /mediabox
 Disallow: /mediabox.html
 Disallow: /player
 Disallow: /player.html
+Disallow: /tv
+Disallow: /tv.html
 Disallow: /art-spring
 Disallow: /art-spring.html
 Disallow: /art-air
@@ -110,6 +116,8 @@ Disallow: /mediabox
 Disallow: /mediabox.html
 Disallow: /player
 Disallow: /player.html
+Disallow: /tv
+Disallow: /tv.html
 Disallow: /art-spring
 Disallow: /art-spring.html
 Disallow: /art-air
@@ -140,6 +148,8 @@ Disallow: /mediabox
 Disallow: /mediabox.html
 Disallow: /player
 Disallow: /player.html
+Disallow: /tv
+Disallow: /tv.html
 Disallow: /art-spring
 Disallow: /art-spring.html
 Disallow: /art-air
@@ -170,6 +180,8 @@ Disallow: /mediabox
 Disallow: /mediabox.html
 Disallow: /player
 Disallow: /player.html
+Disallow: /tv
+Disallow: /tv.html
 Disallow: /art-spring
 Disallow: /art-spring.html
 Disallow: /art-air
@@ -200,6 +212,8 @@ Disallow: /mediabox
 Disallow: /mediabox.html
 Disallow: /player
 Disallow: /player.html
+Disallow: /tv
+Disallow: /tv.html
 Disallow: /art-spring
 Disallow: /art-spring.html
 Disallow: /art-air
@@ -230,6 +244,8 @@ Disallow: /mediabox
 Disallow: /mediabox.html
 Disallow: /player
 Disallow: /player.html
+Disallow: /tv
+Disallow: /tv.html
 Disallow: /art-spring
 Disallow: /art-spring.html
 Disallow: /art-air
@@ -260,6 +276,8 @@ Disallow: /mediabox
 Disallow: /mediabox.html
 Disallow: /player
 Disallow: /player.html
+Disallow: /tv
+Disallow: /tv.html
 Disallow: /art-spring
 Disallow: /art-spring.html
 Disallow: /art-air
@@ -290,6 +308,8 @@ Disallow: /mediabox
 Disallow: /mediabox.html
 Disallow: /player
 Disallow: /player.html
+Disallow: /tv
+Disallow: /tv.html
 Disallow: /art-spring
 Disallow: /art-spring.html
 Disallow: /art-air
@@ -320,6 +340,8 @@ Disallow: /mediabox
 Disallow: /mediabox.html
 Disallow: /player
 Disallow: /player.html
+Disallow: /tv
+Disallow: /tv.html
 Disallow: /art-spring
 Disallow: /art-spring.html
 Disallow: /art-air
@@ -350,6 +372,8 @@ Disallow: /mediabox
 Disallow: /mediabox.html
 Disallow: /player
 Disallow: /player.html
+Disallow: /tv
+Disallow: /tv.html
 Disallow: /art-spring
 Disallow: /art-spring.html
 Disallow: /art-air
@@ -380,6 +404,8 @@ Disallow: /mediabox
 Disallow: /mediabox.html
 Disallow: /player
 Disallow: /player.html
+Disallow: /tv
+Disallow: /tv.html
 Disallow: /art-spring
 Disallow: /art-spring.html
 Disallow: /art-air
@@ -410,6 +436,8 @@ Disallow: /mediabox
 Disallow: /mediabox.html
 Disallow: /player
 Disallow: /player.html
+Disallow: /tv
+Disallow: /tv.html
 Disallow: /art-spring
 Disallow: /art-spring.html
 Disallow: /art-air

@@ -754,7 +754,7 @@
     "/login",
     "/api/",
     "/mediabox",
-    "/player",
+    "/player", "/tv",
     "/art-spring",
     "/art-air",
     "/art-typewall",
