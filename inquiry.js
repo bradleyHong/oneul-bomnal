@@ -98,6 +98,8 @@
           service: (payload.service || []).join(", ") || "(선택 없음)",
         });
       }
+      // 상상연필 관리자 「오늘은 봄날」 집계(bomnal-beacon.js) — 접수 1건
+      if (typeof window.bnTrack === "function") window.bnTrack("inquiry");
       form.reset();
       show(successBox);
       if (button) {
@@ -165,6 +167,9 @@
     if (typeof window.gtag === "function") {
       window.gtag("event", "generate_lead", { lead_source: "inquiry_form_fallback", page_name: location.pathname });
     }
+    // 상상연필 관리자 「오늘은 봄날」 집계 — 비콘이 아직 안 실렸으면 페이지가 다 실린 뒤
+    if (typeof window.bnTrack === "function") window.bnTrack("inquiry");
+    else window.addEventListener("load", function () { if (typeof window.bnTrack === "function") window.bnTrack("inquiry"); });
     show(successBox);
     try {
       sessionStorage.removeItem("bomnal_inquiry_draft");
