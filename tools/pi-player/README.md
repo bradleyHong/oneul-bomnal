@@ -44,3 +44,49 @@ https://publicbloom.art/api/art?code=BN4-0AC6F6          JSON — 재생 주소�
 영상은 해상도가 박힌다. 3840×1080 으로 뽑은 파일을 1920×540 패널에 틀면
 줄이고, 4K 패널에 틀면 늘려서 흐려진다. HTML 은 꽂힌 화면 크기로 그린다.
 그리고 5초 한 바퀴가 정확히 맞물려 하루 종일 돌아도 이음매가 없다.
+
+## 오늘은 봄날 TV 채널로 쓰기 (구독형)
+
+작품을 상자에 넣어 보내는 대신, 구독자 화면이 매일 바뀌는 채널을 띄울 수도 있다.
+인터넷이 필요하다. 영상은 비메오에서 오고, 우리 사이트(publicbloom.art)에서만 재생되게 잠가 두었다.
+
+```
+https://publicbloom.art/tv?k=<입장 코드>
+```
+
+입장 코드는 Vercel 환경변수 `TV_KEYS` 에 넣는다 (구독자 DB 가 붙기 전까지).
+
+```json
+{"BOM-XXXX-XXXX": {"name": "구미코 로비", "until": "2027-10-31", "ratio": "16:9"}}
+```
+
+`until` 이 지나면 30분 안에 그 화면이 꺼지고 입장 화면으로 돌아간다. 세로 사이니지는 `"ratio": "9:16"`.
+
+### HDMI 2번·3번 화면에 바로 띄우기
+
+화면이 여럿 꽂힌 기계에서 사람이 버튼을 누를 수 없을 때는, 크로미움을 그 화면 위치에서
+키오스크로 연다. 화면 위치는 왼쪽 화면들의 가로 폭을 더한 값이다
+(1920 폭 화면이 왼쪽에 하나 있으면 두 번째 화면은 `1920,0`, 세 번째는 `3840,0`).
+
+```bash
+# 라즈베리파이 5 (HDMI 두 개) — 두 번째 화면에 TV 채널
+chromium-browser --kiosk --noerrdialogs --disable-infobars \
+  --autoplay-policy=no-user-gesture-required \
+  --user-data-dir=$HOME/.tv-screen2 \
+  --window-position=1920,0 \
+  "https://publicbloom.art/tv?k=BOM-XXXX-XXXX"
+```
+
+```bat
+:: 윈도 미니 PC (HDMI 세 개) — 세 번째 화면
+"C:\Program Files\Google\Chrome\Application\chrome.exe" --kiosk ^
+  --autoplay-policy=no-user-gesture-required ^
+  --user-data-dir=C:\bomnal\tv3 --window-position=3840,0 ^
+  "https://publicbloom.art/tv?k=BOM-XXXX-XXXX"
+```
+
+화면마다 `--user-data-dir` 을 따로 줘야 창이 하나로 합쳐지지 않는다.
+사람이 앉아 있는 경우에는 페이지의 **화면 고르기** 버튼으로 골라도 된다(크롬·엣지).
+고른 화면은 기억해 두었다가 다음에 **화면 켜기**를 누르면 그 화면에 띄운다.
+
+조작: 두 번 누르기 = 전체화면 켜고 끄기 · `F` 전체화면 · `D` 재생 상태 보기
