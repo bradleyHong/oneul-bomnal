@@ -16,6 +16,8 @@ export const config = { runtime: "edge" };
  * 하루의 경계는 서울 자정이다. 모든 구독자가 같은 날 같은 작품을 받는다.
  */
 import { LIBRARY } from "./_tv-library.js";
+import { readCookie, verifySession } from "./_auth.js";
+import { readTvMembers, TV_COOKIE } from "./_google.js";
 
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), {
@@ -44,10 +46,24 @@ function keys() {
 export default async function handler(req) {
   const url = new URL(req.url);
   const k = (url.searchParams.get("k") || "").trim();
-  if (!k) return json({ error: "입장 열쇠가 필요합니다." }, 401);
 
-  const sub = keys()[k];
-  if (!sub) return json({ error: "등록되지 않은 열쇠입니다." }, 401);
+  /* 두 가지 길로 들어온다.
+     ① Google 로그인 쿠키 — 구독 회원. 명단(TV_MEMBERS)에서 매번 다시 확인한다
+     ② 입장 열쇠(?k=) — 로그인할 사람이 없는 무인 상자용 */
+  let sub = null;
+  let via = "";
+  const session = await verifySession(readCookie(req.headers.get("cookie"), TV_COOKIE), process.env.AUTH_SECRET);
+  if (session && session.role === "tv") {
+    sub = readTvMembers()[session.id] || null;
+    if (!sub) return json({ error: "구독 회원 명단에 없는 계정입니다.", email: session.id }, 403);
+    via = "google";
+  } else if (k) {
+    sub = keys()[k] || null;
+    if (!sub) return json({ error: "등록되지 않은 열쇠입니다." }, 401);
+    via = "key";
+  } else {
+    return json({ error: "로그인이 필요합니다." }, 401);
+  }
 
   const now = Date.now();
   const day = seoulDay(now);
@@ -66,6 +82,9 @@ export default async function handler(req) {
   const nextChangeAt = new Date((day + 1) * 86400000 - SEOUL_MS).toISOString();
 
   return json({
+    via,
+    email: via === "google" ? session.id : "",
+    setup: sub.setup || "led",
     name: sub.name || "",
     date: seoulDate(day),
     today,
