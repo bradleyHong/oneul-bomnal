@@ -273,11 +273,14 @@ body.home-2026 { background: var(--void); color: var(--ink); }
 .home2-cap span { display: block; margin-top: 3px; font-size: 0.79rem; color: var(--h-dim); }
 
 /* ── 자격 · 첫 화면이 아니라 여기에 둔다 ────────────────── */
-/* 자격 띠. 첫 화면(어두운 작품) 바로 아래에 초록으로 앉는다.
-   어둠 → 초록 → 흰 종이. 색이 한 번 꺾여야 첫 화면이 끝난 것으로 읽힌다.
-   색값은 styles.css 의 초록 띠 규칙이 가져간다. */
+/* 자격 띠. 첫 화면 바로 아래 종이 위에 앉는다.
+   예전에는 초록 판이었는데, 첫 화면 → 초록 → 어두운 상영관 → 흰 종이로
+   색이 세 번 꺾여 한 회사로 안 읽혔다. 본문과 같은 종이에 두고 위아래 선으로만 끊는다. */
 .home2-cred {
-  padding: clamp(30px, 5vh, 52px) var(--h-pad) clamp(52px, 8vh, 96px);
+  padding: clamp(30px, 5vh, 52px) var(--h-pad) clamp(30px, 5vh, 52px);
+  background: var(--paper);
+  color: var(--ink);
+  border-bottom: 1px solid var(--edge-soft);
 }
 
 .home2-cred ul {
@@ -289,13 +292,13 @@ body.home-2026 { background: var(--void); color: var(--ink); }
   list-style: none;
 }
 @media (max-width: 760px) { .home2-cred ul { grid-template-columns: repeat(2, 1fr); row-gap: 22px; } }
-.home2-cred li { padding: 0 clamp(14px, 2vw, 26px); border-left: 1px solid rgba(255, 255, 255, 0.24); }
+.home2-cred li { padding: 0 clamp(14px, 2vw, 26px); border-left: 1px solid var(--edge); }
 .home2-cred li:first-child { padding-left: 0; border-left: 0; }
 @media (max-width: 760px) {
   .home2-cred li:nth-child(odd) { padding-left: 0; border-left: 0; }
 }
-.home2-cred b { display: block; font-size: 0.98rem; font-weight: 700; }
-.home2-cred span { display: block; margin-top: 4px; font-size: 0.78rem; color: rgba(242, 248, 244, 0.8); line-height: 1.55; }
+.home2-cred b { display: block; font-size: 0.98rem; font-weight: 700; color: var(--ink); }
+.home2-cred span { display: block; margin-top: 4px; font-size: 0.78rem; color: var(--deep); line-height: 1.55; }
 
 /* ── 어두운 첫 화면 위의 메뉴 ───────────────────────────── */
 /* 기존 스타일은 메뉴를 흐름 안에 둔다(position: relative). 그러면 첫 화면 위에

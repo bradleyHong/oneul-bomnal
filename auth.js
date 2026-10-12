@@ -74,8 +74,9 @@
       nav.appendChild(client);
     }
 
-    // 제작 AX는 관리자와 회원사 담당자가 같이 씁니다.
-    const studio = makeLink("./ax-studio", "제작 AX", "nav-auth-studio");
+    // 새 화면 주문은 공개 스튜디오에서 받습니다. (ax-studio 는 아직 배포하지 않아
+    // 그쪽으로 걸면 404 가 났습니다.)
+    const studio = makeLink("./studio", "작품 주문", "nav-auth-studio");
     studio.dataset.authLink = "studio";
     nav.appendChild(studio);
 

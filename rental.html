@@ -34,7 +34,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Noto+Serif+KR:wght@400;500;600;700&amp;display=swap" />
-    <link rel="stylesheet" href="./styles.css?v=20260914-rolex" />
+    <link rel="stylesheet" href="./styles.css?v=20261012-nav" />
     <link rel="stylesheet" href="./en.css?v=20260914-rolex" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="./assets/favicon-180.png" />
@@ -195,12 +195,36 @@
   <body class="site-page">
     <a class="skip-link" href="#main-content">본문 바로가기</a>
     <header class="site-nav">
-      <a class="brand" href="./"><strong>오늘은 봄날</strong><span>미디어아트 AX · 대구 여성기업</span></a>
+      <a class="brand" href="./"><strong>오늘은 봄날</strong><span>미디어아트 · 대구 여성기업</span></a>
       <nav id="main-nav" aria-label="주요 메뉴">
-        <a href="./#works">작업</a>
-        <a href="./pieces">작품</a>
-        <a href="./#service">사업영역</a>
-        <a href="./studio">스튜디오</a>
+        <div class="nav-group">
+          <a class="nav-top" href="./media-facade">설치</a>
+          <div class="nav-sub">
+            <a href="./media-facade">미디어파사드 설치</a>
+            <a href="./led-install">LED 전광판 설치</a>
+            <a href="./media-facade-cost">설치 비용 안내</a>
+            <a href="./led-rental">LED 패널 렌탈</a>
+            <a href="./rental">미디어아트 렌탈</a>
+            <a href="./#works">설치 실적</a>
+          </div>
+        </div>
+        <div class="nav-group">
+          <a class="nav-top" href="./media-facade-content">콘텐츠 제작</a>
+          <div class="nav-sub">
+            <a href="./media-facade-content">미디어파사드 콘텐츠</a>
+            <a href="./ai-video">AI 영상 제작</a>
+            <a href="./data-media-art">데이터 미디어아트</a>
+            <a href="./interactive">인터랙티브 아트</a>
+            <a href="./showcase">화면 종류별 예시</a>
+          </div>
+        </div>
+        <div class="nav-group">
+          <a class="nav-top" href="./pieces">작품</a>
+          <div class="nav-sub">
+            <a href="./pieces">코드로 만든 작품</a>
+            <a href="./studio">작품 고르고 주문하기</a>
+          </div>
+        </div>
         <a href="./company">회사소개</a>
         <a class="is-cta" href="./quote">견적문의</a>
         <a class="lang-switch" href="/en/rental" hreflang="en" lang="en">EN</a>
@@ -218,7 +242,7 @@
           <p>걸 화면이 없는 자리에도 <strong>3m × 1.8m</strong> 미디어아트가 섭니다.
              빔프로젝터와 스피커, 플레이어가 상자 하나에 들어 있어 전원만 꽂으면 켜지고,
              행사가 끝나면 그대로 거둡니다. <strong>기본 3일 500만원</strong>, 콘텐츠 제작까지 들어 있습니다.</p>
-          <div class="subpage-actions"><a class="primary-link" href="./quote?item=box-rental">대여 문의</a><a class="secondary-link" href="./#box-rental">홈에서 구성 보기</a></div>
+          <div class="subpage-actions"><a class="primary-link" href="./quote?item=box-rental">대여 문의</a><a class="secondary-link" href="./led-rental">LED 패널 렌탈 (11월부터)</a></div>
         </div>
         <aside>
           <span><b>구성</b>단초점 빔 · 스피커 · 봄날 플레이어</span>
@@ -254,6 +278,22 @@
             <tr><th scope="row">콘텐츠</th><td>기관 이야기로 맞춤 제작 · 보유 영상은 화면 규격에 맞춰 재출력</td></tr>
           </tbody>
         </table>
+      </section>
+
+      <section class="section" id="led-wall">
+        <div class="section-head">
+          <p class="section-kicker">LED Panel Rental · 2026년 11월부터</p>
+          <h2>벽이 없거나 실내가 밝다면 LED 패널</h2>
+          <p>스탠드형 LED 패널 6장을 이어 <strong>170인치급(3.84m × 1.92m)</strong> 화면을 세웁니다.
+             하루 250만원(부가세 포함), 1주일 650만원. 오늘은 봄날 미디어아트는 무료입니다.</p>
+        </div>
+        <figure class="mock-shot">
+          <img src="./assets/works/led-wall-6-onsite.webp"
+               alt="로비 사진 위에 LED 패널 6장 170인치급 화면을 같은 비율로 합성한 예시"
+               width="1600" height="1205" loading="lazy" decoding="async" />
+          <figcaption>합성 예시 · 실제 현장 사진 위에 LED 6장을 같은 비율로 얹고 AI로 빛과 반사를 다듬었습니다.</figcaption>
+        </figure>
+        <div class="subpage-actions"><a class="primary-link" href="./led-rental">대구 LED 패널 렌탈 자세히</a></div>
       </section>
 
       <section class="section">
@@ -356,6 +396,7 @@
         <a href="./media-facade">대구 미디어파사드 설치</a>
         <a href="./led-install">LED 패널 · 전광판 설치</a>
         <a href="./media-facade-content">미디어파사드 콘텐츠 제작</a>
+        <a href="./led-rental">대구 LED 패널 렌탈</a>
         <a href="./rental">미디어아트 렌탈</a>
         <a href="./pieces">코드로 만든 작품</a>
         <a href="./interactive">인터랙티브 아트</a>

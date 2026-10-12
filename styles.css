@@ -6490,8 +6490,7 @@ h1, h2, .section-head h2, .subpage-hero h1, .ref-films-head {
    "우리는 이런 회사입니다"라고 말하는 자리와, 페이지 끝에서 "연락 주세요"
    하는 자리. 읽는 글이 아니라 서는 자리라 색을 입어도 안 무겁다. */
 .band-green,
-.en-cta,
-.home2-cred {
+.en-cta {
   background: var(--rx-green);
   color: var(--rx-ink);
   --edge: rgba(255, 255, 255, 0.20);
@@ -6509,8 +6508,7 @@ h1, h2, .section-head h2, .subpage-hero h1, .ref-films-head {
 .band-green h1,
 .band-green h2,
 .band-green h3,
-.en-cta h2,
-.home2-cred b { color: var(--rx-ink); }
+.en-cta h2 { color: var(--rx-ink); }
 
 .band-green .section-kicker,
 .en-cta .section-kicker { color: #b6dcc6; }
@@ -6559,26 +6557,18 @@ h1, h2, .section-head h2, .subpage-hero h1, .ref-films-head {
 .en-cta .section-kicker::before { background: #b6dcc6; }
 
 /* ════════════════════════════════════════════════════════════════
-   상영관 — 작품 영상만 걸리는 어두운 구역
+   상영관 — 작품 영상만 걸리는 구역
    ════════════════════════════════════════════════════════════════
    작품 영상을 실적 사진과 한 구역에 두었더니 사진 아홉 장에 묻혀
-   "레퍼런스 위에 얹은 덤"으로 읽혔다. 파는 것은 사진이 아니라 저
-   화면이다. 구역을 따로 내주고 판을 어둡게 깐다 — 빛나는 그림 뒤가
-   희면 그림이 안 뜬다.
+   "레퍼런스 위에 얹은 덤"으로 읽혔다. 그래서 구역을 따로 낸다.
 
-   판을 가로로 꽉 채운다. 흰 종이 위에 어두운 띠가 통째로 걸려야
-   "여기부터 다른 것"으로 읽힌다. 안쪽 여백만 본문과 맞춘다. */
+   예전에는 판을 어둡게 깔았는데, 홈만 검정·초록·흰색을 오가서 한 회사로
+   안 읽혔다. 판은 다른 페이지와 같은 종이로 두고, 영상 자체를 밝은
+   전시장 벽에 걸린 화면처럼 그림자로 띄운다. */
 .artwork-stage {
-  --ink: var(--stage-ink);
-  --muted: rgba(244, 247, 250, 0.8);
-  --deep: rgba(244, 247, 250, 0.7);
-  --edge: rgba(255, 255, 255, 0.16);
-  --edge-soft: rgba(255, 255, 255, 0.09);
-  --glow: #6fd39b;
   padding: clamp(46px, 7vw, 96px) clamp(18px, 4vw, 56px) clamp(52px, 8vw, 108px);
-  background:
-    radial-gradient(120% 90% at 50% 0%, #12181f 0%, var(--stage) 58%, var(--stage-deep) 100%);
-  color: var(--stage-ink);
+  background: var(--paper);
+  color: var(--ink);
 }
 
 .artwork-stage-head {
@@ -6587,18 +6577,16 @@ h1, h2, .section-head h2, .subpage-hero h1, .ref-films-head {
 }
 .artwork-stage-head h2 {
   margin: 0;
-  color: var(--stage-ink);
+  color: var(--ink);
   font-size: clamp(30px, 4.4vw, 60px);
 }
 .artwork-stage-head p:not(.section-kicker) {
   margin: 14px 0 0;
   max-width: 62ch;
-  color: rgba(244, 247, 250, 0.76);
+  color: var(--muted);
   font-size: var(--t-body);
   line-height: 1.72;
 }
-.artwork-stage .section-kicker { color: #6fd39b; }
-.artwork-stage .section-kicker::before { background: #6fd39b; }
 
 .artwork-stage .ref-films { margin: 0 auto; max-width: 1180px; }
 
@@ -6615,7 +6603,7 @@ h1, h2, .section-head h2, .subpage-hero h1, .ref-films-head {
 .artwork-stage .film:not(:first-child) { aspect-ratio: 16 / 9; }
 .artwork-stage .film {
   border-radius: 18px;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 24px 60px rgba(16, 32, 26, 0.18);
 }
 /* 큰 판에서는 제목도 커야 균형이 맞는다. */
 .artwork-stage .film:first-child .film-name { font-size: clamp(17px, 1.7vw, 22px); }
@@ -6625,4 +6613,114 @@ h1, h2, .section-head h2, .subpage-hero h1, .ref-films-head {
 @media (max-width: 760px) {
   .artwork-stage .film-grid { grid-template-columns: 1fr; }
   .artwork-stage .film:first-child { grid-column: auto; }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   한 가지 머리띠 — 모든 페이지가 같은 메뉴를 단다
+   ════════════════════════════════════════════════════════════════
+   메뉴가 홈 안의 책갈피(작업·작품·사업영역)라서 서비스 페이지 열다섯 곳이
+   메뉴에 없었고, 스튜디오와 AI 영상 페이지는 저마다 다른 머리띠를 달아
+   다른 사이트로 넘어간 것처럼 보였다. 하는 일로 묶어 네 갈래로 둔다.
+
+   넓은 화면: 갈래 이름에 손을 올리거나 키보드로 들어가면 아래로 펼친다.
+   좁은 화면: 햄버거를 열면 갈래 아래 항목이 처음부터 다 보인다. 한 번 더
+   누르게 하지 않는다. */
+.nav-group { position: relative; }
+.nav-sub { display: none; }
+
+@media (min-width: 761px) {
+  .nav-group > .nav-top::after {
+    content: "";
+    display: inline-block;
+    width: 5px; height: 5px;
+    margin: 0 0 3px 7px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: rotate(45deg);
+    opacity: 0.55;
+  }
+  .nav-group:hover > .nav-sub,
+  .nav-group:focus-within > .nav-sub {
+    display: grid;
+    position: absolute;
+    top: 100%;
+    left: -14px;
+    min-width: 196px;
+    padding: 8px;
+    border-radius: 12px;
+    background: var(--surface);
+    border: 1px solid var(--edge-soft);
+    box-shadow: 0 18px 44px rgba(16, 32, 26, 0.14);
+    text-shadow: none;
+  }
+  .nav-sub a {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border-bottom: 0;
+    color: var(--ink);
+    font-weight: 650;
+  }
+  .site-nav nav .nav-sub a:hover {
+    background: var(--raise);
+    border-color: transparent;
+  }
+}
+
+@media (max-width: 760px) {
+  .nav-group { width: 100%; }
+  .site-nav nav .nav-group > .nav-top {
+    padding-top: 20px;
+    padding-bottom: 8px;
+    border-bottom: 0;
+    font-weight: 800;
+    color: var(--ink);
+  }
+  .nav-sub { display: grid; }
+  .site-nav nav .nav-sub a {
+    padding-left: calc(clamp(20px, 4vw, 56px) + 14px);
+    font-size: 14px;
+    font-weight: 600;
+  }
+}
+
+/* 스튜디오와 AI 영상 페이지는 본문이 머리띠 아래에서 바로 시작한다.
+   떠 있는 머리띠 대신 자리를 차지하는 머리띠로 둔다. */
+.st-page .site-nav,
+.av-page .site-nav {
+  position: sticky;
+  top: 0;
+  background: rgba(253, 252, 250, 0.9);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--edge-soft);
+}
+.st-page .brand strong,
+.av-page .brand strong { text-shadow: none; }
+.st-page .brand span,
+.st-page .site-nav nav,
+.av-page .brand span,
+.av-page .site-nav nav { color: rgba(16, 32, 26, 0.66); text-shadow: none; }
+
+/* 홈 첫 화면에서는 메뉴 글자가 희다. 펼친 판은 흰 종이라 그 안의 글자는
+   늘 먹색이어야 한다. */
+body.dark-hero.site-page .site-nav nav .nav-sub a { color: var(--ink); text-shadow: none; }
+/* 홈 손전화에서 연 메뉴도 흰 판이다. home.css 의 흰 글씨 규칙보다 한 단 세게 건다
+   (예전에도 회사소개·견적문의가 흰 판 위 흰 글씨로 안 보였다). */
+@media (max-width: 760px) {
+  body.dark-hero.site-page .site-nav nav.open a { color: var(--ink); text-shadow: none; }
+}
+
+/* 견적문의는 어느 페이지에서나 같은 초록 알약이다 */
+@media (min-width: 761px) {
+  .site-nav nav a.is-cta {
+    padding: 7px 16px;
+    border: 1px solid var(--rx-green);
+    border-radius: 999px;
+    color: var(--rx-green);
+  }
+  .site-nav nav a.is-cta:hover {
+    background: var(--rx-green);
+    border-color: var(--rx-green);
+    color: var(--rx-ink);
+  }
 }
