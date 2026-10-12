@@ -6,23 +6,46 @@ html, body {
 }
 body.is-playing { cursor: none; }
 
-.tv-stage { position: fixed; inset: 0; background: #000; }
+.tv-stage { position: fixed; inset: 0; background: #000; overflow: hidden; }
+
+/* 출력 구역 하나 = 프로젝터(또는 화면) 하나. 빔 2대면 좌우로 두 개가 선다. */
+.tv-out { position: absolute; top: 0; overflow: hidden; background: #000; }
+.tv-warp { position: absolute; left: 0; top: 0; overflow: hidden; transform-origin: 0 0; }
 .tv-layer {
   position: absolute; inset: 0; overflow: hidden;
   opacity: 0; transition: opacity 2.4s ease;
   pointer-events: none;
 }
 .tv-layer.is-on { opacity: 1; }
+.tv-layer iframe { position: absolute; border: 0; }
 
-/* 화면 비율이 영상과 달라도 빈 띠 없이 채운다 (object-fit: cover 와 같은 셈) */
-.tv-layer iframe {
-  position: absolute; top: 50%; left: 50%; border: 0;
-  width: 100vw; height: 56.25vw; min-height: 100vh; min-width: 177.78vh;
-  transform: translate(-50%, -50%);
+/* 겹침 녹이기 · 색온도 · 맞춤 격자 */
+.tv-blend { position: absolute; top: 0; bottom: 0; pointer-events: none; }
+.tv-tint { position: absolute; inset: 0; mix-blend-mode: multiply; pointer-events: none; }
+.tv-grid {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.55) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.55) 1px, transparent 1px);
+  background-size: 10% 10%;
+  box-shadow: inset 0 0 0 2px #c9b48a;
 }
-.tv-layer.is-portrait iframe {
-  width: 56.25vh; height: 100vh; min-width: 100vw; min-height: 177.78vw;
+.tv-blend[hidden], .tv-tint[hidden], .tv-grid[hidden] { display: none; }
+
+/* 가리개 · 꼭짓점 손잡이 */
+.tv-masks, .tv-handles { position: absolute; inset: 0; pointer-events: none; }
+.tv-mask { position: absolute; background: #000; pointer-events: auto; }
+body.is-editing .tv-mask { outline: 1px dashed #c9b48a; cursor: move; background: rgba(0,0,0,.92); }
+.tv-mask-grip {
+  position: absolute; right: -8px; bottom: -8px; width: 16px; height: 16px;
+  border-radius: 4px; background: #c9b48a; cursor: nwse-resize;
 }
+.tv-handle {
+  position: absolute; width: 28px; height: 28px; margin: -14px 0 0 -14px;
+  border-radius: 50%; border: 2px solid #fff; background: rgba(201,180,138,.55);
+  box-shadow: 0 0 0 2px rgba(0,0,0,.6); cursor: grab; pointer-events: auto; touch-action: none;
+}
+.tv-handle.is-on { background: #c9b48a; }
 
 .tv-caption {
   position: fixed; left: 3vw; bottom: 3vh; margin: 0;
@@ -70,6 +93,8 @@ body.is-playing { cursor: none; }
 .tv-hint { margin: 8px 0 0; font-size: 13px; color: rgba(243,239,230,.5); }
 .tv-hint a { color: #c9b48a; }
 
+.tv-google { min-height: 44px; display: flex; justify-content: center; }
+.tv-or { margin: 6px 0 0; font-size: 12px; letter-spacing: .12em; color: rgba(243,239,230,.45); }
 .tv-gate-form { display: flex; gap: 8px; margin-top: 8px; }
 .tv-gate-form input {
   font: inherit; font-size: 18px; letter-spacing: .12em; text-align: center;
@@ -84,6 +109,36 @@ body.is-playing { cursor: none; }
 }
 .tv-diag div { display: flex; justify-content: space-between; gap: 16px; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,.07); }
 .tv-diag span { opacity: .6; }
+
+/* 화면 설정 판 (S) — 오른쪽에 붙어서 뒤의 화면을 보며 맞춘다 */
+.tv-setup {
+  position: fixed; top: 2vh; right: 2vw; z-index: 8; width: min(360px, 92vw);
+  max-height: 96vh; overflow-y: auto; padding: 18px 20px 20px; border-radius: 14px;
+  background: rgba(10,10,10,.92); color: #f3efe6; font-size: 14px;
+  box-shadow: 0 20px 50px rgba(0,0,0,.6);
+}
+.tv-setup[hidden] { display: none; }
+.tv-setup h2 { margin: 0 0 12px; font-size: 16px; }
+.tv-setup h3 { margin: 18px 0 8px; font-size: 13px; color: #c9b48a; font-weight: 700; }
+.tv-seg { display: flex; gap: 4px; padding: 4px; margin-bottom: 10px; border-radius: 10px; background: rgba(255,255,255,.06); }
+.tv-seg button {
+  flex: 1; font: inherit; font-size: 13px; min-height: 40px; border: 0; border-radius: 7px; cursor: pointer;
+  background: transparent; color: rgba(243,239,230,.75);
+}
+.tv-seg button.is-on { background: #c9b48a; color: #14110b; font-weight: 700; }
+.tv-slider { display: grid; gap: 4px; margin: 10px 0; }
+.tv-slider span { display: flex; justify-content: space-between; font-size: 13px; color: rgba(243,239,230,.8); }
+.tv-slider input { width: 100%; accent-color: #c9b48a; }
+.tv-srow { display: flex; gap: 6px; margin-top: 8px; }
+.tv-sbtn {
+  flex: 1; font: inherit; font-size: 13px; min-height: 40px; padding: 0 10px; border-radius: 8px; cursor: pointer;
+  background: rgba(255,255,255,.07); color: #f3efe6; border: 1px solid rgba(255,255,255,.14);
+}
+.tv-setup > .tv-sbtn { width: 100%; margin-top: 4px; }
+.tv-sbtn:hover { border-color: #c9b48a; }
+.tv-sbtn.is-primary { background: #c9b48a; color: #14110b; border-color: #c9b48a; font-weight: 700; }
+.tv-sbtn.is-quiet { background: transparent; color: rgba(243,239,230,.55); }
+.tv-shint { margin: 8px 0 0; font-size: 12px; line-height: 1.6; color: rgba(243,239,230,.55); }
 
 @media (prefers-reduced-motion: reduce) {
   .tv-layer, .tv-caption { transition: none; }

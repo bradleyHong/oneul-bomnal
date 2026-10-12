@@ -329,7 +329,7 @@ ${E.nav.map((n) => `        <a href="${n.path}">${esc(n.label)}</a>`).join("\n")
         1F, Bldg 102, 250 Dongdaegu-ro, Suseong-gu, Daegu, Republic of Korea<br />
         ${esc(cred)}
       </p>
-      <p class="footer-stamp">사이트 최종 업데이트 ${TODAY}</p>
+      <p class="footer-stamp">사이트 최종 업데이트 ${TODAY} · <a href="/privacy">개인정보처리방침 (Privacy)</a></p>
     </footer>
     <script src="${A}hero-video.js?v=20260913-auto" defer></script>
   </body>

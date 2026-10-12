@@ -487,6 +487,20 @@
      }
     },
     {
+     "path": "/privacy",
+     "file": "privacy.html",
+     "title": "개인정보처리방침 | 오늘은 봄날",
+     "description": "오늘은 봄날(publicbloom.art)이 견적 문의, 작품 주문, 구독 로그인 과정에서 처리하는 개인정보의 항목, 목적, 보유 기간, 위탁과 국외 이전, 정보주체의 권리를 안내합니다.",
+     "h1": "개인정보처리방침",
+     "primaryKeywords": [
+      "오늘은 봄날 개인정보처리방침"
+     ],
+     "sitemap": {
+      "priority": "0.2",
+      "changefreq": "yearly"
+     }
+    },
+    {
       "path": "/led-install",
       "file": "led-install.html",
       "title": "대구 LED 패널 설치 · LED전광판 설치 | 여성기업 오늘은 봄날",
