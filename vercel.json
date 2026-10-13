@@ -88,5 +88,32 @@
         }
       ]
     }
+  ],
+  "redirects": [
+    {
+      "source": "/landing",
+      "destination": "/company",
+      "permanent": true
+    },
+    {
+      "source": "/mediabox",
+      "destination": "/rental",
+      "permanent": true
+    },
+    {
+      "source": "/interactive",
+      "destination": "/studio",
+      "permanent": true
+    },
+    {
+      "source": "/pieces",
+      "destination": "/studio",
+      "permanent": true
+    },
+    {
+      "source": "/ai-video",
+      "destination": "/media-facade-content#ai-video",
+      "permanent": true
+    }
   ]
 }

@@ -31,7 +31,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Noto+Serif+KR:wght@400;500;600;700&amp;display=swap" />
-    <link rel="stylesheet" href="./styles.css?v=20261013-loop" />
+    <link rel="stylesheet" href="./styles.css?v=20261013-flat" />
     <link rel="stylesheet" href="./en.css?v=20260914-rolex" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="./assets/favicon-180.png" />
@@ -217,35 +217,9 @@
     <header class="site-nav">
       <a class="brand" href="./"><strong>오늘은 봄날</strong><span>미디어아트 · 대구 여성기업</span></a>
       <nav id="main-nav" aria-label="주요 메뉴">
-        <div class="nav-group">
-          <a class="nav-top" href="./media-facade">설치</a>
-          <div class="nav-sub">
-            <a href="./media-facade">미디어파사드 설치</a>
-            <a href="./led-install">LED 전광판 설치</a>
-            <a href="./media-facade-cost">설치 비용 안내</a>
-            <a href="./led-rental">LED 패널 렌탈</a>
-            <a href="./rental">미디어아트 렌탈</a>
-            <a href="./#works">설치 실적</a>
-          </div>
-        </div>
-        <div class="nav-group">
-          <a class="nav-top" href="./media-facade-content">콘텐츠 제작</a>
-          <div class="nav-sub">
-            <a href="./media-facade-content">미디어파사드 콘텐츠</a>
-            <a href="./ai-video">AI 영상 제작</a>
-            <a href="./data-media-art">공공 API 미디어아트 연동</a>
-            <a href="./interactive">인터랙티브 아트</a>
-            <a href="./showcase">화면 종류별 예시</a>
-          </div>
-        </div>
-        <div class="nav-group">
-          <a class="nav-top" href="./pieces">작품</a>
-          <div class="nav-sub">
-            <a href="./pieces">코드로 만든 작품</a>
-            <a href="./studio">작품 고르고 주문하기</a>
-            <a href="./subscription">미디어아트 구독</a>
-          </div>
-        </div>
+        <a href="./media-facade">설치</a>
+        <a href="./led-rental">렌탈</a>
+        <a href="./studio" aria-current="true">작품·콘텐츠</a>
         <a href="./company">회사소개</a>
         <a class="is-cta" href="./quote">견적문의</a>
         <a class="lang-switch" href="/en" hreflang="en" lang="en">EN</a>
@@ -255,12 +229,19 @@
       </button>
     </header>
     <main class="subpage-main" id="main-content" tabindex="-1">
+      <nav class="section-tabs" aria-label="작품·콘텐츠 페이지">
+        <a href="./studio">작품 고르기</a>
+        <a href="./subscription">미디어아트 구독</a>
+        <a href="./media-facade-content">콘텐츠 제작</a>
+        <a href="./data-media-art">공공 API 연동</a>
+        <a href="./showcase" aria-current="page">화면 예시</a>
+      </nav>
       <section class="subpage-hero">
         <div>
           <p class="section-kicker">Showcase · 어떤 화면에 무엇이 나오는가</p>
           <h1>사이니지 종류별 화면 예시</h1>
           <p>사이니지는 종류마다 화면 비율과 보는 거리가 다릅니다. <strong>어떤 화면에 어떤 영상이 어울리는지</strong> 실제로 돌아가는 화면으로 보여드립니다.</p>
-          <div class="subpage-actions"><a class="primary-link" href="./quote">우리 화면에 맞춰 문의</a><a class="secondary-link" href="./media-facade-content">콘텐츠 제작 보기</a></div>
+          <div class="subpage-actions"><a class="primary-link" href="./quote">우리 화면에 맞춰 문의</a><a class="text-link" href="./media-facade-content">콘텐츠 제작 보기</a></div>
         </div>
         <aside>
           <span><b>화면 종류</b>외벽 전광판 · 로비 미디어월 · 세로 사이니지 · 기둥형 · 미디어파사드</span>
@@ -490,7 +471,7 @@
         </div>
         <div class="subpage-actions">
           <a class="primary-link" href="./quote">견적 문의하기</a>
-          <a class="secondary-link" href="./#works">설치 사례 보기</a>
+          <a class="text-link" href="./#works">설치 사례 보기</a>
         </div>
       </section>
     </main>
@@ -505,9 +486,7 @@
         <a href="./media-facade-content">미디어파사드 콘텐츠 제작</a>
         <a href="./led-rental">대구 LED 패널 렌탈</a>
         <a href="./rental">미디어아트 렌탈</a>
-        <a href="./pieces">코드로 만든 작품</a>
-        <a href="./interactive">인터랙티브 아트</a>
-        <a href="./studio">ArtWork Studio</a>
+        <a href="./studio">미디어아트 작품 · 주문</a>
         <a href="./subscription">미디어아트 구독</a>
         <a href="./data-media-art">공공 API 미디어아트 연동</a>
         <a href="./showcase">사이니지 종류별 화면 예시</a>
