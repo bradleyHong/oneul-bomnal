@@ -34,7 +34,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Noto+Serif+KR:wght@400;500;600;700&amp;display=swap" />
-    <link rel="stylesheet" href="./styles.css?v=20261013-loop" />
+    <link rel="stylesheet" href="./styles.css?v=20261013-flat" />
     <link rel="stylesheet" href="./en.css?v=20260914-rolex" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="./assets/favicon-180.png" />
@@ -231,35 +231,9 @@
     <header class="site-nav">
       <a class="brand" href="./"><strong>오늘은 봄날</strong><span>미디어아트 · 대구 여성기업</span></a>
       <nav id="main-nav" aria-label="주요 메뉴">
-        <div class="nav-group">
-          <a class="nav-top" href="./media-facade">설치</a>
-          <div class="nav-sub">
-            <a href="./media-facade">미디어파사드 설치</a>
-            <a href="./led-install">LED 전광판 설치</a>
-            <a href="./media-facade-cost">설치 비용 안내</a>
-            <a href="./led-rental">LED 패널 렌탈</a>
-            <a href="./rental">미디어아트 렌탈</a>
-            <a href="./#works">설치 실적</a>
-          </div>
-        </div>
-        <div class="nav-group">
-          <a class="nav-top" href="./media-facade-content">콘텐츠 제작</a>
-          <div class="nav-sub">
-            <a href="./media-facade-content">미디어파사드 콘텐츠</a>
-            <a href="./ai-video">AI 영상 제작</a>
-            <a href="./data-media-art">공공 API 미디어아트 연동</a>
-            <a href="./interactive">인터랙티브 아트</a>
-            <a href="./showcase">화면 종류별 예시</a>
-          </div>
-        </div>
-        <div class="nav-group">
-          <a class="nav-top" href="./pieces">작품</a>
-          <div class="nav-sub">
-            <a href="./pieces">코드로 만든 작품</a>
-            <a href="./studio">작품 고르고 주문하기</a>
-            <a href="./subscription">미디어아트 구독</a>
-          </div>
-        </div>
+        <a href="./media-facade">설치</a>
+        <a href="./led-rental">렌탈</a>
+        <a href="./studio" aria-current="true">작품·콘텐츠</a>
         <a href="./company">회사소개</a>
         <a class="is-cta" href="./quote">견적문의</a>
         <a class="lang-switch" href="/en/services" hreflang="en" lang="en">EN</a>
@@ -269,12 +243,19 @@
       </button>
     </header>
     <main class="subpage-main" id="main-content" tabindex="-1">
+      <nav class="section-tabs" aria-label="작품·콘텐츠 페이지">
+        <a href="./studio">작품 고르기</a>
+        <a href="./subscription">미디어아트 구독</a>
+        <a href="./media-facade-content" aria-current="page">콘텐츠 제작</a>
+        <a href="./data-media-art">공공 API 연동</a>
+        <a href="./showcase">화면 예시</a>
+      </nav>
       <section class="subpage-hero">
         <div>
           <p class="section-kicker">Content Production · AI &amp; Code</p>
           <h1>미디어파사드 콘텐츠 제작</h1>
           <p>미디어아트를 <strong>코드로</strong> 만들어 현장 화면 규격대로 다시 뽑고, <strong>시안 3종을 1주일 이내</strong>에 냅니다.</p>
-          <div class="subpage-actions"><a class="primary-link" href="./quote">견적 문의</a><a class="secondary-link" href="./showcase">화면 예시 보기</a></div>
+          <div class="subpage-actions"><a class="primary-link" href="./quote">견적 문의</a><a class="text-link" href="./showcase">화면 예시 보기</a></div>
         </div>
         <aside>
           <span><b>리드타임</b>시안 3종 1주일 이내</span>
@@ -338,6 +319,31 @@
         </ol>
       </section>
 
+      <section class="section" id="ai-video">
+        <div class="section-head">
+          <p class="section-kicker">AI Media Art Video</p>
+          <h2>AI 영상 제작 · 캐릭터와 이야기만 주세요</h2>
+          <p>캐릭터가 나오고 대사가 있고 장면이 이어지는 영상입니다. 2026 고령 국가유산 야행 미디어 포토존에 이 방식으로 납품했습니다.
+             대가야 왕과 왕비 캐릭터, 고분군 배경, 안내 문구를 받아 현장 화면 크기에 맞춰 만들었습니다.</p>
+        </div>
+        <figure class="mock-shot">
+          <img src="./assets/ai-video-site.jpg" alt="2026 고령 국가유산 야행 미디어 포토존에 설치한 AI 영상 화면"
+               width="1600" height="900" loading="lazy" decoding="async" />
+          <figcaption>2026 고령 국가유산 야행 · 미디어 포토존 · 9.3–9.6</figcaption>
+        </figure>
+        <table class="spec-table">
+          <caption>AI 영상 제작 기준가 (부가세 별도)</caption>
+          <tbody>
+            <tr><th scope="row">1분 내외</th><td><b>300만원부터</b> · 포토존·로비 · 장면 3~5개 · 반복 재생</td></tr>
+            <tr><th scope="row">4~5분 내외</th><td><b>500만원부터</b> · 전시·상설 상영·행사 무대 · 장면 10~15개 · 내레이션·배경음</td></tr>
+            <tr><th scope="row">5~10분</th><td><b>800만원부터</b> · 기획전·상영관 · 여러 캐릭터·장소 · 다국어 자막</td></tr>
+            <tr><th scope="row">보내 주실 것</th><td>캐릭터 이미지 · 배경 이미지 · 대사나 안내 문구 · 화면 크기 · 납품 기한 (손그림·메모도 됩니다)</td></tr>
+            <tr><th scope="row">견적</th><td>영업일 이틀 안에 확정 견적 · 캐릭터 수·장면 수·화면 크기에 따라 달라집니다</td></tr>
+          </tbody>
+        </table>
+        <div class="subpage-actions"><a class="primary-link" href="./quote?item=ai-video">AI 영상 의뢰하기</a></div>
+      </section>
+
       <section class="section faq-section" id="faq">
         <div class="section-head">
           <p class="section-kicker">FAQ</p>
@@ -380,7 +386,7 @@
         </div>
         <div class="subpage-actions">
           <a class="primary-link" href="./quote">견적 문의하기</a>
-          <a class="secondary-link" href="./showcase">화면 예시 보기</a>
+          <a class="text-link" href="./showcase">화면 예시 보기</a>
         </div>
       </section>
     </main>
@@ -395,9 +401,7 @@
         <a href="./media-facade-content">미디어파사드 콘텐츠 제작</a>
         <a href="./led-rental">대구 LED 패널 렌탈</a>
         <a href="./rental">미디어아트 렌탈</a>
-        <a href="./pieces">코드로 만든 작품</a>
-        <a href="./interactive">인터랙티브 아트</a>
-        <a href="./studio">ArtWork Studio</a>
+        <a href="./studio">미디어아트 작품 · 주문</a>
         <a href="./subscription">미디어아트 구독</a>
         <a href="./data-media-art">공공 API 미디어아트 연동</a>
         <a href="./showcase">사이니지 종류별 화면 예시</a>

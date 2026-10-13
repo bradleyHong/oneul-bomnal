@@ -6727,3 +6727,61 @@ body.dark-hero.site-page .site-nav nav .nav-sub a { color: var(--ink); text-shad
     color: var(--rx-ink);
   }
 }
+
+/* ════════════════════════════════════════════════════════════════
+   덜 누르게 — 메뉴 다섯, 페이지마다 큰 단추 하나
+   ════════════════════════════════════════════════════════════════
+   메뉴가 펼침 갈래 셋에 링크 스무 개, 페이지마다 큰 단추가 너덧 개라
+   "어디를 눌러야 하나"가 먼저 보였다. 메뉴는 갈래 이름만 두고, 같은 갈래의
+   다른 페이지는 본문 맨 위의 얇은 탭으로 옮긴다. 본문의 보조 단추는 글 링크로. */
+.site-nav nav a[aria-current="true"] {
+  color: var(--ink);
+  border-bottom-color: var(--rx-green);
+}
+
+.section-tabs {
+  display: flex;
+  gap: 4px 18px;
+  flex-wrap: wrap;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 96px clamp(18px, 4vw, 56px) 0;
+  font-size: 14px;
+  font-weight: 650;
+}
+.section-tabs a {
+  padding: 8px 0;
+  color: var(--faint);
+  border-bottom: 2px solid transparent;
+}
+.section-tabs a:hover { color: var(--ink); }
+.section-tabs a[aria-current="page"] {
+  color: var(--ink);
+  border-bottom-color: var(--rx-green);
+}
+/* 탭이 머리띠 아래 자리를 차지하므로 바로 뒤 첫 구역의 윗여백을 줄인다 */
+.section-tabs + .subpage-hero,
+.section-tabs + section { padding-top: clamp(20px, 3vw, 36px); }
+.st-page .section-tabs,
+.av-page .section-tabs { padding-top: 18px; }
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 650;
+  color: var(--rx-green);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+}
+.text-link:hover { color: var(--rx-deep); }
+
+/* 떠 있는 견적 단추는 손전화에서만. 넓은 화면은 머리띠에 늘 견적문의가 있다. */
+@media (min-width: 761px) {
+  .quote-fab { display: none !important; }
+}
+
+@media (max-width: 760px) {
+  .section-tabs { padding-top: 84px; gap: 2px 14px; font-size: 13px; overflow-x: auto; flex-wrap: nowrap; white-space: nowrap; }
+}
