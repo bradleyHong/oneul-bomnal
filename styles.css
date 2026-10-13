@@ -5954,7 +5954,8 @@ main > .section > .section-head .section-kicker {
   background: #0d1220;
 }
 
-.photo-strip img {
+.photo-strip img,
+.photo-strip video {
   display: block;
   width: 100%;
   height: 100%;
@@ -5964,7 +5965,7 @@ main > .section > .section-head .section-kicker {
 
 .photo-strip figcaption {
   padding: 10px 12px 12px;
-  color: #cfd6e4;
+  color: var(--deep);
   font-size: 12.5px;
   line-height: 1.55;
   background: var(--petal);
