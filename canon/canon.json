@@ -1,7 +1,7 @@
 {
   "_comment": "오늘은 봄날 사이트 캐논(정본). 사이트의 모든 문구·메타태그·스키마·llms.txt는 이 파일을 근거로 한다. 사실이 바뀌면 여기를 먼저 고치고, 그 다음 각 파일을 맞춘다. 검증: node tools/check-canon.mjs",
   "version": "2026-09-11",
-  "updated": "2026-10-12",
+  "updated": "2026-10-21",
   "site": {
     "brand": "오늘은 봄날",
     "brandRomanized": "Oneul-eun Bomnal",
@@ -226,7 +226,7 @@
       {
         "id": "public-api",
         "title": "기관 API를 화면에 물립니다",
-        "detail": "기존 사이니지 재생 프로그램은 API를 직접 받아 화면에 반영하지 못합니다. 정해진 영상 파일을 순서대로 트는 구조이기 때문입니다. 오늘은 봄날은 자체 개발한 방식으로 API를 실시간으로 읽어 화면에 반영하며, 대형 사이니지에서도 같은 방식이 돌아갑니다. 날씨·대기질 같은 공개 API는 지금 사이트에서 실제로 돌고 있고, 기관이 보유한 API나 내부 데이터베이스는 인증키와 보안 정책에 맞춰 서버 중계를 한 겹 두고 같은 방식으로 연결합니다."
+        "detail": "일반적인 사이니지 재생 프로그램은 정해진 영상 파일을 순서대로 트는 방식이 많아 API 값을 화면에 바로 반영하기 어렵습니다. 오늘은 봄날은 자체 개발한 방식으로 API를 실시간으로 읽어 화면에 반영하며, 대형 사이니지에서도 같은 방식이 돌아갑니다. 날씨·대기질 같은 공개 API는 지금 사이트에서 실제로 돌고 있고, 기관이 보유한 API나 내부 데이터베이스는 인증키와 보안 정책에 맞춰 서버 중계를 한 겹 두고 같은 방식으로 연결합니다."
       },
       {
         "id": "render-delivery",
@@ -352,9 +352,20 @@
         "priceNote": "기본 3일 500만원(콘텐츠 제작 포함), 나흘째부터 하루 100만원. 설치 장소와 방식에 따라 달라지는 부분은 일정 확인 후 산정합니다.",
         "proof": "2026 고령 국가유산 야행 미디어 포토존에 실제로 나간 구성입니다."
       },
+      "aiVideo": {
+        "name": "AI 영상 제작",
+        "page": "/media-facade-content#ai-video",
+        "tiers": [
+          {"length": "1분 내외", "price": "300만원부터", "fit": "포토존·로비 · 장면 3~5개 · 반복 재생"},
+          {"length": "4~5분 내외", "price": "500만원부터", "fit": "전시·상설 상영·행사 무대 · 장면 10~15개 · 내레이션·배경음"},
+          {"length": "5~10분", "price": "800만원부터", "fit": "기획전·상영관 · 여러 캐릭터·장소 · 다국어 자막"}
+        ],
+        "vat": "부가세 별도",
+        "proof": "2026 고령 국가유산 야행 미디어 포토존에 이 방식으로 납품"
+      },
       "ledWallRental": {
         "_comment": "2026-11 시작. 스탠드형 LED 패널(여울ICT 공급, P1.86 GOB 640×1920) 6장을 이어 한 화면으로 빌려준다. 콘텐츠는 오늘은 봄날 작품을 무료로 틀고, 기관 영상 제작은 별도 문의.",
-        "name": "LED 월 렌탈",
+        "name": "LED 패널 렌탈",
         "startsOn": "2026-11-01",
         "panels": 6,
         "screen": "3.84m × 1.92m (170인치급)",
@@ -429,10 +440,7 @@
       "단초점 빔프로젝터 대여",
       "축제 미디어아트 대여",
       "이동식 미디어파사드",
-      "행사용 프로젝션 장비 대여",
-      "인터랙티브 미디어아트",
-      "관객 반응형 미디어아트",
-      "스크롤 인터랙션 미디어아트"
+      "행사용 프로젝션 장비 대여"
     ],
     "brand": [
       "오늘은 봄날",
@@ -711,7 +719,7 @@
       "path": "/en/works",
       "file": "en/works.html",
       "lang": "en",
-      "altOf": "/pieces",
+      "altOf": "/studio",
       "title": "Selected Works: Media Facades and LED Walls in Korea | Oneul-eun Bomnal",
       "description": "Media facades, LED walls and signage content installed at public institutions and cultural venues across Daegu, Busan and Gyeongbuk. About 40 media art works delivered.",
       "h1": "Screens that are lit right now",
