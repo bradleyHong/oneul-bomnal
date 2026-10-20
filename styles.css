@@ -6785,3 +6785,110 @@ body.dark-hero.site-page .site-nav nav .nav-sub a { color: var(--ink); text-shad
 @media (max-width: 760px) {
   .section-tabs { padding-top: 84px; gap: 2px 14px; font-size: 13px; overflow-x: auto; flex-wrap: nowrap; white-space: nowrap; }
 }
+
+/* ── 자주 묻는 질문은 접어 둔다 ───────────────────────────────
+   질문 예닐곱 개의 답이 모두 펼쳐져 있어 손전화에서 페이지가 화면 열 장을
+   넘었다. 질문만 보이고, 누르면 답이 열린다. 답 글은 그대로 문서 안에 있어
+   검색엔진과 AI 는 지금처럼 읽는다. 두 칸 격자는 한 줄 목록으로. */
+.faq-list { grid-template-columns: 1fr; }
+details.faq-item { padding: 0; }
+details.faq-item > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 56px;
+  padding: 16px clamp(18px, 3vw, 28px);
+  cursor: pointer;
+  list-style: none;
+}
+details.faq-item > summary::-webkit-details-marker { display: none; }
+details.faq-item > summary h3 { margin: 0; font-size: clamp(16px, 1.5vw, 18px); }
+details.faq-item > summary::after {
+  content: "";
+  flex: none;
+  width: 9px; height: 9px;
+  border-right: 1.5px solid var(--faint);
+  border-bottom: 1.5px solid var(--faint);
+  transform: rotate(45deg) translateY(-3px);
+  transition: transform 180ms ease;
+}
+details.faq-item[open] > summary::after { transform: rotate(225deg) translateY(-3px); }
+details.faq-item > p { padding: 0 clamp(18px, 3vw, 28px) 20px; }
+details.faq-item > summary:focus-visible { outline: 2px solid var(--rx-green); outline-offset: -2px; }
+
+/* ── 손전화에서는 사진·카드 묶음을 옆으로 넘긴다 ─────────────────
+   사진 서너 장, 카드 대여섯 장이 세로로 쌓여 페이지 하나가 화면 열 장이
+   넘었다. 한 줄로 세우고 손가락으로 옆으로 넘기게 한다. 다음 장이 조금
+   보이게 폭을 84% 로 둬서 "더 있다"가 보인다. 넓은 화면은 지금 그대로. */
+@media (max-width: 760px) {
+  .photo-strip,
+  .region-art-grid,
+  .signage-list,
+  .video-grid {
+    display: flex !important;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin-inline: calc(-1 * clamp(18px, 4vw, 56px));
+    padding: 0 clamp(18px, 4vw, 56px) 6px;
+  }
+  .photo-strip::-webkit-scrollbar,
+  .region-art-grid::-webkit-scrollbar,
+  .signage-list::-webkit-scrollbar,
+  .video-grid::-webkit-scrollbar { display: none; }
+  .photo-strip > *,
+  .region-art-grid > *,
+  .signage-list > *,
+  .video-grid > * {
+    flex: 0 0 84%;
+    scroll-snap-align: start;
+    min-width: 0;
+  }
+}
+
+/* ── 메뉴 넷, 접는 단추 없음 ────────────────────────────────
+   설치 · 렌탈 · 작품 · 견적문의 넷이면 손전화 폭에도 한 줄에 들어간다.
+   햄버거를 열어야 메뉴가 보이던 한 단계를 없앤다. 회사소개·English 는 바닥글로. */
+.nav-toggle { display: none !important; }
+@media (max-width: 760px) {
+  .site-nav { gap: 10px; }
+  .site-nav nav,
+  body.site-page .site-nav nav {
+    position: static;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    padding: 0;
+    background: none;
+    border: 0;
+    box-shadow: none;
+    font-size: 14px;
+  }
+  .site-nav nav a,
+  body.site-page .site-nav nav a {
+    width: auto;
+    padding: 10px 0;
+    border-bottom: 0;
+  }
+  .site-nav nav a.is-cta {
+    padding: 7px 12px;
+    border: 1px solid var(--rx-green);
+    border-radius: 999px;
+    color: var(--rx-green);
+  }
+  body.dark-hero.site-page .site-nav:not(.scrolled) nav a.is-cta { border-color: rgba(255,255,255,0.5); color: #fff; }
+  .site-nav .brand strong { font-size: 16px; }
+}
+/* 바닥글: 회사 정보만, 링크는 둘 */
+.footer-links { gap: 2px 18px; }
+.site-nav nav a { white-space: nowrap; }
+/* 메뉴에 견적문의가 늘 보이므로 떠 있는 견적 단추는 손전화에서도 뺀다 */
+.quote-fab { display: none !important; }
+@media (max-width: 760px) {
+  body .site-nav nav a.is-cta,
+  body.site-page .site-nav nav a.is-cta { padding: 7px 13px; }
+}

@@ -12,6 +12,7 @@
  *   node tools/build-meta.mjs
  */
 import { readFileSync, writeFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -136,14 +137,29 @@ ${refs}
 - 비교 기준: ${B.proof.leadTime.outsourceBaseline}
 - 원하시는 방향을 자세히 알려주실수록 시안의 디테일이 올라갑니다.
 
+## 공개 가격
+
+${(() => {
+  const K = B.packages || {};
+  const out = [];
+  if (K.ledWallRental) { const L = K.ledWallRental;
+    out.push(`### ${L.name} (${L.screen}, ${L.panels}장 연결) — ${BASE}${L.page}\n- ${L.dayPriceLabel} · ${L.dayPriceIncludes}\n- ${L.extraDayLabel}\n- ${L.weekLabel}\n- 콘텐츠: ${L.contentNote}\n- 대여 시작: ${L.startsOn} · 패널 구매 상담 가능`); }
+  if (K.rental) { const R = K.rental;
+    out.push(`### ${R.name} — ${BASE}/rental\n- ${R.basePriceLabel} · ${R.basePriceIncludes}\n- ${R.extraDayLabel}\n- 상영 ${R.screen}`); }
+  if (K.aiVideo) { const A = K.aiVideo;
+    out.push(`### ${A.name} (${A.vat}) — ${BASE}${A.page}\n${A.tiers.map((t) => `- ${t.length}: ${t.price} · ${t.fit}`).join("\n")}\n- ${A.proof}`); }
+  return out.join("\n\n");
+})()}
+
 ## 자주 묻는 질문 (요약)
 
 - **미디어파사드란?** 건물 외벽이나 전시장 벽면 자체를 하나의 큰 화면으로 쓰는 표현 방식. 빔프로젝터로 벽에 쏘고 벽 형태에 맞춰 영상을 변형(프로젝션 매핑)합니다.
 - **미디어파사드와 LED 전광판의 차이?** 미디어파사드는 빔프로젝터로 벽에 쏘는 방식, LED 전광판은 화면 자체를 설치하는 방식. 오늘은 봄날은 두 방식을 모두 시공합니다.
-- **비용은?** 현장 실측 후 산정합니다. 벽면 크기, 화면 대수, 기존 패널 유무, 연동할 데이터 범위에 따라 달라집니다. 회계연도 기준 견적서를 발행합니다.
+- **비용은?** 설치는 현장 실측 후 산정합니다(벽면 크기, 화면 대수, 기존 패널 유무, 연동할 데이터 범위). 렌탈과 AI 영상은 아래 "공개 가격"에 정가가 있습니다. 회계연도 기준 견적서를 발행합니다.
+- **미디어아트 구독은?** 구독한 Google 계정으로 로그인하면 LED·모니터·빔프로젝터 화면에 매일 자정 다른 작품이 켜집니다. 빔프로젝터 1대·2대 맵핑과 화면별 색 조절을 브라우저에서 하며, 구독료는 화면 수와 종류에 따라 안내합니다. ${BASE}/subscription
 - **LED 패널 사양은 어떻게 정하나?** 보는 거리와 화면 크기가 결정합니다. 실측에서 화면 크기, 최소 시야 거리, 주변 밝기, 전기 용량, 설치면 하중을 확인한 뒤 픽셀 피치와 밝기를 산정합니다.
 - **기존 LED 패널 활용?** 가능합니다. 기존 화면의 해상도와 입력 규격에 맞춰 콘텐츠를 제작하므로 화면을 새로 살 필요가 없습니다.
-- **공공 API를 사이니지에 띄울 수 있나?** 기존 사이니지 재생 프로그램은 정해진 영상을 순서대로 트는 구조라 공공 API를 화면에 반영하지 못합니다. 오늘은 봄날은 자체 개발한 방식으로 공공 API를 실시간으로 읽어 대형 사이니지에서도 반영합니다.
+- **공공 API를 사이니지에 띄울 수 있나?** 됩니다. 날씨·미세먼지 같은 공개 API를 정해진 주기로 받아 그 값에 따라 화면의 색·밀도·속도가 바뀌는 작품으로 만듭니다. 이 사이트의 실시간 화면이 지금 그렇게 돌고 있습니다. ${BASE}/data-media-art
 - **재생 장비가 없다면?** 사이니지 재생 PC를 현장 화면 규격에 맞춰 세팅해 전달합니다.
 - **조달 서류?** 여성기업 확인서, 직접생산확인증명서(동영상제작서비스), 비디오물제작업 신고증, 방송영상독립제작사 신고증 보유. 회계연도 기준 견적서 즉시 발행.
 
@@ -206,18 +222,29 @@ ${items.join("\n")}
 `);
 
 /* ── sitemap.xml ──────────────────────────────────────────── */
+/* lastmod 는 페이지마다 실제로 고친 날을 적는다. 전부 같은 날짜면 검색엔진이
+   그 값을 믿지 않는다(2026-10-13 점검). git 마지막 커밋일을 쓰고, 아직 커밋하지
+   않은 변경이 있으면 오늘 날짜를 쓴다. git 이 없으면 캐논 수정일로 둔다. */
+const lastmod = (file) => {
+  try {
+    const dirty = execFileSync("git", ["status", "--porcelain", "--", file], { cwd: root }).toString().trim();
+    if (dirty) return TODAY;
+    const d = execFileSync("git", ["log", "-1", "--format=%cs", "--", file], { cwd: root }).toString().trim();
+    return d || TODAY;
+  } catch { return TODAY; }
+};
 const rows = [
-  ...C.pages.map((p) => [BASE + (p.path === "/" ? "/" : p.path), p.sitemap]),
-  ...C.artworkPages.map((a) => [BASE + "/" + encodeURI(a.path.replace(/^\//, "")), a.sitemap]),
+  ...C.pages.map((p) => [BASE + (p.path === "/" ? "/" : p.path), p.sitemap, lastmod(p.file)]),
+  ...C.artworkPages.map((a) => [BASE + "/" + encodeURI(a.path.replace(/^\//, "")), a.sitemap, lastmod(a.file || a.path.replace(/^\//, "") + ".html")]),
 ];
 w("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>
 <!-- canon/canon.json에서 생성한다. node tools/build-meta.mjs
      vercel.json의 cleanUrls:true 때문에 .html 주소는 308 리다이렉트를 탄다.
      색인 대상은 확장자 없는 정규 주소로만 제출한다. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${rows.map(([loc, sm]) => `  <url>
+${rows.map(([loc, sm, lm]) => `  <url>
     <loc>${loc}</loc>
-    <lastmod>${TODAY}</lastmod>
+    <lastmod>${lm}</lastmod>
     <changefreq>${sm.changefreq}</changefreq>
     <priority>${sm.priority}</priority>
   </url>`).join("\n")}
