@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>流帶 · 결결 II — flowribbons GL</title>
+<style>
+  html,body{margin:0;background:#000;height:100%;overflow:hidden}
+  canvas{display:block;width:100vw;height:100vh;object-fit:contain}
+  body.capture canvas{width:auto;height:auto}
+</style>
+</head><body>
+<canvas id="c"></canvas>
+<script src="../lib/bomnal-gl.js"></script>
+<script>
+// ============================================================
+//  流帶 · 결결 II — 같은 흐름장, 같은 시드, 새 화면 틀(bomnal-gl).
+//
+//  1판(flowribbons.html)과 무엇이 다른가
+//   - 빛을 선형으로 부동소수 판에 더한다. 겹친 곳이 하얗게 잘리지 않고 색이 남는다.
+//   - 리본을 선분마다 따로 긋지 않고 이어진 띠로 그린다 → 마디 구슬이 없다.
+//   - 적분을 중점법(RK2)으로, 보폭을 반으로 → 곡선이 각지지 않는다.
+//   - 리본 위 펄스를 1 넘는 세기(HDR)로 → 번짐이 펄스에서만 핀다.
+//   - 흐름을 타는 먼지 입자를 더해 공간의 깊이를 만든다.
+//   - 오프라인 렌더는 하위 프레임 6장 = 셔터 180° 모션블러.
+//   - 톤매핑(AgX)·그레인·디더를 끝에서 한 번만.
+//  결정론·완전 루프 규칙은 1판과 같다.
+// ============================================================
+const q    = new URLSearchParams(location.search);
+const CAP  = !!q.get('capture');
+const TAU  = Math.PI*2;
+const RATIOS = {'1:1':[1,1],'9:16':[9,16],'16:9':[16,9],'25:9':[25,9],'32:9':[32,9]};
+
+const state = {
+  ratio: q.get('ratio') || '16:9',
+  qual : +q.get('qual') || (CAP ? 3840 : 1920),
+  seed : +q.get('seed') || 4821937,
+  dur  : +q.get('dur')  || 20,
+  fps  : +q.get('fps')  || 60,
+  flow : (+q.get('flow') || 100)/100,
+  glow : (+q.get('glow') || 100)/100,
+  sub  : +q.get('sub')  || (CAP ? 6 : 1),     // 하위 프레임 수 (모션블러)
+  shutter: (+q.get('shutter') || 180)/360,    // 셔터 각
+  dust : q.get('dust') === '0' ? 0 : 1,
+};
+
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;
+let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;
+return((t^t>>>14)>>>0)/4294967296}}
+
+const {hex} = BomnalGL;
+const BG   = hex('#060814');
+const COOL = ['#1b2ff0','#0d18c8','#4a63ff','#9fd8ff','#b8a6f2'].map(hex);
+const HOT  = ['#e8142a','#ff3b2e','#12a750','#3ecb6b','#f4d43a','#ee52a2','#f2efe6'].map(hex);
+const DUST = [hex('#cfe3ff'), hex('#f2efe6'), hex('#9fd8ff')];
+
+const cv = document.getElementById('c');
+const G = BomnalGL.create(cv, {
+  exposure: 1.0, bloom: 0.07, bloomRadius: 1.0, tone: 'agx',
+  sat: 1.22, contrast: 1.12, vignette: 0.4, grain: 0.014, halo: 0.28, lineExtent: 3.2,
+});
+
+let W,H,U,TOTAL, waves, ribbons, blobs, dust;
+
+function build(){
+  const [rw,rh] = RATIOS[state.ratio] || RATIOS['16:9'];
+  const L = state.qual;
+  if(rw>=rh){ W=L; H=Math.round(L*rh/rw); } else { H=L; W=Math.round(L*rw/rh); }
+  W-=W%2; H-=H%2;
+  G.resize(W,H);
+  U = Math.min(W,H);
+  TOTAL = Math.round(state.fps*state.dur);
+
+  // ---- 1판과 같은 순서로 난수를 뽑는다 → 같은 시드면 같은 배치 ----
+  const rand = mulberry32(state.seed);
+  const rr=(a,b)=>a+(b-a)*rand();
+  const pick=a=>a[Math.floor(rand()*a.length)];
+
+  waves=[];
+  for(let i=0;i<5;i++){
+    const ang=rr(0,TAU), f=rr(1.1,3.4)*(1+i*0.35);
+    waves.push({fx:Math.cos(ang)*f, fy:Math.sin(ang)*f, A:rr(0.5,1.0)/(1+i*0.5),
+                kt:1+Math.floor(rand()*3), ph:rr(0,TAU)});
+  }
+  const N = Math.max(60, Math.round((U/1440)*150));
+  ribbons=[];
+  for(let i=0;i<N;i++){
+    const hot = rand()<0.34;
+    ribbons.push({
+      x0:rr(-0.06,1.06)*W, y0:rr(-0.06,1.06)*H, steps:74,
+      slen:0.010*U*rr(0.75,1.25),
+      col: hot?pick(HOT):pick(COOL), hot,
+      wide: rr(1.6,4.2)*(U/1440),
+      al: rr(0.35,0.8), cyc:1+Math.floor(rand()*3), poff:rand(),
+      pdir: rand()<0.5?1:-1, swirl: rr(0.85,1.15),
+    });
+  }
+  blobs=[];
+  for(let i=0;i<5;i++) blobs.push({
+    x:rr(0.1,0.9)*W, y:rr(0.1,0.9)*H, r:rr(0.35,0.75)*U,
+    ax:rr(0.02,0.08)*W, ay:rr(0.02,0.08)*H, k:1+Math.floor(rand()*2), ph:rr(0,TAU),
+    col: rand()<0.6?pick(COOL):pick(HOT), al:rr(0.05,0.13),
+  });
+
+  // ---- 새로 더한 것: 흐름을 타는 먼지 (따로 된 난수 줄기 → 1판 배치에 영향 없음) ----
+  const r2 = mulberry32(state.seed ^ 0x9e3779b9);
+  dust=[];
+  const ND = state.dust ? Math.round((W*H)/(1920*1080)*700) : 0;
+  for(let i=0;i<ND;i++) dust.push({
+    x0:r2()*W, y0:r2()*H, k:1+Math.floor(r2()*2), off:r2(),
+    len: (0.06+0.16*r2())*U, rad:(0.4+r2()*r2()*1.1)*(U/1080),
+    I: 0.08+0.5*r2()*r2()*r2(), col: DUST[Math.floor(r2()*DUST.length)],
+  });
+}
+
+function fieldVel(x,y,p){
+  const X=x/U, Y=y/U; let vx=0, vy=0;
+  for(const w of waves){
+    const c=Math.cos(w.fx*X + w.fy*Y + w.kt*TAU*p + w.ph);
+    vx += w.A*w.fy*c; vy += -w.A*w.fx*c;
+  }
+  const m=Math.hypot(vx,vy)||1e-6;
+  return [vx/m*state.flow, vy/m*state.flow, m];
+}
+
+/* 중점법 한 걸음 — 오일러보다 곡선이 매끄럽고 흐름선에서 덜 벗어난다 */
+function step(x,y,h,p){
+  const [ax,ay]=fieldVel(x,y,p);
+  const [bx,by]=fieldVel(x+ax*h*0.5, y+ay*h*0.5, p);
+  return [x+bx*h, y+by*h];
+}
+
+const BG_SHADER = `
+uniform float uGain; uniform vec3 uBase;
+uniform vec4 uBlob[5]; uniform vec4 uCol[5];
+void main(){
+  vec2 px = uv * uRes; px.y = uRes.y - px.y;
+  vec3 c = uBase;
+  for(int i=0;i<5;i++){
+    vec2 d = (px - uBlob[i].xy) / uBlob[i].z;
+    c += uCol[i].rgb * uCol[i].a * exp(-dot(d,d)*3.0);
+  }
+  o = vec4(c * uGain, 1.0);
+}`;
+
+function drawScene(p){
+  // 배경 빛 — 선형으로, 아주 낮게
+  const B=[], C=[];
+  for(const b of blobs){
+    const a=TAU*(b.k*p)+b.ph;
+    B.push(b.x+Math.cos(a)*b.ax, b.y+Math.sin(a)*b.ay, b.r, 0);
+    C.push(b.col[0], b.col[1], b.col[2], b.al*0.10*state.glow);
+  }
+  G.background(BG_SHADER, {uBase:BG, uBlob:B, uCol:C});
+
+  // 리본
+  for(const rb of ribbons){
+    const n = rb.steps*2;                         // 걸음은 두 배, 보폭은 반
+    const h = rb.slen*rb.swirl*0.5;
+    const pts = new Float32Array(n*2);
+    let x=rb.x0, y=rb.y0;
+    for(let s=0;s<n;s++){ pts[s*2]=x; pts[s*2+1]=y; [x,y]=step(x,y,h,p); }
+    G.ribbon(pts, rb.col,
+      (u)=>{
+        const env = Math.sin(Math.PI*u);
+        const pulse = 0.5+0.5*Math.cos(TAU*(rb.cyc*(u - rb.pdir*p)) + rb.poff*TAU);
+        // 펄스 꼭대기만 1을 넘긴다 → 번짐이 거기서만 핀다
+        return rb.al*env*(0.3 + 2.4*pulse*pulse*pulse)*state.glow*(rb.hot?1.0:0.85);
+      },
+      (u)=>{ const env=Math.sin(Math.PI*u); return rb.wide*0.5*(0.35+0.65*env); });
+  }
+
+  // 먼지 — 흐름선을 따라 나고 사라진다. 나이 = frac(k·p + off), k 정수 → 루프
+  for(const d of dust){
+    const age = (d.k*p + d.off) % 1;
+    const steps = 2 + Math.floor(age*18);
+    const h = d.len*age/steps;
+    let x=d.x0, y=d.y0;
+    for(let s=0;s<steps;s++) [x,y]=step(x,y,h,p);
+    const fade = Math.pow(Math.sin(Math.PI*age), 1.5);
+    if(fade>0.01) G.point(x, y, d.col, d.I*fade, d.rad);
+  }
+}
+
+window.renderFrame = function(n){
+  const f = n % TOTAL;
+  G.begin();
+  // 셔터: 이 프레임의 시간 폭 안에서 하위 프레임을 고르게 뽑아 더한다
+  G.shutter(state.sub, (s)=>{
+    const p = ((f + (s-0.5)*state.shutter) / TOTAL + 1) % 1;
+    drawScene(p);
+  });
+  G.end(f);
+};
+
+build();
+if(CAP){
+  document.body.classList.add('capture');
+  renderFrame(0);
+  window.__READY__ = true;
+} else {
+  let frame = 0;
+  (function loop(){ renderFrame(frame); frame=(frame+1)%TOTAL; requestAnimationFrame(loop); })();
+}
+</script></body></html>

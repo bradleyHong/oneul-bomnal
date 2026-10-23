@@ -139,7 +139,7 @@
       o.warp.style.transform = setup.mode === "led" ? "none" : matrix3d(ow, H, dst);
 
       var shift = i * ow * (1 - ov);                    // 이 구역이 가상 화면의 어디부터 보여 주는지
-      Array.prototype.forEach.call(o.warp.querySelectorAll("iframe"), function (f) {
+      Array.prototype.forEach.call(o.warp.querySelectorAll("iframe, video"), function (f) {
         f.style.width = fw + "px"; f.style.height = fh + "px";
         f.style.left = ((VW - fw) / 2 - shift) + "px"; f.style.top = ((H - fh) / 2) + "px";
       });
@@ -375,7 +375,11 @@
 
   /* ── 편성 ──────────────────────────────────────────────── */
   function fetchProgram() {
-    var url = "/api/tv" + (state.key ? "?k=" + encodeURIComponent(state.key) : "");
+    var qs = [];
+    if (state.key) qs.push("k=" + encodeURIComponent(state.key));
+    var w = new URLSearchParams(location.search).get("w");   // 시연: /tv?w=light-jellyfish
+    if (w) qs.push("w=" + encodeURIComponent(w));
+    var url = "/api/tv" + (qs.length ? "?" + qs.join("&") : "");
     return fetch(url, { cache: "no-store", credentials: "same-origin" })
       .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, status: r.status, data: d }; }); });
   }
@@ -390,7 +394,7 @@
     $("[data-tv-title]").textContent = t.title;
     $("[data-tv-sub]").textContent = (t.kind === "ai" ? "AI 영상 · " : "") + "내일은 「" + prog.tomorrow.title + "」로 바뀝니다.";
     $("[data-tv-mode]").textContent = MODE_NAMES[setup.mode] + " 설정";
-    if (t.vimeo !== state.playingId) play(t);
+    if (itemId(t) !== state.playingId) play(t);
     scheduleNextDay(prog.nextChangeAt);
   }
 
@@ -424,6 +428,29 @@
     return VIMEO + "/video/" + encodeURIComponent(id) + "?background=1&loop=1&autopause=0&muted=1&dnt=1&quality=auto&playsinline=1";
   }
 
+  /* 작품은 두 가지로 온다. vimeo(비메오 잠긴 영상) 또는 file(우리 사이트에 둔 mp4).
+     파일은 남의 재생기 없이 <video> 로 바로 돌린다. 반복·음소거·자동재생. */
+  function itemId(item) { return item ? (item.vimeo || item.file || "") : ""; }
+
+  function videoEl(item, i, layer) {
+    var v = document.createElement("video");
+    v.src = item.file;
+    v.muted = true; v.loop = true; v.autoplay = true; v.playsInline = true;
+    v.setAttribute("muted", ""); v.setAttribute("playsinline", "");
+    v.preload = "auto";
+    v.setAttribute("aria-label", item.title);
+    v.addEventListener("timeupdate", function () {
+      if (state.pending && layer === state.pending.idx && i === 0) commit();
+      if (layer === state.active) {
+        state.times[i] = { t: v.currentTime, at: Date.now() };
+        if (i === 0) { state.lastTick = Date.now(); state.ticked = true; }
+      }
+    });
+    v.addEventListener("error", function () { note("영상 파일 오류: " + item.file); });
+    var p = v.play(); if (p && p.catch) p.catch(function (e) { note("자동재생 막힘: " + e.message); });
+    return v;
+  }
+
   /* 다음 작품은 보이지 않는 겹에 구역마다 먼저 띄우고, 재생이 시작되면 겹쳐 넘긴다. */
   function play(item) {
     if (!outs.length) buildOutputs();
@@ -431,9 +458,14 @@
     var frames = outs.map(function (o, i) {
       var host = o.layers[next];
       host.innerHTML = "";
-      var f = document.createElement("iframe");
-      f.src = embedUrl(item.vimeo);
-      f.allow = "autoplay; fullscreen; picture-in-picture";
+      var f;
+      if (item.file) {
+        f = videoEl(item, i, next);
+      } else {
+        f = document.createElement("iframe");
+        f.src = embedUrl(item.vimeo);
+        f.allow = "autoplay; fullscreen; picture-in-picture";
+      }
       f.setAttribute("title", item.title + (outs.length > 1 ? " " + (i + 1) : ""));
       f.setAttribute("tabindex", "-1");
       host.appendChild(f);
@@ -457,7 +489,7 @@
         setTimeout(function () { if (!old.classList.contains("is-on")) old.innerHTML = ""; }, 3000);
       }
     });
-    state.active = p.idx; state.playingId = p.item.vimeo;
+    state.active = p.idx; state.playingId = itemId(p.item);
     state.lastTick = Date.now(); state.readyAt = Date.now(); state.ticked = false;
     state.times = [{ t: 0, at: 0 }, { t: 0, at: 0 }];
     showCaption(p.item);
@@ -520,6 +552,14 @@
     var a = state.times[0], b = state.times[1], now = Date.now();
     if (!a.at || !b.at || now - a.at > 2000 || now - b.at > 2000) return;
     var ta = a.t + (now - a.at) / 1000, tb = b.t + (now - b.at) / 1000;
+    var v = outs[1].layers[state.active].querySelector("video");
+    if (v) {
+      // 파일은 15초마다 처음으로 돈다. 차이를 한 바퀴 안에서 잰다 (14.9초와 0.1초는 0.2초 차이)
+      var dur = v.duration || 0; if (!dur) return;
+      var d = Math.abs(ta - tb) % dur; d = Math.min(d, dur - d);
+      if (d > 0.12) v.currentTime = (ta + 0.05) % dur;
+      return;
+    }
     if (Math.abs(ta - tb) > 0.12) {
       var f = outs[1].layers[state.active].querySelector("iframe");
       if (f) post(f, "setCurrentTime", ta + 0.05);

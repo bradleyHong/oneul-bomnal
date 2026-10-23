@@ -3,7 +3,7 @@ export const config = { runtime: "edge" };
 /**
  * 오늘은 봄날 TV — 구독자 화면에 오늘의 작품을 내준다.
  *
- *   GET /api/tv?k=<입장 열쇠>
+ *   GET /api/tv?k=<입장 열쇠>[&w=<작품 id>]
  *   → { name, date, today: {vimeo,title,kind,ratio}, tomorrow: {title}, nextChangeAt }
  *
  * 열쇠는 Vercel 환경변수 TV_KEYS 에 둔다 (저장소는 공개라 여기 적으면 안 된다).
@@ -77,7 +77,10 @@ export default async function handler(req) {
   if (!pool.length) pool = LIBRARY.filter((it) => it.ratio === "16:9");
   if (!pool.length) return json({ error: "편성할 작품이 없습니다." }, 503);
 
-  const today = pool[day % pool.length];
+  /* ?w=<id> — 로그인한 화면에서 특정 작품을 바로 틀어 본다 (시험·영업 시연). 편성표는 그대로 */
+  const want = (url.searchParams.get("w") || "").trim();
+  const picked = want ? LIBRARY.find((it) => it.id === want) : null;
+  const today = picked || pool[day % pool.length];
   const tomorrow = pool[(day + 1) % pool.length];
   const nextChangeAt = new Date((day + 1) * 86400000 - SEOUL_MS).toISOString();
 

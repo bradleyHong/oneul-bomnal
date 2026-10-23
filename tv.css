@@ -17,7 +17,8 @@ body.is-playing { cursor: none; }
   pointer-events: none;
 }
 .tv-layer.is-on { opacity: 1; }
-.tv-layer iframe { position: absolute; border: 0; }
+.tv-layer iframe, .tv-layer video { position: absolute; border: 0; }
+.tv-layer video { object-fit: cover; background: #000; }
 
 /* 겹침 녹이기 · 색온도 · 맞춤 격자 */
 .tv-blend { position: absolute; top: 0; bottom: 0; pointer-events: none; }

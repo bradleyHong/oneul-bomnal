@@ -1,0 +1,175 @@
+/* ─────────────────────────────────────────────────────────────
+   2026 가을판 옷. 홈(home26.css)과 같은 검은 갤러리로 안쪽 페이지를
+   갈아입힌다. styles.css 뒤에 실린다.
+
+   styles.css 는 색을 거의 다 토큰으로 쓴다. 그래서 토큰을 어두운 값으로
+   바꾸면 판이 통째로 뒤집힌다. 토큰 밖에 박힌 색만 아래에서 따로 잡는다.
+   글꼴은 Pretendard 하나 — 명조·이탤릭 제목은 걷는다.
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+  color-scheme: dark;
+
+  --void:    #09090a;
+  --paper:   #09090a;
+  --petal:   #111113;
+  --surface: #141416;
+  --raise:   #1a1c17;
+  --lift:    #19191c;
+
+  --edge:      rgba(243, 242, 238, 0.14);
+  --edge-soft: rgba(243, 242, 238, 0.08);
+  --edge-glow: rgba(212, 255, 58, 0.42);
+
+  --ink:   #f3f2ee;
+  --muted: rgba(243, 242, 238, 0.80);
+  --deep:  rgba(243, 242, 238, 0.68);
+  --faint: rgba(243, 242, 238, 0.56);
+
+  --glow:      #d4ff3a;
+  --glow-soft: rgba(212, 255, 58, 0.28);
+  --glow-dim:  rgba(212, 255, 58, 0.10);
+  --rx-green:  #15170f;
+  --rx-deep:   #0b0c08;
+  --rx-pale:   #131410;
+  --rx-ink:    #f3f2ee;
+
+  --mist: rgba(9, 9, 10, 0.72);
+
+  --font-display: var(--font);
+  --pad: clamp(18px, 4.2vw, 64px);
+}
+
+html, body { background: var(--paper); }
+body { -webkit-font-smoothing: antialiased; }
+
+/* ── 제목: 고딕 하나, 굵게, 자간을 조인다 ─────────────────── */
+h1, h2,
+.subpage-hero h1,
+.section-head h2 {
+  font-family: var(--font);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+}
+h1, .subpage-hero h1 { line-height: 1.04; }
+.section h2, .section-head h2 { line-height: 1.08; }
+h3 { letter-spacing: -0.03em; }
+
+/* kicker — 이탤릭 명조를 걷고 작은 영문 이름표로 */
+.kicker,
+.section-kicker {
+  font-family: var(--font);
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--faint);
+  opacity: 1;
+}
+
+/* ── 단추 ─────────────────────────────────────────────── */
+.primary-link {
+  color: #000;
+  background: var(--glow);
+  border-color: var(--glow);
+  border-radius: 999px;
+  padding: 0 24px;
+  font-weight: 700;
+}
+.primary-link:hover,
+.primary-link:focus-visible { background: #e2ff7a; border-color: #e2ff7a; color: #000; }
+.secondary-link {
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  padding: 0 22px;
+  font-weight: 600;
+}
+.secondary-link:hover,
+.secondary-link:focus-visible { border-color: var(--ink); background: transparent; }
+
+.band-green .primary-link,
+.en-cta .primary-link { background: var(--glow); color: #000; }
+.band-green .primary-link:hover,
+.en-cta .primary-link:hover { background: #e2ff7a; }
+.band-green, .en-cta { --glow: #d4ff3a; border-block: 1px solid var(--edge); }
+.band-green .section-kicker,
+.en-cta .section-kicker { color: var(--faint); }
+
+/* ── 머리: 홈과 같은 모양 ─────────────────────────────── */
+body.site-page .site-nav,
+.site-nav {
+  background: rgba(9, 9, 10, 0.72);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--edge-soft);
+  box-shadow: none;
+  padding-inline: var(--pad);
+}
+.site-nav .brand strong { font-size: 18px; font-weight: 800; letter-spacing: -0.03em; color: var(--ink); }
+.site-nav .brand span { font-size: 12px; color: var(--faint); }
+body.site-page .site-nav nav a,
+.site-nav nav a { color: var(--deep); font-size: 15px; font-weight: 500; }
+body.site-page .site-nav nav a:hover,
+.site-nav nav a:hover,
+.site-nav nav a[aria-current="true"],
+.site-nav nav a[aria-current="page"] { color: var(--ink); background: transparent; }
+body.site-page .site-nav nav a.is-cta,
+.site-nav nav a.is-cta {
+  color: #000;
+  background: var(--glow);
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-weight: 700;
+}
+body.site-page .site-nav nav a.is-cta:hover { color: #000; background: #e2ff7a; }
+
+/* ── 바닥 ─────────────────────────────────────────────── */
+.site-footer {
+  background: var(--paper);
+  border-top: 1px solid var(--edge);
+  color: var(--faint);
+}
+.site-footer strong { color: var(--ink); font-weight: 800; letter-spacing: -0.03em; }
+
+/* ── 카드·표·입력칸: 그림자 대신 실선 ───────────────────── */
+.offer-card, .package-card, .faq-item, .answer-block, .contact-form,
+.price-table, .spec-table, table {
+  box-shadow: none;
+}
+input, textarea, select {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--edge);
+}
+input::placeholder, textarea::placeholder { color: var(--faint); }
+
+/* 사진은 어두운 판 위에서 모서리만 살짝 */
+main img { border-radius: 6px; }
+.site-nav img, .brand img { border-radius: 0; }
+
+@media (max-width: 520px) {
+  .site-nav .brand span { display: none; }
+  body.site-page .site-nav nav a.is-cta { padding: 7px 12px; }
+}
+
+/* ── 잔손질 ──────────────────────────────────────────── */
+/* 구역마다 붙던 꽃잎 장식은 걷는다. 봄날이라고 꽃을 얹지 않는다. */
+.section::after,
+.section::before { display: none; }
+
+/* 첫 화면의 파란 빛 얼룩과 위아래 띠를 걷고 판을 한 색으로 */
+.subpage-hero { background: var(--paper); border-bottom: 1px solid var(--edge-soft); }
+
+/* 글 링크: 초록 글자 → 흰 글자에 밑줄 */
+.text-link { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--faint); }
+.text-link:hover { color: var(--glow); text-decoration-color: var(--glow); }
+main a:not([class]) { color: var(--ink); text-decoration-color: var(--faint); }
+main a:not([class]):hover { color: var(--glow); }
+
+/* 단추 옆 짧은 안내 */
+.subpage-actions .text-note { color: var(--faint); font-size: 14px; align-self: center; }
+.section .subpage-actions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 12px 18px; }
