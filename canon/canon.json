@@ -1,7 +1,7 @@
 {
   "_comment": "오늘은 봄날 사이트 캐논(정본). 사이트의 모든 문구·메타태그·스키마·llms.txt는 이 파일을 근거로 한다. 사실이 바뀌면 여기를 먼저 고치고, 그 다음 각 파일을 맞춘다. 검증: node tools/check-canon.mjs",
   "version": "2026-09-11",
-  "updated": "2026-10-21",
+  "updated": "2026-10-23",
   "site": {
     "brand": "오늘은 봄날",
     "brandRomanized": "Oneul-eun Bomnal",
@@ -371,12 +371,15 @@
         "screen": "3.84m × 1.92m (170인치급)",
         "resolution": "2064 × 1032",
         "panelSpec": "P1.86 GOB · 640 × 1920mm · 실내용",
-        "dayPrice": 2500000,
-        "dayPriceLabel": "하루 250만원 (부가세 포함)",
-        "extraDayPrice": 700000,
-        "extraDayLabel": "이틀째부터 하루 70만원",
-        "weekPrice": 6500000,
-        "weekLabel": "1주일(7일) 650만원",
+        "dayPrice": 2600000,
+        "dayPriceLabel": "하루(24시간) 260만원 (부가세 포함)",
+        "extraDayPrice": 1500000,
+        "extraDayLabel": "이틀째부터 장비값 하루 150만원",
+        "weekPrice": 11600000,
+        "weekLabel": "1주일(7일) 1,160만원",
+        "regionFee": 300000,
+        "regionFeeLabel": "광주·전남·전북·경기·서울 설치 추가비 30만원 (첫날 290만원)",
+        "booking": "/led-booking",
         "vat": "모든 값 부가세 포함",
         "page": "/led-rental",
         "dayPriceIncludes": "설치 · 철거 · 재생 PC 포함",
@@ -644,8 +647,8 @@
     {
      "path": "/led-rental",
      "file": "led-rental.html",
-     "title": "대구 LED 패널 렌탈 · 170인치급 LED 월 하루 250만원 | 여성기업 오늘은 봄날",
-     "description": "대구 LED 패널 렌탈. 스탠드형 LED 패널 6장을 이어 170인치급(3.84m × 1.92m) 화면을 세웁니다. 하루 250만원(부가세 포함)에 설치·철거와 재생 PC가 들어 있고, 1주일은 650만원입니다. 오늘은 봄날 미디어아트는 무료, 패널 구매도 상담합니다.",
+     "title": "대구 LED 패널 렌탈 · 170인치급 LED 월 하루 260만원 | 여성기업 오늘은 봄날",
+     "description": "대구 LED 패널 렌탈. 스탠드형 LED 패널 6장을 이어 170인치급(3.84m × 1.92m) 화면을 세웁니다. 하루(24시간) 260만원(부가세 포함)에 설치·철거와 재생 PC가 들어 있고, 1주일은 1,160만원입니다. 오늘은 봄날 미디어아트는 무료, 패널 구매도 상담합니다.",
      "h1": "대구 LED 패널 렌탈 · 170인치급 LED 월",
      "primaryKeywords": [
       "대구 LED 패널 렌탈",
@@ -807,7 +810,9 @@
     "/art-typewall",
     "/landing-references",
     "/전화응대_핸드북",
-    "/works"
+    "/works",
+    "/led-booking",
+    "/led-schedule"
   ],
   "crawlers": {
     "search": [

@@ -1,0 +1,138 @@
+/* LED 패널 렌탈 예약 화면. theme26.css 위에 얹는다. */
+
+.bk { max-width: 1120px; margin-inline: auto; }
+.bk-hero p strong { color: var(--ink); }
+
+/* 단계 표시 */
+.bk-dots { display: flex; gap: 10px; margin: 0 0 32px; padding: 0; list-style: none; flex-wrap: wrap; }
+.bk-dots li {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px 10px 10px; border: 1px solid var(--edge); border-radius: 999px;
+  color: var(--faint); font-weight: 600; font-size: 15px;
+}
+.bk-dots b {
+  display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--surface); color: var(--deep); font-size: 13px;
+}
+.bk-dots li.is-on { color: var(--ink); border-color: var(--glow); }
+.bk-dots li.is-on b { background: var(--glow); color: #000; }
+.bk-dots li.is-done b { background: var(--ink); color: #000; }
+
+/* 1단계 */
+.bk-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.bk-cal { border: 1px solid var(--edge); border-radius: 14px; padding: 18px; background: var(--petal); }
+.bk-cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.bk-cal-head b { font-size: 19px; font-weight: 800; letter-spacing: -0.02em; }
+.bk-cal-head button {
+  width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--edge);
+  background: transparent; color: var(--ink); font-size: 22px; cursor: pointer;
+}
+.bk-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.bk-w { text-align: center; font-size: 12px; color: var(--faint); padding: 4px 0; }
+.bk-d {
+  position: relative; aspect-ratio: 1; border-radius: 10px; border: 1px solid var(--edge-soft);
+  background: var(--surface); color: var(--ink); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+}
+.bk-d:hover:not(:disabled) { border-color: var(--glow); }
+.bk-d small { font-size: 10px; font-weight: 600; color: var(--faint); }
+.bk-d.is-off { opacity: 0.35; cursor: not-allowed; }
+.bk-d.is-full { opacity: 0.55; background: transparent; text-decoration: line-through; text-decoration-color: var(--faint); }
+.bk-d.is-sel { background: rgba(212, 255, 58, 0.18); border-color: var(--glow); }
+.bk-d.is-start { background: var(--glow); color: #000; }
+.bk-d.is-start small { color: #000; }
+
+.bk-fields, .bk-parties > div { display: grid; gap: 14px; }
+.bk label { display: grid; gap: 6px; }
+.bk label > span { font-size: 14px; font-weight: 600; color: var(--deep); }
+.bk label small { font-weight: 500; color: var(--faint); margin-left: 6px; }
+.bk input[type="text"], .bk input[type="tel"], .bk input[type="email"], .bk select, .bk textarea {
+  width: 100%; box-sizing: border-box; min-height: 46px; padding: 10px 14px;
+  border-radius: 10px; border: 1px solid var(--edge); background: var(--surface); color: var(--ink);
+  font: inherit; font-size: 16px;
+}
+.bk select option, .bk select optgroup { background: #141416; color: #f3f2ee; }
+.bk input:focus, .bk select:focus, .bk textarea:focus { outline: 2px solid var(--glow); outline-offset: 1px; border-color: transparent; }
+.bk-other { margin: -4px 0 0; font-size: 14px; color: var(--glow); }
+.bk-other a { color: var(--ink); text-decoration: underline; }
+
+.bk-summary { margin-top: 26px; border: 1px solid var(--edge); border-radius: 14px; padding: 6px 22px; }
+.bk-summary dl { margin: 0; }
+.bk-summary div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--edge-soft); }
+.bk-summary div:last-child { border-bottom: 0; }
+.bk-summary dt { color: var(--faint); }
+.bk-summary dd { margin: 0; text-align: right; color: var(--ink); font-weight: 600; }
+.bk-summary .is-total dd { font-size: 24px; font-weight: 800; color: var(--glow); letter-spacing: -0.02em; }
+.bk-muted { color: var(--faint); margin: 14px 0; }
+
+.bk-note { color: var(--faint); font-size: 14px; line-height: 1.7; margin: 18px 0 0; }
+.bk-note a { color: var(--ink); text-decoration: underline; }
+.bk-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-top: 26px; }
+.bk-actions button:disabled { opacity: 0.4; cursor: not-allowed; }
+.bk-msg { color: var(--deep); font-size: 14px; }
+
+/* 2단계 — 종이 계약서 */
+.bk-paper {
+  background: #fbfaf7; color: #161616; border-radius: 14px; padding: clamp(22px, 4vw, 52px);
+  --ink: #161616; --deep: #444; --faint: #777; --edge: rgba(0, 0, 0, 0.18); --edge-soft: rgba(0, 0, 0, 0.08); --surface: #fff;
+}
+.bk-paper h2 { font-size: clamp(26px, 3vw, 34px); text-align: center; margin: 0 0 8px; color: #161616; }
+.bk-paper h3 { font-size: 17px; margin: 22px 0 6px; color: #161616; letter-spacing: -0.02em; }
+.bk-paper p { margin: 0; line-height: 1.75; color: #333; }
+.bk-lead { text-align: center; color: #555 !important; margin-bottom: 8px !important; }
+.bk-paper input, .bk-paper textarea { background: #fff; color: #161616; border-color: rgba(0,0,0,.2); }
+.bk-paper input:focus, .bk-paper textarea:focus { outline-color: #161616; }
+.bk-parties { display: grid; grid-template-columns: 1.2fr 1fr; gap: 32px; margin-top: 30px; padding-top: 22px; border-top: 1px solid rgba(0,0,0,.12); }
+.bk-supplier p { margin: 0 0 6px; }
+.bk-ceo { position: relative; }
+.bk-in { position: relative; display: inline-block; margin-left: 10px; }
+/* 도장은 이름 끝과 (인) 위에 반쯤 겹친다 — 종이 계약서처럼 */
+.bk-in img { position: absolute; left: -34px; top: -38px; width: 96px; height: auto; opacity: 0.92; pointer-events: none; mix-blend-mode: multiply; }
+.bk-agree { margin: 30px 0 0; padding: 18px 20px; border: 1px solid rgba(0,0,0,.14); border-radius: 12px; display: grid; gap: 10px; }
+.bk-agree legend { font-weight: 700; padding: 0 6px; color: #161616; }
+.bk-agree label { display: flex; gap: 10px; align-items: flex-start; color: #222; line-height: 1.5; }
+.bk-agree input { width: 20px; height: 20px; margin-top: 1px; accent-color: #161616; flex: none; }
+.bk-sign { margin-top: 24px; display: grid; gap: 8px; }
+.bk-sign > span { font-weight: 700; color: #161616; }
+.bk-sign canvas {
+  width: 100%; max-width: 520px; height: 170px; border-radius: 12px; touch-action: none; cursor: crosshair;
+  background: #fff repeating-linear-gradient(0deg, transparent 0 129px, rgba(0,0,0,.12) 129px 130px);
+  border: 1px dashed rgba(0,0,0,.3);
+}
+.bk-ghost {
+  justify-self: start; border: 1px solid var(--edge); background: transparent; color: inherit;
+  border-radius: 999px; padding: 7px 14px; font: inherit; font-size: 14px; cursor: pointer;
+}
+
+/* 3단계 */
+.bk-done h2 { font-size: clamp(28px, 4vw, 48px); margin: 6px 0 26px; }
+.bk-done-kicker { color: var(--faint); margin: 0; }
+.bk-done-kicker b { color: var(--ink); }
+.bk-bank { margin: 0; border: 1px solid var(--glow); border-radius: 14px; padding: 6px 22px; max-width: 640px; }
+.bk-bank div { display: grid; grid-template-columns: 110px 1fr; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--edge-soft); }
+.bk-bank div:last-child { border-bottom: 0; }
+.bk-bank dt { color: var(--faint); }
+.bk-bank dd { margin: 0; font-weight: 700; font-size: 18px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.bk-bank dd small { width: 100%; font-weight: 500; font-size: 14px; color: var(--deep); }
+.bk-ok { color: var(--glow); margin-top: 16px; }
+.bk-fail { color: #ffb4a8; margin-top: 16px; }
+.bk-fail a { color: inherit; text-decoration: underline; }
+.bk-preview { display: block; max-width: 520px; width: 100%; margin-top: 30px; border-radius: 8px; }
+
+@media (max-width: 860px) {
+  .bk-grid, .bk-parties { grid-template-columns: 1fr; }
+  .bk-bank div { grid-template-columns: 1fr; gap: 4px; }
+}
+.bk-hint { margin: 10px 2px 0; color: var(--glow); font-size: 14px; font-weight: 600; min-height: 1.4em; }
+.bk-parties > .bk-supplier { display: block; align-self: start; }
+.bk-supplier h3 { margin-top: 0; }
+.bk-ceo { margin: 10px 0 14px !important; }
+
+.bk-two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.bk-banner { border: 1px solid var(--glow); border-radius: 12px; padding: 12px 16px; color: var(--ink); margin: 0 0 22px; }
+.bk-summary dd small { display: block; font-weight: 500; font-size: 13px; color: var(--faint); margin-top: 2px; }
+.bk-d.is-part { border-style: dashed; }
+.bk-quote { margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--edge); }
+.bk-step [data-step2] { display: grid; gap: 14px; }
+.bk-step .bk-grid > .bk-summary { margin-top: 0; }
+.bk-summary dt { flex: none; white-space: nowrap; }
