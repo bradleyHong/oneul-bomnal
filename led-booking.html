@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>LED 패널 렌탈 예약 · 전자계약 | 오늘은 봄날</title>
+    <meta name="description" content="오늘은 봄날 LED 패널 렌탈 예약. 날짜·장소를 고르고 전자계약에 서명하면 입금 안내가 나옵니다." />
+    <link rel="canonical" href="https://publicbloom.art/led-booking" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" />
+    <link rel="stylesheet" href="./styles.css?v=20261013-four3" />
+    <link rel="stylesheet" href="./en.css?v=20260914-rolex" />
+    <link rel="stylesheet" href="./theme26-ink.css?v=20261021-a" />
+    <link rel="stylesheet" href="./theme26.css?v=20261023-a" />
+    <link rel="stylesheet" href="./led-booking.css?v=20261023-b" />
+    <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="./assets/favicon-180.png" />
+    <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+    <script defer src="/_vercel/insights/script.js"></script>
+    <script defer src="/bomnal-beacon.js"></script>
+    <!-- Google 애널리틱스 (오늘은 봄날 · publicbloom.art) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5GVT2JZ9RT"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5GVT2JZ9RT');
+      /* 마케팅 성과 보고용 클릭 기록: 전화·메일·견적문의 버튼.
+         폼을 안 쓰고 바로 전화하는 담당자가 많아 폼 접수만 세면 성과가 작게 잡힌다. */
+      document.addEventListener('click', function (e) {
+        var a = e.target && e.target.closest ? e.target.closest('a') : null;
+        if (!a) return;
+        var h = a.getAttribute('href') || '';
+        if (h.indexOf('tel:') === 0) gtag('event', 'contact_click', { method: 'phone' });
+        else if (h.indexOf('mailto:') === 0) gtag('event', 'contact_click', { method: 'email' });
+        else if (h.indexOf('quote') !== -1 || h.indexOf('/contact') !== -1) gtag('event', 'quote_cta_click', { link_text: (a.textContent || '').trim().slice(0, 30) });
+      }, true);
+    </script>
+  </head>
+  <body class="site-page">
+    <a class="skip-link" href="#main-content">본문 바로가기</a>
+    <header class="site-nav">
+      <a class="brand" href="./"><strong>오늘은 봄날</strong><span>미디어아트 · 대구 여성기업</span></a>
+      <nav id="main-nav" aria-label="주요 메뉴">
+        <a href="./media-facade">설치</a>
+        <a href="./led-rental" aria-current="true">렌탈</a>
+        <a href="./studio">작품</a>
+        <a class="is-cta" href="./quote">견적문의</a>
+      </nav>
+    </header>
+    <main class="subpage-main" id="main-content" tabindex="-1">
+      <section class="subpage-hero bk-hero">
+        <div>
+          <p class="section-kicker">LED Panel Rental · Booking</p>
+          <h1>LED 패널 렌탈 예약</h1>
+          <p>기간과 장소를 고르면 견적서가 메일로 갑니다. 견적서의 QR로 전자계약에 서명하고 입금하면 렌탈이 시작됩니다.
+             <strong>입금이 확인되면 예약이 확정</strong>됩니다. 지금 예약할 수 있는 가장 빠른 날은 <strong data-open-from>-</strong>입니다.</p>
+        </div>
+      </section>
+
+      <section class="section bk" data-steps>
+        <p class="bk-banner" data-q-banner hidden></p>
+        <ol class="bk-dots" aria-label="예약 단계">
+          <li data-dot="1" class="is-on"><b>1</b>일정 · 장소</li>
+          <li data-dot="2"><b>2</b>견적서</li>
+          <li data-dot="3"><b>3</b>전자계약</li>
+          <li data-dot="4"><b>4</b>입금</li>
+        </ol>
+
+        <!-- 1단계: 일정 · 장소 -->
+        <div class="bk-step" data-step="1">
+          <div class="bk-grid" data-step1>
+            <div>
+              <div class="bk-cal" data-cal aria-label="대여 기간 달력. 시작일과 끝일을 차례로 누릅니다."></div>
+              <p class="bk-hint" data-cal-hint role="status"></p>
+            </div>
+            <div class="bk-fields">
+              <div class="bk-two">
+                <label><span>시작 시각</span><select name="sHour"></select></label>
+                <label><span>끝 시각</span><select name="eHour"></select></label>
+              </div>
+              <label><span>설치 지역</span><select name="region"></select></label>
+              <p class="bk-other" data-other hidden>이 지역은 <a href="./quote?item=led-wall-rental">렌탈 문의</a>로 남겨 주시면 일정과 운송을 맞춰 견적을 드립니다.</p>
+              <label><span>설치 주소</span><input name="address" type="text" placeholder="예: 대구 중구 공평로 88, 1층 로비" autocomplete="street-address" /></label>
+              <label><span>행사명 <small>선택</small></span><input name="event" type="text" placeholder="예: 개관 기념 전시" /></label>
+              <p class="bk-note">설치는 시작 3시간 전에 도착해 마치고, 회수는 끝 시각부터 1시간 30분입니다. 설치 기사 이동 시간까지 따져 다른 현장과 겹치지 않는 시간만 받습니다.</p>
+            </div>
+          </div>
+          <div class="bk-summary" data-summary></div>
+          <p class="bk-note">요금: 대구·경북·울산·부산·경남 첫날(24시간) <b>260만원</b> · 광주·전남·전북·경기·서울 첫날 <b>290만원</b> · 이틀째부터 하루 150만원(장비값).
+            모두 부가세·설치·철거·재생 PC 포함. 24시간 단위로 올려 계산합니다.</p>
+          <div class="bk-actions">
+            <button class="primary-link" type="button" data-to-step2 disabled>다음 · 견적서 받기</button>
+            <span class="bk-msg" data-step1-msg role="status"></span>
+          </div>
+        </div>
+
+        <!-- 2단계: 견적서 -->
+        <div class="bk-step" data-step="2" hidden>
+          <div class="bk-grid">
+            <form class="bk-fields" data-step2 onsubmit="return false">
+              <label><span>업체명 · 기관명</span><input name="org" type="text" autocomplete="organization" /></label>
+              <label><span>담당자 이름</span><input name="name" type="text" autocomplete="name" /></label>
+              <label><span>연락처</span><input name="phone" type="tel" inputmode="tel" placeholder="010-0000-0000" autocomplete="tel" /></label>
+              <label><span>이메일 <small>견적서를 보내 드립니다</small></span><input name="email" type="email" autocomplete="email" /></label>
+              <label><span>사업자등록번호 <small>선택 · 세금계산서용</small></span><input name="biz" type="text" inputmode="numeric" /></label>
+            </form>
+            <div class="bk-summary" data-quote-summary></div>
+          </div>
+          <p class="bk-note">견적서 안의 QR을 휴대폰으로 찍으면 이 내용 그대로 전자계약이 열립니다. 결재를 받아야 하면 견적서를 먼저 받아 두세요.</p>
+          <div class="bk-actions">
+            <button class="secondary-link" type="button" data-back-1>이전</button>
+            <button class="primary-link" type="button" data-send-quote disabled>견적서 메일로 받기</button>
+            <span class="bk-msg" data-step2-msg role="status"></span>
+          </div>
+          <div class="bk-quote" data-quote-done hidden>
+            <p class="bk-ok" data-quote-sent></p>
+            <div class="bk-actions">
+              <button class="primary-link" type="button" data-to-step3>바로 전자계약하기</button>
+              <a class="secondary-link" data-quote-download href="#">견적서 내려받기 (PNG)</a>
+            </div>
+            <img class="bk-preview" data-quote-img alt="LED 패널 렌탈 견적서" />
+          </div>
+        </div>
+
+        <!-- 3단계: 전자계약 -->
+        <div class="bk-step" data-step="3" hidden>
+          <form class="bk-contract" data-step3 onsubmit="return false">
+            <div class="bk-paper">
+              <h2>LED 패널 렌탈 계약서</h2>
+              <p class="bk-lead">임차인(이하 "갑")과 임대인 오늘은 봄날(이하 "을")은 다음과 같이 계약을 맺는다.</p>
+              <div data-contract-body></div>
+              <div class="bk-parties">
+                <div>
+                  <h3>갑 (임차인)</h3>
+                  <label><span>업체명 · 기관명</span><input name="org" type="text" autocomplete="organization" /></label>
+                  <label><span>계약자 이름</span><input name="name" type="text" autocomplete="name" /></label>
+                  <label><span>연락처</span><input name="phone" type="tel" inputmode="tel" autocomplete="tel" /></label>
+                  <label><span>이메일 <small>계약서 사본을 보내 드립니다</small></span><input name="email" type="email" autocomplete="email" /></label>
+                  <label><span>사업자등록번호 <small>선택</small></span><input name="biz" type="text" inputmode="numeric" /></label>
+                  <label><span>요청 사항 <small>선택</small></span><textarea name="note" rows="2" placeholder="반입 동선, 주차, 설치 가능 시간 등"></textarea></label>
+                </div>
+                <div class="bk-supplier">
+                  <h3>을 (임대인)</h3>
+                  <p>상호 오늘은 봄날</p>
+                  <p class="bk-ceo">대표 박성실 <span class="bk-in">(인)<img src="./assets/contract/seal.png" alt="오늘은 봄날 대표 도장" width="96" height="94" /></span></p>
+                  <p>사업자등록번호 575-19-00976</p>
+                  <p>대구광역시 수성구 동대구로 250, 102동 1층</p>
+                </div>
+              </div>
+              <fieldset class="bk-agree">
+                <legend>확인</legend>
+                <label><input type="checkbox" data-agree /> 위 계약 조항을 모두 읽었고 동의합니다.</label>
+                <label><input type="checkbox" data-agree /> 대여료 전액을 입금 기한까지 입금해야 렌탈이 진행되는 것을 확인했습니다.</label>
+                <label><input type="checkbox" data-agree /> 대여 중 물품이 파손되거나 도난당하면 물품 가격을 배상하는 것을 확인했습니다.</label>
+              </fieldset>
+              <div class="bk-sign">
+                <span>갑 서명</span>
+                <canvas data-sign aria-label="서명란. 손가락이나 마우스로 서명하세요."></canvas>
+                <button type="button" class="bk-ghost" data-sign-clear>다시 쓰기</button>
+              </div>
+            </div>
+            <p class="bk-note">개인정보(이름·연락처·이메일)는 계약 이행과 세금계산서 발행에만 씁니다. <a href="./privacy">개인정보처리방침</a></p>
+            <div class="bk-actions">
+              <button class="secondary-link" type="button" data-back-2>이전</button>
+              <button class="primary-link" type="button" data-sign-btn disabled>서명하고 계약하기</button>
+              <span class="bk-msg" data-step3-msg role="status"></span>
+            </div>
+          </form>
+        </div>
+
+        <!-- 4단계: 입금 -->
+        <div class="bk-step" data-step="4" hidden>
+          <div class="bk-done">
+            <p class="bk-done-kicker">계약번호 <b data-done-no></b></p>
+            <h2>입금이 확인되면 렌탈이 시작됩니다</h2>
+            <dl class="bk-bank">
+              <div><dt>입금 금액</dt><dd data-done-amount></dd></div>
+              <div><dt>입금 기한</dt><dd data-done-deadline></dd></div>
+              <div><dt>입금 계좌</dt><dd><span data-done-bank></span> <button type="button" class="bk-ghost" data-copy-bank>계좌번호 복사</button><small data-done-holder></small></dd></div>
+              <div><dt>입금자명</dt><dd data-done-who></dd></div>
+            </dl>
+            <p class="bk-note">기한까지 입금이 확인되지 않으면 렌탈은 진행되지 않습니다. 입금이 확인되면 설치 기사 도착 시각과 함께 문자로 확정을 알려 드립니다.</p>
+            <p class="bk-ok" data-done-sent hidden>계약서가 오늘은 봄날에 접수되었고, 적어 주신 이메일로 사본이 갑니다.</p>
+            <p class="bk-fail" data-done-fail hidden>계약서를 자동으로 보내지 못했습니다. 아래 계약서를 내려받아 <a href="mailto:studio@publicbloom.art">studio@publicbloom.art</a>로 보내 주시거나 <a href="tel:01042921999">010-4292-1999</a>로 연락 주세요.</p>
+            <div class="bk-actions">
+              <a class="primary-link" data-done-download href="#">계약서 내려받기 (PNG)</a>
+              <a class="secondary-link" href="./led-rental">렌탈 안내로</a>
+            </div>
+            <img class="bk-preview" data-done-img alt="서명한 LED 패널 렌탈 계약서" />
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer" aria-label="오늘은 봄날 연락처">
+      <div>
+        <strong>오늘은 봄날</strong>
+        <p>미디어아트 AX 기업 · 미디어파사드 설치 · LED 패널 · 전광판 설치 · 대구 여성기업</p>
+      </div>
+      <nav class="footer-links" aria-label="회사 정보">
+        <a href="./company">회사소개</a>
+        <a href="/en/rental" hreflang="en" lang="en">English</a>
+      </nav>
+      <dl class="footer-info">
+        <div><dt>사업자정보</dt><dd>대표 박성실 · 사업자등록번호 575-19-00976</dd></div>
+        <div><dt>여성기업</dt><dd>여성기업 확인서 보유 · 공공기관 우선구매 대상</dd></div>
+        <div><dt>비디오물제작업</dt><dd>신고증 보유</dd></div>
+        <div><dt>방송영상독립제작사</dt><dd>신고증 보유</dd></div>
+        <div><dt>직접생산확인</dt><dd>증명서 보유 · 동영상제작서비스 · 중소기업자간 경쟁입찰</dd></div>
+        <div><dt>대표연락처</dt><dd><a href="tel:01042921999">010-4292-1999</a></dd></div>
+        <div><dt>이메일</dt><dd><a href="mailto:studio@publicbloom.art">studio@publicbloom.art</a></dd></div>
+        <div><dt>주소</dt><dd>대구광역시 수성구 동대구로 250, 102동 1층</dd></div>
+      </dl>
+      <p class="footer-stamp">사이트 최종 업데이트 2026-10-23 · <a href="./privacy">개인정보처리방침</a></p>
+    </footer>
+
+    <script src="./site-pages.js"></script>
+    <script src="./assets/vendor/qrcode-generator-1.4.4.js"></script>
+    <script src="./led-booking-data.js?v=20261023-b"></script>
+    <script src="./led-ops.js?v=20261023-b"></script>
+    <script src="./led-booking.js?v=20261023-b"></script>
+  </body>
+</html>

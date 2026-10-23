@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>LED 렌탈 작업 일정 | 오늘은 봄날</title>
+    <meta name="description" content="오늘은 봄날 LED 렌탈 설치 기사 작업 일정." />
+    <link rel="canonical" href="https://publicbloom.art/led-schedule" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" />
+    <link rel="stylesheet" href="./styles.css?v=20261013-four3" />
+    <link rel="stylesheet" href="./en.css?v=20260914-rolex" />
+    <link rel="stylesheet" href="./theme26-ink.css?v=20261021-a" />
+    <link rel="stylesheet" href="./theme26.css?v=20261023-a" />
+    <link rel="stylesheet" href="./led-booking.css?v=20261023-b" />
+    <style>
+      .ls { max-width: 1120px; margin: 0 auto; }
+      .ls table { width: 100%; border-collapse: collapse; font-size: 15px; }
+      .ls th, .ls td { text-align: left; padding: 12px 10px; border-bottom: 1px solid var(--edge-soft); vertical-align: top; }
+      .ls th { color: var(--faint); font-weight: 600; font-size: 13px; }
+      .ls td b { color: var(--glow); }
+      .ls .past { opacity: .45; }
+      @media print { .site-nav, .site-footer { display: none; } body { background: #fff; color: #000; } .ls td b { color: #000; } }
+    </style>
+  </head>
+  <body class="site-page">
+    <main class="subpage-main" id="main-content">
+      <section class="section ls">
+        <p class="section-kicker">Crew schedule</p>
+        <h1>LED 렌탈 작업 일정</h1>
+        <p class="bk-note">입금까지 확인된 예약만 나옵니다 (led-booking-data.js). 출발·복귀는 대구 기준이며 설치 3시간 · 회수 1시간 30분 · 지역별 이동 시간으로 계산합니다.
+          손님 주소·연락처는 계약 메일에서 확인하세요.</p>
+        <table>
+          <thead><tr><th>계약번호</th><th>지역</th><th>대구 출발</th><th>현장 도착 · 설치</th><th>대여</th><th>회수 끝</th><th>대구 복귀</th></tr></thead>
+          <tbody data-rows></tbody>
+        </table>
+        <p class="bk-note" data-closed></p>
+      </section>
+    </main>
+    <script src="./led-booking-data.js?v=20261023-b"></script>
+    <script src="./led-ops.js?v=20261023-b"></script>
+    <script>
+      (function () {
+        var O = window.LEDOPS, now = Date.now();
+        var rows = (window.LED_BOOKINGS || []).map(function (b) {
+          var c = O.crew(O.parse(b.start), O.parse(b.end), b.region);
+          return { b: b, c: c };
+        }).sort(function (x, y) { return x.c.depart - y.c.depart; });
+        document.querySelector("[data-rows]").innerHTML = rows.length ? rows.map(function (r) {
+          var c = r.c;
+          return '<tr class="' + (c.back < now ? "past" : "") + '"><td>' + (r.b.no || "-") + "</td><td>" + r.b.region + " (편도 " + c.travel + "시간)</td>" +
+            "<td><b>" + O.fmtShort(c.depart) + "</b></td><td>" + O.fmtShort(c.arrive) + "</td><td>" + O.fmtShort(c.start) + " ~ " + O.fmtShort(c.end) +
+            "</td><td>" + O.fmtShort(c.doneTear) + "</td><td>" + O.fmtShort(c.back) + "</td></tr>";
+        }).join("") : '<tr><td colspan="7">확정된 예약이 아직 없습니다.</td></tr>';
+        document.querySelector("[data-closed]").textContent = "예약 마감 구간: " + (window.LED_CLOSED || []).map(function (c) { return c[0] + " ~ " + c[1]; }).join(", ");
+      })();
+    </script>
+  </body>
+</html>
