@@ -458,12 +458,11 @@
   var fo = firstOpen();
   $("[data-open-from]").textContent = fmtDay(fo);
   S.viewMonth = fo.slice(0, 7);
-  (function () {   // 바로 앞 달이 꽉 찼으면 그 달부터 보여 준다
-    var y = +S.viewMonth.slice(0, 4), m = +S.viewMonth.slice(5, 7) - 1; if (m < 1) { m = 12; y--; }
-    var prev = y + "-" + pad(m);
-    if (prev >= today().slice(0, 7) && O.dayState(prev + "-15") === "closed") {
-      S.viewMonth = prev;
-      $("[data-cal-hint]").textContent = m + "월은 예약이 모두 찼습니다. 다음 달(›)로 넘겨 날짜를 고르세요.";
+  /* 처음 보여 줄 달: 예약할 수 있는 첫날이 있는 달. 그 앞이 막혀 있으면 언제까지 막혔는지 알린다 */
+  (function () {
+    var lastClosed = addDays(fo, -1);
+    if (lastClosed > today() && O.dayState(lastClosed) === "closed") {
+      $("[data-cal-hint]").textContent = fmtDay(lastClosed) + "까지는 예약이 찼습니다. " + fmtDay(fo) + "부터 고를 수 있습니다.";
     } else $("[data-cal-hint]").textContent = hintText();
   })();
 
