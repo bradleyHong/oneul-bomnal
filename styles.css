@@ -6334,10 +6334,8 @@ body.site-page:not(.home-2026) .site-nav {
    또렷한 편이 낫다. */
 
 :root {
-  --font-display:
-    "Instrument Serif",
-    "Noto Serif KR",
-    ui-serif, Georgia, "Apple SD Gothic Neo", serif;
+  /* 2026-10-21: 명조 제목을 걷고 고딕 하나로 간다. 이름만 남겨 둔다. */
+  --font-display: var(--font);
 
   /* 크기 사다리. 화면 폭을 따라 늘되 양 끝에서 멈춘다. */
   --t-display: clamp(46px, 8.4vw, 112px);
