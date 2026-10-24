@@ -117,6 +117,7 @@
       "<div><dt>설치 · 회수</dt><dd>" + O.fmtShort(c.arrive) + " 도착해 설치 · " + O.fmtShort(c.doneTear) + "까지 회수</dd></div>" +
       "<div><dt>첫날 (24시간)</dt><dd>" + man(q.first + q.fee) + (q.fee ? "<small>설치 추가비 30만원 포함 (" + S.region + ")</small>" : "") + "</dd></div>" +
       (q.extraDays ? "<div><dt>추가 " + q.extraDays + "일</dt><dd>" + man(q.extra) + "<small>하루 150만원</small></dd></div>" : "") +
+      "<div><dt>미디어아트</dt><dd>17편 무료 송출<small>렌탈 기간 내내</small></dd></div>" +
       '<div class="is-total"><dt>합계 · 부가세 포함</dt><dd>' + won(q.total) + "</dd></div>" +
       "<div><dt>입금 기한</dt><dd>" + O.fmt(dl.at) + "<small>" + (dl.nextDay ? "다음 날 시작 · 12시간 전" : "시작 24시간 전") + "</small></dd></div>" +
       "</dl>";

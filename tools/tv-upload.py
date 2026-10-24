@@ -5,6 +5,8 @@
   python3 tools/tv-upload.py <영상.mp4> "<작품 이름>" [--ratio 16:9] [--ai]
 
   --ai   AI 로 만든 영상. 채널 화면에 "AI 영상"이라고 표시된다
+  --replace <비메오 번호>   이미 올린 영상의 파일만 새것으로 바꾼다(새 버전).
+         번호·주소·잠금 설정은 그대로라 사이트와 TV 목록을 고칠 필요가 없다. 지우지 않는다.
 
 올린 영상은 처음부터 이렇게 잠근다.
   - 비메오 사이트에서는 보이지 않는다 (view: disable)
@@ -124,7 +126,39 @@ def upload(path, name, ratio, kind="code"):
     print(json.dumps({"vimeo": vid, "title": name, "kind": kind, "ratio": ratio}, ensure_ascii=False) + ",")
 
 
+def tus_send(path, link, label):
+    size = os.path.getsize(path)
+    off, chunk = 0, 64 * 1024 * 1024
+    with open(path, "rb") as f:
+        while off < size:
+            f.seek(off)
+            part = f.read(chunk)
+            st, _, h = call("PATCH", link, raw=part, headers={
+                "Tus-Resumable": "1.0.0", "Upload-Offset": str(off),
+                "Content-Type": "application/offset+octet-stream"})
+            if st not in (200, 204):
+                sys.exit(f"전송 실패 ({st}) — 다시 실행하세요")
+            off = int(h.get("Upload-Offset", off + len(part)))
+            print(f"  {label}: {off * 100 // size}%", flush=True)
+
+
+def replace(path, vid):
+    """같은 번호에 새 버전을 올린다 (비메오 POST /videos/{id}/versions)."""
+    size = os.path.getsize(path)
+    st, d, _ = call("POST", f"/videos/{vid}/versions", {
+        "file_name": os.path.basename(path), "upload": {"status": "in_progress", "size": size, "approach": "tus"}})
+    if st >= 300:
+        sys.exit("새 버전을 시작하지 못했습니다: " + str(d))
+    tus_send(path, d["upload"]["upload_link"], vid)
+    st, d, _ = call("GET", f"/videos/{vid}?fields=privacy.view,status")
+    print(f"교체 완료 {vid} · 공개범위 {d.get('privacy', {}).get('view')} · 상태 {d.get('status')}")
+
+
 if __name__ == "__main__":
+    if "--replace" in sys.argv:
+        a = sys.argv[1:]
+        replace(a[0], a[a.index("--replace") + 1])
+        sys.exit(0)
     a = sys.argv[1:]
     if len(a) < 2:
         sys.exit(__doc__)
