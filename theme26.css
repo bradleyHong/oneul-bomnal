@@ -173,3 +173,8 @@ main a:not([class]):hover { color: var(--glow); }
 /* 단추 옆 짧은 안내 */
 .subpage-actions .text-note { color: var(--faint); font-size: 14px; align-self: center; }
 .section .subpage-actions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 12px 18px; }
+
+/* 렌탈 페이지 홍보영상 */
+.lr-promo-video { display: block; width: 100%; height: auto; border-radius: 10px; background: #000; }
+.lr-facts table caption { text-align: left; font-size: 13px; color: var(--faint); padding-bottom: 8px; }
+.lr-facts th { width: 18%; white-space: nowrap; }

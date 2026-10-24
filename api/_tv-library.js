@@ -33,4 +33,9 @@ export const LIBRARY = [
   { id: "glass-leaf", file: "/assets/tv/glass-leaf.mp4", title: "유리 너머의 봄 · 잎", kind: "ai", ratio: "16:9" },
   { id: "thermal-crowd", file: "/assets/tv/thermal-crowd.mp4", title: "열화상 군중", kind: "ai", ratio: "16:9" },
   { id: "xray-tulip", file: "/assets/tv/xray-tulip.mp4", title: "투시 튤립", kind: "ai", ratio: "16:9" },
+  // 2026-10-24 · 클링 15초 루프 (레퍼런스 2026-10-24), 비메오 사이트 전용 잠금
+  { id: "landscape-gown", vimeo: "1238991404", title: "풍경을 입은 사람", kind: "ai", ratio: "16:9" },
+  { id: "cosmic-balcony", vimeo: "1238991412", title: "우주의 발코니", kind: "ai", ratio: "16:9" },
+  { id: "prism-glass-sea", vimeo: "1238991444", title: "빛의 유리판", kind: "ai", ratio: "16:9" },
+  { id: "forest-signal", vimeo: "1238991470", title: "숲의 신호", kind: "ai", ratio: "16:9" },
 ];
