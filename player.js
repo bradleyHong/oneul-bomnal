@@ -215,7 +215,7 @@
         scheduleAdvance();
         writeCache(cfg.items);
       } else {
-        noteError(item.title + " — " + why);
+        noteError(item.title + " · " + why);
         state.skips += 1;
         // 목록 전체가 죽었을 때 무한 반복을 막는다.
         if (state.skips <= cfg.items.length) {
@@ -291,7 +291,7 @@
       state.beatsSeen = true;
       state.fps = data.frames || 0;
     } else if (data.type === "bomnal:error") {
-      noteError(shortLabel(data.href || "") + " — " + data.message);
+      noteError(shortLabel(data.href || "") + " · " + data.message);
     }
   });
 
@@ -312,7 +312,7 @@
     if (!state.beatsSeen) return;
 
     if (Date.now() - state.lastBeat > BEAT_TIMEOUT_MS) {
-      noteError(item.title + " — 화면 멈춤, 다음으로 넘김");
+      noteError(item.title + " · 화면 멈춤, 다음으로 넘김");
       state.beatsSeen = false;
       show(state.index + 1, "frozen");
     }
@@ -360,7 +360,7 @@
     diag.innerHTML =
       "<h2>" + esc(cfg.site) + "</h2>" +
       row("재생 중", esc(item.title || "-") + " (" + (state.index + 1) + "/" + cfg.items.length + ")") +
-      row("상태", state.resting ? "운영시간 외 — 대기" : state.paused ? "일시정지" : "재생 중") +
+      row("상태", state.resting ? "운영시간 외 · 대기" : state.paused ? "일시정지" : "재생 중") +
       row("작품당", cfg.dwell + "초") +
       row("운영시간", cfg.hours ? cfg.hours.from + "시–" + cfg.hours.to + "시" : "24시간") +
       row("가동", formatUptime(uptime)) +

@@ -112,7 +112,7 @@
   /* ── 보내기 전 확인 ───────────────────────────────────── */
 
   var join = function (parts) {
-    return parts.filter(Boolean).join(" · ") || "—";
+    return parts.filter(Boolean).join(" · ") || "없음";
   };
 
   function review() {
@@ -125,7 +125,7 @@
       value("theme"), value("reference"), value("ci"), value("font"), value("avoid"),
     ]);
     q("[data-ax-review-deliver]").textContent = join([
-      value("deliver"), value("schedule"), value("budget"), "재생 PC: " + (value("pc") || "—"),
+      value("deliver"), value("schedule"), value("budget"), "재생 PC: " + (value("pc") || "없음"),
     ]);
   }
 
@@ -139,27 +139,27 @@
       "[미디어아트 제작 AX 요청]",
       "",
       "■ 01 현장 규격",
-      "· 화면 종류: " + (value("screen") || "—"),
+      "· 화면 종류: " + (value("screen") || "없음"),
       "· 비율 / 해상도: " + join([value("ratio"), value("resolution")]),
-      "· 재생 길이: " + (value("duration") || "—"),
-      "· 설치 장소: " + (value("place") || "—"),
-      "· 밝기 · 주변 조건: " + (value("light") || "—"),
+      "· 재생 길이: " + (value("duration") || "없음"),
+      "· 설치 장소: " + (value("place") || "없음"),
+      "· 밝기 · 주변 조건: " + (value("light") || "없음"),
       "",
       "■ 02 데이터 연결",
-      "· 연결할 데이터: " + (value("source") || "—"),
-      "· 기관 DB 설명: " + (value("dbNote") || "—"),
+      "· 연결할 데이터: " + (value("source") || "없음"),
+      "· 기관 DB 설명: " + (value("dbNote") || "없음"),
       "",
       "■ 03 원하는 방향",
-      "· 주제 · 소재: " + (value("theme") || "—"),
-      "· 참고: " + (value("reference") || "—"),
-      "· CI · 색: " + (value("ci") || "—"),
-      "· 서체: " + (value("font") || "—"),
-      "· 피하고 싶은 것: " + (value("avoid") || "—"),
+      "· 주제 · 소재: " + (value("theme") || "없음"),
+      "· 참고: " + (value("reference") || "없음"),
+      "· CI · 색: " + (value("ci") || "없음"),
+      "· 서체: " + (value("font") || "없음"),
+      "· 피하고 싶은 것: " + (value("avoid") || "없음"),
       "",
       "■ 04 납품 형태",
-      "· 형태: " + (value("deliver") || "—"),
-      "· 희망 일정: " + (value("schedule") || "—"),
-      "· 재생 PC: " + (value("pc") || "—"),
+      "· 형태: " + (value("deliver") || "없음"),
+      "· 희망 일정: " + (value("schedule") || "없음"),
+      "· 재생 PC: " + (value("pc") || "없음"),
     ].join("\n");
   }
 

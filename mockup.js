@@ -186,7 +186,7 @@
   };
 
   function ratioText(r) {
-    if (!r) return "—";
+    if (!r) return "-";
     if (r >= 1) return (Math.round(r * 10) / 10) + " : 1";
     return "1 : " + (Math.round((1 / r) * 10) / 10);
   }

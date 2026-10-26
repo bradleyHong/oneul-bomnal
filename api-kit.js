@@ -43,7 +43,7 @@
 
   function snippet(label, u) {
     return [
-      "// " + label + " — 화면에 물릴 실시간 값",
+      "// " + label + ": 화면에 물릴 실시간 값",
       "// 인증키가 필요 없고 브라우저에서 바로 호출됩니다.",
       "async function loadLive() {",
       "  const [w, a] = await Promise.all([",

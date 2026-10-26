@@ -47,7 +47,7 @@ const koPages = C.pages.filter((p) => p.h1 && p.lang !== "en")
   .map((p) => `- [${p.h1}](${BASE}${p.path})`).join("\n");
 const enPages = C.pages.filter((p) => p.h1 && p.lang === "en")
   .map((p) => `- [${p.h1}](${BASE}${p.path})`
-            + (p.altOf ? ` — English edition of ${BASE}${p.altOf === "/" ? "/" : p.altOf}` : "")).join("\n");
+            + (p.altOf ? ` · English edition of ${BASE}${p.altOf === "/" ? "/" : p.altOf}` : "")).join("\n");
 const pages = koPages;
 /* 고객 유형 · 준비된 것 (캐논 business.customers / readiness, 2026-10-12).
    손으로 llms.txt 에 적으면 다음 빌드에서 지워진다 — 여기서 만든다. */
@@ -143,11 +143,11 @@ ${(() => {
   const K = B.packages || {};
   const out = [];
   if (K.ledWallRental) { const L = K.ledWallRental;
-    out.push(`### ${L.name} (${L.screen}, ${L.panels}장 연결) — ${BASE}${L.page}\n- ${L.dayPriceLabel} · ${L.dayPriceIncludes}\n- ${L.extraDayLabel}\n- ${L.weekLabel}\n- 콘텐츠: ${L.contentNote}\n- 대여 시작: ${L.startsOn} · 패널 구매 상담 가능`); }
+    out.push(`### ${L.name} (${L.screen}, ${L.panels}장 연결) · ${BASE}${L.page}\n- ${L.dayPriceLabel} · ${L.dayPriceIncludes}\n- ${L.extraDayLabel}\n- ${L.weekLabel}\n- 콘텐츠: ${L.contentNote}\n- 대여 시작: ${L.startsOn} · 패널 구매 상담 가능`); }
   if (K.rental) { const R = K.rental;
-    out.push(`### ${R.name} — ${BASE}/rental\n- ${R.basePriceLabel} · ${R.basePriceIncludes}\n- ${R.extraDayLabel}\n- 상영 ${R.screen}`); }
+    out.push(`### ${R.name} · ${BASE}/rental\n- ${R.basePriceLabel} · ${R.basePriceIncludes}\n- ${R.extraDayLabel}\n- 상영 ${R.screen}`); }
   if (K.aiVideo) { const A = K.aiVideo;
-    out.push(`### ${A.name} (${A.vat}) — ${BASE}${A.page}\n${A.tiers.map((t) => `- ${t.length}: ${t.price} · ${t.fit}`).join("\n")}\n- ${A.proof}`); }
+    out.push(`### ${A.name} (${A.vat}) · ${BASE}${A.page}\n${A.tiers.map((t) => `- ${t.length}: ${t.price} · ${t.fit}`).join("\n")}\n- ${A.proof}`); }
   return out.join("\n\n");
 })()}
 
