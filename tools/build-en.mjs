@@ -307,7 +307,7 @@ function foot() {
      상호·주소와 함께 긁어 가는 사칭 고지서의 재료가 된다. */
   const cred = C.identity.credentials
     .map((c) => (c.name === "여성기업 확인서" ? "Women-Owned Business" : c.name === "직접생산확인증명서" ? "Direct Production Certificate" : c.name === "비디오물제작업 신고증" ? "Video Production Business" : "Independent Broadcast Producer"))
-    .join(" · ") + " — certificates issued on request";
+    .join(" · ") + " (certificates issued on request)";
   return `    </main>
 
     <footer class="site-footer" aria-label="Contact">
