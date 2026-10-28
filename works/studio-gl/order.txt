@@ -1,0 +1,21 @@
+# 손님 화면(/studio)에 보이는 작품 순서. 한 줄에 하나. # 은 메모.
+# 바꾼 뒤: node tools/build-studio-catalog.mjs
+kinetic-flow
+liquid-chrome
+dunes
+kinetic-rings
+caustics
+aurora
+attractor
+gyroid
+kinetic-wall
+black-hole
+prism
+cloud-sea
+nebula
+rain-window
+soap-bubbles
+lava
+contour
+fractal-temple
+forest-light

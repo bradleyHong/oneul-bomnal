@@ -54,7 +54,10 @@ await ev(`window.__post = async (n) => { renderFrame(n); const c=document.getEle
   const a=new Uint8Array(c.width*c.height*4); gl.bindFramebuffer(gl.FRAMEBUFFER,null); gl.readPixels(0,0,c.width,c.height,gl.RGBA,gl.UNSIGNED_BYTE,a);
   const r = await fetch('http://127.0.0.1:${sport}/f', { method:'POST', body:a }); return r.status; }`);
 for (let n = 0; n < N; n++) {
+  // 한 장이 2분 넘게 안 오면 멈춘 것으로 보고 끝낸다 (GPU 를 다른 작업과 같이 쓰다 서는 경우). 부르는 쪽이 다시 시도한다
+  const stall = setTimeout(() => { console.log("STALL frame", n); process.exit(3); }, +(process.env.FRAME_TO || 120000));
   await ev(`window.__post(${n})`);
+  clearTimeout(stall);
   if (n % 30 === 29 || n === N - 1) console.log(`frame ${n + 1}/${N}  ${((Date.now() - t0) / 1000).toFixed(0)}s`);
 }
 ff.stdin.end();

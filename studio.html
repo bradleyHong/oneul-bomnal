@@ -74,7 +74,7 @@
 <link rel="stylesheet" href="./styles.css?v=20261013-four3" />
     <link rel="stylesheet" href="./en.css?v=20260914-rolex" />
         <link rel="stylesheet" href="./theme26.css?v=20261024-a" />
-    <link rel="stylesheet" href="./studio2.css?v=20261028-b" />
+    <link rel="stylesheet" href="./studio2.css?v=20261028-c" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
     <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
     <script defer src="/_vercel/insights/script.js"></script>
@@ -137,16 +137,16 @@
       <!-- 2. 작품 목록: 카드마다 30초 미리보기가 화면에 보일 때만 돈다 -->
       <section class="sx-grid" aria-label="대표작" data-grid></section>
 
-      <!-- 3. 크게 보기: 실제 그림 엔진으로 고른 화면 모양 그대로 그린다 -->
+      <!-- 3. 크게 보기: 색마다 미리 렌더한 고화질 영상(비메오). 색을 누르면 영상이 바뀐다 -->
       <dialog class="sx-view" data-view aria-labelledby="sx-view-title">
-        <div class="sx-view-stage" data-stage><iframe title="작품 크게 보기" data-frame allow="fullscreen"></iframe></div>
+        <div class="sx-view-stage" data-stage><iframe title="작품 크게 보기" data-frame allow="autoplay; fullscreen" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
         <div class="sx-view-side">
           <p class="sx-view-en" data-v-en></p>
           <h2 id="sx-view-title" data-v-title></h2>
           <p class="sx-view-desc" data-v-desc></p>
           <p class="sx-label">색</p>
           <div class="sx-swatches" role="radiogroup" aria-label="색" data-swatches></div>
-          <p class="sx-label">빠르기</p>
+          <p class="sx-label">빠르기 <small>(납품 영상에 반영)</small></p>
           <div class="sx-seg sx-seg-sm" role="radiogroup" aria-label="빠르기" data-speed-group>
             <button type="button" role="radio" aria-checked="false" data-speed="0.5">느리게</button>
             <button type="button" role="radio" aria-checked="true" data-speed="1">보통</button>
@@ -155,8 +155,8 @@
             <button type="button" class="sx-btn" data-pick>이 작품으로 주문하기</button>
             <button type="button" class="sx-btn sx-btn-ghost" data-close>닫기</button>
           </div>
-          <p class="sx-note" data-live-note hidden>이 기기에서는 작품을 바로 그릴 수 없어 미리 만든 영상(첫 번째 색)으로 보여 드립니다. 주문하시면 고르신 색과 화면 규격 그대로 만들어 드립니다.</p>
-          <p class="sx-note">크게 보기는 이 기기에서 바로 그린 미리보기입니다. 납품 파일은 같은 작품을 화면 규격 그대로 다시 그려 더 선명합니다.</p>
+          <p class="sx-note" data-live-note hidden>이 색의 고화질 영상은 준비 중이라 첫 번째 색 영상으로 보여 드립니다. 주문하시면 고르신 색 그대로 만들어 드립니다.</p>
+          <p class="sx-note">크게 보기는 미리 만든 1080p 영상입니다. 납품 파일은 고르신 화면 규격과 빠르기 그대로 새로 그려 더 선명합니다.</p>
         </div>
       </dialog>
 
@@ -217,10 +217,8 @@
       </section>
     </main>
 
-    <script src="./works/lib/bomnal-gl.js" defer></script>
-    <script src="./works/studio-gl/sgl.js?v=20261028-a" defer></script>
-    <script src="./works/studio-gl/catalog.js?v=20261028-b" defer></script>
-    <script src="./studio2.js?v=20261028-a" defer></script>
+    <script src="./works/studio-gl/catalog.js?v=20261028-c" defer></script>
+    <script src="./studio2.js?v=20261028-b" defer></script>
       <script>
       /* 모바일 메뉴 열고 닫기 — 다른 페이지의 site-pages.js 와 같은 동작 */
       (function () {

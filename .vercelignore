@@ -42,3 +42,13 @@ undefined/
 디자인 시안/
 works/QUALITY.md
 보고서/
+
+# ArtWork Studio 작품 코드(2026-10-28): 웹에 올리지 않는다. 손님 화면은 catalog.js(제목·색·비메오 주소)와
+# 미리보기 영상(preview/)만 쓴다. 주문이 들어오면 로컬에서 view.html 로 규격에 맞게 렌더해 납품한다.
+works/studio-gl/works/
+works/studio-gl/sgl.js
+works/studio-gl/view.html
+works/studio-gl/README.md
+works/studio-gl/order.txt
+works/studio-gl/vimeo.json
+works/lib/bomnal-gl.js
