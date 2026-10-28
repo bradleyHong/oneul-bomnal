@@ -398,6 +398,15 @@ function create(canvas, opt = {}) {
     gainK = 1;
   }
 
+  /** 직접 GL 로 그리기 (입자·선 등). HDR 판에 더하기로 그린다.
+   *  fn(gl, { W, H, gain }) — gain 은 하위 프레임 세기 배수(셔터 k 개면 1/k). 셰이더에서 곱할 것. */
+  function custom(fn) {
+    flush();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, hdr.f); gl.viewport(0, 0, W, H);
+    gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);
+    fn(gl, { W, H, gain: gainK });
+  }
+
   function end(frame = 0) {
     flush();
     gl.disable(gl.BLEND);
@@ -439,7 +448,7 @@ function create(canvas, opt = {}) {
   }
 
   return {
-    gl, params: P, resize, begin, end, ribbon, point, background, shutter, flush,
+    gl, params: P, resize, begin, end, ribbon, point, background, shutter, flush, custom,
     get width() { return W; }, get height() { return H; },
   };
 }

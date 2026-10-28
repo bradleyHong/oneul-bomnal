@@ -18,7 +18,8 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const read = (f) => readFileSync(join(root, f), "utf8");
 const art = read("studio-engine.js");
 const gen = read("studio-gen.js");
-const html = read("studio.html");
+// 2026-10-28 손님 화면(/studio)은 새 GPU 대표작으로 바뀌었다. 예전 프리셋 엔진은 /studio-classic 이 쓴다.
+const html = read("studio-classic.html");
 const wrap = read("works/studio-art.html");
 const fails = [];
 

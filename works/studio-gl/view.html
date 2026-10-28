@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>ArtWork Studio · 작품 보기</title>
+<style>
+  html,body{margin:0;background:#000;height:100%;overflow:hidden}
+  canvas{display:block;width:100vw;height:100vh;object-fit:contain}
+  body.capture canvas{width:auto;height:auto}
+</style>
+</head><body>
+<canvas id="c"></canvas>
+<script src="../lib/bomnal-gl.js"></script>
+<script src="./sgl.js"></script>
+<script>
+// 작품 한 편을 그린다. 스튜디오 미리보기(iframe)와 납품 렌더(capture)가 같은 파일을 쓴다.
+//   ?work=<id>&pal=0&speed=1&w=1280&h=720            미리보기
+//   ?work=<id>&capture=1&w=3840&h=2160&aa=2&sub=8    납품 (tools/render-gl-video.mjs)
+const q = new URLSearchParams(location.search);
+const CAP = !!q.get('capture');
+const id = q.get('work') || 'kinetic-flow';
+const S = {
+  w: +q.get('w') || (CAP ? 1920 : Math.min(1920, Math.round(innerWidth*devicePixelRatio))),
+  h: +q.get('h') || (CAP ? 1080 : Math.min(1080, Math.round(innerHeight*devicePixelRatio))),
+  pal: +q.get('pal') || 0, speed: +q.get('speed') || 1,
+  fps: +q.get('fps') || 30, sub: +q.get('sub') || (CAP ? 8 : 1), aa: +q.get('aa') || (CAP ? 2 : 1),
+  shutter: (+q.get('shutter') || 180)/360,
+};
+let G, W, ctx, st, TOTAL;
+function load(src){ return new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = no; document.head.appendChild(s); }); }
+async function boot(){
+  await load(`./works/${id}.js?v=${Date.now()}`);
+  W = SGL.get(id);
+  G = BomnalGL.create(document.getElementById('c'), Object.assign({ width: S.w, height: S.h,
+    exposure: 1.0, bloom: 0.07, tone: 'agx', sat: 1.15, contrast: 1.06, vignette: 0.18, grain: 0.010 }, W.post || {}));
+  G.resize(S.w, S.h);
+  const p = W.palettes[Math.min(S.pal, W.palettes.length - 1)];
+  ctx = { W: S.w, H: S.h, aa: S.aa, speed: S.speed, cap: CAP, colors: p.colors.map(SGL.hex), palName: p.name };
+  st = W.init(G, ctx) || {};
+  TOTAL = Math.round(S.fps*SGL.T/S.speed);
+}
+window.renderFrame = function(n){
+  const f = ((n % TOTAL) + TOTAL) % TOTAL;
+  G.begin();
+  G.shutter(S.sub, (s)=>{
+    const u = (((f + (s - 0.5)*S.shutter)/TOTAL) % 1 + 1) % 1;
+    W.draw(G, st, u*SGL.T, ctx);
+  });
+  G.end(f);
+};
+boot().then(()=>{
+  if(CAP){ document.body.classList.add('capture'); renderFrame(0); window.__READY__ = true; return; }
+  const t0 = performance.now();
+  (function loop(){ renderFrame(Math.floor((performance.now() - t0)/1000*S.fps)); requestAnimationFrame(loop); })();
+}).catch(e => { console.error(e.message || e); window.__READY__ = true; });
+</script></body></html>
