@@ -682,7 +682,7 @@
       "path": "/studio",
       "file": "studio.html",
       "title": "ArtWork Studio · 작품을 고르고 화면만 알려주세요 | 오늘은 봄날",
-      "description": "마음에 드는 미디어아트를 고르고 화면 규격만 알려주시면, 그 규격에 맞춰 고화질로 만들어 보내 드립니다. 기관은 세금계산서, 매장은 카드로 결제합니다. 대구 여성기업 오늘은 봄날.",
+      "description": "오늘은 봄날이 GPU 로 직접 그린 대표 미디어아트 중 마음에 드는 작품과 색을 고르고 화면 규격만 알려 주세요. 그 규격에 맞춰 고화질 30초 반복 영상으로 만들어 보내 드립니다. 대구 여성기업 오늘은 봄날.",
       "h1": "작품을 고르고, 화면만 알려주세요",
       "primaryKeywords": [
         "미디어아트 제작",
@@ -814,7 +814,8 @@
     "/전화응대_핸드북",
     "/works",
     "/led-booking",
-    "/led-schedule"
+    "/led-schedule",
+    "/studio-classic"
   ],
   "crawlers": {
     "search": [
