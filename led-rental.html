@@ -33,6 +33,7 @@
     <link rel="stylesheet" href="./en.css?v=20260914-rolex" />
     <link rel="stylesheet" href="./theme26-ink.css?v=20261021-a" />
     <link rel="stylesheet" href="./theme26.css?v=20261024-a" />
+    <link rel="stylesheet" href="./rental-art.css?v=20261028-a" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="./assets/favicon-180.png" />
     <script type="application/ld+json">
@@ -306,12 +307,45 @@
         <div class="section-head">
           <p class="section-kicker">Screen + Art</p>
           <h2 id="promo-h">화면과 작품이 같이 갑니다</h2>
-          <p>틀 영상이 없어도 됩니다. 루프 작품 17편 가운데 행사 분위기에 맞춰 골라 렌탈 기간 내내 틀어 드립니다. 기관 홍보 영상은 따로 만들어 드립니다.</p>
+          <p>틀 영상이 없어도 됩니다. 루프 작품 17편 가운데 행사 분위기에 맞춰 골라 렌탈 기간 내내 틀어 드립니다. 기관 홍보 영상은 따로 만들어 드립니다. <a href="#art">작품 17편 보기</a></p>
         </div>
         <video class="lr-promo-video" src="./assets/video/led-rental-promo.mp4" poster="./assets/video/led-rental-promo.jpg"
                autoplay muted loop playsinline preload="metadata" width="1280" height="720"
                aria-label="LED 렌탈 + 미디어아트 홍보영상: 대구학생문화센터 로비에 세운 LED 화면에 미디어아트가 차례로 나온다"></video>
       </section>
+
+      <!-- 렌탈 때 마음껏 트는 작품: 렌탈 LED(2:1) 모양 카드 → 누르면 패널 화면에서 영상(비메오). rental-art.js -->
+      <section class="section" id="art" aria-labelledby="art-h">
+        <div class="section-head">
+          <p class="section-kicker">Art Library</p>
+          <h2 id="art-h">렌탈 때 마음껏 트는 작품 17편</h2>
+          <p>모두 렌탈 LED 화면(6장 · 2064×1032)에 꼭 맞게 만든 루프 작품입니다. 렌탈 기간에는 추가 비용 없이 원하는 만큼 바꿔 틀 수 있습니다. 작품을 누르면 실제 화면 모양으로 보여 드립니다.</p>
+        </div>
+        <ul class="ra-grid" data-ra-grid></ul>
+        <p class="ra-note">현장에서는 재생 PC에 작품을 모두 담아 두고, 행사 순서에 맞춰 원하는 작품을 바로 켜고 바꿀 수 있게 세팅해 드립니다. 행사 이름이나 로고를 넣은 화면도 따로 만들어 드립니다.</p>
+      </section>
+
+      <dialog class="ra-view" data-ra-view aria-labelledby="ra-title">
+        <div class="ra-stage">
+          <div class="ra-wall">
+            <img data-ra-still alt="" />
+            <iframe title="렌탈 LED 화면 작품" allow="autoplay; fullscreen" referrerpolicy="strict-origin-when-cross-origin" hidden></iframe>
+          </div>
+          <div class="ra-legs" aria-hidden="true"><i></i><i></i></div>
+        </div>
+        <div class="ra-info">
+          <div>
+            <p class="ra-meta"><span data-ra-no></span> · LED 6장 3.84m × 1.92m · 2064×1032 · 루프 · 소리 없음</p>
+            <h3 id="ra-title" data-ra-title></h3>
+            <p data-ra-desc></p>
+          </div>
+          <div class="ra-act">
+            <button type="button" data-ra-prev aria-label="이전 작품">‹</button>
+            <button type="button" data-ra-next aria-label="다음 작품">›</button>
+            <button type="button" data-ra-close>닫기</button>
+          </div>
+        </div>
+      </dialog>
 
       <section class="section">
         <div class="section-head">
@@ -485,5 +519,6 @@
     <script src="./site-pages.js"></script>
     <script src="./auth.js?v=20260728-auth"></script>
     <script src="./quote-cta.js?v=20260803-cta"></script>
+    <script src="./rental-art.js?v=20261028-a" defer></script>
   </body>
 </html>

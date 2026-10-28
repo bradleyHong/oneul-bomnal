@@ -1,0 +1,36 @@
+/* LED 렌탈 · 렌탈 때 마음껏 트는 작품. 카드와 크게 보기 모두 렌탈 LED(6장 연결, 2:1) 모양이다 */
+.ra-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+.ra-card { all: unset; box-sizing: border-box; display: block; width: 100%; cursor: pointer; }
+.ra-card:focus-visible .ra-panel { outline: 2px solid var(--glow); outline-offset: 3px; }
+.ra-panel { position: relative; display: block; aspect-ratio: 2 / 1; background: #000; border: 3px solid #1c1c1f; border-radius: 3px; overflow: hidden; box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45); }
+.ra-panel img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease, filter 0.3s ease; filter: saturate(0.92); }
+.ra-card:hover .ra-panel img { transform: scale(1.03); filter: saturate(1.08); }
+/* 패널 6장의 이음매 */
+.ra-seams { position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(90deg, transparent 0, transparent calc(100% / 6 - 1px), rgba(0, 0, 0, 0.55) calc(100% / 6 - 1px), rgba(0, 0, 0, 0.55) calc(100% / 6)); }
+.ra-name { display: block; margin-top: 10px; color: var(--ink); font-size: 15px; line-height: 1.4; }
+.ra-name small { color: var(--faint); font-size: 12px; margin-right: 8px; font-variant-numeric: tabular-nums; }
+.ra-note { margin-top: 22px; color: var(--deep); font-size: 14px; }
+
+.ra-view { width: min(1180px, 94vw); max-width: none; max-height: 96vh; padding: 0; border: 0; border-radius: 14px; background: var(--surface); color: var(--ink); }
+.ra-view::backdrop { background: rgba(0, 0, 0, 0.82); }
+.ra-stage { padding: clamp(16px, 3vw, 34px) clamp(16px, 3vw, 34px) 0; background: radial-gradient(120% 90% at 50% 0%, #26262b 0%, var(--surface) 70%); }
+/* 스탠드형 LED 월: 화면 + 받침 */
+.ra-wall { position: relative; width: 100%; aspect-ratio: 2 / 1; background: #000; border: 6px solid #111; border-radius: 3px; overflow: hidden; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6); }
+.ra-wall img, .ra-wall iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; object-fit: cover; pointer-events: none; }
+.ra-wall iframe[hidden] { display: none; }
+.ra-legs { display: flex; justify-content: space-between; width: 86%; margin: 0 auto; height: clamp(14px, 2.2vw, 26px); }
+.ra-legs i { display: block; width: 3px; background: #2a2a2e; position: relative; }
+.ra-legs i::after { content: ""; position: absolute; bottom: 0; left: -18px; width: 39px; height: 3px; background: #2a2a2e; border-radius: 2px; }
+.ra-info { display: grid; grid-template-columns: 1fr auto; gap: 8px 24px; align-items: start; padding: 18px clamp(16px, 3vw, 34px) 22px; }
+.ra-info h3 { margin: 2px 0 6px; font-size: clamp(20px, 2.4vw, 26px); }
+.ra-info p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.6; }
+.ra-info .ra-meta { color: var(--faint); font-size: 13px; }
+.ra-act { display: flex; gap: 8px; }
+.ra-act button { min-width: 44px; height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--edge); background: transparent; color: var(--ink); font: inherit; cursor: pointer; }
+.ra-act button:hover { border-color: var(--glow); color: var(--glow); }
+@media (max-width: 640px) {
+  .ra-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .ra-name { font-size: 13px; }
+  .ra-info { grid-template-columns: 1fr; }
+}
