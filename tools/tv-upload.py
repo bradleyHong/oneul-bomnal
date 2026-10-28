@@ -83,19 +83,19 @@ def folder_id():
     return d["uri"].split("/")[-1]
 
 
-def upload(path, name, ratio, kind="code"):
+def upload(path, name, ratio, kind="code", desc="오늘은 봄날 TV", folder=True):
     size = os.path.getsize(path)
     privacy = {"view": "disable", "embed": "whitelist", "download": False, "add": False, "comments": "nobody"}
     st, d, _ = call("POST", "/me/videos", {
         "upload": {"approach": "tus", "size": size},
-        "name": name, "description": "오늘은 봄날 TV", "privacy": privacy, "embed": EMBED,
+        "name": name, "description": desc, "privacy": privacy, "embed": EMBED,
     })
     if st >= 300 and "view" in str(d):
         # 요금제가 '숨김'을 막으면 일부공개로 낮춘다. 도메인 잠금은 그대로 건다.
         privacy["view"] = "unlisted"
         st, d, _ = call("POST", "/me/videos", {
             "upload": {"approach": "tus", "size": size},
-            "name": name, "description": "오늘은 봄날 TV", "privacy": privacy, "embed": EMBED,
+            "name": name, "description": desc, "privacy": privacy, "embed": EMBED,
         })
     if st >= 300:
         sys.exit("업로드를 시작하지 못했습니다: " + str(d))
@@ -117,13 +117,14 @@ def upload(path, name, ratio, kind="code"):
 
     for dom in DOMAINS:
         call("PUT", f"/videos/{vid}/privacy/domains/{dom}")
-    fid = folder_id()
+    fid = folder_id() if folder else None
     if fid:
         call("PUT", f"/me/projects/{fid}/videos/{vid}")
     st, d, _ = call("GET", f"/videos/{vid}?fields=privacy.view,player_embed_url")
     print(f"완료 {vid} · 공개범위 {d.get('privacy', {}).get('view')}")
     print("api/_tv-library.js 에 붙일 줄:")
     print(json.dumps({"vimeo": vid, "title": name, "kind": kind, "ratio": ratio}, ensure_ascii=False) + ",")
+    return vid, d.get("player_embed_url")
 
 
 def tus_send(path, link, label):

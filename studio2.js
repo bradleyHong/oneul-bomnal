@@ -4,9 +4,10 @@
  * 예전 판은 장소·분위기·색·규격·부가 옵션·추천·번호 불러오기가 한 화면에 다 있어 작품보다
  * 설정을 먼저 만났다. 이번 판은 작품 목록이 첫 화면이고, 설정은 크게 보기와 주문서로 미뤘다.
  *
- * 카드 미리보기는 미리 뽑은 30초 영상(works/studio-gl/preview/<id>.mp4)이다. 열한 개를 한꺼번에
- * GPU 로 그리면 휴대폰이 버티지 못한다. 크게 보기 한 곳에서만 실제 엔진(view.html)을 띄운다.
- * 주문은 예전과 같은 /api/inquiry 로 보낸다(새 API 없음).
+ * 카드 미리보기는 미리 뽑은 30초 영상(works/studio-gl/preview/<id>.mp4)이다.
+ * 크게 보기는 색마다 미리 렌더해 비메오에 올린 고화질 영상이다. 색을 누르면 그 색의 영상으로 바뀐다.
+ * 작품 코드는 웹에 올리지 않는다(2026-10-28 대표: 주문이 들어오면 코드로 규격에 맞게 새로 렌더).
+ * 목록은 catalog.js(SX_CATALOG, tools/build-studio-catalog.mjs 가 만든다). 주문은 /api/inquiry (새 API 없음).
  */
 (function () {
   "use strict";
@@ -15,14 +16,9 @@
   var BASE = "./works/studio-gl/";
   var MOOD = { calm: "차분한", vivid: "화려한", nature: "자연", geo: "조형", cosmos: "우주" };
   var state = { ratio: "16:9", mood: "all", work: null, pal: 0, speed: 1, picked: null };
-  /* 이 기기에서 작품 엔진을 돌릴 수 있는가 (WebGL2 + 부동소수 판). 안 되면 크게 보기는 미리 뽑은 영상으로 */
-  var LIVE = (function () {
-    try { var g = document.createElement("canvas").getContext("webgl2"); return !!(g && g.getExtension("EXT_color_buffer_float")); } catch (e) { return false; }
-  })();
-
-  function load(src) {
-    return new Promise(function (ok, no) { var s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = no; document.head.appendChild(s); });
-  }
+  var WORKS = {};
+  (window.SX_CATALOG || []).forEach(function (w) { WORKS[w.id] = w; });
+  function get(id) { return WORKS[id]; }
   function radio(group, attr, val) {
     $$("[" + attr + "]", group).forEach(function (b) { b.setAttribute("aria-checked", String(b.getAttribute(attr) === String(val))); });
   }
@@ -31,7 +27,7 @@
   /* ── 목록 ─────────────────────────────────────────── */
   var grid = $("[data-grid]");
   function cards() {
-    var list = (window.SX_WORKS || []).map(function (id) { return window.SGL && SGL.get(id); }).filter(Boolean);
+    var list = window.SX_CATALOG || [];
     grid.innerHTML = list.map(function (w, i) {
       var moods = (w.mood || []).map(function (m) { return MOOD[m]; }).filter(Boolean).join(" · ");
       return '<article class="sx-card" data-id="' + w.id + '" data-moods="' + (w.mood || []).join(" ") + '">' +
@@ -83,26 +79,31 @@
     var r = state.ratio.split(":").map(Number);
     stage.style.aspectRatio = r[0] + " / " + r[1];
     stage.setAttribute("data-tall", String(r[1] > r[0]));
-    // 미리보기 해상도: 화면 크기 × 기기 배율, 너무 크면 줄인다 (휴대폰 배터리)
-    var box = stage.getBoundingClientRect();
-    var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    var w = Math.max(320, Math.round(box.width * dpr)), h = Math.round(w * r[1] / r[0]);
-    var cap = 1280; if (w > cap || h > cap) { var k = cap / Math.max(w, h); w = Math.round(w * k); h = Math.round(h * k); }
-    if (!LIVE) {
-      // 엔진을 못 돌리는 기기: 미리 뽑은 영상(첫 번째 색)으로 대신 보여 준다
-      ifr.hidden = true;
-      var v = $("video", stage) || stage.appendChild(Object.assign(document.createElement("video"), { muted: true, loop: true, playsInline: true, autoplay: true }));
-      v.className = "sx-view-fallback"; v.muted = true;
-      var vs = BASE + "preview/" + state.work + ".mp4";
-      if (v.getAttribute("src") !== vs) { v.setAttribute("src", vs); var pp = v.play(); if (pp && pp.catch) pp.catch(function () {}); }
-      $("[data-live-note]").hidden = false;
+    // 영상은 16:9. 다른 화면 모양은 가운데를 꽉 채워 잘라 보여 준다 (납품은 그 규격으로 새로 렌더)
+    var box = stage.getBoundingClientRect(), k = 16 / 9;
+    var w = box.width, h = box.width / k;
+    if (h < box.height) { h = box.height; w = h * k; }
+    var fit = { width: w + "px", height: h + "px", left: (box.width - w) / 2 + "px", top: (box.height - h) / 2 + "px" };
+    var url = get(state.work).palettes[state.pal].vimeo;
+    var v = $("video", stage);
+    if (url) {
+      if (v) v.hidden = true;
+      ifr.hidden = false; Object.assign(ifr.style, fit);
+      var src = url + (url.indexOf("?") < 0 ? "?" : "&") + "background=1&quality=1080p";
+      if (ifr.getAttribute("src") !== src) ifr.setAttribute("src", src);
+      $("[data-live-note]").hidden = true;
       return;
     }
-    var src = BASE + "view.html?work=" + state.work + "&pal=" + state.pal + "&speed=" + state.speed + "&w=" + w + "&h=" + h;
-    if (ifr.getAttribute("src") !== src) ifr.setAttribute("src", src);
+    // 아직 비메오에 없는 색: 미리 뽑은 영상(첫 번째 색)으로 대신
+    ifr.hidden = true; ifr.removeAttribute("src");
+    v = v || stage.appendChild(Object.assign(document.createElement("video"), { muted: true, loop: true, playsInline: true, autoplay: true }));
+    v.hidden = false; v.className = "sx-view-fallback"; v.muted = true;
+    var vs = BASE + "preview/" + state.work + ".mp4";
+    if (v.getAttribute("src") !== vs) { v.setAttribute("src", vs); var pp = v.play(); if (pp && pp.catch) pp.catch(function () {}); }
+    $("[data-live-note]").hidden = state.pal === 0;
   }
   function open(id) {
-    var w = SGL.get(id); if (!w) return;
+    var w = get(id); if (!w) return;
     state.work = id; state.pal = 0; state.speed = 1;
     $("[data-v-title]").textContent = w.title;
     $("[data-v-en]").textContent = w.en;
@@ -122,13 +123,13 @@
   });
   $("[data-speed-group]").addEventListener("click", function (e) {
     var b = e.target.closest("[data-speed]"); if (!b) return;
-    state.speed = +b.getAttribute("data-speed"); radio($("[data-speed-group]"), "data-speed", state.speed); frame();
+    state.speed = +b.getAttribute("data-speed"); radio($("[data-speed-group]"), "data-speed", state.speed);
   });
   $("[data-close]").addEventListener("click", close);
   view.addEventListener("close", function () { ifr.removeAttribute("src"); });
   view.addEventListener("click", function (e) { if (e.target === view) close(); });
   $("[data-pick]").addEventListener("click", function () {
-    var w = SGL.get(state.work);
+    var w = get(state.work);
     state.picked = { id: w.id, title: w.title, en: w.en, pal: w.palettes[state.pal].name, colors: w.palettes[state.pal].colors, speed: state.speed, ratio: state.ratio };
     paintPicked();
     close();
@@ -190,7 +191,6 @@
       .catch(function () { send.disabled = false; say("전송이 되지 않았습니다. 010-4292-1999 또는 studio@publicbloom.art 로 연락 주세요.", "err"); });
   });
 
-  /* 시작: 작품 파일들을 차례로 불러 목록을 그린다 */
-  (window.SX_WORKS || []).reduce(function (p, id) { return p.then(function () { return load(BASE + "works/" + id + ".js?v=20261028-a"); }); }, Promise.resolve())
-    .then(cards).catch(function () { grid.innerHTML = '<p class="sx-msg" data-tone="err">작품 목록을 불러오지 못했습니다. 새로 고침해 주세요.</p>'; });
+  cards();
+  window.addEventListener("resize", function () { if (view.open) frame(); });
 })();

@@ -43,9 +43,11 @@
   display: none; grid-template-columns: minmax(0, 1fr) 320px; overflow: hidden; }
 .sx-view[open] { display: grid; }
 .sx-view::backdrop { background: rgba(0,0,0,.78); backdrop-filter: blur(6px); }
-.sx-view-stage { position: relative; background: #000; align-self: center; width: 100%; max-height: 94vh; margin: auto; }
+.sx-view-stage { position: relative; overflow: hidden; background: #000; align-self: center; width: 100%; max-height: 94vh; margin: auto; }
 .sx-view-stage[data-tall="true"] { width: auto; height: min(88vh, 900px); }
-.sx-view-stage iframe, .sx-view-fallback { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; object-fit: cover; }
+.sx-view-stage iframe { position: absolute; border: 0; display: block; pointer-events: none; }
+.sx-view-fallback { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; object-fit: cover; }
+.sx-view-fallback[hidden] { display: none; }
 .sx-view-stage iframe[hidden] { display: none; }
 .sx-view-side { padding: 28px 26px; overflow-y: auto; border-left: 1px solid var(--edge-soft); }
 .sx-view-en { margin: 0; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--glow); }
