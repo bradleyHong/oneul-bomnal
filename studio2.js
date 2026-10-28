@@ -83,6 +83,7 @@
     var box = stage.getBoundingClientRect(), k = 16 / 9;
     var w = box.width, h = box.width / k;
     if (h < box.height) { h = box.height; w = h * k; }
+    w *= 1.03; h *= 1.03;                                     // 비메오 판 가장자리 흰 줄이 비치지 않게 살짝 크게
     var fit = { width: w + "px", height: h + "px", left: (box.width - w) / 2 + "px", top: (box.height - h) / 2 + "px" };
     var url = get(state.work).palettes[state.pal].vimeo;
     var v = $("video", stage);
