@@ -17,6 +17,11 @@
     <link rel="stylesheet" href="./led-booking.css?v=20261023-b" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="./assets/favicon-180.png" />
+    <script>
+      /* 2026-10-28 대표 지시: 날짜(빈 일정)를 손님에게 보이지 않는다. 바로 들어오면 렌탈 상담으로 보낸다.
+         견적서 QR(?q=…)로 여는 전자계약과 내부용 견적 작성(?staff=1)만 이 화면을 그대로 쓴다. */
+      (function () { var s = new URLSearchParams(location.search); if (!s.get("q") && !s.get("staff")) location.replace("./quote?item=led-wall-rental"); })();
+    </script>
     <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
     <script defer src="/_vercel/insights/script.js"></script>
     <script defer src="/bomnal-beacon.js"></script>
