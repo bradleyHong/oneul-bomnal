@@ -22,7 +22,7 @@
 .sx-seg button:focus-visible, .sx-chips button:focus-visible, .sx-card-hit:focus-visible, .sx-btn:focus-visible { outline: 2px solid var(--glow); outline-offset: 2px; }
 
 /* 목록 */
-.sx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); gap: var(--gap); margin-top: 8px; }
+.sx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr)); gap: var(--gap); margin-top: 8px; }
 .sx-card[hidden] { display: none; }
 .sx-card-hit { all: unset; box-sizing: border-box; display: flex; flex-direction: column; width: 100%; cursor: pointer; border-radius: 18px; overflow: hidden;
   background: var(--surface, #141416); border: 1px solid var(--edge-soft); transition: transform .35s cubic-bezier(.2,.8,.2,1), border-color .35s; }

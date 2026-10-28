@@ -52,7 +52,8 @@ void main(){
   float pulse = 0.0;
   for(int k=0;k<3;k++){ float c = fract(uT/30.0*float(2 + k) + float(k)*0.37); float d = abs(s - c); d = min(d, 1.0 - d); pulse += exp(-d*d*60000.0); }
   float sp = aP.w;
-  vCol = pal(0.18*sp + i*1.3 + 0.1*sin(TAU*uT/30.0)) * (0.55 + 0.9*smoothstep(0.3, 1.2, sp) + 3.0*pulse) * uGain * uScale;
+  // 색은 높이(끌개의 축)를 따라 갈라지고, 빠른 곳이 더 밝다
+  vCol = pal(0.30 + aP.y*0.42 + 0.10*sp + 0.08*sin(TAU*uT/30.0)) * (0.45 + 0.9*smoothstep(0.3, 1.2, sp) + 3.0*pulse) * uGain * uScale;
   gl_Position = uVP*vec4(aP.xyz*0.62, 1.0);
   gl_PointSize = uPx;
 }`;
