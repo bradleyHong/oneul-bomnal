@@ -19,3 +19,9 @@ lava
 contour
 fractal-temple
 forest-light
+# 사계 연작 (2026-11-02)
+four-seasons
+spring-sprout
+summer-barrel
+autumn-whirl
+winter-crystal
