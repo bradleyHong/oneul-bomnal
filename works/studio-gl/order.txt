@@ -25,3 +25,14 @@ spring-sprout
 summer-barrel
 autumn-whirl
 winter-crystal
+# 삶의 선 연작 (2026-11-02)
+life-birth
+life-joy
+life-rage
+life-sorrow
+life-delight
+life-love
+life-marriage
+life-lineage
+life-rise
+life-chance

@@ -173,6 +173,119 @@ void main(){
     G.background(RAY + src + RAY_MAIN, u);
   }
 
+  /* 빛의 선 (삶의 선 연작, 2026-11-02)
+     선 하나를 이어진 띠로 그린다. 마디마다 앞뒤 점으로 접선을 구해 두 마디가 같은 꼭짓점을 쓰므로
+     겹쳐 더해지는 곳(구슬 무늬)이 없다. 굵기는 세계 단위(원근에 따라 가늘어짐)이고, 1.5px 아래는 밝기를 줄여 에너지를 맞춘다.
+     초점 거리 밖의 선은 넓고 옅어진다(피사계 심도, 에너지 보존).
+     body 는 다음을 정의한다:  vec3 LP(float id, float u, out vec3 col, out float w)
+       id 선 번호 · u 선 위 위치 0..1 · col 빛(선형, 1 넘어도 됨) · w 굵기(세계 단위)
+     body 앞에는 uT · uN · uC0..3 · TAU · T · h11 · h3 · vn3 · fbm3 · pal · rotA 가 있다. */
+  const LINE_HEAD = `#version 300 es
+uniform float uT, uGain, uH, uAsp, uF, uK, uN, uFocus, uAp;
+uniform mat4 uVP; uniform vec3 uC0, uC1, uC2, uC3; uniform vec4 uP;
+out vec3 vCol; out float vS; out float vPx;
+#define TAU 6.2831853
+#define T 30.0
+float h11(float p){ p = fract(p*0.1031); p *= p + 33.33; p *= p + p; return fract(p); }
+vec3 h3(float n){ vec3 p = fract(vec3(n)*vec3(0.1031, 0.1030, 0.0973)); p += dot(p, p.yzx + 33.33); return fract((p.xxy + p.yzz)*p.zyx); }
+float vn3(vec3 p){ vec3 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);
+  float n = dot(i, vec3(1.0, 57.0, 113.0));
+  return mix(mix(mix(h11(n), h11(n+1.0), f.x), mix(h11(n+57.0), h11(n+58.0), f.x), f.y),
+             mix(mix(h11(n+113.0), h11(n+114.0), f.x), mix(h11(n+170.0), h11(n+171.0), f.x), f.y), f.z); }
+float fbm3(vec3 p){ float s = 0.0, a = 0.5; for(int i=0;i<3;i++){ s += a*vn3(p); p = p*2.03 + 1.7; a *= 0.5; } return s; }
+vec3 pal(float x){ x = fract(x)*4.0; return x < 1.0 ? mix(uC0, uC1, x) : (x < 2.0 ? mix(uC1, uC2, x - 1.0) : (x < 3.0 ? mix(uC2, uC3, x - 2.0) : mix(uC3, uC0, x - 3.0))); }
+vec3 rotA(vec3 v, vec3 a, float t){ float c = cos(t), s = sin(t); return v*c + cross(a, v)*s + a*dot(a, v)*(1.0 - c); }
+`;
+  const LINE_MAIN = `
+void main(){
+  int K = int(uK);
+  int per = (K - 1)*6;
+  int line = gl_VertexID/per; int r = gl_VertexID - line*per;
+  int seg = r/6; int c = r - seg*6;
+  int along = (c == 1 || c == 2 || c == 4) ? 1 : 0;
+  float side = (c == 2 || c == 4 || c == 5) ? 1.0 : -1.0;
+  float fid = float(line);
+  float du = 1.0/float(K - 1);
+  float u = float(seg + along)*du;
+  vec3 col, cc; float w, ww;
+  vec3 p = LP(fid, u, col, w);
+  vec3 pa = LP(fid, max(u - du, 0.0), cc, ww);
+  vec3 pb = LP(fid, min(u + du, 1.0), cc, ww);
+  vec4 c0 = uVP*vec4(p, 1.0), ca = uVP*vec4(pa, 1.0), cb = uVP*vec4(pb, 1.0);
+  if(c0.w < 0.05){ gl_Position = vec4(2.0, 2.0, 2.0, 1.0); vCol = vec3(0.0); vS = 0.0; vPx = 1.0; return; }
+  vec2 s0 = c0.xy/c0.w, sa = ca.xy/max(ca.w, 0.05), sb = cb.xy/max(cb.w, 0.05);
+  vec2 dir = (sb - sa)*vec2(uAsp, 1.0);
+  dir = length(dir) > 1e-7 ? normalize(dir) : vec2(1.0, 0.0);
+  vec2 nrm = vec2(-dir.y, dir.x);
+  float px = w*uF/c0.w*uH*0.5;
+  float coc = uAp*abs(c0.w - uFocus)/c0.w*uH;                     // 초점 밖 번짐(px)
+  float tot = sqrt(px*px + coc*coc);
+  float I = px/max(tot, 1e-4);
+  if(tot < 1.5){ I *= tot/1.5; tot = 1.5; }
+  float half_ = tot*0.5 + 1.0;
+  vec2 off = nrm*half_*2.0/uH; off.x /= uAsp;
+  gl_Position = vec4((s0 + off*side)*c0.w, c0.z, c0.w);
+  vS = side*half_/(tot*0.5);
+  vPx = tot;
+  vCol = col*I*uGain;
+}`;
+  const LINE_FS = `#version 300 es
+precision highp float; in vec3 vCol; in float vS; in float vPx; out vec4 o;
+void main(){
+  float s = abs(vS);
+  float edge = 1.0 + 2.0/vPx;
+  float a = (1.0 - smoothstep(1.0 - 1.0/vPx, edge, s))*(0.55 + 0.45*exp(-s*s*5.0));
+  o = vec4(vCol*a, 1.0);
+}`;
+  function lines(gl, body) {
+    const prog = program(gl, LINE_HEAD + body + LINE_MAIN, LINE_FS);
+    const vao = gl.createVertexArray();
+    return {
+      prog,
+      /* o: { t, VP, fov, N, K, ctx, c(custom 의 c), focus, aperture, P(vec4) } */
+      draw(gl, o) {
+        const u = prog.u;
+        gl.useProgram(prog.p);
+        gl.uniform1f(u.uT, o.t); gl.uniform1f(u.uGain, o.c.gain);
+        gl.uniform1f(u.uH, o.ctx.H); gl.uniform1f(u.uAsp, o.ctx.W / o.ctx.H);
+        gl.uniform1f(u.uF, 1 / Math.tan(o.fov / 2)); gl.uniform1f(u.uK, o.K); gl.uniform1f(u.uN, o.N);
+        gl.uniform1f(u.uFocus, o.focus || 5); gl.uniform1f(u.uAp, o.aperture || 0);
+        if (u.uP) gl.uniform4fv(u.uP, o.P || [0, 0, 0, 0]);
+        gl.uniformMatrix4fv(u.uVP, false, o.VP);
+        ["uC0", "uC1", "uC2", "uC3"].forEach((k, i) => u[k] && gl.uniform3fv(u[k], o.ctx.colors[i]));
+        gl.bindVertexArray(vao);
+        gl.drawArrays(gl.TRIANGLES, 0, o.N * (o.K - 1) * 6);
+      },
+    };
+  }
+  /* 카메라 묶음: 눈·목표·화각 → VP */
+  function cam(ctx, eye, ta, fov) {
+    return mul(perspective(fov, ctx.W / ctx.H, 0.05, 80), lookAt(eye, ta, [0, 1, 0]));
+  }
+
+  /* 선 작품 공통 틀. 작품은 body(LP) · N · K · camera(t, ctx) → {eye, ta, fov, focus, ap} · bg(선택) 를 둔다.
+     bg 는 RAY 머리말 + uEye·uTa·uFov 와 RD()(이 화소의 광선 방향) 위에서 main 을 쓴다.
+     init/draw 는 SGL.lineInit/lineDraw 를 부른다 (목록 만드는 도구는 SGL.add 만 알면 되게). */
+  const BGHEAD = RAY + `
+uniform vec3 uEye, uTa; uniform float uFov;
+vec3 RD(){
+  vec2 sp = (gl_FragCoord.xy/uRes*2.0 - 1.0)*vec2(uRes.x/uRes.y, 1.0);
+  vec3 cw = normalize(uTa - uEye), cu = normalize(cross(cw, vec3(0.0, 1.0, 0.0))), cv = cross(cu, cw);
+  return normalize(sp.x*cu + sp.y*cv + cw/tan(uFov*0.5));
+}
+`;
+  function lineInit(w, G, ctx) {
+    return { L: lines(G.gl, w.body), N: typeof w.N === "function" ? w.N(ctx) : w.N, K: w.K };
+  }
+  function lineDraw(w, G, st, t, ctx) {
+    const c = w.camera(t, ctx);
+    const VP = cam(ctx, c.eye, c.ta, c.fov);
+    if (w.bg) G.background(BGHEAD + w.bg, { uT: t, uEye: c.eye, uTa: c.ta, uFov: c.fov,
+      uC0: ctx.colors[0], uC1: ctx.colors[1], uC2: ctx.colors[2], uC3: ctx.colors[3] });
+    if (w.extra) w.extra(G, st, t, ctx, c, VP);
+    G.custom((gl, cc) => st.L.draw(gl, { t, VP, fov: c.fov, N: st.N, K: st.K, ctx, c: cc, focus: c.focus, aperture: c.ap }));
+  }
+
   global.SGL = { T, works, add: (w) => works.push(w), get: (id) => works.find((w) => w.id === id),
-    perspective, lookAt, mul, program, RAY, RAY_MAIN, drawRay, hex: (h) => global.BomnalGL.hex(h) };
+    perspective, lookAt, mul, program, RAY, RAY_MAIN, drawRay, lines, cam, lineInit, lineDraw, hex: (h) => global.BomnalGL.hex(h) };
 })(window);
