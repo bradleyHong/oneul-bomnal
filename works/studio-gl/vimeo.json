@@ -112,5 +112,17 @@
   "https://player.vimeo.com/video/1240589382?h=b49fa8a8b0",
   "https://player.vimeo.com/video/1240589927?h=ac72f445ca",
   "https://player.vimeo.com/video/1240590338?h=7a86d7307d"
+ ],
+ "four-seasons": [
+  "https://player.vimeo.com/video/1242273152?h=101be905f4",
+  "https://player.vimeo.com/video/1242273717?h=a773f7c53a",
+  "https://player.vimeo.com/video/1242274238?h=1db7485a28",
+  "https://player.vimeo.com/video/1242274724?h=3a5f3c5a95"
+ ],
+ "spring-sprout": [
+  "https://player.vimeo.com/video/1242280603?h=5013349c4b",
+  "https://player.vimeo.com/video/1242282853?h=392f323a11",
+  "https://player.vimeo.com/video/1242285128?h=49dbbca14e",
+  null
  ]
 }

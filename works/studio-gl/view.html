@@ -11,7 +11,7 @@
 </head><body>
 <canvas id="c"></canvas>
 <script src="../lib/bomnal-gl.js"></script>
-<script src="./sgl.js"></script>
+<script>document.write('<script src="./sgl.js?v=' + Date.now() + '"><\/script>');  // 늘 새 엔진 (캐시 금지)</script>
 <script>
 // 작품 한 편을 그린다. 스튜디오 미리보기(iframe)와 납품 렌더(capture)가 같은 파일을 쓴다.
 //   ?work=<id>&pal=0&speed=1&w=1280&h=720            미리보기

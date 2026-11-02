@@ -1008,7 +1008,7 @@ window.SX_CATALOG = [
      "#ffaa30",
      "#d8ecff"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242273152?h=101be905f4"
    },
    {
     "name": "보석",
@@ -1018,7 +1018,7 @@ window.SX_CATALOG = [
      "#ff6a3d",
      "#e0f0ff"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242273717?h=a773f7c53a"
    },
    {
     "name": "파스텔",
@@ -1028,7 +1028,7 @@ window.SX_CATALOG = [
      "#ffd0a0",
      "#f0f4ff"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242274238?h=1db7485a28"
    },
    {
     "name": "노을",
@@ -1038,7 +1038,7 @@ window.SX_CATALOG = [
      "#ff7a3a",
      "#c8d0ff"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242274724?h=3a5f3c5a95"
    }
   ]
  },
@@ -1060,7 +1060,7 @@ window.SX_CATALOG = [
      "#fff0a8",
      "#14241c"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242280603?h=5013349c4b"
    },
    {
     "name": "봄비",
@@ -1070,7 +1070,7 @@ window.SX_CATALOG = [
      "#e8fff4",
      "#101a26"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242282853?h=392f323a11"
    },
    {
     "name": "아지랑이",
@@ -1080,7 +1080,7 @@ window.SX_CATALOG = [
      "#fff2c8",
      "#24141c"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242285128?h=49dbbca14e"
    },
    {
     "name": "비취",
@@ -1246,6 +1246,522 @@ window.SX_CATALOG = [
      "#8aa0c8",
      "#ffffff",
      "#0a0c10"
+    ],
+    "vimeo": null
+   }
+  ]
+ },
+ {
+  "id": "life-birth",
+  "title": "첫 숨",
+  "en": "First Breath",
+  "mood": [
+   "calm",
+   "vivid"
+  ],
+  "desc": "아이가 태어나던 순간의 기쁨. 작은 빛 한 점에서 수천 가닥의 선이 숨 쉬듯 피어나고, 두 번 첫 울음처럼 터집니다.",
+  "palettes": [
+   {
+    "name": "새벽빛",
+    "colors": [
+     "#fff1d6",
+     "#ffb38a",
+     "#ff7aa8",
+     "#2a1420"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "금빛 요람",
+    "colors": [
+     "#fff4c8",
+     "#ffc85a",
+     "#ff8a3a",
+     "#20140a"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "젖빛",
+    "colors": [
+     "#f4f8ff",
+     "#a8d0ff",
+     "#ffc8e0",
+     "#101420"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "연두 숨",
+    "colors": [
+     "#f8ffe0",
+     "#b8ff8a",
+     "#5ae0c0",
+     "#0c1a14"
+    ],
+    "vimeo": null
+   }
+  ]
+ },
+ {
+  "id": "life-joy",
+  "title": "희 · 기쁨",
+  "en": "Joy",
+  "mood": [
+   "vivid"
+  ],
+  "desc": "기쁨은 가만히 있지 못합니다. 빛의 선 수백 가닥이 고리를 따라 통통 튀며 달리고, 땅에 닿을 때마다 반짝입니다.",
+  "palettes": [
+   {
+    "name": "축제",
+    "colors": [
+     "#ffd23a",
+     "#ff5a8a",
+     "#3ad8ff",
+     "#9a5aff"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "햇살",
+    "colors": [
+     "#fff0a0",
+     "#ffb03a",
+     "#ff7a5a",
+     "#ffe0c0"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "사탕",
+    "colors": [
+     "#ff8ad0",
+     "#8ae0ff",
+     "#d0ff8a",
+     "#ffd08a"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "네온",
+    "colors": [
+     "#3dffa8",
+     "#ff3df0",
+     "#3da8ff",
+     "#ffe83d"
+    ],
+    "vimeo": null
+   }
+  ]
+ },
+ {
+  "id": "life-rage",
+  "title": "노 · 분노",
+  "en": "Rage",
+  "mood": [
+   "vivid"
+  ],
+  "desc": "속에서 엉킨 붉은 실이 떨리다가 차오르면 번개처럼 사방으로 터집니다. 쌓이고, 터지고, 고요해지는 분노의 결.",
+  "palettes": [
+   {
+    "name": "불",
+    "colors": [
+     "#ff3a1a",
+     "#fff0d0",
+     "#ff9a3a",
+     "#1a0604"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "핏빛",
+    "colors": [
+     "#ff1a3a",
+     "#ffe0e8",
+     "#ff6a8a",
+     "#1a0408"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "번개",
+    "colors": [
+     "#8a5aff",
+     "#f0f0ff",
+     "#3ad8ff",
+     "#08061a"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "쇳물",
+    "colors": [
+     "#ff7a1a",
+     "#fff8e0",
+     "#ffd03a",
+     "#140a04"
+    ],
+    "vimeo": null
+   }
+  ]
+ },
+ {
+  "id": "life-sorrow",
+  "title": "애 · 슬픔",
+  "en": "Sorrow",
+  "mood": [
+   "calm"
+  ],
+  "desc": "슬픔은 아래로 흐릅니다. 버들가지처럼 늘어진 빛의 선을 타고 물방울이 미끄러져 내려와 검은 물 위에 동그란 물결을 남깁니다.",
+  "palettes": [
+   {
+    "name": "비 오는 밤",
+    "colors": [
+     "#5a8aff",
+     "#9ab8e8",
+     "#e8f4ff",
+     "#04070e"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "쪽빛",
+    "colors": [
+     "#2a5aff",
+     "#5ac8ff",
+     "#d0ecff",
+     "#03050c"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "잿빛",
+    "colors": [
+     "#8a96a8",
+     "#c8d0dc",
+     "#ffffff",
+     "#060708"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "보랏빛 저녁",
+    "colors": [
+     "#7a5aff",
+     "#c8a0ff",
+     "#f4e8ff",
+     "#07040e"
+    ],
+    "vimeo": null
+   }
+  ]
+ },
+ {
+  "id": "life-delight",
+  "title": "락 · 즐거움",
+  "en": "Delight",
+  "mood": [
+   "vivid",
+   "geo"
+  ],
+  "desc": "즐거움은 리듬입니다. 빛의 곡선 수백 가닥이 실뜨기처럼 겹쳐 춤추고, 박자에 맞춰 부풀며 선을 따라 빛이 노래하듯 달립니다.",
+  "palettes": [
+   {
+    "name": "음악",
+    "colors": [
+     "#ff4f9a",
+     "#ffd23a",
+     "#3ad8ff",
+     "#9a5aff"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "재즈",
+    "colors": [
+     "#ffb347",
+     "#ff6a3d",
+     "#ffe7a8",
+     "#c9762c"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "라임 팝",
+    "colors": [
+     "#d4ff3a",
+     "#3dffa8",
+     "#38d6ff",
+     "#ff5ab0"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "달빛 왈츠",
+    "colors": [
+     "#c8d8ff",
+     "#a08aff",
+     "#ffd8f0",
+     "#8affe8"
+    ],
+    "vimeo": null
+   }
+  ]
+ },
+ {
+  "id": "life-love",
+  "title": "사랑",
+  "en": "Love",
+  "mood": [
+   "calm",
+   "vivid"
+  ],
+  "desc": "따뜻한 선과 서늘한 선이 끝없는 매듭 길을 함께 갑니다. 감기며 멀어졌다 가까워지고, 닿는 곳마다 빛이 핍니다.",
+  "palettes": [
+   {
+    "name": "설렘",
+    "colors": [
+     "#ff5a8a",
+     "#5ab8ff",
+     "#fff0f4",
+     "#ffb0c8"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "노을 연인",
+    "colors": [
+     "#ff8a3a",
+     "#8a6aff",
+     "#fff4e0",
+     "#ffc08a"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "장미와 진주",
+    "colors": [
+     "#ff2a5a",
+     "#f0e8ff",
+     "#ffffff",
+     "#ff8aa8"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "봄밤",
+    "colors": [
+     "#ffa0d0",
+     "#7affd8",
+     "#fffaf0",
+     "#c0a8ff"
+    ],
+    "vimeo": null
+   }
+  ]
+ },
+ {
+  "id": "life-marriage",
+  "title": "결혼 · 하나의 매듭",
+  "en": "Vow",
+  "mood": [
+   "calm",
+   "geo"
+  ],
+  "desc": "금실과 은실 두 가닥이 서로를 감아 하나의 반지가 됩니다. 감김이 숨 쉬듯 조였다 풀리고, 엇갈리는 자리마다 빛이 맺힙니다.",
+  "palettes": [
+   {
+    "name": "금과 백금",
+    "colors": [
+     "#ffc86a",
+     "#e8eef8",
+     "#fff4d8",
+     "#ffd8a0"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "로즈골드",
+    "colors": [
+     "#ffa088",
+     "#f4e8e0",
+     "#ffe8e0",
+     "#ffc0a8"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "진주",
+    "colors": [
+     "#f0e8d8",
+     "#c8d8f0",
+     "#ffffff",
+     "#e8d8ff"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "흑진주",
+    "colors": [
+     "#d8c8a8",
+     "#6a7088",
+     "#e8f0ff",
+     "#a08ac8"
+    ],
+    "vimeo": null
+   }
+  ]
+ },
+ {
+  "id": "life-lineage",
+  "title": "자녀 · 이어지는 선",
+  "en": "Lineage",
+  "mood": [
+   "calm",
+   "nature"
+  ],
+  "desc": "한 줄기 빛이 둘로, 넷으로 갈라지며 나무가 됩니다. 한 나무가 다 자랄 즈음 옆에서 다음 나무가 자라기 시작합니다. 이어지고, 또 이어집니다.",
+  "palettes": [
+   {
+    "name": "온기",
+    "colors": [
+     "#ffd8a0",
+     "#ff9a6a",
+     "#fff4e0",
+     "#1a1008"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "새싹",
+    "colors": [
+     "#d4ff8a",
+     "#5ae0a0",
+     "#f4ffe8",
+     "#08140c"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "별빛 가계",
+    "colors": [
+     "#c8d8ff",
+     "#8a9aff",
+     "#ffffff",
+     "#060814"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "벚빛",
+    "colors": [
+     "#ffd0e0",
+     "#ff8ab0",
+     "#fff4f8",
+     "#1a0810"
+    ],
+    "vimeo": null
+   }
+  ]
+ },
+ {
+  "id": "life-rise",
+  "title": "다시, 일어서다",
+  "en": "Rise Again",
+  "mood": [
+   "vivid"
+  ],
+  "desc": "힘차게 솟던 빛이 무너져 바닥에 식어 눕고, 불씨가 하나하나 다시 붙어 아래에서 위로 더 높이 일어섭니다. 다시 할 수 있다는 다짐.",
+  "palettes": [
+   {
+    "name": "불씨",
+    "colors": [
+     "#ffb03a",
+     "#3a6aff",
+     "#ff5a1a",
+     "#0a0604"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "새벽",
+    "colors": [
+     "#ffe08a",
+     "#5a7ab8",
+     "#ff8a6a",
+     "#06080e"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "푸른 불꽃",
+    "colors": [
+     "#7ae8ff",
+     "#5a4ab8",
+     "#3a8aff",
+     "#04060e"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "백금",
+    "colors": [
+     "#fff4e0",
+     "#7a8090",
+     "#ffc88a",
+     "#08080a"
+    ],
+    "vimeo": null
+   }
+  ]
+ },
+ {
+  "id": "life-chance",
+  "title": "우연이 겹쳐",
+  "en": "Serendipity",
+  "mood": [
+   "vivid",
+   "cosmos"
+  ],
+  "desc": "저마다의 길을 가던 두 선이 우연히 한 점에서 만나 빛이 터지고, 같은 색이 되어 함께 갑니다. 겹친 우연이 모여 인생이 됩니다.",
+  "palettes": [
+   {
+    "name": "설렘",
+    "colors": [
+     "#38d6ff",
+     "#ff5ab0",
+     "#ffd36b",
+     "#ffffff"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "기회",
+    "colors": [
+     "#3dffa8",
+     "#7a5cff",
+     "#ffe07a",
+     "#fff8e0"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "밤거리",
+    "colors": [
+     "#ff7a3a",
+     "#3a8aff",
+     "#ff3a8a",
+     "#fff0f8"
+    ],
+    "vimeo": null
+   },
+   {
+    "name": "별자리",
+    "colors": [
+     "#a8c8ff",
+     "#e8d8ff",
+     "#fff4c8",
+     "#ffffff"
     ],
     "vimeo": null
    }

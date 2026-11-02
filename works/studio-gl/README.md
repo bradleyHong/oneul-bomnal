@@ -40,6 +40,12 @@ node tools/render-gl-video.mjs "http://localhost:4737/works/studio-gl/view.html?
 
 렌더 큐를 여러 개 돌릴 때: 큐마다 다음 장면 전에 헤드리스 크롬을 모두 끄므로(`pkill`), 두 큐를 같이 돌리면 서로의 렌더를 죽인다. 하나씩 차례로.
 
+## 선 작품 (삶의 선 연작, 2026-11-02)
+
+`SGL.lines(gl, body)` 는 선을 이어진 띠로 그린다. 마디마다 앞뒤 점으로 접선을 구해 이웃 마디와 꼭짓점을 같이 쓰므로 겹쳐 더해지는 구슬 무늬가 없다. 굵기는 세계 단위이고, 초점 밖은 넓고 옅어진다(피사계 심도, 에너지 보존).
+작품은 `body` 에 `vec3 LP(float id, float u, out vec3 col, out float w)`(선 번호 · 선 위 위치 0..1 → 자리 · 빛 · 굵기)를 두고, `N · K · camera(t) · bg` 를 정한 뒤 `init/draw` 에서 `SGL.lineInit/lineDraw` 를 부른다. 예: `works/life-birth.js`.
+`view.html` 은 `sgl.js` 를 늘 새로 읽는다(헤드리스 크롬이 옛 엔진을 캐시해 `lineInit` 이 없다고 멈춘 적이 있다).
+
 ## 기법 출처
 
 코드를 옮기지 않고 기법만 다시 구현했습니다: ABC 흐름(Arnold–Beltrami–Childress), Aizawa 끌개, 자이로이드, Inigo Quilez 의 거리장·잡음 글, 반복 커스틱(정의역 비틀기) 꼴, GGX(Karis 2013), 번짐(Jimenez 2014).
@@ -48,5 +54,6 @@ node tools/render-gl-video.mjs "http://localhost:4737/works/studio-gl/view.html?
 
 - `pow(음수, 2.0)` 은 NaN 이다. 제곱은 `x*x` 로.
 - 거리장 부호: 카메라 쪽이 양수여야 한다.
-- 예약어 `out` 을 변수 이름으로 쓰지 않는다.
+- 예약어 `out` · `active` 를 변수 이름으로 쓰지 않는다.
+- 시간에 따라 칸을 밀어 올리는 무늬(불티 등)는 칸 번호를 mod 로 감아야 루프가 이어진다.
 - 구조체(M 등)에는 삼항 연산자(`?:`)를 쓸 수 없다.
