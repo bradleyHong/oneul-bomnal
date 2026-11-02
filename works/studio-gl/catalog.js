@@ -1090,7 +1090,7 @@ window.SX_CATALOG = [
      "#d4ff9a",
      "#0c1a18"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242288350?h=7823112d1e"
    }
   ]
  },
@@ -1112,7 +1112,7 @@ window.SX_CATALOG = [
      "#fff2c8",
      "#eafcff"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242288524?h=aa9a26230e"
    },
    {
     "name": "남국",
@@ -1122,7 +1122,7 @@ window.SX_CATALOG = [
      "#ffe7a8",
      "#f0f8ff"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242288704?h=b8e22c7956"
    },
    {
     "name": "노을 파도",
@@ -1132,7 +1132,7 @@ window.SX_CATALOG = [
      "#ffd8a0",
      "#fff0e0"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242288925?h=e464e1df56"
    },
    {
     "name": "에메랄드",
@@ -1142,7 +1142,7 @@ window.SX_CATALOG = [
      "#f4ffc8",
      "#f0fff4"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242289140?h=313bb6c3bf"
    }
   ]
  },
@@ -1164,7 +1164,7 @@ window.SX_CATALOG = [
      "#ffd27a",
      "#2a1408"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242289304?h=5b1722b1ac"
    },
    {
     "name": "은행",

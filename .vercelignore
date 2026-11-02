@@ -52,3 +52,19 @@ works/studio-gl/README.md
 works/studio-gl/order.txt
 works/studio-gl/vimeo.json
 works/lib/bomnal-gl.js
+
+# 2026-11-02 대표: 작품 코드를 웹에 두지 않는다. 쇼케이스·/ai 는 녹화 영상(assets/video/showcase-*, assets/video/ai/)으로 바꿨고,
+# 예전 프리셋 스튜디오와 도구 화면은 내린다(/studio 로 보낸다). 코드는 저장소에 그대로 있다.
+works/eyewall.html
+works/vessel.html
+works/flowribbons.html
+works/brushtrace-clock.html
+works/studio-art.html
+works/studio-deliver.html
+studio-classic.html
+tools.html
+# 봄날 플레이어(/play)와 예전 프리셋 엔진도 내린다 (2026-11-02 대표: 쓰는 고객 없음, 주문 들어오면 코드로 따로 드린다)
+play.html
+studio-engine.js
+studio-gen.js
+studio-meshes.js
