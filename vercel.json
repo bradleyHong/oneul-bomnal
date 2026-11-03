@@ -91,6 +91,21 @@
   ],
   "redirects": [
     {
+      "source": "/play",
+      "destination": "/studio",
+      "permanent": false
+    },
+    {
+      "source": "/studio-classic",
+      "destination": "/studio",
+      "permanent": false
+    },
+    {
+      "source": "/tools",
+      "destination": "/studio",
+      "permanent": false
+    },
+    {
       "source": "/landing",
       "destination": "/company",
       "permanent": true

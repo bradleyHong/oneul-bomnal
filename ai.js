@@ -16,7 +16,9 @@
 (function () {
   "use strict";
 
-  var ART = "./works/studio-art.html";
+  /* 장면은 미리 녹화한 짧은 영상이다 (2026-11-02: 작품 코드를 웹에 두지 않는다).
+     만든 법: tools/record-page.mjs 로 works/studio-art.html 을 장면마다 녹화 → assets/video/ai/shot-N.mp4 */
+  var CLIP = "./assets/video/ai/shot-";
 
   /* ── 편집표 ────────────────────────────────────────────────
      dur   장면 길이(초)
@@ -185,27 +187,25 @@
   var live = 0;                       // 지금 보이는 화면
 
   /* ── 화면 갈아 끼우기 ─────────────────────────────────────── */
-  function artUrl(spec) {
-    /* 미리보기 해상도는 작게. 홍보 시퀀스 때문에 팬이 돌면 안 된다. */
-    return ART + "?w=880&h=495&seed=" + (4820000 + shot * 7919) + "&dur=12&fps=30&" + spec;
+  function clip(i) { return CLIP + (((i % EDL.length) + EDL.length) % EDL.length) + ".mp4"; }
+  function run(v, on) {
+    try { if (on) { var p = v.play(); if (p && p.catch) p.catch(function () {}); } else v.pause(); } catch (e) { /* 무시 */ }
   }
 
+  /* 안 보이는 쪽 화면에 다음 장면을 미리 받아 둔다 */
   function preload(i) {
-    var next = EDL[(i) % EDL.length];
     var hidden = frames[1 - live];
-    hidden.src = artUrl(next.art);
-    /* 뜨자마자 세워둔다. 안 보이는 화면이 계속 그려질 이유가 없다. */
-    hidden.addEventListener("load", function once() {
-      hidden.removeEventListener("load", once);
-      try { hidden.contentWindow.postMessage("bomnal:pause", "*"); } catch (e) { /* 무시 */ }
-    });
+    if (hidden.getAttribute("src") !== clip(i)) { hidden.src = clip(i); hidden.load(); }
   }
 
+  /* 미리 받아 둔 화면을 앞으로. 편집점을 눌러 건너뛰었으면 그 장면으로 바꿔 끼운다 */
   function swap() {
     var showing = frames[1 - live];
     var hiding = frames[live];
-    try { showing.contentWindow.postMessage("bomnal:play", "*"); } catch (e) { /* 무시 */ }
-    try { hiding.contentWindow.postMessage("bomnal:pause", "*"); } catch (e) { /* 무시 */ }
+    if (showing.getAttribute("src") !== clip(shot)) { showing.src = clip(shot); showing.load(); }
+    try { showing.currentTime = 0; } catch (e) { /* 무시 */ }
+    run(showing, true);
+    run(hiding, false);
     showing.classList.add("is-live");
     hiding.classList.remove("is-live");
     live = 1 - live;
@@ -321,7 +321,7 @@
     if (on) playShot(shot);
     else {
       clearTimeout(timer);
-      try { frames[live].contentWindow.postMessage("bomnal:pause", "*"); } catch (e) { /* 무시 */ }
+      run(frames[live], false);
     }
   }
 
@@ -345,7 +345,7 @@
     var calm = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (calm) {
       playing = false;
-      frames[0].src = artUrl(EDL[0].art);
+      frames[0].src = clip(0);
       frames[0].classList.add("is-live");
       var t = L[lang];
       $("[data-promo-line1]").textContent = t.s1[0];
@@ -355,10 +355,10 @@
       $("[data-pause]").setAttribute("aria-pressed", "true");
       markCuts();
     } else {
-      frames[0].src = artUrl(EDL[0].art);
-      frames[0].classList.add("is-live");
-      frames[0].addEventListener("load", function once() {
-        frames[0].removeEventListener("load", once);
+      /* 첫 장면은 뒤쪽 화면에 받아 두었다가 playShot(0) 이 앞으로 꺼낸다 */
+      preload(0);
+      frames[1].addEventListener("canplay", function once() {
+        frames[1].removeEventListener("canplay", once);
         playShot(0);
       });
     }
@@ -368,9 +368,7 @@
       new IntersectionObserver(function (en) {
         en.forEach(function (x) {
           if (!playing) return;
-          try {
-            frames[live].contentWindow.postMessage(x.isIntersecting ? "bomnal:play" : "bomnal:pause", "*");
-          } catch (e) { /* 무시 */ }
+          run(frames[live], x.isIntersecting);
           if (x.isIntersecting) { if (!timer) playShot(shot); }
           else { clearTimeout(timer); timer = null; }
         });
