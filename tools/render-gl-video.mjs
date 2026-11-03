@@ -13,7 +13,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const cport = 9334 + Math.floor(Math.random() * 500);
 const chrome = spawn("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-  ["--headless=new", `--remote-debugging-port=${cport}`, "--hide-scrollbars",
+  [`--remote-debugging-port=${cport}`, "--headless=new", "--hide-scrollbars",
    ...(process.env.GPU === "0" ? [] : ["--use-angle=metal", "--enable-gpu", "--ignore-gpu-blocklist"]),
    "--disable-features=LocalNetworkAccessChecks,PrivateNetworkAccessRespectPreflightResults,BlockInsecurePrivateNetworkRequests",
    "--force-color-profile=srgb", `--user-data-dir=${process.env.TMPDIR || "/tmp"}/cdp-vid-${cport}`, "about:blank"], { stdio: "ignore" });

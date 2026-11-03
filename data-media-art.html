@@ -216,6 +216,13 @@
         else if (h.indexOf('quote') !== -1 || h.indexOf('/contact') !== -1) gtag('event', 'quote_cta_click', { link_text: (a.textContent || '').trim().slice(0, 30) });
       }, true);
     </script>
+    <style>
+      /* 2026-11-03 대표: 작품 코드를 웹에 두지 않는다. 캔버스 대신 녹화한 반복 영상을 띄운다.
+         녹화본에 빛·격자 효과가 이미 들어 있으므로 패널 위에 덧씌우던 효과는 끈다. */
+      .proposal-visual video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; display: block; }
+      .region-preview.is-video::before, .region-preview.is-video::after { display: none; }
+      .region-preview.is-video video { display: block; width: 100%; height: 100%; object-fit: cover; }
+    </style>
   </head>
   <body class="site-page">
     <a class="skip-link" href="#main-content">본문 바로가기</a>
@@ -253,7 +260,7 @@
           <p class="section-kicker">Public API</p>
           <h2>연동하는 공공 API와 데이터</h2>
           <p>정해진 주기로 데이터를 받아 그 값대로 색, 밀도, 속도, 높이가 바뀝니다.
-             이 페이지와 홈의 실시간 화면도 지금 날씨·대기질 데이터로 움직입니다.</p>
+             실제 설치에서는 날씨·대기질 데이터로 실시간으로 반응합니다. 이 페이지의 화면은 녹화 영상입니다.</p>
         </div>
         <table class="spec-table">
           <caption>미디어아트에 연결할 수 있는 데이터</caption>
@@ -329,7 +336,7 @@
         </div>
         <div class="region-art-grid">
           <article id="gyeongju-media-art" class="region-media-card region-card-star">
-            <div class="region-preview region-preview-star" data-live-panel="gyeongjuWeather" aria-hidden="true"><img src="./assets/gyeongju-cheomseongdae-art.webp" alt="" loading="lazy" width="1200" height="600" decoding="async" /></div>
+            <div class="region-preview region-preview-star is-video" aria-hidden="true"><video src="./assets/video/live/region-gyeongju-weather.mp4?v=20261103-video" poster="./assets/gyeongju-cheomseongdae-art.webp" muted loop playsinline preload="metadata"></video></div>
             <span>Gyeongju 01</span>
             <h3>첨성대 별빛 날씨 시계</h3>
             <p>경주 날씨, 구름량, 강수확률, 일몰 시간을 별자리와 꽃잎 밀도로 바꾼 첨성대 야간관광 사이니지 화면입니다.</p>
@@ -337,10 +344,10 @@
               <div><dt>연결 데이터</dt><dd>경주 날씨, 일몰 시간, 강수확률, 관광지 운영 시간</dd></div>
               <div><dt>적용 공간</dt><dd>첨성대 권역, 관광안내소, 야간경관 LED</dd></div>
             </dl>
-            <div class="live-readout"><strong>실시간 반영</strong><span data-live="gyeongjuWeather">경주 현재 데이터를 불러오는 중입니다.</span></div>
+            <div class="live-readout"><strong>녹화 화면</strong><span>경주 날씨에 따라 별자리와 꽃잎 밀도가 바뀝니다. 실제 설치에서는 실시간으로 반영됩니다.</span></div>
           </article>
           <article id="gyeongju-bomun-media-art" class="region-media-card region-card-water">
-            <div class="region-preview region-preview-water" data-live-panel="gyeongjuBomun" aria-hidden="true"><img src="./assets/gyeongju-bomun-lake-art.webp" alt="" loading="lazy" width="1200" height="675" decoding="async" /></div>
+            <div class="region-preview region-preview-water is-video" aria-hidden="true"><video src="./assets/video/live/region-gyeongju-bomun.mp4?v=20261103-video" poster="./assets/gyeongju-bomun-lake-art.webp" muted loop playsinline preload="metadata"></video></div>
             <span>Gyeongju 02</span>
             <h3>보문호 물결 미디어월</h3>
             <p>보문호 산책 흐름, 기온, 바람을 물결의 높이와 속도로 표현한 휴식형 공공 미디어월입니다.</p>
@@ -348,10 +355,10 @@
               <div><dt>연결 데이터</dt><dd>기온, 풍속, 강수 예보, 수변 혼잡도 또는 방문 흐름</dd></div>
               <div><dt>적용 공간</dt><dd>보문관광단지, 호수 산책로, 리조트 공용부</dd></div>
             </dl>
-            <div class="live-readout"><strong>실시간 반영</strong><span data-live="gyeongjuBomun">보문호 물결 데이터를 계산하는 중입니다.</span></div>
+            <div class="live-readout"><strong>녹화 화면</strong><span>기온과 바람에 따라 보문호 물결의 높이와 속도가 바뀝니다. 실제 설치에서는 실시간으로 반영됩니다.</span></div>
           </article>
           <article id="gyeongju-hwarang-festival-art" class="region-media-card region-card-festival">
-            <div class="region-preview region-preview-festival" data-live-panel="gyeongjuFestival" aria-hidden="true"><img src="./assets/gyeongju-hwarang-festival-art.webp" alt="" loading="lazy" width="1200" height="675" decoding="async" /></div>
+            <div class="region-preview region-preview-festival is-video" aria-hidden="true"><video src="./assets/video/live/region-gyeongju-festival.mp4?v=20261103-video" poster="./assets/gyeongju-hwarang-festival-art.webp" muted loop playsinline preload="metadata"></video></div>
             <span>Gyeongju 03</span>
             <h3>신라 화랑 축제 참여 파사드</h3>
             <p>유물·고분 벽화의 선과 신라 행렬을 모티브로, 현장 QR 참여와 관객 밀도에 따라 금빛 행렬과 문양이 살아나는 축제형 미디어파사드입니다.</p>
@@ -359,14 +366,10 @@
               <div><dt>연결 데이터</dt><dd>QR 접속 수, 스탬프 인증, 설문 응답, 시간대별 방문량</dd></div>
               <div><dt>적용 공간</dt><dd>신라문화제, 축제장 LED, 문화재단 행사, 야외 무대 배경</dd></div>
             </dl>
-            <div class="live-readout">
-              <strong>참여 반응 데모</strong>
-              <span data-live="gyeongjuFestival">축제 참여값을 준비하는 중입니다.</span>
-              <div class="live-readout-actions"><button class="live-action" type="button" data-live-action="gyeongjuFestival">QR 참여 1건 보내기</button></div>
-            </div>
+            <div class="live-readout"><strong>녹화 화면</strong><span>현장 QR 참여가 늘수록 금빛 행렬과 문양이 살아납니다. 실제 설치에서는 실시간으로 반영됩니다.</span></div>
           </article>
           <article id="andong-media-art" class="region-media-card region-card-wind">
-            <div class="region-preview region-preview-wind" data-live-panel="andongWeather" aria-hidden="true"><img src="./assets/andong-hahoe-mask-art.webp" alt="" loading="lazy" width="1200" height="675" decoding="async" /></div>
+            <div class="region-preview region-preview-wind is-video" aria-hidden="true"><video src="./assets/video/live/region-andong-weather.mp4?v=20261103-video" poster="./assets/andong-hahoe-mask-art.webp" muted loop playsinline preload="metadata"></video></div>
             <span>Andong 01</span>
             <h3>하회마을 바람결 지도</h3>
             <p>안동의 풍속, 습도, 기온, 관광객 흐름을 한지 결 같은 선의 움직임으로 바꾼 차분한 미디어아트입니다.</p>
@@ -374,10 +377,10 @@
               <div><dt>연결 데이터</dt><dd>안동 날씨, 풍속, 습도, 관광 안내 데이터, 체류 시간</dd></div>
               <div><dt>적용 공간</dt><dd>하회마을 안내관, 전통문화 전시, 관광안내소</dd></div>
             </dl>
-            <div class="live-readout"><strong>실시간 반영</strong><span data-live="andongWeather">안동 현재 데이터를 불러오는 중입니다.</span></div>
+            <div class="live-readout"><strong>녹화 화면</strong><span>안동의 풍속·습도·기온에 따라 바람결 선이 움직입니다. 실제 설치에서는 실시간으로 반영됩니다.</span></div>
           </article>
           <article id="andong-wolyeonggyo-moonboat-art" class="region-media-card region-card-river">
-            <div class="region-preview region-preview-river" data-live-panel="andongRiver" aria-hidden="true"><img src="./assets/andong-wolyeonggyo-moonboat-art.webp" alt="" loading="lazy" width="1200" height="675" decoding="async" /></div>
+            <div class="region-preview region-preview-river is-video" aria-hidden="true"><video src="./assets/video/live/region-andong-river.mp4?v=20261103-video" poster="./assets/andong-wolyeonggyo-moonboat-art.webp" muted loop playsinline preload="metadata"></video></div>
             <span>Andong 02</span>
             <h3>월영교 달빛배 수위 미디어월</h3>
             <p>낙동강 수위, 강수량, 재난안전 알림을 월영교 달빛과 물결의 밝기로 표현해 안전 안내와 경관을 겸합니다.</p>
@@ -385,10 +388,10 @@
               <div><dt>연결 데이터</dt><dd>하천 수위, 강수량, 기상 특보, 재난안전 알림, 달빛배 위치</dd></div>
               <div><dt>적용 공간</dt><dd>월영교, 낙동강 산책로, 수변 광장, 공공 안전 사이니지</dd></div>
             </dl>
-            <div class="live-readout"><strong>실시간 반영</strong><span data-live="andongRiver">낙동강 수위 지표를 계산하는 중입니다.</span></div>
+            <div class="live-readout"><strong>녹화 화면</strong><span>낙동강 수위와 강수량에 따라 달빛과 물결의 밝기가 바뀝니다. 실제 설치에서는 실시간으로 반영됩니다.</span></div>
           </article>
           <article id="andong-mask-dance-festival-art" class="region-media-card region-card-mask">
-            <div class="region-preview region-preview-mask" data-live-panel="andongDance" aria-hidden="true"><img src="./assets/andong-mask-dance-art.webp" alt="" loading="lazy" width="1200" height="675" decoding="async" /></div>
+            <div class="region-preview region-preview-mask is-video" aria-hidden="true"><video src="./assets/video/live/region-andong-dance.mp4?v=20261103-video" poster="./assets/andong-mask-dance-art.webp" muted loop playsinline preload="metadata"></video></div>
             <span>Andong 03</span>
             <h3>탈춤 축제 반응형 무대</h3>
             <p>하회마을 탈춤을 모티브로, 관람객 참여·현장 설문·SNS 반응이 늘수록 춤사위 주변 빛의 밀도와 색이 바뀌는 축제형 LED 콘텐츠입니다.</p>
@@ -396,11 +399,7 @@
               <div><dt>연결 데이터</dt><dd>공연 일정, QR 참여, 관람객 수, 설문 응답, 현장 이벤트 인증</dd></div>
               <div><dt>적용 공간</dt><dd>탈춤축제장, 문화예술회관, 야외 LED 무대</dd></div>
             </dl>
-            <div class="live-readout">
-              <strong>관객 반응 데모</strong>
-              <span data-live="andongDance">관객 반응값을 준비하는 중입니다.</span>
-              <div class="live-readout-actions"><button class="live-action" type="button" data-live-action="andongDance">관객 반응 1건 보내기</button></div>
-            </div>
+            <div class="live-readout"><strong>녹화 화면</strong><span>관객 반응이 늘수록 춤사위 주변 빛의 밀도와 색이 바뀝니다. 실제 설치에서는 실시간으로 반영됩니다.</span></div>
           </article>
         </div>
       </section>
@@ -421,7 +420,7 @@
           </div>
           <div class="proposal-panels">
             <article class="proposal-panel active" data-panel="weather">
-              <div class="proposal-visual proposal-weather" aria-hidden="true"><canvas id="propWeatherCanvas"></canvas></div>
+              <div class="proposal-visual proposal-weather" aria-hidden="true"><video src="./assets/video/live/prop-weather.mp4?v=20261103-video" muted loop playsinline preload="metadata"></video></div>
               <div class="proposal-copy">
                 <span>Weather / Season API</span>
                 <h4>계절이 바뀌는 공공 미디어월</h4>
@@ -434,7 +433,7 @@
               </div>
             </article>
             <article class="proposal-panel" data-panel="air">
-              <div class="proposal-visual proposal-air" aria-hidden="true"><canvas id="propAirCanvas"></canvas></div>
+              <div class="proposal-visual proposal-air" aria-hidden="true"><video src="./assets/video/live/prop-air.mp4?v=20261103-video" muted loop playsinline preload="metadata"></video></div>
               <div class="proposal-copy">
                 <span>Air Quality / Safety</span>
                 <h4>아이들의 야외활동 신호등</h4>
@@ -447,7 +446,7 @@
               </div>
             </article>
             <article class="proposal-panel" data-panel="water">
-              <div class="proposal-visual proposal-water" aria-hidden="true"><canvas id="propWaterCanvas"></canvas></div>
+              <div class="proposal-visual proposal-water" aria-hidden="true"><video src="./assets/video/live/prop-water.mp4?v=20261103-video" muted loop playsinline preload="metadata"></video></div>
               <div class="proposal-copy">
                 <span>River / Rainfall Data</span>
                 <h4>도시의 물결과 수위가 보이는 벽</h4>
@@ -460,7 +459,7 @@
               </div>
             </article>
             <article class="proposal-panel" data-panel="mobility">
-              <div class="proposal-visual proposal-mobility" aria-hidden="true"><canvas id="propMobilityCanvas"></canvas></div>
+              <div class="proposal-visual proposal-mobility" aria-hidden="true"><video src="./assets/video/live/prop-mobility.mp4?v=20261103-video" muted loop playsinline preload="metadata"></video></div>
               <div class="proposal-copy">
                 <span>Traffic / Mobility</span>
                 <h4>도시 이동의 리듬</h4>
@@ -473,7 +472,7 @@
               </div>
             </article>
             <article class="proposal-panel" data-panel="energy">
-              <div class="proposal-visual proposal-energy" aria-hidden="true"><canvas id="propEnergyCanvas"></canvas></div>
+              <div class="proposal-visual proposal-energy" aria-hidden="true"><video src="./assets/video/live/prop-energy.mp4?v=20261103-video" muted loop playsinline preload="metadata"></video></div>
               <div class="proposal-copy">
                 <span>Energy / ESG</span>
                 <h4>태양광 꽃시계와 탄소중립 정원</h4>
@@ -486,7 +485,7 @@
               </div>
             </article>
             <article class="proposal-panel" data-panel="festival">
-              <div class="proposal-visual proposal-festival" aria-hidden="true"><canvas id="propFestivalCanvas"></canvas></div>
+              <div class="proposal-visual proposal-festival" aria-hidden="true"><video src="./assets/video/live/prop-festival.mp4?v=20261103-video" muted loop playsinline preload="metadata"></video></div>
               <div class="proposal-copy">
                 <span>Festival / QR Participation</span>
                 <h4>참여자가 많아질수록 피어나는 축제 파사드</h4>
@@ -523,8 +522,18 @@
       <p class="footer-stamp">사이트 최종 업데이트 2026-10-12 · <a href="./privacy">개인정보처리방침</a></p>
     </footer>
     <script src="./site-pages.js"></script>
-    <script src="./spring.js?v=20260801-perf"></script>
-    <script src="./regional-live-data.js?v=20260801-perf"></script>
+    <script>
+      /* 녹화 영상은 화면에 보일 때만 튼다. 영상이 열두 편이라 한꺼번에 돌리지 않는다. */
+      (function () {
+        var vs = document.querySelectorAll(".proposal-visual video, .region-preview video");
+        var play = function (v) { var p = v.play(); if (p && p.catch) p.catch(function () {}); };
+        if (!("IntersectionObserver" in window)) { vs.forEach(play); return; }
+        var io = new IntersectionObserver(function (es) {
+          es.forEach(function (e) { if (e.isIntersecting) play(e.target); else e.target.pause(); });
+        }, { rootMargin: "200px" });
+        vs.forEach(function (v) { io.observe(v); });
+      })();
+    </script>
       <script src="./auth.js?v=20260728-auth"></script>
     <script src="./quote-cta.js?v=20260803-cta"></script>
   </body>
