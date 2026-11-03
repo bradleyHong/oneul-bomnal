@@ -1372,11 +1372,13 @@
         box-shadow: 0 0 26px rgba(255, 255, 255, 0.48);
       }
 
-      #refArtCanvas {
+      #refArtVideo {
         position: absolute;
         inset: 0;
         width: 100%;
         height: 100%;
+        object-fit: cover;
+        display: block;
         z-index: 1;
       }
 
@@ -2808,7 +2810,7 @@
         ["market-coupon", "소상공인", "전통시장 모바일 쿠폰 이벤트", "행사 소개, 상점 지도, 구매 인증, 쿠폰 수령을 연결하는 전통시장 활성화 페이지.", "쿠폰 받기", "event", "쿠폰"],
         ["smallbiz-support", "관공서", "소상공인 디지털 전환 지원", "지원사업 안내와 신청 상담을 받는 B2G 사업 랜딩.", "지원 상담 신청", "public", "상담"],
         ["employee-esg", "기업/공공", "임직원 ESG 참여 캠페인", "조직 내부 ESG 실천 인증과 설문을 함께 받는 캠페인.", "ESG 실천 참여", "report", "ESG"],
-        ["spring-day-clock", "미디어아트", "오늘은 봄날", "대구의 오늘 날씨, 현재 시각, 바람, 구름을 꽃잎과 빛의 궤도로 바꾸는 실시간 미디어아트.", "실시간 작품 보기", "media", "봄날"],
+        ["spring-day-clock", "미디어아트", "오늘은 봄날", "대구의 오늘 날씨, 현재 시각, 바람, 구름을 꽃잎과 빛의 궤도로 바꾸는 실시간 미디어아트.", "작품 영상 보기", "media", "봄날"],
         ["light-walk-air", "미디어아트", "빛의 산책로", "대구 미세먼지와 초미세먼지 데이터를 야외활동 가능 신호와 산책로 빛의 색으로 바꾸는 공공 사이니지.", "공기질 작품 보기", "media", "공기"],
         ["breathing-temperature-garden", "미디어아트", "숨 쉬는 정원", "현재 온도와 체감온도를 꽃의 크기, 색온도, 호흡 리듬으로 시각화하는 실내 미디어월.", "온도 작품 보기", "media", "온도"],
         ["city-flower-rain", "미디어아트", "도시의 꽃비", "강수 확률과 강수량 예보를 꽃비의 밀도, 낙하 속도, 하늘 밝기로 보여주는 축제형 미디어파사드.", "강수 작품 보기", "media", "강수"],
@@ -3271,6 +3273,31 @@
         `;
       }
 
+      /* 2026-11-03 대표: 작품 코드를 웹에 두지 않는다. 미디어아트 사례 화면은 녹화한 반복 영상(assets/video/live/ref-*.mp4)으로 보여 준다.
+         사례마다 같은 계열의 작품을 쓰므로 영상은 아홉 편이다. */
+      const REF_ART_CLIPS = {
+        "spring-day-clock": "spring-clock",
+        "light-walk-air": "dust-walk",
+        "breathing-temperature-garden": "temperature",
+        "city-flower-rain": "rain-flower",
+        "rain-flower-facade": "rain-flower",
+        "festival-crowd-bloom": "rain-flower",
+        "eternal-flower": "rain-flower",
+        "air-garden-led": "air-garden",
+        "daegu-air-interaction": "air-garden",
+        "river-level-wall": "calm-wall",
+        "heatwave-shade-signage": "calm-wall",
+        "noise-calm-wall": "calm-wall",
+        "bus-flow-screen": "mobility",
+        "safe-walk-light": "mobility",
+        "library-reading-light": "library",
+        "daegu-culture-map": "library",
+        "solar-energy-bloom": "energy",
+      };
+      function refArtClip(id) {
+        return REF_ART_CLIPS[id] || "spring-clock";
+      }
+
       function renderCaseHero(item, english, image) {
         const bp = blueprintFor(item);
         const variant = `variant-${item.index % 4}`;
@@ -3359,10 +3386,10 @@
               <aside class="media-console">
                 <div class="media-console-head">
                   <span>LED Media Art Operating Board</span>
-                  <span class="media-live-badge">DATA LIVE</span>
+                  <span class="media-live-badge">녹화 화면</span>
                 </div>
                 <div class="media-screen" aria-label="공공데이터 미디어아트 송출 화면">
-                  <canvas id="refArtCanvas" data-artwork="${item.id}"></canvas>
+                  <video id="refArtVideo" src="./assets/video/live/ref-${refArtClip(item.id)}.mp4?v=20261103-video" muted loop autoplay playsinline aria-label="${item.title} 녹화 화면"></video>
                   <div class="media-screen-label"><span>${item.badge} data</span><strong>${item.title}</strong></div>
                   <div class="media-qr-card"><img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(window.location.href)}" alt="QR" width="80" height="80"><b>QR 참여 연결</b><small>현재 페이지 바로가기</small></div>
                 </div>
@@ -3370,7 +3397,7 @@
                   ${bp.fields.map((field, index) => `<div><span>${field}</span><b data-media-stat="${index}">${bp.stats[index] || "LIVE"}</b></div>`).join("")}
                 </div>
                 <table class="media-live-table" aria-label="실시간 공공데이터 수치 표">
-                  <caption>대구 기준 실시간 데이터</caption>
+                  <caption>대구 기준 실시간 데이터 · 위 화면은 녹화 영상이며, 실제 설치에서는 이 값으로 실시간으로 그립니다</caption>
                   <tbody>
                     <tr><th scope="row">날짜·시간</th><td data-live="time">불러오는 중</td></tr>
                     <tr><th scope="row">연결 데이터</th><td data-live="source">${bp.fields[0]}</td></tr>
@@ -3563,7 +3590,6 @@
         });
       }
     </script>
-    <script src="./spring.js?v=20260801-perf"></script>
     <script>
       const refToggle = document.querySelector('.topbar-toggle');
       const refNav = document.getElementById('ref-nav');

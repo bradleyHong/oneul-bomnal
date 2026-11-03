@@ -10,7 +10,7 @@ import { writeFileSync } from "node:fs";
 const [url, out, list] = process.argv.slice(2);
 const port = 9334 + Math.floor(Math.random() * 500);
 const chrome = spawn("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-  ["--headless=new", `--remote-debugging-port=${port}`, "--hide-scrollbars", ...(process.env.GPU ? ["--use-angle=metal", "--enable-gpu", "--ignore-gpu-blocklist"] : []),
+  [`--remote-debugging-port=${port}`, "--headless=new", "--hide-scrollbars", ...(process.env.GPU ? ["--use-angle=metal", "--enable-gpu", "--ignore-gpu-blocklist"] : []),
    "--force-color-profile=srgb", `--user-data-dir=${process.env.TMPDIR || "/tmp"}/cdp-fr-${port}`, "about:blank"], { stdio: "ignore" });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 let ws;

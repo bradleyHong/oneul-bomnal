@@ -3,7 +3,14 @@
 // 페이지의 시계(performance.now · Date · requestAnimationFrame)를 가짜 시계로 바꿔
 // 한 장씩 정확히 1/fps 초 나아가게 한 뒤 화면을 찍는다. 느린 컴퓨터에서도 끊김 없는 영상이 나온다.
 // 시작 시각은 START(ISO, 기본 2026-11-02T10:10:00+09:00) — 시계 작품용.
-// 로컬 서버(4737)가 떠 있어야 한다. GPU 렌더 큐와 같이 돌리지 않는다.
+// 선택 환경변수 (2026-11-03, 실시간 데이터 작품 녹화용):
+//   SELECTOR  이 요소만 잘라 찍는다 (예: "#lobbyArtCanvas"). 없으면 화면 전체.
+//   DPR       화면 배율 (기본 1). 작은 캔버스를 선명하게 찍을 때 2.
+//   CSS       찍기 전에 넣을 CSS (글자 패널 숨기기 등).
+//   JS        찍기 전에 페이지에서 돌릴 코드 (탭 누르기 등).
+//   WARM      찍기 전에 실제 시간으로 기다릴 초 (3D 모델·데이터가 늦게 뜨는 페이지).
+//   PRE       찍기 전에 가짜 시계로 미리 돌릴 초 (작품이 자리 잡는 시간, 기본 0.33).
+// 로컬 서버가 떠 있어야 한다(URL 에 포트를 적는다). 다른 큐의 pkill 패턴에 안 걸리게 --remote-debugging-port 를 --headless 앞에 둔다. GPU 렌더 큐와 같이 돌리지 않는다.
 import { spawn } from "node:child_process";
 const [url, out, secArg, fpsArg, wArg, hArg] = process.argv.slice(2);
 const SEC = +secArg, FPS = +(fpsArg || 30), W = +(wArg || 1280), H = +(hArg || 720);
@@ -13,7 +20,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const cport = 9334 + Math.floor(Math.random() * 500);
 const chrome = spawn("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-  ["--headless=new", `--remote-debugging-port=${cport}`, "--hide-scrollbars", "--use-angle=metal", "--enable-gpu", "--ignore-gpu-blocklist",
+  [`--remote-debugging-port=${cport}`, "--headless=new", "--hide-scrollbars", "--use-angle=metal", "--enable-gpu", "--ignore-gpu-blocklist",
    "--force-color-profile=srgb", `--user-data-dir=${process.env.TMPDIR || "/tmp"}/cdp-rec-${cport}`, "about:blank"], { stdio: "ignore" });
 let ws;
 for (let i = 0; i < 60; i++) { try { const j = await (await fetch(`http://127.0.0.1:${cport}/json`)).json(); const p = j.find((t) => t.type === "page"); if (p) { ws = new WebSocket(p.webSocketDebuggerUrl); break; } } catch {} await sleep(200); }
@@ -25,7 +32,8 @@ const send = (method, params = {}) => new Promise((r) => { const i = ++id; pend.
 const ev = async (e) => { const d = await send("Runtime.evaluate", { expression: e, returnByValue: true, awaitPromise: true }); return d.result.result.value; };
 
 await send("Runtime.enable");
-await send("Emulation.setDeviceMetricsOverride", { width: W, height: H, deviceScaleFactor: 1, mobile: false });
+const DPR = +(process.env.DPR || 1);
+await send("Emulation.setDeviceMetricsOverride", { width: W, height: H, deviceScaleFactor: DPR, mobile: false });
 // 가짜 시계: rAF 콜백은 모아 두었다가 __step 때만 부른다
 await send("Page.addScriptToEvaluateOnNewDocument", { source: `(() => {
   let t = 0; const T0 = ${START};
@@ -43,15 +51,26 @@ await send("Page.addScriptToEvaluateOnNewDocument", { source: `(() => {
 await send("Page.enable");
 await send("Page.navigate", { url });
 for (let i = 0; i < 100; i++) { await sleep(150); if (await ev("window.__ready && window.__ready()")) break; }
-await sleep(800);
+if (process.env.CSS) await ev(`(() => { const s = document.createElement('style'); s.textContent = ${JSON.stringify(process.env.CSS)}; document.head.appendChild(s); })()`);
+if (process.env.JS) { await ev(process.env.JS); for (let i = 0; i < 3; i++) await ev(`window.__step(${1000 / FPS})`); }
+await sleep(800 + 1000 * +(process.env.WARM || 0));
 // 처음 몇 장은 버린다 (작품이 자리 잡는 시간)
-for (let i = 0; i < 10; i++) await ev(`window.__step(${1000 / FPS})`);
+const PRE = Math.round(FPS * +(process.env.PRE || 0.33));
+for (let i = 0; i < PRE; i++) await ev(`window.__step(${1000 / FPS})`);
+let clip = { x: 0, y: 0, width: W, height: H, scale: 1 };
+if (process.env.SELECTOR) {
+  const r = await ev(`(() => { const e = document.querySelector(${JSON.stringify(process.env.SELECTOR)}); if (!e) return null;
+    e.scrollIntoView({ block: 'center' }); const b = e.getBoundingClientRect(); return { x: b.left + scrollX, y: b.top + scrollY, w: b.width, h: b.height }; })()`);
+  if (!r) { console.error("SELECTOR 없음:", process.env.SELECTOR); process.exit(1); }
+  clip = { x: Math.round(r.x), y: Math.round(r.y), width: Math.floor(r.w), height: Math.floor(r.h), scale: 1 };
+  console.log("clip", JSON.stringify(clip));
+}
 const ff = spawn("ffmpeg", ["-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", String(FPS), "-i", "-",
-  "-c:v", "libx264", "-preset", "slow", "-crf", process.env.CRF || "20", "-pix_fmt", "yuv420p", "-movflags", "+faststart", "-an", out],
+  "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2", "-c:v", "libx264", "-preset", "slow", "-crf", process.env.CRF || "20", "-pix_fmt", "yuv420p", "-movflags", "+faststart", "-an", out],
   { stdio: ["pipe", "inherit", "inherit"] });
 for (let n = 0; n < N; n++) {
   await ev(`window.__step(${1000 / FPS})`);
-  const s = await send("Page.captureScreenshot", { format: "png", clip: { x: 0, y: 0, width: W, height: H, scale: 1 } });
+  const s = await send("Page.captureScreenshot", { format: "png", clip, captureBeyondViewport: false });
   const buf = Buffer.from(s.result.data, "base64");
   if (!ff.stdin.write(buf)) await new Promise((r) => ff.stdin.once("drain", r));
   if (n % 60 === 59) console.log(`frame ${n + 1}/${N}`);

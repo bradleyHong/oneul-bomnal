@@ -49,12 +49,12 @@
         <section class="fleet-card" aria-labelledby="liveTitle">
           <h2 id="liveTitle">지금 송출 중인 화면</h2>
           <p class="fleet-card-desc">
-            우리 기관 화면에 현재 나가고 있는 미디어아트입니다. 대구 실시간 공공데이터가 그대로 반영됩니다.
+            우리 기관 화면에 나가는 미디어아트의 녹화 화면입니다. 실제 화면에서는 대구 실시간 공공데이터가 그대로 반영됩니다.
           </p>
           <div class="client-live">
-            <canvas id="lobbyArtCanvas"></canvas>
+            <video src="./assets/video/live/lobby.mp4?v=20261103-video" muted loop autoplay playsinline aria-label="로비 미디어아트 녹화 화면" style="width:100%;height:100%;object-fit:cover;display:block"></video>
           </div>
-          <p class="fleet-tip" data-lobby-readout>대구 실시간 데이터를 불러오는 중입니다.</p>
+          <p class="fleet-tip">설치된 화면에서는 대구의 기온·바람·미세먼지에 따라 꽃잎의 양과 빛이 바뀝니다.</p>
         </section>
 
         <section class="fleet-card" aria-labelledby="reqTitle">
@@ -112,7 +112,6 @@
     </footer>
 
     <script src="./auth.js?v=20260831-ax"></script>
-    <script src="./lobby-art.js?v=20260728-lobby2"></script>
     <script>
       (async () => {
         try {

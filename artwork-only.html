@@ -7,43 +7,16 @@
     <title>오늘은 봄날 | 작품 단독 송출</title>
     <meta name="robots" content="noindex, follow" />
     <link rel="canonical" href="https://publicbloom.art/" />
-    <link rel="preconnect" href="https://api.open-meteo.com" />
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <!-- 회사 글꼴. 못 받아도 시스템 글꼴로 그대로 읽힌다(font-display: swap). -->
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Noto+Serif+KR:wght@400;500;600;700&amp;display=swap" />
-    <link rel="stylesheet" href="./styles.css?v=20261013-four3" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="./assets/favicon-180.png" />
+    <style>
+      /* 2026-11-03 대표: 작품 코드를 웹에 두지 않는다 — 녹화한 반복 영상만 띄운다.
+         실제 설치 현장에서는 미디어박스가 대구 날씨에 맞춰 실시간으로 그린다. */
+      html, body { margin: 0; height: 100%; overflow: hidden; background: #0d1017; }
+      video { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+    </style>
   </head>
-  <body class="artwork-page">
-    <main class="spring-stage" aria-label="대구 날씨와 시간에 반응하는 오늘은 봄날 시계 미디어아트 단독 송출">
-      <canvas id="springCanvas"></canvas>
-      <section class="copy" aria-live="polite">
-        <p class="kicker" id="placeLabel">대구의 하늘을 읽는 중</p>
-        <h1>오늘은 봄날</h1>
-        <p class="line" id="weatherLine">대구의 오늘 날씨와 현재 시간이 시침, 초침, 꽃잎의 궤도를 바꿉니다.</p>
-      </section>
-      <aside class="panel" aria-label="날씨와 작품 상태">
-        <div>
-          <span>기온</span>
-          <strong id="tempValue">--</strong>
-        </div>
-        <div>
-          <span>하늘</span>
-          <strong id="skyValue">--</strong>
-        </div>
-        <div>
-          <span>바람</span>
-          <strong id="windValue">--</strong>
-        </div>
-        <button id="refreshButton" type="button">대구 하늘 다시 읽기</button>
-      </aside>
-    </main>
-    <script src="./spring.js?v=20260801-perf"></script>
+  <body>
+    <video src="./assets/video/live/artwork-only.mp4?v=20261103-video" muted loop autoplay playsinline aria-label="대구 날씨와 시간에 반응하는 오늘은 봄날 시계 미디어아트 (녹화 영상)"></video>
   </body>
 </html>
