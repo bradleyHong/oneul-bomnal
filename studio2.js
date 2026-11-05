@@ -172,6 +172,7 @@
       "",
       "작품: " + p.title + " (" + p.en + ", 코드 " + p.id + ")",
       p.loop ? "아나모픽 · " + p.loop + "초 반복 (렌탈 LED 2:1 기준, 다른 규격은 틀까지 다시 렌더)" : "색: " + p.pal + " · 빠르기: " + (p.speed === 1 ? "보통 (30초 반복)" : "느리게 (60초 반복)"),
+      "금액: 110만원 (맞춤 크기 · 렌더링 · 로고 넣기 · 문구 넣기 포함)",
       "화면: " + scr + (p.loop ? "" : "\n단독 구매: 판매 후 이 작품은 더 이상 판매하지 않음"),
       v("note") ? "남길 말: " + v("note") : "",
       "",
@@ -187,7 +188,7 @@
         if (typeof window.gtag === "function") window.gtag("event", "generate_lead", { lead_source: "studio_order", buyer_type: shop ? "shop" : "org", artwork: p.title });
         if (typeof window.bnTrack === "function") window.bnTrack("inquiry");
         form.reset(); send.disabled = false;
-        say("주문을 받았습니다. 평일 하루 안에 " + v("email") + " 로 금액과 결제 방법을 보내 드립니다.", "ok");
+        say("주문을 받았습니다. 평일 하루 안에 " + v("email") + " 로 결제 방법을 보내 드립니다.", "ok");
       })
       .catch(function () { send.disabled = false; say("전송이 되지 않았습니다. 010-4292-1999 또는 studio@publicbloom.art 로 연락 주세요.", "err"); });
   });

@@ -117,3 +117,6 @@
 .sx-only { margin: 18px 0 0; padding: 10px 14px; border-left: 3px solid var(--glow, #d4ff3a); background: color-mix(in srgb, var(--glow, #d4ff3a) 7%, transparent);
   border-radius: 0 10px 10px 0; font-size: 14px; line-height: 1.55; color: var(--ink, #f3f2ee); }
 .sx-only[hidden] { display: none; }
+.sx-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 18px 0 0; }
+.sx-price strong { font-size: 26px; font-weight: 700; color: var(--glow, #d4ff3a); letter-spacing: -.01em; }
+.sx-price span { font-size: 13px; color: var(--deep, rgba(243,242,238,.68)); }
