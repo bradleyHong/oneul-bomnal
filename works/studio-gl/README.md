@@ -70,3 +70,8 @@ node tools/render-gl-video.mjs "http://localhost:4737/works/studio-gl/view.html?
 렌탈 LED 2:1 아나모픽 29편(봄 10 · 크리스마스 19)도 목록 맨 뒤에 실린다. 코드는 `works/_source/anamorphic/`(웹에 안 올림), 목록은 `anamorphic.json`.
 `python3 tools/studio-anamorphic.py` 가 미리보기(864×432)를 만들고, 비메오에 없으면 올린 뒤 catalog.js 를 다시 만든다.
 손님 화면에서는 '아나모픽' · '크리스마스' 칩으로 고르고, 크게 보기는 작품 비율(2:1) 그대로, 빠르기 고르기는 숨긴다(15초 루프).
+
+## 자연의 기하학 연작 (2026-11-06)
+
+주상절리 · 앵무조개 · 방산충 · 튜링 무늬 · 황금각 · 소리의 무늬 · 잠자리 날개 · 비스무트 결정 · 고사리 새순 · 결정의 심장, 10편 (`works/geo-*.js`).
+order.txt 맨 뒤 일반 작품으로 실린다. 카드 미리보기는 `bash tools/studio-preview.sh <id>...` (960×540 렌더 → 854×480, 12초 장면 포스터. 잠자리 날개만 18초로 다시 뽑음).

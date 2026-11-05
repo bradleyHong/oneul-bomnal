@@ -42,3 +42,14 @@ drop-impression
 drop-haystacks
 drop-breeze
 drop-self
+# 자연의 기하학 연작 (2026-11-06)
+geo-basalt
+geo-nautilus
+geo-radiolaria
+geo-turing
+geo-phyllotaxis
+geo-cymatics
+geo-wing
+geo-bismuth
+geo-koru
+geo-geode
