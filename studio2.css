@@ -120,3 +120,4 @@
 .sx-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 18px 0 0; }
 .sx-price strong { font-size: 26px; font-weight: 700; color: var(--glow, #d4ff3a); letter-spacing: -.01em; }
 .sx-price span { font-size: 13px; color: var(--deep, rgba(243,242,238,.68)); }
+.sx-price[hidden] { display: none; }

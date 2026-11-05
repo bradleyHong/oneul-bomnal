@@ -112,7 +112,7 @@
     radio($("[data-speed-group]"), "data-speed", 1);
     // 아나모픽(15초 루프 영상)은 빠르기를 고르지 않는다
     $("[data-speed-group]").hidden = $("[data-speed-label]").hidden = !!w.loop;
-    $("[data-only]").hidden = !!w.loop;                      // 단독 판매 안내는 렌탈용 아나모픽에는 안 붙인다
+    $("[data-only]").hidden = $("[data-price]").hidden = !!w.loop;   // 렌탈용 아나모픽은 값을 나중에 정한다                      // 단독 판매 안내는 렌탈용 아나모픽에는 안 붙인다
     if (typeof view.showModal === "function") view.showModal(); else view.setAttribute("open", "");
     requestAnimationFrame(frame);
     if (typeof window.gtag === "function") window.gtag("event", "view_item", { item_id: id, item_name: w.title });
@@ -172,7 +172,7 @@
       "",
       "작품: " + p.title + " (" + p.en + ", 코드 " + p.id + ")",
       p.loop ? "아나모픽 · " + p.loop + "초 반복 (렌탈 LED 2:1 기준, 다른 규격은 틀까지 다시 렌더)" : "색: " + p.pal + " · 빠르기: " + (p.speed === 1 ? "보통 (30초 반복)" : "느리게 (60초 반복)"),
-      "금액: 110만원 (맞춤 크기 · 렌더링 · 로고 넣기 · 문구 넣기 포함)",
+      (p.loop ? "금액: 렌탈 영상 · 상담 후 안내" : "금액: 110만원 (부가세 포함 · 맞춤 크기 · 렌더링 · 로고 넣기 · 문구 넣기 포함)"),
       "화면: " + scr + (p.loop ? "" : "\n단독 구매: 판매 후 이 작품은 더 이상 판매하지 않음"),
       v("note") ? "남길 말: " + v("note") : "",
       "",
