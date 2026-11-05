@@ -121,3 +121,29 @@
 .sx-price strong { font-size: 26px; font-weight: 700; color: var(--glow, #d4ff3a); letter-spacing: -.01em; }
 .sx-price span { font-size: 13px; color: var(--deep, rgba(243,242,238,.68)); }
 .sx-price[hidden] { display: none; }
+/* 크게 보기 닫기 단추: 영상 오른쪽 위 */
+.sx-view-x { position: absolute; top: 12px; right: 12px; z-index: 5; width: 40px; height: 40px; display: grid; place-items: center; padding: 0;
+  border: 1px solid rgba(243,242,238,.22); border-radius: 999px; background: rgba(12,12,14,.72); color: var(--ink, #f3f2ee); cursor: pointer;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.sx-view-x:hover { background: rgba(40,40,44,.9); }
+.sx-view-x:focus-visible { outline: 2px solid var(--glow); outline-offset: 2px; }
+@media (max-width: 960px) { .sx-view-x { top: 10px; right: 10px; width: 38px; height: 38px; } }
+/* 색 고르기는 작게 한 줄, 주문하기 · 닫기는 창 아래에 늘 붙어 있게 */
+.sx-swatches { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.sx-swatches button { flex-direction: column; justify-content: center; gap: 5px; padding: 8px 4px 7px; border-radius: 10px; font-size: 11.5px; line-height: 1.25; text-align: center; }
+.sx-swatches button i { width: 18px; height: 18px; }
+.sx-view-act { position: sticky; bottom: 0; z-index: 3; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); margin: 18px -26px -28px; padding: 12px 26px 16px;
+  background: linear-gradient(to bottom, rgba(12,12,14,0), #0c0c0e 14px); }
+.sx-view-act .sx-btn { padding: 13px 10px; }
+.sx-view-side .sx-note { margin-top: 12px; }
+@media (max-width: 960px) {
+  .sx-view { max-height: 94dvh; }
+  .sx-view-side { padding: 18px 18px 22px; }
+  .sx-view-side h2 { font-size: 22px; margin: 4px 0 8px; }
+  .sx-view-desc { font-size: 13px; line-height: 1.6; margin: 0 0 4px; }
+  .sx-label { margin: 12px 0 6px; }
+  .sx-price { margin-top: 12px; }
+  .sx-price strong { font-size: 22px; }
+  .sx-only { margin-top: 10px; padding: 8px 12px; font-size: 13px; }
+  .sx-view-act { margin: 14px -18px -22px; padding: 10px 18px calc(12px + env(safe-area-inset-bottom, 0px)); }
+}
