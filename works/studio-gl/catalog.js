@@ -1976,6 +1976,57 @@ window.SX_CATALOG = [
   ]
  },
  {
+  "id": "drop-self",
+  "title": "자화상",
+  "en": "Self",
+  "mood": [
+   "calm"
+  ],
+  "desc": "해 질 녘 연못에 물방울이 내려앉을 때마다 보이지 않던 옆얼굴과 어깨가 조금씩 드러납니다. 그게 나인지는 모르겠지만, 잠시 머물다 빛이 되어 날아갑니다.",
+  "palettes": [
+   {
+    "name": "해 질 녘",
+    "colors": [
+     "#3a3060",
+     "#8a7ab8",
+     "#ff9a8a",
+     "#ffd0a0"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243781052?h=072b3fae49"
+   },
+   {
+    "name": "푸른 저녁",
+    "colors": [
+     "#26385e",
+     "#7090c8",
+     "#ffa8a0",
+     "#ffe0c0"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243781403?h=4e3f1745cf"
+   },
+   {
+    "name": "연분홍",
+    "colors": [
+     "#4a3a5a",
+     "#c0a8d0",
+     "#ffb0c0",
+     "#fff0e0"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243781818?h=4d4d87605f"
+   },
+   {
+    "name": "금빛 저녁",
+    "colors": [
+     "#3a3a4a",
+     "#a0a0b8",
+     "#ff9a50",
+     "#ffe090"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243782237?h=350c504eed"
+   }
+  ]
+ },
+ {
   "id": "ana-a01",
   "title": "봄날의 창 II",
   "en": "Spring Window II",

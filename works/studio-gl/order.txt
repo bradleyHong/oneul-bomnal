@@ -41,4 +41,4 @@ drop-nympheas
 drop-impression
 drop-haystacks
 drop-breeze
-# drop-self  (미리보기·비메오 준비되면 켠다)
+drop-self
