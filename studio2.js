@@ -112,6 +112,7 @@
     radio($("[data-speed-group]"), "data-speed", 1);
     // 아나모픽(15초 루프 영상)은 빠르기를 고르지 않는다
     $("[data-speed-group]").hidden = $("[data-speed-label]").hidden = !!w.loop;
+    $("[data-only]").hidden = !!w.loop;                      // 단독 판매 안내는 렌탈용 아나모픽에는 안 붙인다
     if (typeof view.showModal === "function") view.showModal(); else view.setAttribute("open", "");
     requestAnimationFrame(frame);
     if (typeof window.gtag === "function") window.gtag("event", "view_item", { item_id: id, item_name: w.title });
@@ -171,7 +172,7 @@
       "",
       "작품: " + p.title + " (" + p.en + ", 코드 " + p.id + ")",
       p.loop ? "아나모픽 · " + p.loop + "초 반복 (렌탈 LED 2:1 기준, 다른 규격은 틀까지 다시 렌더)" : "색: " + p.pal + " · 빠르기: " + (p.speed === 1 ? "보통 (30초 반복)" : "느리게 (60초 반복)"),
-      "화면: " + scr,
+      "화면: " + scr + (p.loop ? "" : "\n단독 구매: 판매 후 이 작품은 더 이상 판매하지 않음"),
       v("note") ? "남길 말: " + v("note") : "",
       "",
       "[동의 기록] 개인정보 수집·이용: 동의함"

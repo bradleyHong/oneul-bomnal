@@ -113,3 +113,7 @@
   background: color-mix(in srgb, var(--glow, #d4ff3a) 7%, transparent); font-size: 14px; line-height: 1.5; color: var(--ink, #f3f2ee); }
 .sx-point b { flex: none; padding: 4px 12px; border-radius: 999px; background: var(--glow, #d4ff3a); color: var(--void, #09090a); font-size: 13px; font-weight: 700; }
 @media (max-width: 640px) { .sx-point { border-radius: 18px; padding: 10px 14px 12px 10px; } }
+.sx-points { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.sx-only { margin: 18px 0 0; padding: 10px 14px; border-left: 3px solid var(--glow, #d4ff3a); background: color-mix(in srgb, var(--glow, #d4ff3a) 7%, transparent);
+  border-radius: 0 10px 10px 0; font-size: 14px; line-height: 1.55; color: var(--ink, #f3f2ee); }
+.sx-only[hidden] { display: none; }
