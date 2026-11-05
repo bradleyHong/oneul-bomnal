@@ -106,3 +106,18 @@
   .sx-how ol { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) { .sx-card-hit { transition: none; } }
+
+/* 화면 비율 맞춤 안내 (고르는 단추 대신 포인트 한 줄) */
+.sx-point { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0; padding: 10px 18px 10px 10px;
+  border: 1px solid color-mix(in srgb, var(--glow, #d4ff3a) 40%, transparent); border-radius: 999px;
+  background: color-mix(in srgb, var(--glow, #d4ff3a) 7%, transparent); font-size: 14px; line-height: 1.5; color: var(--ink, #f3f2ee); }
+.sx-point b { flex: none; padding: 4px 12px; border-radius: 999px; background: var(--glow, #d4ff3a); color: var(--void, #09090a); font-size: 13px; font-weight: 700; }
+@media (max-width: 640px) { .sx-point { border-radius: 18px; padding: 10px 14px 12px 10px; } }
+.sx-points { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.sx-only { margin: 18px 0 0; padding: 10px 14px; border-left: 3px solid var(--glow, #d4ff3a); background: color-mix(in srgb, var(--glow, #d4ff3a) 7%, transparent);
+  border-radius: 0 10px 10px 0; font-size: 14px; line-height: 1.55; color: var(--ink, #f3f2ee); }
+.sx-only[hidden] { display: none; }
+.sx-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 18px 0 0; }
+.sx-price strong { font-size: 26px; font-weight: 700; color: var(--glow, #d4ff3a); letter-spacing: -.01em; }
+.sx-price span { font-size: 13px; color: var(--deep, rgba(243,242,238,.68)); }
+.sx-price[hidden] { display: none; }

@@ -27,7 +27,9 @@
   /* ── 목록 ─────────────────────────────────────────── */
   var grid = $("[data-grid]");
   function cards() {
-    var list = window.SX_CATALOG || [];
+    // 들어올 때마다 순서를 섞는다 (늘 같은 작품이 맨 앞에 서지 않게)
+    var list = (window.SX_CATALOG || []).slice();
+    for (var k = list.length - 1; k > 0; k--) { var j = Math.floor(Math.random() * (k + 1)), t = list[k]; list[k] = list[j]; list[j] = t; }
     grid.innerHTML = list.map(function (w, i) {
       var moods = (w.mood || []).map(function (m) { return MOOD[m]; }).filter(Boolean).join(" · ");
       return '<article class="sx-card" data-id="' + w.id + '" data-moods="' + (w.mood || []).join(" ") + '">' +
@@ -59,15 +61,8 @@
     });
   }
 
-  /* 화면 모양 · 분위기 */
-  var ratioGroup = $("[data-ratio-group]"), moodGroup = $("[data-mood-group]");
-  ratioGroup.addEventListener("click", function (e) {
-    var b = e.target.closest("[data-ratio]"); if (!b) return;
-    state.ratio = b.getAttribute("data-ratio"); radio(ratioGroup, "data-ratio", state.ratio);
-    var pick = { "16:9": "3840x2160", "2:1": "2064x1032", "9:16": "1080x1920", "32:9": "3840x1080" }[state.ratio];
-    var sel = $("[data-screen]"); if (sel && pick) { sel.value = pick; syncScreen(); }
-    if (view.open) frame();
-  });
+  /* 분위기 (화면 비율은 고르지 않는다. 주문서에서 규격을 받아 그 비율로 새로 렌더) */
+  var moodGroup = $("[data-mood-group]");
   moodGroup.addEventListener("click", function (e) {
     var b = e.target.closest("[data-mood]"); if (!b) return;
     state.mood = b.getAttribute("data-mood"); radio(moodGroup, "data-mood", state.mood); filter();
@@ -117,6 +112,7 @@
     radio($("[data-speed-group]"), "data-speed", 1);
     // 아나모픽(15초 루프 영상)은 빠르기를 고르지 않는다
     $("[data-speed-group]").hidden = $("[data-speed-label]").hidden = !!w.loop;
+    $("[data-only]").hidden = $("[data-price]").hidden = !!w.loop;   // 렌탈용 아나모픽은 값을 나중에 정한다                      // 단독 판매 안내는 렌탈용 아나모픽에는 안 붙인다
     if (typeof view.showModal === "function") view.showModal(); else view.setAttribute("open", "");
     requestAnimationFrame(frame);
     if (typeof window.gtag === "function") window.gtag("event", "view_item", { item_id: id, item_name: w.title });
@@ -176,7 +172,8 @@
       "",
       "작품: " + p.title + " (" + p.en + ", 코드 " + p.id + ")",
       p.loop ? "아나모픽 · " + p.loop + "초 반복 (렌탈 LED 2:1 기준, 다른 규격은 틀까지 다시 렌더)" : "색: " + p.pal + " · 빠르기: " + (p.speed === 1 ? "보통 (30초 반복)" : "느리게 (60초 반복)"),
-      "화면: " + scr + " · 미리 본 화면 모양 " + p.ratio,
+      (p.loop ? "금액: 렌탈 영상 · 상담 후 안내" : "금액: 110만원 (부가세 포함 · 맞춤 크기 · 렌더링 · 로고 넣기 · 문구 넣기 포함)"),
+      "화면: " + scr + (p.loop ? "" : "\n단독 구매: 판매 후 이 작품은 더 이상 판매하지 않음"),
       v("note") ? "남길 말: " + v("note") : "",
       "",
       "[동의 기록] 개인정보 수집·이용: 동의함"
@@ -191,7 +188,7 @@
         if (typeof window.gtag === "function") window.gtag("event", "generate_lead", { lead_source: "studio_order", buyer_type: shop ? "shop" : "org", artwork: p.title });
         if (typeof window.bnTrack === "function") window.bnTrack("inquiry");
         form.reset(); send.disabled = false;
-        say("주문을 받았습니다. 평일 하루 안에 " + v("email") + " 로 금액과 결제 방법을 보내 드립니다.", "ok");
+        say("주문을 받았습니다. 평일 하루 안에 " + v("email") + " 로 결제 방법을 보내 드립니다.", "ok");
       })
       .catch(function () { send.disabled = false; say("전송이 되지 않았습니다. 010-4292-1999 또는 studio@publicbloom.art 로 연락 주세요.", "err"); });
   });
