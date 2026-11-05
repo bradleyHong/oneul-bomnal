@@ -110,7 +110,7 @@
       return '<button type="button" role="radio" aria-checked="' + (i === 0) + '" data-pal="' + i + '"><i style="background:' + swatchBg(p.colors) + '"></i>' + p.name + '</button>';
     }).join("");
     // 렌탈용 아나모픽은 값을 나중에 정하고, 단독 판매 안내도 붙이지 않는다
-    $("[data-only]").hidden = $("[data-price]").hidden = !!w.loop;
+    $("[data-only]").hidden = $("[data-price]").hidden = $("[data-deliver]").hidden = !!w.loop;
     if (typeof view.showModal === "function") view.showModal(); else view.setAttribute("open", "");
     requestAnimationFrame(frame);
     if (typeof window.gtag === "function") window.gtag("event", "view_item", { item_id: id, item_name: w.title });
@@ -183,7 +183,7 @@
         if (typeof window.gtag === "function") window.gtag("event", "generate_lead", { lead_source: "studio_order", buyer_type: shop ? "shop" : "org", artwork: p.title });
         if (typeof window.bnTrack === "function") window.bnTrack("inquiry");
         form.reset(); send.disabled = false;
-        say("주문을 받았습니다. 평일 하루 안에 " + v("email") + " 로 결제 방법을 보내 드립니다.", "ok");
+        say("주문을 받았습니다. 평일 하루 안에 " + v("email") + " 로 결제 방법을 보내 드립니다. 입금 후 48시간 안에 영상을 전용 클라우드로 전달합니다.", "ok");
       })
       .catch(function () { send.disabled = false; say("전송이 되지 않았습니다. 010-4292-1999 또는 studio@publicbloom.art 로 연락 주세요.", "err"); });
   });
