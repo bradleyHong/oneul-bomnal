@@ -60,6 +60,13 @@ section+section{border-top:1px solid var(--line)}
 .seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.08)}
 .seg button small{font-weight:600;color:var(--green-2);margin-left:4px;font-size:12px}
 .works-label{font-size:14px;color:var(--ink-2);margin:18px 0 10px}
+.works-label b{color:var(--ink)}
+@media (min-width:761px){.works{flex-wrap:wrap;overflow:visible}}
+.cats{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;-webkit-overflow-scrolling:touch}
+.cats button{flex:0 0 auto;border:1px solid var(--line);background:var(--card);font:inherit;font-size:14.5px;font-weight:600;color:var(--ink-2);padding:8px 14px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.cats button small{font-size:12px;font-weight:600;margin-left:6px;color:var(--ink-2);opacity:.7}
+.cats button[aria-pressed="true"]{background:var(--green);border-color:var(--green);color:#fff}
+.cats button[aria-pressed="true"] small{color:#fff}
 .works{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 12px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
 .works button{flex:0 0 auto;width:112px;border:0;background:none;font:inherit;text-align:left;cursor:pointer;scroll-snap-align:start;color:var(--ink)}
 .works .th{display:block;width:112px;height:112px;border-radius:12px;overflow:hidden;background:#111;outline:2px solid transparent;outline-offset:2px;transition:outline-color .2s}
@@ -175,7 +182,8 @@ footer img{height:26px;margin:0 auto 10px;opacity:.9}
         <button data-mode="same" aria-pressed="false">같은 작품 두 면</button>
       </div>
     </div>
-    <p class="works-label">오늘은 봄날 작품 · 눌러서 이 벽에 틀어 보기</p>
+    <p class="works-label">오늘은 봄날 작품 <b id="workCount"></b>편 · 눌러서 이 벽에 틀어 보기</p>
+    <div class="cats" id="cats" role="group" aria-label="작품 갈래"></div>
     <div class="works" id="works"></div>
   </div>
 </div>
@@ -285,22 +293,14 @@ footer img{height:26px;margin:0 auto 10px;opacity:.9}
   이 페이지는 미팅용 비공개 주소입니다 · 공간 사진은 현장 합성 시안입니다
 </footer>
 
+<script src="works.js?v=2"></script>
 <script>
 (() => {
   // 작품 목록 (media/ 안의 720×720 정사각 루프)
-  const WORKS = [
-    { id: "orig",     name: "제안 시안",   sub: "처음 보여 드린 물결" },
-    { id: "caustics", name: "물빛",        sub: "물 아래 비치는 빛" },
-    { id: "aurora",   name: "극광",        sub: "북쪽 하늘의 빛" },
-    { id: "nympheas", name: "수련",        sub: "방울방울, 나" },
-    { id: "forest",   name: "빛 내리는 숲", sub: "아침 숲" },
-    { id: "cloud",    name: "구름 바다",    sub: "새벽" },
-    { id: "sprout",   name: "움트는 결",    sub: "봄 · 새순" },
-    { id: "lineage",  name: "이어지는 선",  sub: "삶의 선" },
-    { id: "flow",     name: "결의 흐름",    sub: "봄밤" },
-    { id: "nebula",   name: "성운",        sub: "창조의 기둥" },
-    { id: "jelly",    name: "빛 해파리",    sub: "밤거리" },
-  ];
+  // 작품 목록: works.js (tools/make-meet-media.py 가 만든다). media/ 안의 540×540 정사각 루프
+  const M = window.MEET_WORKS;
+  const ORIG = { id: "orig", name: "제안 시안", sub: "처음 보여 드린 물결" };
+  let cat = "code";
   // 화면 자리 (사진 1672×940 픽셀): [x0, y0, x1, y1]
   const IMG = { w: 1672, h: 940 };
   const OPTS = {
@@ -368,21 +368,36 @@ footer img{height:26px;margin:0 auto 10px;opacity:.9}
     document.querySelectorAll("[data-work]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.work === id)));
   }
 
-  // 작품 버튼
-  const strip = $("#works"), tStrip = $("#tStrip");
-  WORKS.forEach((w) => {
-    const thumb = w.id === "orig" ? "img/space-b.jpg" : "media/" + w.id + ".jpg";
+  // 작품 갈래 · 버튼
+  const strip = $("#works"), tStrip = $("#tStrip"), cats = $("#cats");
+  const thumbOf = (w) => (w.id === "orig" ? "img/space-b.jpg" : "media/" + w.id + ".jpg");
+  const pos = (w) => (w.id === "orig" ? 'style="object-position:30% 50%"' : "");
+  function renderList() {
+    strip.innerHTML = ""; tStrip.innerHTML = "";
+    [ORIG, ...M.works.filter((w) => w.cat === cat)].forEach((w) => {
+      const b = document.createElement("button");
+      b.dataset.work = w.id; b.setAttribute("aria-pressed", String(w.id === work));
+      b.innerHTML = `<span class="th"><img src="${thumbOf(w)}" alt="" loading="lazy" ${pos(w)}></span><span class="nm">${w.name}</span><span class="sub">${w.sub}</span>`;
+      b.onclick = () => setWork(w.id);
+      strip.appendChild(b);
+      const t = document.createElement("button");
+      t.dataset.work = w.id; t.setAttribute("aria-label", w.name); t.setAttribute("aria-pressed", String(w.id === work));
+      t.innerHTML = `<img src="${thumbOf(w)}" alt="" loading="lazy" ${pos(w)}>`;
+      t.onclick = (e) => { e.stopPropagation(); setWork(w.id); };
+      tStrip.appendChild(t);
+    });
+    strip.scrollLeft = 0;
+  }
+  M.cats.forEach((c) => {
+    const n = M.works.filter((w) => w.cat === c.id).length;
     const b = document.createElement("button");
-    b.dataset.work = w.id;
-    b.innerHTML = `<span class="th"><img src="${thumb}" alt="" loading="lazy" ${w.id === "orig" ? 'style="object-position:30% 50%"' : ""}></span><span class="nm">${w.name}</span><span class="sub">${w.sub}</span>`;
-    b.onclick = () => setWork(w.id);
-    strip.appendChild(b);
-    const t = document.createElement("button");
-    t.dataset.work = w.id; t.setAttribute("aria-label", w.name);
-    t.innerHTML = `<img src="${thumb}" alt="" ${w.id === "orig" ? 'style="object-position:30% 50%"' : ""}>`;
-    t.onclick = (e) => { e.stopPropagation(); setWork(w.id); };
-    tStrip.appendChild(t);
+    b.dataset.cat = c.id; b.setAttribute("aria-pressed", String(c.id === cat));
+    b.innerHTML = `${c.name}<small>${n}</small>`;
+    b.onclick = () => { cat = c.id; cats.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); renderList(); };
+    cats.appendChild(b);
   });
+  $("#workCount").textContent = M.works.length;
+  renderList();
 
   document.querySelectorAll("[data-opt]").forEach((b) => b.onclick = () => {
     opt = b.dataset.opt;
