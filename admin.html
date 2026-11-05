@@ -16,6 +16,18 @@
     <link rel="stylesheet" href="./styles.css?v=20261013-four3" />
     <link rel="stylesheet" href="./fleet.css?v=20260911-dark" />
     <link rel="icon" href="./assets/favicon-32.png" type="image/png" sizes="32x32" />
+    <style>
+      /* 미팅 자료 · 비공개 링크 */
+      .meet-list{display:grid;gap:14px}
+      .meet-item{display:grid;grid-template-columns:200px 1fr 120px;gap:18px;align-items:center;padding:14px;border:1px solid rgba(125,178,255,.18);border-radius:12px}
+      .meet-item img.th{width:200px;aspect-ratio:16/9;object-fit:cover;border-radius:8px}
+      .meet-item img.qr{width:120px;height:120px;border-radius:8px;background:#fff}
+      .meet-item h3{margin:0 0 4px;font-size:16px;color:var(--ink)}
+      .meet-item p{margin:0;font-size:13px;color:var(--muted);line-height:1.6}
+      .meet-item code{font-size:12.5px;color:var(--ink);word-break:break-all}
+      .meet-item .fleet-actions{margin-top:10px}
+      @media (max-width:760px){.meet-item{grid-template-columns:1fr}.meet-item img.th{width:100%}.meet-item img.qr{width:140px;height:140px}}
+    </style>
   </head>
   <body class="fleet-page">
     <header class="fleet-nav">
@@ -40,6 +52,29 @@
         <article><span>운영 중</span><strong id="sumOperating">0</strong></article>
         <article><span>조치 필요</span><strong id="sumIssues">0</strong></article>
         <article><span>연 계약 매출</span><strong id="sumRevenue">0원</strong></article>
+      </section>
+
+      <!-- 미팅 자료: /p/ 아래 비공개 주소(검색 차단). 새 자료를 만들면 여기에 한 줄씩 더한다. -->
+      <section class="fleet-card wide" aria-labelledby="meetTitle" style="margin-bottom:20px">
+        <h2 id="meetTitle">미팅 자료 · 비공개 링크</h2>
+        <p class="fleet-card-desc">고객에게 QR·링크로 보여 주는 제안 페이지입니다. 검색에 안 잡히고 사이트 어디에도 링크가 없어, 주소를 받은 사람만 열 수 있습니다.</p>
+        <div class="meet-list">
+          <article class="meet-item">
+            <a href="/p/mw-73pc806s" target="_blank" rel="noopener"><img class="th" src="/p/mw-73pc806s/img/space-b-clean.jpg" alt="" loading="lazy"></a>
+            <div>
+              <h3>벽체 일체형 LED 미디어월 제안</h3>
+              <p>2026-11-05 작성 · 학교 미팅용 · B 세로형(추천)/A 네모형 · 현장 합성 위에 작품 10편 틀어 보기 · 소개 영상 2분</p>
+              <p><code>https://publicbloom.art/p/mw-73pc806s</code></p>
+              <div class="fleet-actions">
+                <a class="fleet-btn primary" href="/p/mw-73pc806s" target="_blank" rel="noopener">열기</a>
+                <button type="button" class="fleet-btn" data-copy="https://publicbloom.art/p/mw-73pc806s">링크 복사</button>
+                <a class="fleet-btn" href="/p/mw-73pc806s/img/qr-card.png" download="QR카드_미디어월_제안.png">QR 카드 받기</a>
+                <a class="fleet-btn" href="/p/mw-73pc806s/media/promo.mp4" target="_blank" rel="noopener">소개 영상 2분</a>
+              </div>
+            </div>
+            <img class="qr" src="/p/mw-73pc806s/img/qr.png" alt="QR 코드">
+          </article>
+        </div>
       </section>
 
       <div class="fleet-grid">
@@ -226,5 +261,11 @@
 
     <script src="./fleet.js?v=20260803-player"></script>
       <script src="./auth.js?v=20260831-ax"></script>
+    <script>
+      document.querySelectorAll("[data-copy]").forEach((b) => b.addEventListener("click", async () => {
+        try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = "복사됨"; } catch (e) { prompt("주소를 복사하세요", b.dataset.copy); }
+        setTimeout(() => (b.textContent = "링크 복사"), 1600);
+      }));
+    </script>
   </body>
 </html>
