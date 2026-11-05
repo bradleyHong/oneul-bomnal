@@ -2027,6 +2027,534 @@ window.SX_CATALOG = [
   ]
  },
  {
+  "id": "geo-basalt",
+  "title": "주상절리",
+  "en": "Basalt Columns",
+  "mood": [
+   "nature",
+   "geo",
+   "calm"
+  ],
+  "desc": "육각 돌기둥이 큰 계단처럼 안개 낀 바다로 내려갑니다. 해 질 녘 푸른 빛 속에서 젖은 기둥 위를 낮게 미끄러져 갑니다.",
+  "palettes": [
+   {
+    "name": "블루 아워",
+    "colors": [
+     "#ffb48a",
+     "#24407e",
+     "#9ab4e0",
+     "#2c2e36"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243819866?h=d10e36dafd"
+   },
+   {
+    "name": "금빛 황혼",
+    "colors": [
+     "#ffa040",
+     "#5a3a78",
+     "#f2b08a",
+     "#2e2622"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243820759?h=3c88dc0654"
+   },
+   {
+    "name": "달밤",
+    "colors": [
+     "#dce6ff",
+     "#0c1838",
+     "#6a88c0",
+     "#1c2028"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243821638?h=bc02feb06e"
+   },
+   {
+    "name": "새벽 분홍",
+    "colors": [
+     "#ffc2c8",
+     "#2a6a80",
+     "#bfe4e0",
+     "#283234"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243822450?h=cf06de6581"
+   }
+  ]
+ },
+ {
+  "id": "geo-nautilus",
+  "title": "앵무조개",
+  "en": "Nautilus",
+  "mood": [
+   "geo",
+   "nature",
+   "calm"
+  ],
+  "desc": "반으로 가른 앵무조개의 방들이 황금 나선을 그리며 끝없이 이어집니다. 깊은 바닷속 햇살 아래, 진주빛 방들을 따라 나선의 한가운데로 천천히 빨려 들어갑니다.",
+  "palettes": [
+   {
+    "name": "진주 바다",
+    "colors": [
+     "#f4ece2",
+     "#8fe3ff",
+     "#ffb8d8",
+     "#05304e"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243830385?h=6d7bf28cb4"
+   },
+   {
+    "name": "황혼 심해",
+    "colors": [
+     "#f8dcc4",
+     "#ffb06a",
+     "#c890ff",
+     "#22103a"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243831977?h=a06429937d"
+   },
+   {
+    "name": "에메랄드 라군",
+    "colors": [
+     "#e6f6ea",
+     "#5effc8",
+     "#ffe08a",
+     "#03332e"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243833477?h=b65c5c4252"
+   },
+   {
+    "name": "달빛 심연",
+    "colors": [
+     "#dfe6f4",
+     "#7aa0ff",
+     "#a8fff0",
+     "#040a1c"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243834797?h=30fea17457"
+   }
+  ]
+ },
+ {
+  "id": "geo-radiolaria",
+  "title": "방산충",
+  "en": "Radiolaria",
+  "mood": [
+   "geo",
+   "nature",
+   "cosmos"
+  ],
+  "desc": "바다 속 아주 작은 생물이 남긴 유리 뼈대가 어둠 속에 떠 있습니다. 육각 그물 두 겹과 빛나는 가시가 천천히 돌며 숨을 쉽니다.",
+  "palettes": [
+   {
+    "name": "암시야",
+    "colors": [
+     "#e8f4ff",
+     "#5ad0ff",
+     "#ffcf7a",
+     "#02040a"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243805869?h=b7cf083aa9"
+   },
+   {
+    "name": "심해 청록",
+    "colors": [
+     "#d8fff4",
+     "#2affc0",
+     "#7a8cff",
+     "#010806"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243807661?h=4fc259f80d"
+   },
+   {
+    "name": "호박 유리",
+    "colors": [
+     "#fff0d8",
+     "#ffa040",
+     "#ff5a7a",
+     "#080402"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243809384?h=a3e480a30c"
+   },
+   {
+    "name": "자수정",
+    "colors": [
+     "#f4e8ff",
+     "#b07aff",
+     "#5ad8ff",
+     "#05020c"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243811122?h=f93bd7dca2"
+   }
+  ]
+ },
+ {
+  "id": "geo-turing",
+  "title": "튜링 무늬",
+  "en": "Turing Pattern",
+  "mood": [
+   "geo",
+   "nature",
+   "cosmos"
+  ],
+  "desc": "뇌산호와 얼룩말 줄무늬를 만드는 튜링 무늬가 거대한 구를 덮고 있습니다. 미로 같은 골마다 빛이 고이고, 무늬는 천천히 흐르며 다시 짜입니다.",
+  "palettes": [
+   {
+    "name": "심해 산호",
+    "colors": [
+     "#fff0e0",
+     "#ff6a4a",
+     "#18b8ff",
+     "#e8cbb4"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243815768?h=dc371f1529"
+   },
+   {
+    "name": "우주 청금",
+    "colors": [
+     "#dfe8ff",
+     "#38d6ff",
+     "#7a3aff",
+     "#9aa0b8"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243816778?h=f694329f35"
+   },
+   {
+    "name": "황금 뇌산호",
+    "colors": [
+     "#ffe6b0",
+     "#ffa02a",
+     "#4a2a8a",
+     "#d0a878"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243817801?h=89eff9e7bb"
+   },
+   {
+    "name": "옥빛 심연",
+    "colors": [
+     "#e8fff4",
+     "#2dffb0",
+     "#0a6a8a",
+     "#88b0a0"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243818972?h=03df4dbb52"
+   }
+  ]
+ },
+ {
+  "id": "geo-phyllotaxis",
+  "title": "황금각",
+  "en": "Golden Angle",
+  "mood": [
+   "geo",
+   "nature",
+   "calm"
+  ],
+  "desc": "황금각마다 하나씩 놓인 진주 수만 알이 끝없는 들판이 되어, 피보나치 나선을 그리며 가운데의 빛으로 휘감겨 듭니다. 빛의 물결이 나선을 따라 번지며 알알이 속에서부터 차오릅니다.",
+  "palettes": [
+   {
+    "name": "황금 들판",
+    "colors": [
+     "#e6d8c4",
+     "#ffb04a",
+     "#ffd9a0",
+     "#0e0805"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243836707?h=867515b17f"
+   },
+   {
+    "name": "달빛 진주",
+    "colors": [
+     "#d4dbe6",
+     "#7ab8ff",
+     "#c4e2ff",
+     "#03060d"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243838835?h=8c7683a516"
+   },
+   {
+    "name": "흑진주",
+    "colors": [
+     "#3a3f46",
+     "#3fe0bc",
+     "#a8fff0",
+     "#020605"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243840719?h=286f7da052"
+   },
+   {
+    "name": "장밋빛 새벽",
+    "colors": [
+     "#f0dcd6",
+     "#ff7f98",
+     "#ffc4b0",
+     "#0d0507"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243842613?h=f603632a9e"
+   }
+  ]
+ },
+ {
+  "id": "geo-cymatics",
+  "title": "소리의 무늬",
+  "en": "Cymatics",
+  "mood": [
+   "geo",
+   "calm"
+  ],
+  "desc": "소리가 판을 떨게 하면 고운 모래알이 흔들리지 않는 자리로 모여 무늬를 그립니다. 소리가 바뀔 때마다 수십만 알의 빛 모래가 춤추듯 새 무늬로 옮겨 갑니다.",
+  "palettes": [
+   {
+    "name": "금빛 모래",
+    "colors": [
+     "#ffcf8a",
+     "#ff8a4a",
+     "#fff2d8",
+     "#0a1018"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243788931?h=f8ed2ce7a8"
+   },
+   {
+    "name": "달빛 물",
+    "colors": [
+     "#a8dcff",
+     "#7a6cff",
+     "#f0f8ff",
+     "#060a16"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243789266?h=e82415f6d2"
+   },
+   {
+    "name": "자개",
+    "colors": [
+     "#ffb0d8",
+     "#7ae0ff",
+     "#fff0c8",
+     "#0e0a16"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243789623?h=f5be764db2"
+   },
+   {
+    "name": "청록 숨",
+    "colors": [
+     "#7affd0",
+     "#3a9cff",
+     "#f0ffe8",
+     "#04100e"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243789915?h=ca48352edb"
+   }
+  ]
+ },
+ {
+  "id": "geo-wing",
+  "title": "잠자리 날개",
+  "en": "Dragonfly Wing",
+  "mood": [
+   "geo",
+   "nature",
+   "calm"
+  ],
+  "desc": "새벽빛 속 거대한 잠자리 날개 위를 낮게 날아갑니다. 자연이 짠 그물 같은 맥을 따라 빛이 물결처럼 건너가고, 얇은 막은 무지갯빛으로 반짝입니다.",
+  "palettes": [
+   {
+    "name": "새벽",
+    "colors": [
+     "#ffc89a",
+     "#ff8a9a",
+     "#9ab8ff",
+     "#1a1428"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243803076?h=d2420a7cd0"
+   },
+   {
+    "name": "물총새",
+    "colors": [
+     "#a8f0ff",
+     "#3ad0c8",
+     "#7a8cff",
+     "#06141c"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243803344?h=27b21b886b"
+   },
+   {
+    "name": "호박 빛",
+    "colors": [
+     "#ffd08a",
+     "#ff9a50",
+     "#9cbce8",
+     "#140e0c"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243803619?h=9fc2dcf6a5"
+   },
+   {
+    "name": "자줏빛 저녁",
+    "colors": [
+     "#ffb0e0",
+     "#b07aff",
+     "#7ab8ff",
+     "#140a1e"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243803887?h=578081a40d"
+   }
+  ]
+ },
+ {
+  "id": "geo-bismuth",
+  "title": "비스무트 결정",
+  "en": "Bismuth Crystal",
+  "mood": [
+   "geo",
+   "vivid"
+  ],
+  "desc": "계단처럼 안으로 꺼져 들어간 비스무트 결정 탑을 천천히 한 바퀴 돕니다. 금속 면 위에 얇은 산화막이 무지갯빛으로 물듭니다.",
+  "palettes": [
+   {
+    "name": "무지개 산화",
+    "colors": [
+     "#ffc23a",
+     "#ff3a9a",
+     "#3a5cff",
+     "#2ee8c0"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243824011?h=d1b7df9af6"
+   },
+   {
+    "name": "금과 청",
+    "colors": [
+     "#ffd36a",
+     "#ff8a2a",
+     "#2a4cff",
+     "#5ac8ff"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243825458?h=0ffa8bfb52"
+   },
+   {
+    "name": "보랏빛",
+    "colors": [
+     "#ff7ad0",
+     "#9a4aff",
+     "#4a6aff",
+     "#ffc8ec"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243827055?h=8713d4be3f"
+   },
+   {
+    "name": "은빛 서리",
+    "colors": [
+     "#e8eef8",
+     "#a8c4ff",
+     "#ffd2c4",
+     "#c4c8d4"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243828666?h=f39f403bfd"
+   }
+  ]
+ },
+ {
+  "id": "geo-koru",
+  "title": "고사리 새순",
+  "en": "Koru",
+  "mood": [
+   "nature",
+   "geo",
+   "calm"
+  ],
+  "desc": "안개 낀 숲에서 고사리 새순이 숨 쉬듯 천천히 풀렸다 다시 감깁니다. 큰 나선 위에 작은 나선 잎이 같은 모양으로 말려 있습니다.",
+  "palettes": [
+   {
+    "name": "이끼 숲",
+    "colors": [
+     "#ffe9c0",
+     "#7dffb0",
+     "#2f8a7a",
+     "#5f9a3a"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243846285?h=0c0582e0de"
+   },
+   {
+    "name": "달빛 고사리",
+    "colors": [
+     "#cfe0ff",
+     "#5ae0ff",
+     "#5a78c8",
+     "#3a7a80"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243849841?h=c14429e904"
+   },
+   {
+    "name": "반딧불 숲",
+    "colors": [
+     "#ffd890",
+     "#d8ff4a",
+     "#2a6a50",
+     "#4a7a2a"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243853409?h=ee02664238"
+   },
+   {
+    "name": "요정의 숲",
+    "colors": [
+     "#ffd0ec",
+     "#ff7ad8",
+     "#9a5ac0",
+     "#4a8a6a"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243856980?h=d87c349406"
+   }
+  ]
+ },
+ {
+  "id": "geo-geode",
+  "title": "결정의 심장",
+  "en": "Crystal Heart",
+  "mood": [
+   "geo",
+   "nature",
+   "cosmos"
+  ],
+  "desc": "어둠 속에 떠 있는 수천 개의 결정 사이로 천천히 다가갑니다. 위에서 내려온 빛줄기가 육각 결정 무리를 비추면 결정이 속에서부터 빛납니다.",
+  "palettes": [
+   {
+    "name": "자수정",
+    "colors": [
+     "#7a1ec8",
+     "#e8c4ff",
+     "#fff0dc",
+     "#140c22"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243859546?h=0c010264bb"
+   },
+   {
+    "name": "시트린",
+    "colors": [
+     "#d8600a",
+     "#ffe4a8",
+     "#fff4e4",
+     "#1a120a"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243862185?h=9dcac171e0"
+   },
+   {
+    "name": "아쿠아마린",
+    "colors": [
+     "#0a7eb0",
+     "#c4f6ff",
+     "#fff6ea",
+     "#08141c"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243864778?h=df66adf08d"
+   },
+   {
+    "name": "로즈쿼츠",
+    "colors": [
+     "#d83c7c",
+     "#ffdcea",
+     "#fff2ec",
+     "#1c1018"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243867436?h=297ceb45bb"
+   }
+  ]
+ },
+ {
   "id": "ana-a01",
   "title": "봄날의 창 II",
   "en": "Spring Window II",
