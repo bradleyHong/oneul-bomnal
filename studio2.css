@@ -106,3 +106,10 @@
   .sx-how ol { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) { .sx-card-hit { transition: none; } }
+
+/* 화면 비율 맞춤 안내 (고르는 단추 대신 포인트 한 줄) */
+.sx-point { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0; padding: 10px 18px 10px 10px;
+  border: 1px solid color-mix(in srgb, var(--glow, #d4ff3a) 40%, transparent); border-radius: 999px;
+  background: color-mix(in srgb, var(--glow, #d4ff3a) 7%, transparent); font-size: 14px; line-height: 1.5; color: var(--ink, #f3f2ee); }
+.sx-point b { flex: none; padding: 4px 12px; border-radius: 999px; background: var(--glow, #d4ff3a); color: var(--void, #09090a); font-size: 13px; font-weight: 700; }
+@media (max-width: 640px) { .sx-point { border-radius: 18px; padding: 10px 14px 12px 10px; } }

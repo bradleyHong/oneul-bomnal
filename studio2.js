@@ -27,7 +27,9 @@
   /* ── 목록 ─────────────────────────────────────────── */
   var grid = $("[data-grid]");
   function cards() {
-    var list = window.SX_CATALOG || [];
+    // 들어올 때마다 순서를 섞는다 (늘 같은 작품이 맨 앞에 서지 않게)
+    var list = (window.SX_CATALOG || []).slice();
+    for (var k = list.length - 1; k > 0; k--) { var j = Math.floor(Math.random() * (k + 1)), t = list[k]; list[k] = list[j]; list[j] = t; }
     grid.innerHTML = list.map(function (w, i) {
       var moods = (w.mood || []).map(function (m) { return MOOD[m]; }).filter(Boolean).join(" · ");
       return '<article class="sx-card" data-id="' + w.id + '" data-moods="' + (w.mood || []).join(" ") + '">' +
@@ -59,15 +61,8 @@
     });
   }
 
-  /* 화면 모양 · 분위기 */
-  var ratioGroup = $("[data-ratio-group]"), moodGroup = $("[data-mood-group]");
-  ratioGroup.addEventListener("click", function (e) {
-    var b = e.target.closest("[data-ratio]"); if (!b) return;
-    state.ratio = b.getAttribute("data-ratio"); radio(ratioGroup, "data-ratio", state.ratio);
-    var pick = { "16:9": "3840x2160", "2:1": "2064x1032", "9:16": "1080x1920", "32:9": "3840x1080" }[state.ratio];
-    var sel = $("[data-screen]"); if (sel && pick) { sel.value = pick; syncScreen(); }
-    if (view.open) frame();
-  });
+  /* 분위기 (화면 비율은 고르지 않는다. 주문서에서 규격을 받아 그 비율로 새로 렌더) */
+  var moodGroup = $("[data-mood-group]");
   moodGroup.addEventListener("click", function (e) {
     var b = e.target.closest("[data-mood]"); if (!b) return;
     state.mood = b.getAttribute("data-mood"); radio(moodGroup, "data-mood", state.mood); filter();
@@ -176,7 +171,7 @@
       "",
       "작품: " + p.title + " (" + p.en + ", 코드 " + p.id + ")",
       p.loop ? "아나모픽 · " + p.loop + "초 반복 (렌탈 LED 2:1 기준, 다른 규격은 틀까지 다시 렌더)" : "색: " + p.pal + " · 빠르기: " + (p.speed === 1 ? "보통 (30초 반복)" : "느리게 (60초 반복)"),
-      "화면: " + scr + " · 미리 본 화면 모양 " + p.ratio,
+      "화면: " + scr,
       v("note") ? "남길 말: " + v("note") : "",
       "",
       "[동의 기록] 개인정보 수집·이용: 동의함"
