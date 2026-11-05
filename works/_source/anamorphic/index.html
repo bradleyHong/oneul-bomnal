@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>봄날 아나모픽 · 렌탈 LED</title>
+<style>
+  html,body{margin:0;background:#000;height:100%;overflow:hidden}
+  canvas{display:block;width:100vw;height:100vh;object-fit:contain}
+  body.capture canvas{width:auto;height:auto}
+</style>
+</head><body>
+<canvas id="c"></canvas>
+<script src="../../lib/bomnal-gl.js"></script>
+<script>
+// ============================================================
+//  봄날 아나모픽 — 평면 LED 한 장을 '깊은 상자'로 보이게 하는 공통 엔진
+//
+//  관객 눈은 화면 정면 가운데, 화면 반높이의 ZC 배 거리. 화면 테두리 = 상자 앞 테두리(틀).
+//  상자 안(벽·바닥·천장·뒷벽)은 분석적 평면, 물체는 거리장(SDF)으로 광선 행진.
+//  입체감을 만드는 것들:
+//   - 벽 격자: 원근이 모이는 선. 가장 가는 선도 LED 2~3화소 이상.
+//   - 틀 구멍을 지난 조명 자국: 앞쪽 위 조명이 상자 안에 비스듬한 빛 조각을 만든다.
+//   - 물체의 부드러운 그림자(벽·바닥·틀 위), 접촉 그늘(AO), 구석 그늘.
+//   - 반사 한 번: 물체끼리, 물체에 벽이, 반들한 바닥에 물체가 비친다.
+//   - 틀보다 앞(z<0)으로 나온 물체는 틀을 가리고 틀 위에 그림자를 떨어뜨린다.
+//  장면은 scenes/NN.glsl 하나에 map()·mat()·outside() 와 #define 몇 개만 둔다.
+//  렌탈 LED 실제 화소 지도 2064×1032(2:1) 그대로 렌더한다.
+// ============================================================
+const q = new URLSearchParams(location.search);
+const CAP = !!q.get('capture');
+const state = {
+  scene: q.get('scene') || '01',
+  w: +q.get('w') || (CAP ? 2064 : 1376),
+  h: +q.get('h') || (CAP ? 1032 : 688),
+  fps: +q.get('fps') || 30, dur: 15,
+  sub: +q.get('sub') || (CAP ? 6 : 1),
+  aa: +q.get('aa') || (CAP ? 2 : 1),
+  shutter: (+q.get('shutter') || 180) / 360,
+};
+
+const HEAD = `
+uniform float uGain, uT, uAA;
+#define TAU 6.2831853
+#define T 15.0
+const float ZC = 2.75;
+vec3 L(vec3 s){ return pow(max(s, 0.0), vec3(2.2)); }
+float h11(float p){ p = fract(p*0.1031); p *= p + 33.33; p *= p + p; return fract(p); }
+float h21(vec2 p){ vec3 p3 = fract(vec3(p.xyx)*0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y)*p3.z); }
+vec3 h33(vec3 p){ p = fract(p*vec3(0.1031, 0.1030, 0.0973)); p += dot(p, p.yxz + 33.33); return fract((p.xxy + p.yxx)*p.zyx); }
+float vnoise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);
+  return mix(mix(h21(i), h21(i+vec2(1,0)), f.x), mix(h21(i+vec2(0,1)), h21(i+vec2(1,1)), f.x), f.y); }
+float vnoise3(vec3 p){ vec3 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);
+  float n = dot(i, vec3(1.0, 57.0, 113.0));
+  return mix(mix(mix(h11(n), h11(n+1.0), f.x), mix(h11(n+57.0), h11(n+58.0), f.x), f.y),
+             mix(mix(h11(n+113.0), h11(n+114.0), f.x), mix(h11(n+170.0), h11(n+171.0), f.x), f.y), f.z); }
+float fbm(vec2 p){ float s = 0.0, a = 0.5; mat2 m = mat2(1.6,1.2,-1.2,1.6);
+  for(int i=0;i<5;i++){ s += a*vnoise(p); p = m*p; a *= 0.5; } return s; }
+vec3 spectral(float x){ vec3 c = clamp(1.0 - abs(4.0*(x - vec3(0.75, 0.5, 0.25))), 0.0, 1.0); return c*c; }
+mat2 rot(float a){ float c = cos(a), s = sin(a); return mat2(c, s, -s, c); }
+float smin(float a, float b, float k){ float h = max(k - abs(a - b), 0.0)/k; return min(a, b) - h*h*k*0.25; }
+float sdBox(vec3 p, vec3 b){ vec3 d = abs(p) - b; return length(max(d, 0.0)) + min(max(d.x, max(d.y, d.z)), 0.0); }
+float sdRBox(vec3 p, vec3 b, float r){ return sdBox(p, b - r) - r; }
+float sdCap(vec3 p, vec3 a, vec3 b, float r){ vec3 pa = p - a, ba = b - a; float h = clamp(dot(pa, ba)/dot(ba, ba), 0.0, 1.0); return length(pa - ba*h) - r; }
+float sdTorus(vec3 p, vec2 t){ return length(vec2(length(p.xz) - t.x, p.y)) - t.y; }
+vec3 VRD;  // 지금 보는 광선 방향 (장면 재질이 '창 너머 하늘'을 그릴 때)
+float A;   // 화면 가로/세로
+vec2 HO;   // 틀 구멍 반크기
+float ease(float x){ x = clamp(x, 0.0, 1.0); return x*x*(3.0 - 2.0*x); }
+// 장면이 쓰는 재질
+// alb 바탕색 · rough 거칠기 · metal 금속 · emit 스스로 빛 · iri 무지개 막 · wrap 빛 스밈
+// bump 표면 결 세기 · bumpF 결 촘촘함 · coat 겉칠(투명 코팅) · glit 반짝이 펄 촘촘함 · sss 속빛(눈·마시멜로)
+struct M { vec3 alb; float rough; float metal; vec3 emit; float iri; float wrap; float bump; float bumpF; float coat; float glit; float sss; };
+M mk(vec3 alb, float rough, float metal){ M m; m.alb = alb; m.rough = rough; m.metal = metal; m.emit = vec3(0); m.iri = 0.0; m.wrap = 0.0;
+  m.bump = 0.0; m.bumpF = 40.0; m.coat = 0.0; m.glit = 0.0; m.sss = 0.0; return m; }
+// 표본마다 다른 난수 (초표본 9 × 셔터 8 = 72 표본이 흐린 반사·면광원 그림자를 고르게 채운다)
+uint SEED;
+float rnd(){ SEED = SEED*747796405u + 2891336453u; uint w = ((SEED >> ((SEED >> 28u) + 4u)) ^ SEED)*277803737u; return float((w >> 22u) ^ w)/4294967295.0; }
+vec3 rndDir(){ float z = rnd()*2.0 - 1.0, a = rnd()*6.2831853, r = sqrt(max(1.0 - z*z, 0.0)); return vec3(r*cos(a), r*sin(a), z); }
+`;
+
+const ENGINE = `
+#ifndef DT
+#define DT 1.6
+#endif
+#ifndef FB
+#define FB 0.07
+#endif
+#ifndef WALL
+#define WALL L(vec3(0.80, 0.78, 0.84))
+#endif
+#ifndef GRID
+#define GRID 0.25
+#endif
+#ifndef GRIDW
+#define GRIDW 0.010
+#endif
+#ifndef GRIDC
+#define GRIDC vec3(0.0)
+#endif
+#ifndef GRIDK
+#define GRIDK 0.55
+#endif
+#ifndef FRAMEC
+#define FRAMEC L(vec3(0.10, 0.10, 0.12))
+#endif
+#ifndef KEYC
+#define KEYC vec3(2.6, 2.45, 2.25)
+#endif
+#ifndef LKD
+#define LKD vec3(-0.42, 0.70, -0.58)
+#endif
+#ifndef AMB_TOP
+#define AMB_TOP L(vec3(0.42, 0.44, 0.56))
+#endif
+#ifndef AMB_BOT
+#define AMB_BOT L(vec3(0.20, 0.17, 0.22))
+#endif
+#ifndef BACKC
+#define BACKC vec3(0.0)
+#endif
+#ifndef BACK_OPEN
+#define BACK_OPEN 0
+#endif
+#ifndef FLOOR_REFL
+#define FLOOR_REFL 0.0
+#endif
+#ifndef WALLSTYLE
+#define WALLSTYLE 0
+#endif
+#ifndef CY1
+#define CY1 L(vec3(1.0, 0.16, 0.30))
+#endif
+#ifndef CY2
+#define CY2 L(vec3(0.15, 1.0, 0.55))
+#endif
+#ifndef CY3
+#define CY3 L(vec3(1.0, 0.80, 0.35))
+#endif
+#ifndef CYE
+#define CYE L(vec3(0.55, 0.90, 1.0))
+#endif
+#ifndef CYK
+#define CYK 1.0
+#endif
+#ifndef CYREFL
+#define CYREFL 0.0
+#endif
+#ifndef SNOWD
+#define SNOWD 0.30
+#endif
+#ifndef SNOWC
+#define SNOWC vec3(1.3, 1.35, 1.45)
+#endif
+#ifndef RIMD
+#define RIMD vec3(0.55, 0.65, 0.75)
+#endif
+#ifndef RIMC
+#define RIMC (CYE*0.9 + vec3(0.35))
+#endif
+#ifndef ROOM
+#define ROOM L(vec3(0.03, 0.03, 0.035))
+#endif
+#ifndef MAXD
+#define MAXD 30.0
+#endif
+#ifndef STEPS
+#define STEPS 160
+#endif
+const vec3 LK = normalize(LKD);
+
+// 틀·상자 교차. id 1 틀 앞면, 2 옆벽, 3 바닥·천장, 4 뒷벽
+float hitBox(vec3 ro, vec3 rd, out vec3 n, out float id){
+  id = 0.0;
+  if(ro.z < 0.0){
+    if(rd.z <= 0.0) return 1e9;
+    float t = -ro.z/rd.z; vec3 q = ro + rd*t;
+    if(abs(q.x) > HO.x || abs(q.y) > HO.y){ n = vec3(0,0,-1); id = 1.0; return t; }
+  } else if(ro.z > DT + 1e-3) return 1e9;
+  float tx = rd.x > 0.0 ? (HO.x - ro.x)/rd.x : (rd.x < 0.0 ? (-HO.x - ro.x)/rd.x : 1e9);
+  float ty = rd.y > 0.0 ? (HO.y - ro.y)/rd.y : (rd.y < 0.0 ? (-HO.y - ro.y)/rd.y : 1e9);
+  float tz = rd.z > 0.0 ? (DT - ro.z)/rd.z : (rd.z < 0.0 ? -ro.z/rd.z : 1e9);
+  float te = min(tx, ty);
+  if(te < tz && te > 0.0){
+    if(tx < ty){ n = vec3(-sign(rd.x),0,0); id = 2.0; } else { n = vec3(0,-sign(rd.y),0); id = 3.0; }
+    return te;
+  }
+#if BACK_OPEN == 0
+  if(rd.z > 0.0){
+#ifdef HAS_HOLE
+    if(backHole(ro + rd*tz)) return 1e9;
+#endif
+    n = vec3(0,0,-1); id = 4.0; return tz;
+  }
+#endif
+  return 1e9;
+}
+
+float march(vec3 ro, vec3 rd, float tmax, int steps){
+  float t = 0.0;
+  for(int i=0;i<STEPS;i++){
+    if(i >= steps) break;
+    float h = map(ro + rd*t);
+    if(h < 0.0004*(1.0 + t)) return t;
+    t += h*0.9;
+    if(t > tmax) break;
+  }
+  return 1e9;
+}
+vec3 normalAt(vec3 p){
+  vec2 e = vec2(0.0007, -0.0007);
+  return normalize(e.xyy*map(p + e.xyy) + e.yyx*map(p + e.yyx) + e.yxy*map(p + e.yxy) + e.xxx*map(p + e.xxx));
+}
+float softShadowN(vec3 ro, vec3 rd, float k, int N){
+  // IQ 개선판: 앞 걸음과의 교차로 가장 가까운 거리를 추정 → 반그림자 줄무늬가 덜 생긴다
+  float res = 1.0, t = 0.015, ph = 1e10;
+  for(int i=0;i<96;i++){
+    if(i >= N) break;
+    float h = map(ro + rd*t);
+    float y = h*h/(2.0*ph), d = sqrt(max(h*h - y*y, 0.0));
+    res = min(res, k*d/max(1e-4, t - y));                   // 0 으로 나누면 NaN → 번짐이 하얀 덩어리로 퍼진다
+    ph = h;
+    t += clamp(h, 0.010, 0.20);
+    if(res < 0.002 || t > 8.0) break;
+  }
+  res = clamp(res, 0.0, 1.0);
+  return res*res*(3.0 - 2.0*res);
+}
+float softShadow(vec3 ro, vec3 rd, float k){ return softShadowN(ro, rd, k, 64); }
+float sdfAO(vec3 p, vec3 n){
+  float o = 0.0, s = 1.0;
+  for(int i=1;i<=5;i++){ float h = 0.03*float(i)*float(i)*0.5 + 0.01; o += (h - map(p + n*h))*s; s *= 0.6; }
+  return clamp(1.0 - 2.2*o, 0.0, 1.0);
+}
+// 조명이 틀 구멍을 지나 이 점에 닿는가 (상자 안·밖 모두)
+float keyAperture(vec3 p){
+  if(p.z <= 0.0) return 1.0;
+  if(BACK_OPEN == 1 && p.z > DT + 0.3) return 1.0;     // 상자 너머 바깥은 바깥의 해가 비춘다
+  float t = -p.z/LK.z; vec3 q = p + LK*t;
+  float pen = 0.004 + 0.018*t;
+  return smoothstep(-pen, pen, min(HO.x - abs(q.x), HO.y - abs(q.y)));
+}
+// 상자 모서리 구석 그늘
+float boxAO(vec3 p, float id){
+  float dx = HO.x - abs(p.x), dy = HO.y - abs(p.y);
+  float dz = BACK_OPEN == 0 ? DT - p.z : 9.0;
+  float a = 1.0;
+  if(id != 2.0) a *= 0.42 + 0.58*smoothstep(0.0, 0.45, dx);
+  if(id != 3.0) a *= 0.42 + 0.58*smoothstep(0.0, 0.45, dy);
+  if(id != 4.0) a *= 0.42 + 0.58*smoothstep(0.0, 0.45, dz);
+  return a;
+}
+vec3 ambient(vec3 n){ return mix(AMB_BOT, AMB_TOP, n.y*0.5 + 0.5) + BACKC*pow(max(n.z, 0.0), 1.5); }
+
+#ifndef HAS_OUTSIDE
+vec3 outside(vec3 rd, vec3 ro){ return vec3(0.0); }
+#endif
+#ifndef HAS_BACKWALL
+vec3 backWall(vec3 p){ return vec3(0.0); }
+#endif
+#ifndef HAS_WALLTEX
+vec3 wallTex(vec3 p, vec3 n, float id){ return WALL; }
+#endif
+
+// 사이버 벽: 어두운 금속 패널 · 홈 · 회로 · 깊이 쪽으로 흐르는 빛줄 · 모서리 LED
+// 가장 가는 선도 LED 2~3화소 (뒷벽 깊이에서 0.008 ≈ 2.5화소)
+vec3 cyberWall(vec3 p, float id, float t, inout vec3 alb, out float bev){
+  vec2 uv = id < 2.5 ? p.zy : (id < 3.5 ? p.xz : p.xy);
+  float pw = t*(2.0/uRes.y)/ZC*1.2;
+  vec2 PS = vec2(0.40, 0.30);
+  vec2 cid = floor(uv/PS); vec2 f = fract(uv/PS)*PS;
+  float h = h21(cid + id*17.3);
+  float seam = min(min(f.x, PS.x - f.x), min(f.y, PS.y - f.y));
+  float groove = 1.0 - smoothstep(0.005 - pw, 0.005 + pw, seam);
+  bev = smoothstep(0.005, 0.012, seam)*(1.0 - smoothstep(0.012, 0.024, seam));
+  alb = L(vec3(0.10, 0.11, 0.15))*(0.75 + 0.6*h)*(1.0 - 0.85*groove);
+  vec3 em = CYE*groove*0.035*CYK;                                   // 패널 이음매가 은은히 빛난다
+  float depth = id < 3.5 ? p.z : length(p.xy);
+  if(h > 0.80){
+    // 패널 속 빛줄. 빛 덩이가 깊이를 따라 관객 쪽으로 흘러온다
+    float ly = PS.y*(0.22 + 0.56*fract(h*7.0));
+    float dl = abs(f.y - ly);
+    float ln = 1.0 - smoothstep(0.004, 0.004 + pw, dl);
+    ln *= smoothstep(0.02, 0.05, f.x)*smoothstep(0.02, 0.05, PS.x - f.x);
+    float hc = fract(h*13.0);
+    vec3 cc = hc < 0.4 ? CY1 : (hc < 0.8 ? CY2 : CY3);
+    float pulse = 0.30 + 2.4*pow(0.5 + 0.5*cos(TAU*(depth*0.6 + uT/T*3.0 + h*3.0)), 14.0);
+    em += cc*(ln*pulse + exp(-dl*80.0)*0.05)*CYK;
+  } else if(h < 0.16){
+    // 회로: 잘게 나눈 칸마다 가로·세로 선, 몇 곳은 깜박이는 점
+    vec2 g = uv/0.075; vec2 gi = floor(g); vec2 gf = fract(g) - 0.5;
+    float r = h21(gi + 3.7*id);
+    float dline = r < 0.35 ? abs(gf.y) : (r < 0.7 ? abs(gf.x) : 9.0);
+    float tr = (1.0 - smoothstep(0.055, 0.055 + pw/0.075*1.5, dline))*smoothstep(0.02, 0.035, seam);
+    float node = (1.0 - smoothstep(0.13, 0.13 + pw/0.075, length(gf)))*step(0.8, fract(r*11.0))*smoothstep(0.02, 0.035, seam);
+    vec3 cc = fract(r*5.0) < 0.5 ? CY2 : CY3;
+    float flick = 0.5 + 0.5*sin(TAU*(uT/T*floor(1.0 + r*4.0) + r*9.0));
+    em += cc*(tr*0.05 + node*(0.3 + 1.0*flick))*CYK;
+    alb *= 1.0 - 0.5*tr;
+  }
+  // 상자 모서리와 앞 테두리를 따라 LED 띠
+  float dx = HO.x - abs(p.x), dy = HO.y - abs(p.y);
+  float dz = BACK_OPEN == 0 ? DT - p.z : 9.0;
+  float e = id < 2.5 ? min(min(dy, dz), p.z) : (id < 3.5 ? min(min(dx, dz), p.z) : min(dx, dy));
+  em += CYE*(1.0 - smoothstep(0.006, 0.006 + pw*1.5, e))*2.2*CYK + CYE*exp(-e*22.0)*0.10*CYK;
+  return em;
+}
+
+vec3 boxShade(vec3 p, vec3 n, float id, vec3 rd, float t, bool full){
+  if(id < 1.5){
+    // 틀 앞면: 무광. 앞으로 나온 물체의 그림자를 받는다
+    float sh = full ? softShadow(p + n*0.002, LK, 12.0) : 1.0;
+    vec3 c = FRAMEC*(KEYC*max(dot(n, LK), 0.0)*sh*0.9 + ambient(n)*0.6);
+    float d = max(abs(p.x) - HO.x, abs(p.y) - HO.y);
+    c += FRAMEC*KEYC*0.9*smoothstep(0.010, 0.0, d);       // 안쪽 모서리 깎은 면
+    return c;
+  }
+  vec3 alb = wallTex(p, n, id);
+#if WALLSTYLE == 1
+  {
+    float bev; vec3 em = cyberWall(p, id, t, alb, bev);
+    float ao = boxAO(p, id);
+    float sh = 1.0, oao = 1.0;
+    float kd = max(dot(n, LK), 0.0)*keyAperture(p);
+    if(full){ if(kd > 0.0) sh = softShadowN(p + n*0.002, LK, 12.0, 40); oao = sdfAO(p, n); }
+    vec3 c = alb*(KEYC*kd*sh + ambient(n)*ao*oao*(0.55 + 0.45*clamp(p.z/DT, 0.0, 1.0)));
+    c += alb*KEYC*bev*kd*sh*1.5;                                    // 패널 모서리 깎은 면이 빛을 받는다
+    vec3 hh = normalize(LK - rd);
+    c += KEYC*0.08*pow(max(dot(n, hh), 0.0), 60.0)*sh*kd;           // 금속 광택
+    c += em*(0.6 + 0.4*oao);
+    if(id > 3.5) c += backWall(p);
+    return c;
+  }
+#endif
+  // 격자: 원근이 모이는 홈. 화소 크기로 부드럽게 깎는다
+  vec2 uv = id < 2.5 ? p.zy : (id < 3.5 ? p.xz : p.xy);
+  float pw = t*(2.0/uRes.y)/ZC*1.2;
+  vec2 g = abs(fract(uv/GRID - 0.5) - 0.5)*GRID;
+  float line = 1.0 - smoothstep(GRIDW*0.5 - pw, GRIDW*0.5 + pw, min(g.x, g.y));
+  alb *= 1.0 - GRIDK*line;
+  float ao = boxAO(p, id);
+  float sh = 1.0, oao = 1.0;
+  float kd = max(dot(n, LK), 0.0)*keyAperture(p);
+  if(full){ if(kd > 0.0) sh = softShadow(p + n*0.002, LK, 12.0); oao = sdfAO(p, n); }
+  vec3 c = alb*(KEYC*kd*sh + ambient(n)*ao*oao*(0.55 + 0.45*clamp(p.z/DT, 0.0, 1.0)));
+  c += GRIDC*line*(0.4 + 0.6*clamp(p.z/DT, 0.0, 1.0));
+  if(id > 3.5) c += backWall(p);
+  return c;
+}
+
+vec3 roomEnv(vec3 r){ return ROOM + KEYC*pow(max(dot(r, LK), 0.0), 300.0)*1.5; }
+
+// 반사용 간이 추적 (그림자 없음)
+vec3 traceLite(vec3 ro, vec3 rd){
+  vec3 bn; float bid;
+  float tb = hitBox(ro, rd, bn, bid);
+  float to = march(ro, rd, min(tb, 14.0), 72);
+  if(to < tb){
+    vec3 p = ro + rd*to; vec3 n = normalAt(p);
+    VRD = rd; M m = mat(p, n);
+    float dif = m.wrap > 0.0 ? max((dot(n, LK) + m.wrap)/(1.0 + m.wrap), 0.0) : max(dot(n, LK), 0.0);
+    return m.alb*(KEYC*dif*keyAperture(p) + ambient(n)) + m.emit;
+  }
+  if(tb < 1e8) return boxShade(ro + rd*tb, bn, bid, rd, tb + 3.0, false);
+  if(rd.z > 0.0 && ro.z > -0.5) return outside(rd, ro);
+  return roomEnv(rd);
+}
+
+#ifdef PBR2
+// 실사 재질판: GGX 하이라이트 · 거칠기만큼 흐린 반사 · 면광원 그림자 · 표면 결 · 투명 겉칠 · 반짝이 펄 · 속빛
+float n3(vec3 p){ return vnoise3(p) + 0.5*vnoise3(p*2.07 + 3.1); }
+vec3 shadeObj(vec3 p, vec3 n, vec3 rd, M m){
+  vec3 ng = n;
+  if(m.bump > 0.0){
+    vec3 q = p*m.bumpF; float e = 0.35;
+    vec3 g = vec3(n3(q + vec3(e,0,0)) - n3(q - vec3(e,0,0)), n3(q + vec3(0,e,0)) - n3(q - vec3(0,e,0)), n3(q + vec3(0,0,e)) - n3(q - vec3(0,0,e)))/(2.0*e);
+    n = normalize(n - m.bump*(g - dot(g, n)*n));
+  }
+  vec3 Ls = normalize(LK + rndDir()*0.035);                     // 조명을 작은 면광원으로
+  float ka = keyAperture(p);
+  float nl = dot(n, Ls);
+  float dif = m.wrap > 0.0 ? max((nl + m.wrap)/(1.0 + m.wrap), 0.0) : max(nl, 0.0);
+  float sh = (dif > 0.0 && ka > 0.0) ? softShadow(p + ng*0.003, Ls, 24.0) : 0.0;
+  float ao = sdfAO(p, ng);
+  if(p.z > 0.0 && p.z < DT) ao *= boxAO(p, 0.0)*0.5 + 0.5;
+  float cosV = max(dot(n, -rd), 1e-3);
+  vec3 F0 = mix(vec3(0.04), m.alb, m.metal);
+  vec3 Fv = F0 + (1.0 - F0)*pow(1.0 - cosV, 5.0);
+  if(m.iri > 0.0) Fv *= mix(vec3(1.0), 0.35 + 1.5*spectral(fract(cosV*1.3 + m.iri)), 0.75);
+  // GGX
+  vec3 h = normalize(Ls - rd);
+  float a = max(m.rough*m.rough, 0.002), a2 = a*a;
+  float nh = max(dot(n, h), 0.0), nlc = max(nl, 0.0);
+  float dd = nh*nh*(a2 - 1.0) + 1.0;
+  float D = a2/(3.14159*dd*dd);
+  float k = a*0.5, Gv = cosV/(cosV*(1.0 - k) + k), Gl = nlc/(nlc*(1.0 - k) + k);
+  vec3 spec = D*Gv*Gl/(4.0*cosV*max(nlc, 1e-3) + 1e-4)*Fv*nlc;
+  vec3 col = m.alb*(1.0 - m.metal)*(1.0 - 0.5*m.coat*0.04)*(KEYC*dif*sh*ka + ambient(n)*ao);
+  col += KEYC*min(spec, vec3(40.0))*sh*ka;
+  col += m.alb*m.metal*ambient(n)*ao*0.45;
+  // 테두리 조명 (뒤쪽 위): 물체 윤곽에 빛줄을 그어 배경에서 떼어 낸다
+  {
+    vec3 Lr = normalize(RIMD);
+    float nr = max(dot(n, Lr), 0.0);
+    float rimF = pow(1.0 - cosV, 2.5);
+    vec3 hr = normalize(Lr - rd);
+    float sr = pow(max(dot(n, hr), 0.0), mix(400.0, 20.0, m.rough));
+    col += RIMC*(m.alb*(1.0 - m.metal)*nr*0.35 + rimF*nr*0.9*mix(vec3(1.0), m.alb, m.metal) + sr*Fv*2.0)*ao;
+  }
+  // 속빛: 눈·설탕·밀랍처럼 빛이 안으로 스며 그늘도 밝다
+  if(m.sss > 0.0) col += m.alb*m.sss*(ambient(-n)*0.5*ao + KEYC*ka*0.22*smoothstep(-0.4, 0.6, nl));
+  // 거칠기만큼 흐린 반사 (표본마다 방향을 흔들고 72표본이 평균을 낸다)
+  if(m.rough < 0.8 && !(m.coat > 0.0 && m.rough > 0.2)){        // 겉칠이 있으면 바탕 반사는 겉칠이 맡는다
+    vec3 r = reflect(rd, n);
+    r = normalize(r + rndDir()*m.rough*m.rough*1.3);
+    if(dot(r, ng) < 0.0) r = reflect(r, ng);
+    col += traceLite(p + ng*0.004, r)*Fv*(1.0 - 0.7*m.rough)*mix(1.0, ao, 0.5);
+  }
+  // 투명 겉칠: 바탕 위에 또렷한 반사 한 겹
+  if(m.coat > 0.0){
+    float Fc = 0.04 + 0.96*pow(1.0 - max(dot(ng, -rd), 0.0), 5.0);
+    vec3 rc = reflect(rd, ng);
+    col += traceLite(p + ng*0.004, rc)*Fc*m.coat;
+    col += KEYC*pow(max(dot(normalize(LK - rd), ng), 0.0), 900.0)*90.0*Fc*m.coat*sh*ka;
+  }
+  // 반짝이 펄: 작은 칸마다 기울어진 조각이 조명을 받으면 반짝
+  if(m.glit > 0.0){
+    vec3 gq = p*m.glit; vec3 gi = floor(gq);
+    vec3 hh = h33(gi + 7.3);
+    vec3 gn = normalize(n + (hh - 0.5)*0.9);
+    float sp = pow(max(dot(reflect(rd, gn), Ls), 0.0), 500.0)*step(0.45, hh.x);
+    float cell = smoothstep(0.5, 0.2, length(fract(gq) - 0.5));
+    col += KEYC*sp*cell*sh*ka*6.0*mix(vec3(1.0), m.alb*2.0, m.metal);
+  }
+  col += m.emit;
+  return col;
+}
+#else
+vec3 shadeObj(vec3 p, vec3 n, vec3 rd, M m){
+  float ka = keyAperture(p);
+  float dif = m.wrap > 0.0 ? max((dot(n, LK) + m.wrap)/(1.0 + m.wrap), 0.0) : max(dot(n, LK), 0.0);
+  float sh = (dif > 0.0 && ka > 0.0) ? softShadow(p + n*0.003, LK, 14.0) : 0.0;
+  float ao = sdfAO(p, n);
+  if(p.z > 0.0 && p.z < DT) ao *= boxAO(p, 0.0)*0.5 + 0.5;
+  float cosV = max(dot(n, -rd), 0.0);
+  vec3 F0 = mix(vec3(0.04), m.alb, m.metal);
+  vec3 F = F0 + (1.0 - F0)*pow(1.0 - cosV, 5.0);
+  if(m.iri > 0.0) F *= mix(vec3(1.0), 0.35 + 1.5*spectral(fract(cosV*1.3 + m.iri)), 0.75);
+  vec3 h = normalize(LK - rd);
+  float shin = mix(600.0, 6.0, m.rough);
+  float spec = pow(max(dot(n, h), 0.0), shin)*(shin + 8.0)/(8.0*3.14159);
+  vec3 col = m.alb*(1.0 - m.metal)*(KEYC*dif*sh*ka + ambient(n)*ao);
+  col += KEYC*spec*F*sh*ka*0.6;
+  col += m.alb*m.metal*ambient(n)*ao*0.55;
+  vec3 r = reflect(rd, n);
+  float rk = (1.0 - m.rough)*(1.0 - m.rough);
+  if(rk > 0.02) col += traceLite(p + n*0.004, r)*F*rk*mix(1.0, ao, 0.5);
+  col += m.emit;
+  return col;
+}
+#endif
+
+#ifdef SNOW
+// 눈: 깊이별 얇은 판 몇 장에 눈송이를 뿌린다. 관객 앞(z<0)부터 상자 끝까지
+vec3 snowLayers(vec3 ro, vec3 rd, float tHit){
+  vec3 c = vec3(0.0);
+  if(rd.z <= 0.0) return c;
+  for(int j=0;j<SNOW;j++){
+    float fj = float(j);
+    float z = -1.45 + fj*(DT + 1.5)/float(SNOW);
+    float t = (z - ro.z)/rd.z;
+    if(t <= 0.0 || t >= tHit) continue;
+    vec2 q = (ro + rd*t).xy;
+    float cs = 0.17;
+    q.y += uT/T*cs*float(5 + 2*(j - 3*(j/3)));                     // 15초에 정확히 몇 칸 → 루프
+    q.x += 0.035*sin(TAU*(uT/T*2.0 + fj*0.37) + q.y*2.5);
+    vec2 gi = floor(q/cs), gf = fract(q/cs);
+    vec3 hh = h33(vec3(gi, fj + 1.7));
+    if(hh.z > SNOWD) continue;
+    float r = (0.035 + 0.06*hh.y)*cs;
+    float pwz = t*(2.0/uRes.y)/ZC;
+    float d = length((gf - (0.2 + 0.6*hh.xy))*cs);
+    c += SNOWC*smoothstep(r + pwz, r*0.25, d)*(0.55 + 0.6*hh.x);
+  }
+  return c;
+}
+#endif
+
+vec3 trace(vec3 ro, vec3 rd){
+  vec3 bn; float bid;
+  float tb = hitBox(ro, rd, bn, bid);
+  float to = march(ro, rd, min(tb, MAXD), STEPS);
+  vec3 col; float tHit;
+  if(to < tb){
+    vec3 p = ro + rd*to; vec3 n = normalAt(p);
+    VRD = rd; col = shadeObj(p, n, rd, mat(p, n)); tHit = to;
+  } else if(tb < 1e8){
+    vec3 p = ro + rd*tb;
+    col = boxShade(p, bn, bid, rd, tb, true); tHit = tb;
+    bool isFloor = bid == 3.0 && bn.y > 0.5;
+    float rk = isFloor ? FLOOR_REFL : (WALLSTYLE == 1 && bid > 1.5 ? CYREFL : 0.0);
+    if(rk > 0.0){
+      float F = rk + (1.0 - rk)*pow(1.0 - max(dot(bn, -rd), 0.0), 5.0);
+#if WALLSTYLE == 1
+      col += traceLite(p + bn*0.002, reflect(rd, bn))*F*0.85;      // 어두운 금속 위 반사는 더한다
+#else
+      col = mix(col, traceLite(p + bn*0.002, reflect(rd, bn)), F*0.85);
+#endif
+    }
+  } else { col = outside(rd, ro); tHit = 1e9; }
+#ifdef SNOW
+  col += snowLayers(ro, rd, tHit);
+#endif
+  return col;
+}
+
+void main(){
+  A = uRes.x/uRes.y; HO = vec2(A - FB, 1.0 - FB);
+#ifdef HAS_PREP
+  prep();
+#endif
+  vec3 acc = vec3(0.0);
+  int n = int(uAA);
+  for(int j=0;j<4;j++){ if(j >= n) break;
+    for(int i=0;i<4;i++){ if(i >= n) break;
+      SEED = uint(gl_FragCoord.x)*1973u + uint(gl_FragCoord.y)*9277u + uint(i + j*4)*26699u + uint(uT*997.0)*1013u + 1u;
+      vec2 off = (vec2(float(i), float(j)) + 0.5)/uAA - 0.5;
+      off = mat2(0.894, 0.447, -0.447, 0.894)*off;
+      vec2 sp = ((gl_FragCoord.xy + off)/uRes*2.0 - 1.0)*vec2(A, 1.0);
+      vec3 ro = vec3(0.0, 0.0, -ZC);
+      acc += trace(ro, normalize(vec3(sp, 0.0) - ro));
+    }
+  }
+  vec3 fin = acc/(uAA*uAA);
+  if(any(isnan(fin)) || any(isinf(fin))) fin = vec3(0.0);
+  o = vec4(min(max(fin, 0.0), vec3(200.0))*uGain, 1.0);
+}
+`;
+
+const cv = document.getElementById('c');
+let G, SRC, TOTAL, POST = {};
+async function boot(){
+  const txt = await (await fetch(`scenes/${state.scene}.glsl`, { cache: 'no-store' })).text();
+  // 장면 머리의 // @post {...} 로 마무리 값 바꾸기
+  const m = txt.match(/\/\/\s*@post\s*(\{.*\})/);
+  if(m) POST = JSON.parse(m[1]);
+  G = BomnalGL.create(cv, Object.assign({ width: state.w, height: state.h,
+    exposure: 1.0, bloom: 0.06, tone: 'agx', sat: 1.25, contrast: 1.08, vignette: 0.12, grain: 0.010 }, POST));
+  G.resize(state.w, state.h);
+  let lib = '';
+  const lm = txt.match(/\/\/\s*@lib\s*(\S+)/);
+  if(lm) lib = await (await fetch(`scenes/${lm[1]}.glsl`, { cache: 'no-store' })).text();
+  SRC = HEAD + lib + txt + ENGINE;
+  TOTAL = Math.round(state.fps*state.dur);
+}
+window.renderFrame = function(n){
+  const f = ((n % TOTAL) + TOTAL) % TOTAL;
+  G.begin();
+  G.shutter(state.sub, (s)=>{
+    const tSec = (((f + (s - 0.5)*state.shutter)/TOTAL + 1) % 1)*state.dur;
+    G.background(SRC, { uT: tSec, uAA: state.aa });
+  });
+  G.end(f);
+  G.gl.finish();
+};
+boot().then(()=>{
+  if(CAP){ document.body.classList.add('capture'); renderFrame(0); window.__READY__ = true; }
+  else {
+    let frame = +q.get('f') || 0; const still = q.has('f');
+    (function loop(){ renderFrame(frame); if(!still) frame = (frame + 1) % TOTAL; requestAnimationFrame(loop); })();
+  }
+}).catch(e => { console.error(e.message || e); window.__READY__ = true; });
+</script></body></html>

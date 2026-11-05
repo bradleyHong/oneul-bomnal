@@ -76,7 +76,7 @@
   font: inherit; font-size: 15px; color: var(--ink); background: var(--void); border: 1px solid var(--edge); border-radius: 10px; padding: 11px 12px; width: 100%; box-sizing: border-box; }
 .sx-form input:focus, .sx-form select:focus, .sx-form textarea:focus { outline: 2px solid var(--glow-soft); border-color: var(--glow); }
 .sx-two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.sx-two[hidden] { display: none; }
+.sx-two[hidden], .sx-seg[hidden], .sx-label[hidden] { display: none; }
 .sx-check { display: flex !important; grid-template-columns: none; gap: 8px; align-items: flex-start; line-height: 1.6; }
 .sx-check input { accent-color: var(--glow); margin-top: 4px; }
 .sx-picked { display: flex; align-items: center; gap: 14px; padding: 14px; border-radius: 14px; border: 1px dashed var(--edge); color: var(--deep); font-size: 14px; }

@@ -14,7 +14,7 @@
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   var BASE = "./works/studio-gl/";
-  var MOOD = { calm: "차분한", vivid: "화려한", nature: "자연", geo: "조형", cosmos: "우주" };
+  var MOOD = { calm: "차분한", vivid: "화려한", nature: "자연", geo: "조형", cosmos: "우주", ana: "아나모픽", xmas: "크리스마스" };
   var state = { ratio: "16:9", mood: "all", work: null, pal: 0, speed: 1, picked: null };
   var WORKS = {};
   (window.SX_CATALOG || []).forEach(function (w) { WORKS[w.id] = w; });
@@ -76,11 +76,13 @@
   /* ── 크게 보기 ───────────────────────────────────── */
   var view = $("[data-view]"), stage = $("[data-stage]"), ifr = $("[data-frame]");
   function frame() {
-    var r = state.ratio.split(":").map(Number);
+    // 아나모픽은 렌탈 LED 2:1 틀에 맞춰 만든 작품이라 화면 모양을 바꾸지 않고 작품 비율 그대로 보여 준다
+    var wk = get(state.work), wr = (wk.ratio || "16:9").split(":").map(Number);
+    var r = (wk.ratio || state.ratio).split(":").map(Number);
     stage.style.aspectRatio = r[0] + " / " + r[1];
     stage.setAttribute("data-tall", String(r[1] > r[0]));
     // 영상은 16:9. 다른 화면 모양은 가운데를 꽉 채워 잘라 보여 준다 (납품은 그 규격으로 새로 렌더)
-    var box = stage.getBoundingClientRect(), k = 16 / 9;
+    var box = stage.getBoundingClientRect(), k = wr[0] / wr[1];
     var w = box.width, h = box.width / k;
     if (h < box.height) { h = box.height; w = h * k; }
     w *= 1.03; h *= 1.03;                                     // 비메오 판 가장자리 흰 줄이 비치지 않게 살짝 크게
@@ -113,6 +115,8 @@
       return '<button type="button" role="radio" aria-checked="' + (i === 0) + '" data-pal="' + i + '"><i style="background:' + swatchBg(p.colors) + '"></i>' + p.name + '</button>';
     }).join("");
     radio($("[data-speed-group]"), "data-speed", 1);
+    // 아나모픽(15초 루프 영상)은 빠르기를 고르지 않는다
+    $("[data-speed-group]").hidden = $("[data-speed-label]").hidden = !!w.loop;
     if (typeof view.showModal === "function") view.showModal(); else view.setAttribute("open", "");
     requestAnimationFrame(frame);
     if (typeof window.gtag === "function") window.gtag("event", "view_item", { item_id: id, item_name: w.title });
@@ -131,7 +135,7 @@
   view.addEventListener("click", function (e) { if (e.target === view) close(); });
   $("[data-pick]").addEventListener("click", function () {
     var w = get(state.work);
-    state.picked = { id: w.id, title: w.title, en: w.en, pal: w.palettes[state.pal].name, colors: w.palettes[state.pal].colors, speed: state.speed, ratio: state.ratio };
+    state.picked = { id: w.id, title: w.title, en: w.en, pal: w.palettes[state.pal].name, colors: w.palettes[state.pal].colors, speed: state.speed, ratio: w.ratio || state.ratio, loop: w.loop || 0 };
     paintPicked();
     close();
     $("#order").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -143,7 +147,7 @@
     var p = state.picked, el = $("[data-picked]");
     if (!p) return;
     el.innerHTML = '<i style="background:' + swatchBg(p.colors) + '"></i><span><strong>' + p.title + '</strong> · ' + p.en +
-      '<br /><small>색 ' + p.pal + ' · ' + (p.speed === 1 ? "보통 빠르기 · 30초 반복" : "느리게 · 60초 반복") + '</small></span>' +
+      '<br /><small>' + (p.loop ? "아나모픽 · " + p.loop + "초 반복 · 렌탈 LED 2:1 기준" : '색 ' + p.pal + ' · ' + (p.speed === 1 ? "보통 빠르기 · 30초 반복" : "느리게 · 60초 반복")) + '</small></span>' +
       '<button type="button" class="sx-link" data-repick>다른 작품</button>';
     el.setAttribute("data-on", "");
     $("[data-repick]", el).addEventListener("click", function () { $("#studio").scrollIntoView({ behavior: "smooth" }); });
@@ -171,7 +175,7 @@
       "주문자: " + (shop ? "매장·개인 / 결제 희망: 카드 또는 계좌이체" : "기관·기업 / 결제: 세금계산서"),
       "",
       "작품: " + p.title + " (" + p.en + ", 코드 " + p.id + ")",
-      "색: " + p.pal + " · 빠르기: " + (p.speed === 1 ? "보통 (30초 반복)" : "느리게 (60초 반복)"),
+      p.loop ? "아나모픽 · " + p.loop + "초 반복 (렌탈 LED 2:1 기준, 다른 규격은 틀까지 다시 렌더)" : "색: " + p.pal + " · 빠르기: " + (p.speed === 1 ? "보통 (30초 반복)" : "느리게 (60초 반복)"),
       "화면: " + scr + " · 미리 본 화면 모양 " + p.ratio,
       v("note") ? "남길 말: " + v("note") : "",
       "",

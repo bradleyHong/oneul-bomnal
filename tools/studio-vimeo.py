@@ -21,7 +21,7 @@ tv = importlib.util.module_from_spec(spec); spec.loader.exec_module(tv)
 
 ids = sys.argv[1:]
 meta = json.loads(subprocess.run(["node", "-e", """
-const fs=require('fs'),vm=require('vm');const got={};const ctx={SGL:{add:w=>got[w.id]=w}};vm.createContext(ctx);
+const fs=require('fs'),vm=require('vm');const got={};const ctx={SGL:new Proxy({add:w=>got[w.id]=w},{get:(t,k)=>k in t?t[k]:()=>''})};vm.createContext(ctx);
 for(const id of process.argv.slice(1)) vm.runInContext(fs.readFileSync('works/studio-gl/works/'+id+'.js','utf8'),ctx);
 console.log(JSON.stringify(Object.fromEntries(Object.values(got).map(w=>[w.id,{title:w.title,pals:w.palettes.map(p=>p.name)}]))));
 """, *ids], cwd=SITE, capture_output=True, text=True).stdout)
@@ -37,10 +37,17 @@ for wid in ids:
             ok = False
             for attempt in range(3):
                 subprocess.run(["pkill", "-f", "Google Chrome --headless=new --remote-debugging-port"])
-                r = subprocess.run(["node", "tools/render-gl-video.mjs",
-                    f"http://localhost:4737/works/studio-gl/view.html?work={wid}&pal={pal}&speed=1&capture=1&w=1920&h=1080&aa=1&sub=4",
-                    out + ".tmp.mp4", "900", "30"], cwd=SITE, capture_output=True, text=True, env={**os.environ, "CRF": "15"})
-                ok = "done" in r.stdout and "ERROR" not in r.stdout
+                try:
+                    r = subprocess.run(["node", "tools/render-gl-video.mjs",
+                        f"http://localhost:4737/works/studio-gl/view.html?work={wid}&pal={pal}&speed=1&capture=1&w=1920&h=1080&aa=1&sub=4",
+                        out + ".tmp.mp4", "900", "30"], cwd=SITE, capture_output=True, text=True, env={**os.environ, "CRF": "15"}, timeout=1800)
+                    ok = "done" in r.stdout and "ERROR" not in r.stdout
+                except subprocess.TimeoutExpired:
+                    # 2026-11-06: 900프레임을 다 쓰고 끝맺음에서 멈춘 적이 있다 → 프레임이 다 있으면 받아 준다
+                    n = subprocess.run(["ffprobe", "-v", "error", "-count_packets", "-select_streams", "v", "-show_entries",
+                                        "stream=nb_read_packets", "-of", "csv=p=0", out + ".tmp.mp4"], capture_output=True, text=True).stdout.strip()
+                    ok = n == "900"
+                    class r: stdout = "timeout, frames " + n
                 if ok:
                     break
                 print(wid, pal, "retry", attempt, r.stdout[-200:], flush=True)

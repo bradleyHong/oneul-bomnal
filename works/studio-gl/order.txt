@@ -36,3 +36,9 @@ life-marriage
 life-lineage
 life-rise
 life-chance
+# 방울방울, 나 연작 (2026-11-03)
+drop-nympheas
+drop-impression
+drop-haystacks
+drop-breeze
+drop-self
