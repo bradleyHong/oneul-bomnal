@@ -1174,7 +1174,7 @@ window.SX_CATALOG = [
      "#fff2c0",
      "#2a2008"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242305756?h=45b59e8111"
    },
    {
     "name": "늦가을",
@@ -1184,7 +1184,7 @@ window.SX_CATALOG = [
      "#ffb070",
      "#1a100a"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242305947?h=8f08c54c57"
    },
    {
     "name": "진홍",
@@ -1194,7 +1194,7 @@ window.SX_CATALOG = [
      "#ffc0a0",
      "#200810"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242306155?h=8b310ab137"
    }
   ]
  },
@@ -1217,7 +1217,7 @@ window.SX_CATALOG = [
      "#e8f6ff",
      "#060c1a"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242307148?h=421f635458"
    },
    {
     "name": "극야",
@@ -1227,7 +1227,7 @@ window.SX_CATALOG = [
      "#e0fff4",
      "#08061a"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242308135?h=2fab78f81a"
    },
    {
     "name": "새벽 서리",
@@ -1237,7 +1237,7 @@ window.SX_CATALOG = [
      "#fff4f8",
      "#120c1a"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242309074?h=1759dceeb8"
    },
    {
     "name": "은빛",
@@ -1247,7 +1247,7 @@ window.SX_CATALOG = [
      "#ffffff",
      "#0a0c10"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242310060?h=9f339f6bc7"
    }
   ]
  },
@@ -1269,7 +1269,7 @@ window.SX_CATALOG = [
      "#ff7aa8",
      "#2a1420"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242310250?h=eaae99d170"
    },
    {
     "name": "금빛 요람",
@@ -1279,7 +1279,7 @@ window.SX_CATALOG = [
      "#ff8a3a",
      "#20140a"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242310448?h=1fa5eacf65"
    },
    {
     "name": "젖빛",
@@ -1289,7 +1289,7 @@ window.SX_CATALOG = [
      "#ffc8e0",
      "#101420"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242310672?h=16b844fd7d"
    },
    {
     "name": "연두 숨",
@@ -1299,7 +1299,7 @@ window.SX_CATALOG = [
      "#5ae0c0",
      "#0c1a14"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242310864?h=c98a0e6cd5"
    }
   ]
  },
@@ -1320,7 +1320,7 @@ window.SX_CATALOG = [
      "#3ad8ff",
      "#9a5aff"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242311147?h=daf6b6d028"
    },
    {
     "name": "햇살",
@@ -1330,7 +1330,7 @@ window.SX_CATALOG = [
      "#ff7a5a",
      "#ffe0c0"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242311383?h=c430f907d3"
    },
    {
     "name": "사탕",
@@ -1340,7 +1340,7 @@ window.SX_CATALOG = [
      "#d0ff8a",
      "#ffd08a"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242311561?h=06da640dec"
    },
    {
     "name": "네온",
@@ -1350,7 +1350,7 @@ window.SX_CATALOG = [
      "#3da8ff",
      "#ffe83d"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242311734?h=1c24573135"
    }
   ]
  },
@@ -1371,7 +1371,7 @@ window.SX_CATALOG = [
      "#ff9a3a",
      "#1a0604"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242311928?h=6c738d20d9"
    },
    {
     "name": "핏빛",
@@ -1381,7 +1381,7 @@ window.SX_CATALOG = [
      "#ff6a8a",
      "#1a0408"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242312092?h=c60da774b8"
    },
    {
     "name": "번개",
@@ -1391,7 +1391,7 @@ window.SX_CATALOG = [
      "#3ad8ff",
      "#08061a"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242312264?h=7c36c486e2"
    },
    {
     "name": "쇳물",
@@ -1401,7 +1401,7 @@ window.SX_CATALOG = [
      "#ffd03a",
      "#140a04"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242312489?h=1226e126ad"
    }
   ]
  },
@@ -1422,7 +1422,7 @@ window.SX_CATALOG = [
      "#e8f4ff",
      "#04070e"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242312710?h=8f3c1cf3af"
    },
    {
     "name": "쪽빛",
@@ -1432,7 +1432,7 @@ window.SX_CATALOG = [
      "#d0ecff",
      "#03050c"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242312859?h=7e278712e8"
    },
    {
     "name": "잿빛",
@@ -1442,7 +1442,7 @@ window.SX_CATALOG = [
      "#ffffff",
      "#060708"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242313061?h=3a62e08a27"
    },
    {
     "name": "보랏빛 저녁",
@@ -1452,7 +1452,7 @@ window.SX_CATALOG = [
      "#f4e8ff",
      "#07040e"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242766544?h=856046af2a"
    }
   ]
  },
@@ -1474,7 +1474,7 @@ window.SX_CATALOG = [
      "#3ad8ff",
      "#9a5aff"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242766820?h=2f5f48f630"
    },
    {
     "name": "재즈",
@@ -1484,7 +1484,7 @@ window.SX_CATALOG = [
      "#ffe7a8",
      "#c9762c"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242767034?h=c1158a3bef"
    },
    {
     "name": "라임 팝",
@@ -1494,7 +1494,7 @@ window.SX_CATALOG = [
      "#38d6ff",
      "#ff5ab0"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242767215?h=b7febca114"
    },
    {
     "name": "달빛 왈츠",
@@ -1504,7 +1504,7 @@ window.SX_CATALOG = [
      "#ffd8f0",
      "#8affe8"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242767419?h=96e6717fd9"
    }
   ]
  },
@@ -1526,7 +1526,7 @@ window.SX_CATALOG = [
      "#fff0f4",
      "#ffb0c8"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242767600?h=7e57d7ade6"
    },
    {
     "name": "노을 연인",
@@ -1536,7 +1536,7 @@ window.SX_CATALOG = [
      "#fff4e0",
      "#ffc08a"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242767739?h=da96219a59"
    },
    {
     "name": "장미와 진주",
@@ -1546,7 +1546,7 @@ window.SX_CATALOG = [
      "#ffffff",
      "#ff8aa8"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242767910?h=5213cb5443"
    },
    {
     "name": "봄밤",
@@ -1556,7 +1556,7 @@ window.SX_CATALOG = [
      "#fffaf0",
      "#c0a8ff"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242768091?h=995d4f1288"
    }
   ]
  },
@@ -1578,7 +1578,7 @@ window.SX_CATALOG = [
      "#fff4d8",
      "#ffd8a0"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242768675?h=57a743f4d0"
    },
    {
     "name": "로즈골드",
@@ -1588,7 +1588,7 @@ window.SX_CATALOG = [
      "#ffe8e0",
      "#ffc0a8"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242769214?h=b40e3d2f58"
    },
    {
     "name": "진주",
@@ -1598,7 +1598,7 @@ window.SX_CATALOG = [
      "#ffffff",
      "#e8d8ff"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242769755?h=743ef243e8"
    },
    {
     "name": "흑진주",
@@ -1608,7 +1608,7 @@ window.SX_CATALOG = [
      "#e8f0ff",
      "#a08ac8"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242770232?h=390aec034d"
    }
   ]
  },
@@ -1630,7 +1630,7 @@ window.SX_CATALOG = [
      "#fff4e0",
      "#1a1008"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1242770346?h=8bbd6807af"
    },
    {
     "name": "새싹",
@@ -1640,7 +1640,7 @@ window.SX_CATALOG = [
      "#f4ffe8",
      "#08140c"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1243572305?h=3bab9462f9"
    },
    {
     "name": "별빛 가계",
@@ -1650,7 +1650,7 @@ window.SX_CATALOG = [
      "#ffffff",
      "#060814"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1243572364?h=dfa6191236"
    },
    {
     "name": "벚빛",
@@ -1660,7 +1660,7 @@ window.SX_CATALOG = [
      "#fff4f8",
      "#1a0810"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1243572440?h=1111605ee0"
    }
   ]
  },
@@ -1681,7 +1681,7 @@ window.SX_CATALOG = [
      "#ff5a1a",
      "#0a0604"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1243572523?h=1182c6b19c"
    },
    {
     "name": "새벽",
@@ -1691,7 +1691,7 @@ window.SX_CATALOG = [
      "#ff8a6a",
      "#06080e"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1243572597?h=06a6b595da"
    },
    {
     "name": "푸른 불꽃",
@@ -1701,7 +1701,7 @@ window.SX_CATALOG = [
      "#3a8aff",
      "#04060e"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1243572634?h=8c63ecc8f5"
    },
    {
     "name": "백금",
@@ -1711,7 +1711,7 @@ window.SX_CATALOG = [
      "#ffc88a",
      "#08080a"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1243572689?h=34a2b2ec7e"
    }
   ]
  },
@@ -1733,7 +1733,7 @@ window.SX_CATALOG = [
      "#ffd36b",
      "#ffffff"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1243572750?h=fc76fb5793"
    },
    {
     "name": "기회",
@@ -1743,7 +1743,7 @@ window.SX_CATALOG = [
      "#ffe07a",
      "#fff8e0"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1243572819?h=39ff168ab5"
    },
    {
     "name": "밤거리",
@@ -1753,7 +1753,7 @@ window.SX_CATALOG = [
      "#ff3a8a",
      "#fff0f8"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1243572883?h=6b93f542b4"
    },
    {
     "name": "별자리",
@@ -1763,7 +1763,901 @@ window.SX_CATALOG = [
      "#fff4c8",
      "#ffffff"
     ],
-    "vimeo": null
+    "vimeo": "https://player.vimeo.com/video/1243572938?h=4206e9ea9b"
+   }
+  ]
+ },
+ {
+  "id": "drop-nympheas",
+  "title": "수련",
+  "en": "Nymphéas",
+  "mood": [
+   "calm",
+   "nature"
+  ],
+  "desc": "연못 위로 물방울이 톡, 톡 떨어져 통통 튀며 쌓이고, 꽃잎인 듯 아닌 듯한 형상으로 피어납니다. 방울마다 모네의 연못이 거꾸로 담깁니다.",
+  "palettes": [
+   {
+    "name": "수련",
+    "colors": [
+     "#2f6b5e",
+     "#a9b8e0",
+     "#f0a8c0",
+     "#f6e3a1"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243573119?h=c874edd492"
+   },
+   {
+    "name": "아침 안개",
+    "colors": [
+     "#4a6f8a",
+     "#c8d4e6",
+     "#f4c6a8",
+     "#fff1d6"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243573335?h=1427f2c4f0"
+   },
+   {
+    "name": "보랏빛 저녁",
+    "colors": [
+     "#3b3a6b",
+     "#9d8fc8",
+     "#ff9e8a",
+     "#ffd9a0"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243573538?h=8f0d2037b4"
+   },
+   {
+    "name": "초록 정원",
+    "colors": [
+     "#3e6b3a",
+     "#b8d4c8",
+     "#e8a0b8",
+     "#f2f0c0"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243573727?h=f76763232c"
+   }
+  ]
+ },
+ {
+  "id": "drop-impression",
+  "title": "해돋이",
+  "en": "Impression",
+  "mood": [
+   "calm",
+   "nature"
+  ],
+  "desc": "안개 낀 새벽 물가에 물방울이 톡, 톡 내려앉아 위로 휘감아 오르는 형상을 세웁니다. 해를 등진 방울마다 주황빛이 고이고, 끝에는 하나씩 물 위로 떨어집니다.",
+  "palettes": [
+   {
+    "name": "해돋이",
+    "colors": [
+     "#2c4a6e",
+     "#8fa6c0",
+     "#ff7a3c",
+     "#ffd8a8"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243573914?h=60d7a1e622"
+   },
+   {
+    "name": "푸른 새벽",
+    "colors": [
+     "#253a66",
+     "#7a90c8",
+     "#ff9a7a",
+     "#ffe6c8"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243574099?h=afc0a0d35c"
+   },
+   {
+    "name": "안개 항구",
+    "colors": [
+     "#3a4a58",
+     "#a8b4bc",
+     "#ffa060",
+     "#fff0d8"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243574288?h=e7b6c09e2c"
+   },
+   {
+    "name": "장밋빛",
+    "colors": [
+     "#3a2f5a",
+     "#a096c0",
+     "#ff6a7a",
+     "#ffd0b8"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243574493?h=d674a87a22"
+   }
+  ]
+ },
+ {
+  "id": "drop-haystacks",
+  "title": "건초더미",
+  "en": "Haystacks",
+  "mood": [
+   "calm",
+   "nature"
+  ],
+  "desc": "늦은 오후 낮은 해 아래, 물방울이 쌓이고 쌓여 둥근 더미 셋이 차례로 솟습니다. 해를 받는 쪽은 금빛, 그늘 쪽은 보랏빛. 하루하루 쌓아 온 나.",
+  "palettes": [
+   {
+    "name": "늦은 오후",
+    "colors": [
+     "#5a4a8a",
+     "#9ab0d8",
+     "#ff9a5a",
+     "#ffe0a0"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243574742?h=14cdf487a1"
+   },
+   {
+    "name": "가을 저녁",
+    "colors": [
+     "#4a3a6a",
+     "#c0a0c8",
+     "#ff7a4a",
+     "#ffd890"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243575024?h=22f7f94709"
+   },
+   {
+    "name": "눈 온 아침",
+    "colors": [
+     "#4a5a8a",
+     "#c8d4ec",
+     "#ffb0a0",
+     "#fff4e0"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243575206?h=90a64f6393"
+   },
+   {
+    "name": "여름 한낮",
+    "colors": [
+     "#3a6a5a",
+     "#a0c8e0",
+     "#ffc060",
+     "#fff8c8"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243575448?h=89bd7287da"
+   }
+  ]
+ },
+ {
+  "id": "drop-breeze",
+  "title": "바람",
+  "en": "Breeze",
+  "mood": [
+   "calm",
+   "nature"
+  ],
+  "desc": "밝은 날 바람이 붑니다. 물방울이 허공의 보이지 않는 천 위에 내려앉아 바람에 부푼 베일이 드러나고, 바람결 따라 출렁이다 하나씩 실려 갑니다.",
+  "palettes": [
+   {
+    "name": "양산",
+    "colors": [
+     "#3a7a5a",
+     "#7ab0e0",
+     "#f6efe0",
+     "#f2d04a"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243779515?h=8faea586e4"
+   },
+   {
+    "name": "들꽃",
+    "colors": [
+     "#4a7a4a",
+     "#9ac0e8",
+     "#ffc8d8",
+     "#fff0a0"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243779892?h=9404b30431"
+   },
+   {
+    "name": "바닷바람",
+    "colors": [
+     "#2a6a7a",
+     "#6aa8e0",
+     "#e8f4f8",
+     "#ffe0a0"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243780241?h=0caf57b0e2"
+   },
+   {
+    "name": "저녁 바람",
+    "colors": [
+     "#4a4a7a",
+     "#a8a0d8",
+     "#ffd0c0",
+     "#ffc870"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243780578?h=f05761ed0a"
+   }
+  ]
+ },
+ {
+  "id": "ana-a01",
+  "title": "봄날의 창 II",
+  "en": "Spring Window II",
+  "mood": [
+   "ana"
+  ],
+  "desc": "바다에서 떠오른 흰 나무 창틀이 화면 밖으로 넘어옵니다. 창 안에는 다른 날의 하늘이 흐릅니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#896185",
+     "#a47ca0",
+     "#b089ad",
+     "#d1a9cd"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1240093551?h=aa67d30046"
+   }
+  ]
+ },
+ {
+  "id": "ana-a02",
+  "title": "무지개 구슬",
+  "en": "Rainbow Marbles",
+  "mood": [
+   "ana"
+  ],
+  "desc": "뒷벽 구멍에서 굴러 나온 무지개 구슬이 통통 튀다가 관객 쪽으로 날아옵니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#774c83",
+     "#845990",
+     "#9b70a7",
+     "#ba8fc5"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1240093574?h=057e5b371b"
+   }
+  ]
+ },
+ {
+  "id": "ana-a03",
+  "title": "빛기둥의 숲",
+  "en": "Forest of Light Pins",
+  "mood": [
+   "ana"
+  ],
+  "desc": "뒷벽의 빛기둥 수백 개가 파도처럼 부풀어 틀 밖까지 밀려 나옵니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#381e10",
+     "#381e10",
+     "#3e2316",
+     "#3a1f11"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1240093603?h=88b65bd1fb"
+   }
+  ]
+ },
+ {
+  "id": "ana-a04",
+  "title": "봄 (Spring)",
+  "en": "Spring",
+  "mood": [
+   "ana"
+  ],
+  "desc": "사탕빛 용수철이 '보잉' 하고 관객 코앞까지 튀어나옵니다. 이름 그대로 봄입니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#915e49",
+     "#97644f",
+     "#b07d68",
+     "#c6937e"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1240093628?h=f9736f2b9d"
+   }
+  ]
+ },
+ {
+  "id": "ana-a05",
+  "title": "구름 상자",
+  "en": "Cloud Box",
+  "mood": [
+   "ana"
+  ],
+  "desc": "상자 안에서 몽글몽글 피어난 구름이 틀 위로 넘쳐 흘러나옵니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#737eab",
+     "#9aa6d2",
+     "#98a4d0",
+     "#9da8d4"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1240093657?h=33f46caf64"
+   }
+  ]
+ },
+ {
+  "id": "ana-a06",
+  "title": "녹는 빛",
+  "en": "Melting Light",
+  "mood": [
+   "ana"
+  ],
+  "desc": "사탕빛 액체 방울이 틀 밖에서 길게 늘어지며 떨어집니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#3e776d",
+     "#488176",
+     "#5e978c",
+     "#7db6ac"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1240093676?h=f111b41d72"
+   }
+  ]
+ },
+ {
+  "id": "ana-a07",
+  "title": "풍경 조각",
+  "en": "Landscape Cubes",
+  "mood": [
+   "ana"
+  ],
+  "desc": "네 날의 풍경을 담은 큐브가 뒤집히며 화면 밖으로 튀어나옵니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#2f0a3d",
+     "#452053",
+     "#441f52",
+     "#4f295d"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1240093697?h=642f44d70f"
+   }
+  ]
+ },
+ {
+  "id": "ana-a08",
+  "title": "우주의 문",
+  "en": "Gate of the Cosmos",
+  "mood": [
+   "ana"
+  ],
+  "desc": "아치 문 너머 우주에서 고리 행성이 천천히 지나갑니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#080b4b",
+     "#0c1050",
+     "#1a1e5e",
+     "#353878"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1240093713?h=631f9e9dd7"
+   }
+  ]
+ },
+ {
+  "id": "ana-a09",
+  "title": "TV 탑",
+  "en": "TV Tower",
+  "mood": [
+   "ana"
+  ],
+  "desc": "옛 TV가 한 대씩 미끄러져 나와 관객 쪽으로 몸을 돌립니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#894d2a",
+     "#935835",
+     "#b67b58",
+     "#d69a77"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1240093731?h=b52aa291c5"
+   }
+  ]
+ },
+ {
+  "id": "ana-a10",
+  "title": "빛 해파리",
+  "en": "Light Jellyfish",
+  "mood": [
+   "ana"
+  ],
+  "desc": "빛나는 해파리가 틀을 넘어 관객 머리 위로 헤엄쳐 갑니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#00598a",
+     "#006293",
+     "#006e9f",
+     "#037bac"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1240093757?h=d9c0f88088"
+   }
+  ]
+ },
+ {
+  "id": "ana-x01",
+  "title": "오너먼트 그네",
+  "en": "Ornament Swing",
+  "mood": [
+   "ana",
+   "xmas"
+  ],
+  "desc": "천장에 매달린 오너먼트들이 그네처럼 흔들리고, 앞줄은 관객 코앞까지 넘어왔다 돌아갑니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#17292c",
+     "#0f2123",
+     "#1b2e30",
+     "#2c3e41"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243778072?h=a9d940b4a1"
+   }
+  ]
+ },
+ {
+  "id": "ana-x02",
+  "title": "선물 폭포",
+  "en": "Gift Falls",
+  "mood": [
+   "ana",
+   "xmas"
+  ],
+  "desc": "뒷벽에서 선물 상자가 하나씩 굴러 나와 튀다가, 틀 끝에서 크게 튀어 관객 쪽으로 날아옵니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#2f2305",
+     "#2f2305",
+     "#2f2305",
+     "#382d0f"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243778142?h=638a54e296"
+   }
+  ]
+ },
+ {
+  "id": "ana-x03",
+  "title": "캔디케인 숲",
+  "en": "Candy Cane Forest",
+  "mood": [
+   "ana",
+   "xmas"
+  ],
+  "desc": "지팡이 사탕들이 빙글 돌며 솟고, 앞줄은 관객 쪽으로 기울어 틀 밖까지 걸쳐 나옵니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#270a0a",
+     "#2a0d0d",
+     "#482a2a",
+     "#4f3131"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243778201?h=112beba3b6"
+   }
+  ]
+ },
+ {
+  "id": "ana-x04",
+  "title": "자라는 트리",
+  "en": "Growing Tree",
+  "mood": [
+   "ana",
+   "xmas"
+  ],
+  "desc": "빛 트리가 자라나 전구가 반짝이고, 꼭대기 별이 떨어져 나와 관객 머리 위로 날아갑니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#082d0d",
+     "#082d0d",
+     "#183d1e",
+     "#173c1c"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243778274?h=76f8617313"
+   }
+  ]
+ },
+ {
+  "id": "ana-x05",
+  "title": "눈꽃 결정",
+  "en": "Snow Crystals",
+  "mood": [
+   "ana",
+   "xmas"
+  ],
+  "desc": "겨울밤 하늘에서 큰 얼음 눈송이들이 빙글 돌며 다가와 틀 밖으로 지나갑니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#113e58",
+     "#0b3852",
+     "#416e88",
+     "#45738c"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243778327?h=cfaaeb4134"
+   }
+  ]
+ },
+ {
+  "id": "ana-x06",
+  "title": "눈사람 깜짝 상자",
+  "en": "Snowman in the Box",
+  "mood": [
+   "ana",
+   "xmas"
+  ],
+  "desc": "선물 상자 뚜껑이 열리고, 용수철에 달린 눈사람이 '보잉' 하고 관객 코앞까지 튀어나옵니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#341213",
+     "#290809",
+     "#482627",
+     "#3c1a1b"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243778385?h=ca37300d2f"
+   }
+  ]
+ },
+ {
+  "id": "ana-x07",
+  "title": "황금 종",
+  "en": "Golden Bells",
+  "mood": [
+   "ana",
+   "xmas"
+  ],
+  "desc": "리본에 매달린 금종 셋이 흔들리며 울리고, 가운데 큰 종은 틀 밖까지 크게 넘어옵니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#291e02",
+     "#2a1f03",
+     "#33270b",
+     "#362a0f"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243778439?h=c4e2f77ee4"
+   }
+  ]
+ },
+ {
+  "id": "ana-x08",
+  "title": "생강빵 행진",
+  "en": "Gingerbread Parade",
+  "mood": [
+   "ana",
+   "xmas"
+  ],
+  "desc": "생강빵 사람들이 깡충깡충 줄지어 나와 틀 끝에서 관객 쪽으로 폴짝 뛰어듭니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#2e1400",
+     "#2f1600",
+     "#50361c",
+     "#462d13"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243778490?h=6d9847f950"
+   }
+  ]
+ },
+ {
+  "id": "ana-x09",
+  "title": "별똥별",
+  "en": "Shooting Stars",
+  "mood": [
+   "ana",
+   "xmas"
+  ],
+  "desc": "겨울밤에서 금빛 별들이 빙글빙글 날아와 틀을 넘어 관객 곁을 스칩니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#291948",
+     "#2c1b4a",
+     "#281846",
+     "#30204f"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243778555?h=30720dfccc"
+   }
+  ]
+ },
+ {
+  "id": "ana-x11",
+  "title": "리스 터널",
+  "en": "Wreath Tunnel",
+  "mood": [
+   "ana",
+   "xmas"
+  ],
+  "desc": "솔잎 리스가 하나씩 날아와 커지고, 관객이 그 고리 속을 지나가는 듯 빠져나갑니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#08373f",
+     "#06363e",
+     "#26565e",
+     "#2a5a62"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243778613?h=0dabeee638"
+   }
+  ]
+ },
+ {
+  "id": "ana-x12",
+  "title": "빛 나선 트리",
+  "en": "Spiral Light Tree",
+  "mood": [
+   "ana",
+   "xmas"
+  ],
+  "desc": "전구 구슬이 나선으로 감겨 트리가 되었다가, 빛의 강이 되어 관객 쪽으로 흘러나옵니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#221e09",
+     "#1f1a05",
+     "#2f2a16",
+     "#3a3520"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243778676?h=843370f166"
+   }
+  ]
+ },
+ {
+  "id": "ana-x13",
+  "title": "선물 탑",
+  "en": "Gift Tower",
+  "mood": [
+   "ana",
+   "xmas"
+  ],
+  "desc": "쌓인 선물 상자 뚜껑이 차례로 '펑' 열리고 오너먼트가 불꽃처럼 쏟아집니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#20100b",
+     "#21110c",
+     "#3e2e29",
+     "#44342f"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243778727?h=e6548f00a4"
+   }
+  ]
+ },
+ {
+  "id": "ana-x14",
+  "title": "핫초코",
+  "en": "Hot Chocolate",
+  "mood": [
+   "ana",
+   "xmas"
+  ],
+  "desc": "큰 머그잔에서 김이 오르고, 마시멜로가 퐁퐁 튀어 올라 관객 쪽으로 날아옵니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#340901",
+     "#340901",
+     "#4d221a",
+     "#4d221a"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243778791?h=c0684a0bba"
+   }
+  ]
+ },
+ {
+  "id": "ana-x15",
+  "title": "거울 오너먼트",
+  "en": "Mirror Ornament",
+  "mood": [
+   "ana",
+   "xmas"
+  ],
+  "desc": "상자 전체를 비추는 거대한 거울 오너먼트가 돌며 다가와 틀을 넘습니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#132930",
+     "#273d44",
+     "#1b3138",
+     "#233a41"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243778840?h=65d4a78555"
+   }
+  ]
+ },
+ {
+  "id": "ana-x16",
+  "title": "눈보라 터널",
+  "en": "Blizzard Tunnel",
+  "mood": [
+   "ana",
+   "xmas"
+  ],
+  "desc": "멀리 빛나는 트리를 두고 큰 눈송이들이 소용돌이치며 관객 쪽으로 쏟아집니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#1f3f65",
+     "#224368",
+     "#37587d",
+     "#3a5a7f"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243778905?h=5565a8a096"
+   }
+  ]
+ },
+ {
+  "id": "ana-x17",
+  "title": "페퍼민트 사탕",
+  "en": "Peppermint Candy",
+  "mood": [
+   "ana",
+   "xmas"
+  ],
+  "desc": "빨강·하양 소용돌이 사탕들이 팽이처럼 돌며 날아와 틀 밖으로 쏟아집니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#371419",
+     "#38161a",
+     "#3d1a1f",
+     "#432025"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243778943?h=519fec2c21"
+   }
+  ]
+ },
+ {
+  "id": "ana-x18",
+  "title": "MERRY XMAS",
+  "en": "Merry Xmas",
+  "mood": [
+   "ana",
+   "xmas"
+  ],
+  "desc": "사탕 관으로 만든 글자들이 차례로 빙글 돌며 관객 코앞까지 튀어나왔다 돌아갑니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#302713",
+     "#332916",
+     "#352c18",
+     "#3c331f"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243778982?h=6068bf70eb"
+   }
+  ]
+ },
+ {
+  "id": "ana-x19",
+  "title": "눈덩이 굴리기",
+  "en": "Rolling Snowball",
+  "mood": [
+   "ana",
+   "xmas"
+  ],
+  "desc": "굴러 나온 눈덩이가 점점 커지다 틀 끝에서 튀어 관객 쪽으로 굴러떨어집니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#183037",
+     "#082027",
+     "#698289",
+     "#213a41"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243779071?h=82559a90ae"
+   }
+  ]
+ },
+ {
+  "id": "ana-x20",
+  "title": "선물 폭죽",
+  "en": "Gift Fireworks",
+  "mood": [
+   "ana",
+   "xmas"
+  ],
+  "desc": "큰 선물 상자 뚜껑이 '펑' 날아가고 오너먼트와 별이 불꽃처럼 터져 쏟아집니다.",
+  "ratio": "2:1",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#420d00",
+     "#491400",
+     "#602c17",
+     "#905b46"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1243779117?h=744ea731c0"
    }
   ]
  }
