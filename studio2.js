@@ -14,7 +14,7 @@
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   var BASE = "./works/studio-gl/";
-  var MOOD = { calm: "차분한", vivid: "화려한", nature: "자연", geo: "조형", cosmos: "우주", ana: "아나모픽", vert: "세로 패널", xmas: "크리스마스" };
+  var MOOD = { calm: "차분한", vivid: "화려한", nature: "자연", geo: "조형", cosmos: "우주", ana: "아나모픽", vert: "세로 패널", season: "사계절", xmas: "크리스마스" };
   // 아나모픽 틀 규격: 렌탈 LED 2:1 또는 세로 패널 2:5 (80×200 cm)
   function ledOf(r) { return r === "2:5" ? "세로 패널 80×200 cm · 2:5" : "렌탈 LED " + (r || "2:1"); }
   var state = { ratio: "16:9", mood: "all", work: null, pal: 0, speed: 1, picked: null };
