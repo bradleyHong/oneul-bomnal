@@ -188,7 +188,7 @@ footer img{height:26px;margin:0 auto 10px;opacity:.9}
       <div class="inner" id="inner">
         <img class="space" id="space" src="img/space-f.jpg" alt="설치 예정 공간 합성 시안">
       </div>
-      <span class="badge" id="badge">확정 · 80 × 200 cm 두 면 · 벽 정중앙</span>
+      <span class="badge" id="badge">실측 이후 시안 · 80 × 200 cm 두 면 · 벽 정중앙</span>
       <span class="note">현장 사진 위 합성 시안</span>
       <button class="fs" id="fsBtn" aria-label="크게 보기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
       <div class="theater-strip" id="tStrip"></div>
@@ -197,7 +197,7 @@ footer img{height:26px;margin:0 auto 10px;opacity:.9}
 
     <div class="controls">
       <div class="seg" role="group" aria-label="설치 안">
-        <button data-opt="F" aria-pressed="true">확정 80×200<small>정중앙</small></button>
+        <button data-opt="F" aria-pressed="true">실측 이후 시안<small>80×200</small></button>
         <button data-opt="B" aria-pressed="false">B 바닥까지</button>
         <button data-opt="C" aria-pressed="false">C 천장까지</button>
         <button data-opt="A" aria-pressed="false">A 네모형</button>
@@ -215,8 +215,8 @@ footer img{height:26px;margin:0 auto 10px;opacity:.9}
 
 <section>
   <div class="wrap">
-    <p class="eyebrow">Final Spec</p>
-    <h2>확정 규격 · 80 × 200 cm 두 면</h2>
+    <p class="eyebrow">After Site Measurement</p>
+    <h2>실측 이후 시안 · 80 × 200 cm 두 면</h2>
     <p class="lead">실측한 벽(가로 5 m · 천장고 3.3 m) 정중앙에 세로 화면 두 면을 같은 간격으로 놓습니다.</p>
     <div class="final">
       <figure class="elev">
@@ -243,9 +243,9 @@ footer img{height:26px;margin:0 auto 10px;opacity:.9}
         <figcaption>정면도 · 단위 mm</figcaption>
       </figure>
       <div class="opt final-card">
-        <img src="img/space-f.jpg" alt="확정안 합성 시안: 벽 정중앙 세로 화면 두 면" loading="lazy">
+        <img src="img/space-f.jpg" alt="실측 이후 시안 합성: 벽 정중앙 세로 화면 두 면" loading="lazy">
         <div class="body">
-          <p class="k">FINAL <span class="rec">확정</span></p>
+          <p class="k">AFTER MEASUREMENT <span class="rec">실측 이후 시안</span></p>
           <h3>세로형 일체형 LED · 벽 정중앙 두 면</h3>
           <dl class="spec">
             <dt>화면 1면</dt><dd>W 800 × H 2,000 mm</dd>
@@ -348,7 +348,7 @@ footer img{height:26px;margin:0 auto 10px;opacity:.9}
       <li>전원 · 통신 위치</li>
       <li>점검구 · 유지보수 동선</li>
     </ol>
-    <p class="fine">※ 화면 크기(W 800 × H 2,000 mm)와 배치는 실측값 기준 확정입니다. 위 사진은 현장 사진 위 합성 시안이며, 전원 · 통신 위치와 매립 깊이는 현장 확인 뒤 정합니다.</p>
+    <p class="fine">※ 화면 크기(W 800 × H 2,000 mm)와 배치는 실측값(벽 가로 5 m · 천장고 3.3 m)을 반영한 시안입니다. 위 사진은 현장 사진 위 합성 시안이며, 전원 · 통신 위치와 매립 깊이는 현장 확인 뒤 정합니다.</p>
   </div>
 </section>
 
@@ -382,8 +382,8 @@ footer img{height:26px;margin:0 auto 10px;opacity:.9}
   // 화면 자리 (사진 1672×940 픽셀): [x0, y0, x1, y1]
   const IMG = { w: 1672, h: 940 };
   const OPTS = {
-    // 확정안: 실측 벽 가로 5,000 · 천장고 3,300 mm 에 W 800 × H 2,000 mm 두 면, 간격 1,133 mm 씩 같게 · 위아래 650 mm (사진 벽 x 223–1252, 천장 y 85, 바닥 y 804)
-    F: { img: "img/space-f.jpg", badge: "확정 · 80 × 200 cm 두 면 · 벽 정중앙", screens: [[456, 227, 621, 662], [854, 227, 1019, 662]], floor: null, refl: false },
+    // 실측 이후 시안: 실측 벽 가로 5,000 · 천장고 3,300 mm 에 W 800 × H 2,000 mm 두 면, 간격 1,133 mm 씩 같게 · 위아래 650 mm (사진 벽 x 223–1252, 천장 y 85, 바닥 y 804)
+    F: { img: "img/space-f.jpg", badge: "실측 이후 시안 · 80 × 200 cm 두 면 · 벽 정중앙", screens: [[456, 227, 621, 662], [854, 227, 1019, 662]], floor: null, refl: false },
     B: { img: "img/space-b.jpg", clean: "img/space-b-clean.jpg", badge: "B 세로형 · 바닥 연장", screens: [[408, 166, 623, 805], [895, 166, 1100, 805]], floor: 805, refl: true },
     C: { img: "img/space-c.jpg", clean: "img/space-c-clean.jpg", badge: "C 세로형 · 천장에서 바닥까지", screens: [[408, 56, 623, 805], [895, 56, 1100, 805]], floor: 805, refl: true, fix: [400, 50, 1110, 85] },
     A: { img: "img/space-a.jpg", badge: "A 네모형", screens: [[387, 254, 683, 529], [878, 252, 1160, 529]], floor: null, refl: false },
