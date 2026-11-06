@@ -89,7 +89,7 @@ section+section{border-top:1px solid var(--line)}
 .theater-strip img{width:100%;height:100%;object-fit:cover}
 
 /* ── 두 가지 안 ───────────────────────── */
-.options{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:26px}
+.options{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:26px}
 .opt{background:var(--card);border-radius:var(--r);overflow:hidden;border:1px solid var(--line)}
 .opt img{width:100%;aspect-ratio:1672/940;object-fit:cover}
 .opt .body{padding:20px 22px 22px}
@@ -175,6 +175,7 @@ footer img{height:26px;margin:0 auto 10px;opacity:.9}
     <div class="controls">
       <div class="seg" role="group" aria-label="설치 안">
         <button data-opt="B" aria-pressed="true">B 세로형<small>추천</small></button>
+        <button data-opt="C" aria-pressed="false">C 천장까지</button>
         <button data-opt="A" aria-pressed="false">A 네모형</button>
       </div>
       <div class="seg" role="group" aria-label="두 화면 구성">
@@ -190,8 +191,8 @@ footer img{height:26px;margin:0 auto 10px;opacity:.9}
 
 <section>
   <div class="wrap">
-    <p class="eyebrow">Two Options</p>
-    <h2>두 가지 안</h2>
+    <p class="eyebrow">Three Options</p>
+    <h2>세 가지 안</h2>
     <p class="lead">사진 비례로 잡은 잠정 규격입니다. 현장 스캔과 실측 뒤 제작 치수를 확정합니다.</p>
     <div class="options">
       <article class="opt">
@@ -204,6 +205,18 @@ footer img{height:26px;margin:0 auto 10px;opacity:.9}
             <dt>권장 초안</dt><dd>W 850 × H 2,400 mm</dd>
           </dl>
           <p class="feel">수직감 · 작품성. 바닥까지 이어져 공간의 높이를 강조합니다.</p>
+        </div>
+      </article>
+      <article class="opt">
+        <img src="img/space-c.jpg" alt="C안 세로형 천장에서 바닥까지 합성 시안" loading="lazy">
+        <div class="body">
+          <p class="k">OPTION C</p>
+          <h3>세로형 일체형 LED · 천장에서 바닥까지</h3>
+          <dl class="spec">
+            <dt>1면 예상 크기</dt><dd>W 800–900 × H 2,650–2,750 mm</dd>
+            <dt>기준</dt><dd>천장고 실측 뒤 확정</dd>
+          </dl>
+          <p class="feel">가장 강한 수직감. 천장 끝에서 바닥까지 벽 한 줄이 통째로 화면이 됩니다.</p>
         </div>
       </article>
       <article class="opt">
@@ -305,6 +318,7 @@ footer img{height:26px;margin:0 auto 10px;opacity:.9}
   const IMG = { w: 1672, h: 940 };
   const OPTS = {
     B: { img: "img/space-b.jpg", clean: "img/space-b-clean.jpg", badge: "B 세로형 · 바닥 연장", screens: [[408, 166, 623, 805], [895, 166, 1100, 805]], floor: 805, refl: true },
+    C: { img: "img/space-c.jpg", clean: "img/space-c-clean.jpg", badge: "C 세로형 · 천장에서 바닥까지", screens: [[408, 86, 623, 805], [895, 86, 1100, 805]], floor: 805, refl: true },
     A: { img: "img/space-a.jpg", badge: "A 네모형", screens: [[387, 254, 683, 529], [878, 252, 1160, 529]], floor: null, refl: false },
   };
   const $ = (s, r = document) => r.querySelector(s);
