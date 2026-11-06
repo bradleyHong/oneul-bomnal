@@ -49,6 +49,14 @@ section+section{border-top:1px solid var(--line)}
 .refl video{position:absolute;max-width:none;object-fit:cover;transform:scaleY(-1)}
 .stage.on .screen{opacity:1}
 .fixlayer{position:absolute;pointer-events:none;z-index:2}
+/* 두 화면 구성을 바꿀 때 잠깐: 한 작품이면 두 면을 잇는 한 장의 그림 테두리, 같은 작품이면 면마다 같은 표시 */
+.ghost{position:absolute;overflow:hidden;pointer-events:none;opacity:0;border:2px dashed rgba(255,255,255,.85);border-radius:4px;box-sizing:border-box}
+.ghost video{position:absolute;max-width:none;object-fit:cover;opacity:.42}
+.ghost.flash{animation:ghost 2.6s ease}
+.ghost-tag{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;pointer-events:none;opacity:0;white-space:nowrap;
+  background:rgba(20,32,24,.86);color:#fff;font-size:13px;font-weight:700;padding:6px 12px;border-radius:999px}
+.ghost-tag.flash{animation:ghost 2.6s ease}
+@keyframes ghost{0%{opacity:0}14%{opacity:1}72%{opacity:1}100%{opacity:0}}
 .stage.on .refl.show{opacity:.6}
 .stage .badge{position:absolute;left:14px;top:14px;background:rgba(47,74,60,.92);color:#fff;font-size:13px;font-weight:600;padding:7px 13px;border-radius:999px;letter-spacing:0.01em}
 .stage .note{position:absolute;right:12px;bottom:10px;font-size:11.5px;color:rgba(29,31,28,.6);background:rgba(251,249,245,.75);padding:3px 9px;border-radius:999px}
@@ -329,7 +337,7 @@ footer img{height:26px;margin:0 auto 10px;opacity:.9}
 
   const pct = (v, total) => (v / total * 100) + "%";
 
-  function build() {
+  function build(flash) {
     nodes.forEach((n) => n.remove()); nodes = [];
     const o = OPTS[opt];
     badge.textContent = o.badge;
@@ -341,6 +349,28 @@ footer img{height:26px;margin:0 auto 10px;opacity:.9}
       f.src = "img/space-c-fix.png"; f.alt = ""; f.className = "fixlayer";
       Object.assign(f.style, { left: pct(o.fix[0], IMG.w), top: pct(o.fix[1], IMG.h), width: pct(o.fix[2] - o.fix[0], IMG.w), height: pct(o.fix[3] - o.fix[1], IMG.h) });
       inner.appendChild(f); nodes.push(f);
+    }
+    if (flash) {
+      // 한 작품: 두 면을 아우르는 한 장의 그림을 벽 위에 잠깐 비춰 '이어진 한 장면'임을 보여 준다
+      const boxes = mode === "span" ? [bb] : o.screens;
+      boxes.forEach((a) => {
+        const g = document.createElement("div"); g.className = "ghost flash";
+        Object.assign(g.style, { left: pct(a[0], IMG.w), top: pct(a[1], IMG.h), width: pct(a[2] - a[0], IMG.w), height: pct(a[3] - a[1], IMG.h) });
+        if (mode === "span") {
+          const aw = a[2] - a[0], ah = a[3] - a[1], side = Math.max(aw, ah);
+          const v = document.createElement("video");
+          Object.assign(v, { muted: true, loop: true, playsInline: true, autoplay: true, preload: "auto" });
+          v.setAttribute("muted", ""); v.setAttribute("playsinline", "");
+          Object.assign(v.style, { left: ((aw - side) / 2 / aw * 100) + "%", top: ((ah - side) / 2 / ah * 100) + "%", width: (side / aw * 100) + "%", height: (side / ah * 100) + "%" });
+          g.appendChild(v);
+        }
+        g.addEventListener("animationend", () => g.remove());
+        inner.appendChild(g); nodes.push(g);
+      });
+      const t = document.createElement("span"); t.className = "ghost-tag flash";
+      t.textContent = mode === "span" ? "한 장면이 두 면에 이어집니다" : "두 면에 같은 장면";
+      t.addEventListener("animationend", () => t.remove());
+      inner.appendChild(t); nodes.push(t);
     }
     o.screens.forEach((s, i) => {
       const [x0, y0, x1, y1] = s, w = x1 - x0, h = y1 - y0;
@@ -429,7 +459,7 @@ footer img{height:26px;margin:0 auto 10px;opacity:.9}
   document.querySelectorAll("[data-mode]").forEach((b) => b.onclick = () => {
     mode = b.dataset.mode;
     document.querySelectorAll("[data-mode]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
-    build();
+    build(true);
   });
 
   // 크게 보기: 되면 진짜 전체화면, 아이폰처럼 안 되면 화면을 덮는다
