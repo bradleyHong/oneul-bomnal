@@ -14,7 +14,9 @@
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   var BASE = "./works/studio-gl/";
-  var MOOD = { calm: "차분한", vivid: "화려한", nature: "자연", geo: "조형", cosmos: "우주", ana: "아나모픽", xmas: "크리스마스" };
+  var MOOD = { calm: "차분한", vivid: "화려한", nature: "자연", geo: "조형", cosmos: "우주", ana: "아나모픽", vert: "세로 패널", xmas: "크리스마스" };
+  // 아나모픽 틀 규격: 렌탈 LED 2:1 또는 세로 패널 2:5 (80×200 cm)
+  function ledOf(r) { return r === "2:5" ? "세로 패널 80×200 cm · 2:5" : "렌탈 LED " + (r || "2:1"); }
   var state = { ratio: "16:9", mood: "all", work: null, pal: 0, speed: 1, picked: null };
   var WORKS = {};
   (window.SX_CATALOG || []).forEach(function (w) { WORKS[w.id] = w; });
@@ -138,7 +140,7 @@
     var p = state.picked, el = $("[data-picked]");
     if (!p) return;
     el.innerHTML = '<i style="background:' + swatchBg(p.colors) + '"></i><span><strong>' + p.title + '</strong> · ' + p.en +
-      '<br /><small>' + (p.loop ? "아나모픽 · " + p.loop + "초 반복 · 렌탈 LED 2:1 기준" : '색 ' + p.pal + ' · 30초 반복') + '</small></span>' +
+      '<br /><small>' + (p.loop ? "아나모픽 · " + p.loop + "초 반복 · " + ledOf(p.ratio) + " 기준" : '색 ' + p.pal + ' · 30초 반복') + '</small></span>' +
       '<button type="button" class="sx-link" data-repick>다른 작품</button>';
     el.setAttribute("data-on", "");
     $("[data-repick]", el).addEventListener("click", function () { $("#studio").scrollIntoView({ behavior: "smooth" }); });
@@ -166,7 +168,7 @@
       "주문자: " + (shop ? "매장·개인 / 결제 희망: 카드 또는 계좌이체" : "기관·기업 / 결제: 세금계산서"),
       "",
       "작품: " + p.title + " (" + p.en + ", 코드 " + p.id + ")",
-      p.loop ? "아나모픽 · " + p.loop + "초 반복 (렌탈 LED 2:1 기준, 다른 규격은 틀까지 다시 렌더)" : "색: " + p.pal + " · 30초 반복",
+      p.loop ? "아나모픽 · " + p.loop + "초 반복 (" + ledOf(p.ratio) + " 기준, 다른 규격은 틀까지 다시 렌더)" : "색: " + p.pal + " · 30초 반복",
       (p.loop ? "금액: 렌탈 영상 · 상담 후 안내" : "금액: 110만원 (부가세 포함 · 맞춤 크기 · 렌더링 · 로고 넣기 · 문구 넣기 포함)"),
       "화면: " + scr + (p.loop ? "" : "\n단독 구매: 판매 후 이 작품은 더 이상 판매하지 않음"),
       v("note") ? "남길 말: " + v("note") : "",

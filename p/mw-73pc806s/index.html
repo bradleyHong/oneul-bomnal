@@ -67,6 +67,7 @@ section+section{border-top:1px solid var(--line)}
 .seg{display:inline-flex;background:var(--paper-2);border-radius:999px;padding:4px}
 .seg button{border:0;background:transparent;font:inherit;font-size:15px;font-weight:600;color:var(--ink-2);padding:9px 16px;border-radius:999px;cursor:pointer;white-space:nowrap}
 .seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.seg button:disabled{opacity:.4;cursor:default}
 .seg button small{font-weight:600;color:var(--green-2);margin-left:4px;font-size:12px}
 .works-label{font-size:14px;color:var(--ink-2);margin:18px 0 10px}
 .works-label b{color:var(--ink)}
@@ -371,14 +372,14 @@ footer img{height:26px;margin:0 auto 10px;opacity:.9}
   이 페이지는 미팅용 비공개 주소입니다 · 공간 사진은 현장 합성 시안입니다
 </footer>
 
-<script src="works.js?v=2"></script>
+<script src="works.js?v=3"></script>
 <script>
 (() => {
   // 작품 목록 (media/ 안의 720×720 정사각 루프)
   // 작품 목록: works.js (tools/make-meet-media.py 가 만든다). media/ 안의 540×540 정사각 루프
   const M = window.MEET_WORKS;
   const ORIG = { id: "orig", name: "기본 시안", sub: "처음 보여 드린 물결" };
-  let cat = "code";
+  let cat = "vert";
   // 화면 자리 (사진 1672×940 픽셀): [x0, y0, x1, y1]
   const IMG = { w: 1672, h: 940 };
   const OPTS = {
@@ -390,14 +391,21 @@ footer img{height:26px;margin:0 auto 10px;opacity:.9}
   };
   const $ = (s, r = document) => r.querySelector(s);
   const stage = $("#stage"), inner = $("#inner"), space = $("#space"), badge = $("#badge");
-  let opt = "F", mode = "span", work = "caustics";
+  let opt = "F", mode = "span", work = M.works.some((w) => w.id === "vt-v03") ? "vt-v03" : "caustics";
   let nodes = [];
 
   const pct = (v, total) => (v / total * 100) + "%";
 
+  // 세로 패널 아나모픽(2:5)은 화면 한 면에 한 작품씩 꽉 차게 튼다 (두 면을 잇지 않는다)
+  const isTall = (id) => !!(M.works.find((w) => w.id === id) || {}).tall;
+  let builtTall = false;
   function build(flash) {
     nodes.forEach((n) => n.remove()); nodes = [];
     const o = OPTS[opt];
+    const tall = builtTall = isTall(work);
+    const VA = tall ? 0.4 : 1;   // 영상 가로/세로
+    const md = tall ? "same" : mode;
+    document.querySelectorAll("[data-mode]").forEach((b) => (b.disabled = tall));
     badge.textContent = o.badge;
     const xs = o.screens.map((s) => s[0]), xe = o.screens.map((s) => s[2]);
     const bb = [Math.min(...xs), Math.min(...o.screens.map((s) => s[1])), Math.max(...xe), Math.max(...o.screens.map((s) => s[3]))];
@@ -410,11 +418,11 @@ footer img{height:26px;margin:0 auto 10px;opacity:.9}
     }
     if (flash) {
       // 한 작품: 두 면을 아우르는 한 장의 그림을 벽 위에 잠깐 비춰 '이어진 한 장면'임을 보여 준다
-      const boxes = mode === "span" ? [bb] : o.screens;
+      const boxes = md === "span" ? [bb] : o.screens;
       boxes.forEach((a) => {
         const g = document.createElement("div"); g.className = "ghost flash";
         Object.assign(g.style, { left: pct(a[0], IMG.w), top: pct(a[1], IMG.h), width: pct(a[2] - a[0], IMG.w), height: pct(a[3] - a[1], IMG.h) });
-        if (mode === "span") {
+        if (md === "span") {
           const aw = a[2] - a[0], ah = a[3] - a[1], side = Math.max(aw, ah);
           const v = document.createElement("video");
           Object.assign(v, { muted: true, loop: true, playsInline: true, autoplay: true, preload: "auto" });
@@ -426,17 +434,18 @@ footer img{height:26px;margin:0 auto 10px;opacity:.9}
         inner.appendChild(g); nodes.push(g);
       });
       const t = document.createElement("span"); t.className = "ghost-tag flash";
-      t.textContent = mode === "span" ? "한 장면이 두 면에 이어집니다" : "두 면에 같은 장면";
+      t.textContent = tall ? "세로 패널마다 아나모픽 한 편" : md === "span" ? "한 장면이 두 면에 이어집니다" : "두 면에 같은 장면";
       t.addEventListener("animationend", () => t.remove());
       inner.appendChild(t); nodes.push(t);
     }
     o.screens.forEach((s, i) => {
       const [x0, y0, x1, y1] = s, w = x1 - x0, h = y1 - y0;
       // 화면 안 영상 자리: "한 작품" 이면 두 화면을 아우르는 상자에 하나의 그림으로, 아니면 화면마다 꽉 차게
-      const area = mode === "span" ? bb : s;
+      const area = md === "span" ? bb : s;
       const aw = area[2] - area[0], ah = area[3] - area[1];
-      const side = Math.max(aw, ah); // 영상이 정사각이므로 긴 쪽에 맞춰 덮는다
-      const vx = area[0] + (aw - side) / 2 - x0, vy = area[1] + (ah - side) / 2 - y0;
+      // 영상(정사각 또는 2:5 세로)이 자리를 꽉 덮도록 키운다
+      const vw = Math.max(aw, ah * VA), vh = vw / VA;
+      const vx = area[0] + (aw - vw) / 2 - x0, vy = area[1] + (ah - vh) / 2 - y0;
       const mk = (cls, top, height) => {
         const box = document.createElement("div");
         box.className = cls;
@@ -444,7 +453,7 @@ footer img{height:26px;margin:0 auto 10px;opacity:.9}
         const v = document.createElement("video");
         Object.assign(v, { muted: true, loop: true, playsInline: true, autoplay: true, preload: "auto" });
         v.setAttribute("muted", ""); v.setAttribute("playsinline", "");
-        Object.assign(v.style, { left: (vx / w * 100) + "%", top: (cls === "screen" ? vy / h * 100 : (y1 - (vy + y0) - side) / height * 100) + "%", width: (side / w * 100) + "%", height: (side / height * 100) + "%" });
+        Object.assign(v.style, { left: (vx / w * 100) + "%", top: (cls === "screen" ? vy / h * 100 : (y1 - (vy + y0) - vh) / height * 100) + "%", width: (vw / w * 100) + "%", height: (vh / height * 100) + "%" });
         box.appendChild(v); inner.appendChild(box); nodes.push(box);
         return v;
       };
@@ -460,6 +469,7 @@ footer img{height:26px;margin:0 auto 10px;opacity:.9}
 
   function setWork(id, rebuilt) {
     work = id;
+    if (!rebuilt && isTall(id) !== builtTall) return build(true);
     const on = id !== "orig";
     const o = OPTS[opt];
     // 작품을 틀 때는 원래 물결이 바닥에 비친 자국을 지운 사진을 쓴다

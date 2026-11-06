@@ -2,6 +2,10 @@
 window.MEET_WORKS = {
  "cats": [
   {
+   "id": "vert",
+   "name": "세로 패널 아나모픽"
+  },
+  {
    "id": "code",
    "name": "코드 작품"
   },
@@ -27,6 +31,48 @@ window.MEET_WORKS = {
   }
  ],
  "works": [
+  {
+   "id": "vt-v01",
+   "cat": "vert",
+   "name": "구슬 길",
+   "sub": "세로 패널 아나모픽",
+   "tall": true
+  },
+  {
+   "id": "vt-v02",
+   "cat": "vert",
+   "name": "새벽 열기구",
+   "sub": "세로 패널 아나모픽",
+   "tall": true
+  },
+  {
+   "id": "vt-v03",
+   "cat": "vert",
+   "name": "해파리 우물",
+   "sub": "세로 패널 아나모픽",
+   "tall": true
+  },
+  {
+   "id": "vt-v04",
+   "cat": "vert",
+   "name": "은행잎 내리는 날",
+   "sub": "세로 패널 아나모픽",
+   "tall": true
+  },
+  {
+   "id": "vt-v05",
+   "cat": "vert",
+   "name": "큰 진자",
+   "sub": "세로 패널 아나모픽",
+   "tall": true
+  },
+  {
+   "id": "vt-v06",
+   "cat": "vert",
+   "name": "종이학",
+   "sub": "세로 패널 아나모픽",
+   "tall": true
+  },
   {
    "id": "attractor",
    "cat": "code",
@@ -70,6 +116,12 @@ window.MEET_WORKS = {
    "sub": "네온"
   },
   {
+   "id": "drop-breeze",
+   "cat": "drop",
+   "name": "바람",
+   "sub": "양산"
+  },
+  {
    "id": "drop-haystacks",
    "cat": "drop",
    "name": "건초더미",
@@ -86,6 +138,12 @@ window.MEET_WORKS = {
    "cat": "drop",
    "name": "수련",
    "sub": "수련"
+  },
+  {
+   "id": "drop-self",
+   "cat": "drop",
+   "name": "자화상",
+   "sub": "해 질 녘"
   },
   {
    "id": "dunes",
@@ -110,6 +168,66 @@ window.MEET_WORKS = {
    "cat": "code",
    "name": "프랙탈 신전",
    "sub": "황금 신전"
+  },
+  {
+   "id": "geo-basalt",
+   "cat": "code",
+   "name": "주상절리",
+   "sub": "블루 아워"
+  },
+  {
+   "id": "geo-bismuth",
+   "cat": "code",
+   "name": "비스무트 결정",
+   "sub": "무지개 산화"
+  },
+  {
+   "id": "geo-cymatics",
+   "cat": "code",
+   "name": "소리의 무늬",
+   "sub": "금빛 모래"
+  },
+  {
+   "id": "geo-geode",
+   "cat": "code",
+   "name": "결정의 심장",
+   "sub": "자수정"
+  },
+  {
+   "id": "geo-koru",
+   "cat": "code",
+   "name": "고사리 새순",
+   "sub": "이끼 숲"
+  },
+  {
+   "id": "geo-nautilus",
+   "cat": "code",
+   "name": "앵무조개",
+   "sub": "진주 바다"
+  },
+  {
+   "id": "geo-phyllotaxis",
+   "cat": "code",
+   "name": "황금각",
+   "sub": "황금 들판"
+  },
+  {
+   "id": "geo-radiolaria",
+   "cat": "code",
+   "name": "방산충",
+   "sub": "암시야"
+  },
+  {
+   "id": "geo-turing",
+   "cat": "code",
+   "name": "튜링 무늬",
+   "sub": "심해 산호"
+  },
+  {
+   "id": "geo-wing",
+   "cat": "code",
+   "name": "잠자리 날개",
+   "sub": "새벽"
   },
   {
    "id": "gyroid",
@@ -248,12 +366,6 @@ window.MEET_WORKS = {
    "cat": "code",
    "name": "겨울 · 얼음꽃 결정",
    "sub": "눈보라"
-  },
-  {
-   "id": "drop-breeze",
-   "cat": "drop",
-   "name": "바람",
-   "sub": "양산"
   },
   {
    "id": "drop-self",
