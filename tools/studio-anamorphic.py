@@ -30,8 +30,12 @@ L = json.load(open(AJ))
 for e in L:
     src = TV + e["file"]
     mp4, jpg = PV + e["id"] + ".mp4", PV + e["id"] + ".jpg"
+    tall = e.get("ratio") == "2:5"
+    # 세로 패널(2:5) 작품: 카드(16:9)에서는 가운데에 세로 화면을, 양옆은 같은 영상을 흐리고 어둡게 깐다
+    vf = ("split[a][b];[a]scale=864:486:force_original_aspect_ratio=increase,crop=864:486,boxblur=24:2,eq=brightness=-0.22[bg];"
+          "[b]scale=-2:486:flags=lanczos[fg];[bg][fg]overlay=(W-w)/2:0") if tall else "scale=864:432:flags=lanczos"
     if not os.path.exists(mp4):
-        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", src, "-an", "-vf", "scale=864:432:flags=lanczos",
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", src, "-an", "-vf", vf,
                         "-c:v", "libx264", "-crf", "30", "-preset", "slow", "-pix_fmt", "yuv420p",
                         "-movflags", "+faststart", mp4], check=True)
     if not os.path.exists(jpg):
@@ -47,7 +51,7 @@ for e in L:
             st, d, _ = tv.call("GET", f"/videos/{e['vid']}?fields=player_embed_url")
             e["vimeo"] = d.get("player_embed_url") or f"https://player.vimeo.com/video/{e['vid']}"
         else:
-            vid, url = tv.upload(src, f"아나모픽 · {e['title']}", "2:1", kind="studio",
+            vid, url = tv.upload(src, f"아나모픽 · {e['title']}", e.get("ratio", "2:1"), kind="studio",
                                  desc="ArtWork Studio 아나모픽 (publicbloom.art/studio)", folder=False)
             e["vid"] = vid
             e["vimeo"] = url or f"https://player.vimeo.com/video/{vid}"

@@ -28,7 +28,7 @@ let list = order.map((id) => {
 // 아나모픽(렌탈 LED 2:1, 15초 루프)은 GPU 대표작 뒤에 붙는다. 색은 하나(원본)뿐이다. tools/studio-anamorphic.py
 if (fs.existsSync(D + "anamorphic.json")) {
   for (const a of JSON.parse(fs.readFileSync(D + "anamorphic.json", "utf8"))) {
-    list.push({ id: a.id, title: a.title, en: a.en, mood: a.mood, desc: a.desc, ratio: "2:1", loop: 15,
+    list.push({ id: a.id, title: a.title, en: a.en, mood: a.mood, desc: a.desc, ratio: a.ratio || "2:1", loop: 15,
       palettes: [{ name: "원본", colors: a.colors || ["#333333", "#555555", "#777777", "#999999"], vimeo: a.vimeo || null }] });
   }
 }

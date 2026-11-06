@@ -141,6 +141,34 @@ const ENGINE = `
 #ifndef CYK
 #define CYK 1.0
 #endif
+// 벽돌 상자 (WALLSTYLE 2): 벽돌 두 색 · 줄눈 색 · 낡음 · 이끼 · 바닥 젖음
+#ifndef BRICK1
+#define BRICK1 L(vec3(0.56, 0.27, 0.19))
+#endif
+#ifndef BRICK2
+#define BRICK2 L(vec3(0.70, 0.42, 0.30))
+#endif
+#ifndef MORTAR
+#define MORTAR L(vec3(0.62, 0.58, 0.52))
+#endif
+#ifndef BRICKW
+#define BRICKW 0.24
+#endif
+#ifndef BRICKH
+#define BRICKH 0.08
+#endif
+#ifndef BRICK_AGE
+#define BRICK_AGE 0.5
+#endif
+#ifndef MOSS
+#define MOSS 0.0
+#endif
+#ifndef MOSSC
+#define MOSSC L(vec3(0.24, 0.36, 0.12))
+#endif
+#ifndef BFLOOR
+#define BFLOOR 1
+#endif
 #ifndef CYREFL
 #define CYREFL 0.0
 #endif
@@ -304,6 +332,52 @@ vec3 cyberWall(vec3 p, float id, float t, inout vec3 alb, out float bev){
   return em;
 }
 
+// 벽돌 벽: 엇갈려 쌓은 벽돌 · 오목한 줄눈 · 모서리 둥근 면 · 벽돌마다 다른 색과 결 · 낡은 얼룩 · 아래쪽 이끼
+// 돌려주는 값: alb(바탕), n(벽돌 모서리에서 기운 법선), rough(벽돌 거칠기), cav(줄눈 오목 그늘)
+void brickWall(vec3 p, float id, float t, inout vec3 alb, inout vec3 n, out float cav){
+  vec3 U, V; vec2 uv;
+  if(id < 2.5){ uv = p.zy; U = vec3(0,0,1); V = vec3(0,1,0); }
+  else if(id < 3.5){ uv = p.xz; U = vec3(1,0,0); V = vec3(0,0,1); }
+  else { uv = p.xy; U = vec3(1,0,0); V = vec3(0,1,0); }
+  float pw = t*(2.0/uRes.y)/ZC*1.2;
+  bool floorTile = (id > 2.5 && id < 3.5 && p.y < 0.0 && BFLOOR == 1);
+  vec2 S = vec2(BRICKW, BRICKH);
+  if(floorTile) S = vec2(BRICKW, BRICKW*0.5);                // 바닥은 넓적한 벽돌 포장
+  float row = floor(uv.y/S.y);
+  vec2 q = uv; q.x += mod(row, 2.0)*S.x*0.5;               // 한 줄씩 반 장 엇갈림
+  vec2 cid = vec2(floor(q.x/S.x), row);
+  vec2 f = fract(q/S)*S;
+  float h = h21(cid + id*31.7), h2 = h21(cid*1.7 + 9.1);
+  float mw = 0.0075;                                       // 줄눈 반폭
+  vec2 e2 = min(f, S - f);
+  float e = min(e2.x, e2.y);
+  float mortar = 1.0 - smoothstep(mw - pw, mw + pw, e);
+  // 벽돌 색: 두 색 사이 + 굽기 얼룩 + 표면 결
+  vec2 wq = uv*vec2(9.0, 14.0);
+  float grain = vnoise(wq*3.0)*0.6 + vnoise(wq*9.0)*0.4;
+  vec3 bc = mix(BRICK1, BRICK2, h)*(0.78 + 0.34*h2)*(0.86 + 0.28*grain);
+  if(fract(h*7.3) < 0.08) bc *= 0.55;                      // 가끔 검게 그을린 벽돌
+  float stain = fbm(uv*1.3 + id*5.0);                      // 낡은 얼룩 · 흘러내린 자국
+  bc *= 1.0 - BRICK_AGE*0.45*smoothstep(0.45, 0.85, stain);
+  vec3 mc = MORTAR*(0.8 + 0.3*vnoise(uv*60.0));
+  alb = mix(bc, mc, mortar);
+  // 이끼: 아래쪽 · 줄눈을 따라 · 바닥과 만나는 곳
+  if(MOSS > 0.0){
+    float low = id > 2.5 && id < 3.5 ? (p.y < 0.0 ? 1.0 : 0.0) : smoothstep(0.2, -1.0, p.y);
+    float mz = fbm(uv*3.0 + 7.0);
+    float mm = clamp(MOSS*(low*0.9 + mortar*0.35)*smoothstep(0.35, 0.7, mz + low*0.25), 0.0, 1.0);
+    alb = mix(alb, MOSSC*(0.7 + 0.6*vnoise(uv*40.0)), mm);
+  }
+  // 모서리 둥근 면: 줄눈 쪽으로 기운 법선 (조명 쪽 모서리는 밝고 반대쪽은 그늘)
+  float bw = 0.016;
+  vec2 dir = vec2(f.x < S.x*0.5 ? -1.0 : 1.0, f.y < S.y*0.5 ? -1.0 : 1.0);
+  vec2 tl = vec2(1.0 - smoothstep(mw, mw + bw, e2.x), 1.0 - smoothstep(mw, mw + bw, e2.y))*(1.0 - mortar);
+  vec2 bump = dir*tl*0.75;
+  bump += (vec2(vnoise(wq*4.0 + 1.3), vnoise(wq*4.0 + 7.1)) - 0.5)*0.35*(1.0 - mortar);   // 표면 울퉁불퉁
+  n = normalize(n + U*bump.x + V*bump.y);
+  cav = mortar*0.55 + max(tl.x, tl.y)*0.10;
+}
+
 vec3 boxShade(vec3 p, vec3 n, float id, vec3 rd, float t, bool full){
   if(id < 1.5){
     // 틀 앞면: 무광. 앞으로 나온 물체의 그림자를 받는다
@@ -314,6 +388,27 @@ vec3 boxShade(vec3 p, vec3 n, float id, vec3 rd, float t, bool full){
     return c;
   }
   vec3 alb = wallTex(p, n, id);
+#if WALLSTYLE == 2
+  {
+    vec3 nb = n; float cav;
+    brickWall(p, id, t, alb, nb, cav);
+#ifdef HAS_WALLTINT
+    alb = wallTint(p, id, alb);                                      // 장면이 벽돌 위에 서리·젖음·그을음을 칠한다
+#endif
+    float ao = boxAO(p, id);
+    float sh = 1.0, oao = 1.0;
+    float kd = max(dot(nb, LK), 0.0)*keyAperture(p);
+    if(full){ if(max(dot(n, LK), 0.0) > 0.0) sh = softShadowN(p + n*0.002, LK, 12.0, 40); oao = sdfAO(p, n); }
+    vec3 c = alb*(KEYC*kd*sh + ambient(nb)*ao*oao*(0.55 + 0.45*clamp(p.z/DT, 0.0, 1.0)))*(1.0 - cav);
+#ifdef HAS_WALLLIGHT
+    c += alb*wallLight(p, nb)*(1.0 - cav)*ao;                        // 장면의 작은 불빛(풍등·반딧불·촛불)이 벽돌을 물들인다
+#endif
+    vec3 hh = normalize(LK - rd);
+    c += KEYC*0.025*pow(max(dot(nb, hh), 0.0), 18.0)*sh*kd;        // 구운 흙의 옅은 윤기
+    if(id > 3.5) c += backWall(p);
+    return c;
+  }
+#endif
 #if WALLSTYLE == 1
   {
     float bev; vec3 em = cyberWall(p, id, t, alb, bev);
@@ -524,6 +619,7 @@ void main(){
       SEED = uint(gl_FragCoord.x)*1973u + uint(gl_FragCoord.y)*9277u + uint(i + j*4)*26699u + uint(uT*997.0)*1013u + 1u;
       vec2 off = (vec2(float(i), float(j)) + 0.5)/uAA - 0.5;
       off = mat2(0.894, 0.447, -0.447, 0.894)*off;
+      if(n == 1) off = vec2(h11(uT*13.71 + 0.37), h11(uT*7.31 + 5.13)) - 0.5;   // 표본 1개일 때는 부분 프레임마다 화소 안 위치를 흔들어 계단을 지운다
       vec2 sp = ((gl_FragCoord.xy + off)/uRes*2.0 - 1.0)*vec2(A, 1.0);
       vec3 ro = vec3(0.0, 0.0, -ZC);
       acc += trace(ro, normalize(vec3(sp, 0.0) - ro));
@@ -557,6 +653,7 @@ window.renderFrame = function(n){
   G.shutter(state.sub, (s)=>{
     const tSec = (((f + (s - 0.5)*state.shutter)/TOTAL + 1) % 1)*state.dur;
     G.background(SRC, { uT: tSec, uAA: state.aa });
+    G.gl.flush();                  // 부분 프레임마다 GPU 로 넘긴다 (한 번에 너무 오래 잡으면 GPU 감시가 끊어 검은 화면이 된다)
   });
   G.end(f);
   G.gl.finish();

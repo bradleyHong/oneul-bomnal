@@ -3239,5 +3239,149 @@ window.SX_CATALOG = [
     "vimeo": "https://player.vimeo.com/video/1243779117?h=744ea731c0"
    }
   ]
+ },
+ {
+  "id": "ana-v01",
+  "title": "구슬 길",
+  "en": "The Marble Run",
+  "mood": [
+   "ana",
+   "vert"
+  ],
+  "desc": "높은 벽돌 통로 가운데 호두나무 기둥을 놋쇠 레일이 감아 내려옵니다. 유리·진주·놋쇠 구슬이 쉼 없이 굴러 내려오고, 마지막 굽이에서 틀 밖 관객 쪽으로 커다랗게 굴러 나옵니다.",
+  "ratio": "2:5",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#3f0f00",
+     "#4d1c00",
+     "#4a1900",
+     "#6b3a1a"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1244117493?h=5ece2b3c73"
+   }
+  ]
+ },
+ {
+  "id": "ana-v02",
+  "title": "새벽 열기구",
+  "en": "Dawn Balloons",
+  "mood": [
+   "ana",
+   "vert"
+  ],
+  "desc": "벽돌 통로 뒤가 동트는 분홍빛 하늘과 안개 낀 골짜기로 열려 있습니다. 줄무늬 열기구들이 새벽 속으로 천천히 떠오르고, 한 대가 틀 밖 관객 앞까지 다가와 커다랗게 떠오릅니다.",
+  "ratio": "2:5",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#84503b",
+     "#915d48",
+     "#86523d",
+     "#9f6b56"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1244117520?h=2553731668"
+   }
+  ]
+ },
+ {
+  "id": "ana-v03",
+  "title": "해파리 우물",
+  "en": "Jellyfish Well",
+  "mood": [
+   "ana",
+   "vert"
+  ],
+  "desc": "물에 잠긴 깊은 벽돌 우물로 햇빛이 빛기둥처럼 내려옵니다. 은은히 빛나는 해파리들이 갓을 오므렸다 펴며 떠오르고, 한 마리는 틀을 넘어 관객 눈앞을 크게 지나갑니다.",
+  "ratio": "2:5",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#0f4643",
+     "#09413d",
+     "#0b433f",
+     "#043c38"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1244117567?h=9c86afb07f"
+   }
+  ]
+ },
+ {
+  "id": "ana-v04",
+  "title": "은행잎 내리는 날",
+  "en": "Ginkgo Day",
+  "mood": [
+   "ana",
+   "vert"
+  ],
+  "desc": "채광창으로 드는 비스듬한 가을 햇살 속에 부채꼴 은행잎이 팔랑팔랑 맴돌며 내려와 낙엽 더미에 쌓입니다. 몇 잎은 틀을 넘어 관객 눈앞으로 커다랗게 날아옵니다.",
+  "ratio": "2:5",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#5b2700",
+     "#703c00",
+     "#6b3600",
+     "#743f03"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1244117607?h=4666871e4f"
+   }
+  ]
+ },
+ {
+  "id": "ana-v05",
+  "title": "큰 진자",
+  "en": "The Great Pendulum",
+  "mood": [
+   "ana",
+   "vert"
+  ],
+  "desc": "높은 벽돌 굴뚝에 매달린 커다란 놋쇠 진자가 느리고 묵직하게 흔들립니다. 앞으로 올 때는 틀을 넘어 관객 코앞까지 다가오고, 물러날 때는 긴 그림자가 벽돌 위를 쓸고 지나갑니다.",
+  "ratio": "2:5",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#410800",
+     "#480f00",
+     "#571e01",
+     "#6f3619"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1244117645?h=b0d5b1a127"
+   }
+  ]
+ },
+ {
+  "id": "ana-v06",
+  "title": "종이학",
+  "en": "Paper Cranes",
+  "mood": [
+   "ana",
+   "vert"
+  ],
+  "desc": "아치 너머 밝은 낮에서 종이학 떼가 날아 들어와 날개를 살랑이며 나선을 그리고 오릅니다. 위에 다다른 학은 하나씩 틀을 넘어 관객 쪽으로 커다랗게 날아옵니다.",
+  "ratio": "2:5",
+  "loop": 15,
+  "palettes": [
+   {
+    "name": "원본",
+    "colors": [
+     "#4c3a22",
+     "#534129",
+     "#7e6c54",
+     "#826f58"
+    ],
+    "vimeo": "https://player.vimeo.com/video/1244117697?h=c7292faeba"
+   }
+  ]
  }
 ];
