@@ -5468,6 +5468,169 @@ function create(canvas, opts) {
       ctx.fillRect(W * 3 - bx, H - H * 0.085 - bh, W, bh);
     },
 
+    /* 99 봄가지 — 세로 액자용.
+       거실 벽에 거는 그림은 전시장 화면과 반대다. 어두운 판에 빛을
+       쌓는 대신, 밝은 자리에 가지 하나를 놓고 빛이 꽃에 걸리게 둔다.
+       비는 데가 많아야 액자로 보이고, 꽉 차면 벽지가 된다.
+
+       움직임은 바람 한 번이 전부다. 뿌리는 가만히 있고 끝으로 갈수록
+       크게 흔들린다. 꽃잎 몇 장이 떨어지는데, 한 바퀴 끝에서 튀지
+       않도록 제자리에서 옅어졌다 다시 짙어진다. */
+    bomgaji(t) {
+      const ph = motionPhase(t);
+      const vert = H / W;                       // 세로로 길수록 가지를 키운다
+      const M = Math.min(W, H);
+
+      /* ── 빛 ──────────────────────────────────────────────────
+         꽃이 모이는 자리 뒤에 해가 하나 있다고 보고 거기서 밝아진다. */
+      const lx = W * 0.40, ly = H * 0.34;
+      let g = ctx.createRadialGradient(lx, ly, 0, lx, ly, Math.hypot(W, H) * 0.62);
+      g.addColorStop(0.00, shade(0, 0.085 * k.contrast));
+      g.addColorStop(0.42, shade(1, 0.030 * k.contrast));
+      g.addColorStop(1.00, shade(3, 0.055 * k.contrast));
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+
+      /* 아래쪽을 한 겹 더 눕힌다. 액자는 바닥이 무거워야 선다. */
+      g = ctx.createLinearGradient(0, H * 0.34, 0, H);
+      g.addColorStop(0, tone(3, 0));
+      g.addColorStop(1, tone(3, 0.10 * k.contrast));
+      ctx.fillStyle = g;
+      ctx.fillRect(0, H * 0.34, W, H * 0.66);
+
+      /* ── 바람 ────────────────────────────────────────────────
+         뿌리에서 멀수록 크게 흔들린다. 한 바퀴에 정확히 한 번. */
+      const rootY = H * 1.02;
+      const amp = M * 0.020 * k.speed;
+      function sway(p) {
+        const hgt = clamp((rootY - p[1]) / H, 0, 1.3);
+        const d = Math.sin(ph + hgt * 2.1) * hgt * hgt * amp;
+        return [p[0] + d, p[1] + Math.cos(ph + hgt * 2.1) * hgt * hgt * amp * 0.22];
+      }
+
+      /* ── 가지 ────────────────────────────────────────────────
+         뿌리에서 갈라져 나가며 끝으로 갈수록 가늘어진다. 꽃자리는
+         가지를 치는 동안 모아 두었다가 나중에 한꺼번에 그린다. */
+      const blooms = [];
+      let si = 300;
+      function limb(x, y, ang, len, wid, depth) {
+        const s = seeds[(si++) % seeds.length];
+        const N = 10;
+        const pts = [];
+        /* 한 마디는 조금씩 휜다. 곧게 그으면 전봇대가 된다. */
+        const bend = (s.a - 0.5) * 0.55;
+        for (let i = 0; i <= N; i++) {
+          const u = i / N;
+          const a = ang + bend * u * u;
+          pts.push([x + Math.cos(a) * len * u, y + Math.sin(a) * len * u]);
+        }
+        ctx.beginPath();
+        for (let i = 0; i <= N; i++) {
+          const q = sway(pts[i]);
+          if (i) ctx.lineTo(q[0], q[1]); else ctx.moveTo(q[0], q[1]);
+        }
+        ctx.strokeStyle = shade(3, (0.30 + 0.34 * (1 - depth / 4)) * k.contrast);
+        ctx.lineWidth = Math.max(1, wid);
+        ctx.lineCap = "round";
+        ctx.stroke();
+
+        const tip = pts[N];
+        if (depth >= 2) blooms.push({ p: tip, s: seeds[(si * 7) % seeds.length], d: depth });
+        /* 처음엔 마디마다 꽃을 달았더니 가지가 안 보이고 꽃 덩어리만
+           남았다. 끝가지에만, 그것도 가끔 단다. 액자는 빈 데가 있어야 한다. */
+        if (depth >= 2 && s.b > 0.45) {
+          blooms.push({ p: pts[Math.round(N * (0.6 + 0.3 * s.b))], s: seeds[(si * 13) % seeds.length], d: depth });
+        }
+        if (depth >= 4 || len < M * 0.035) return;
+
+        const spread = 0.42 + 0.34 * s.c;
+        const shrink = 0.62 + 0.14 * s.d;
+        limb(tip[0], tip[1], ang - spread, len * shrink, wid * 0.58, depth + 1);
+        limb(tip[0], tip[1], ang + spread * (0.6 + 0.6 * s.b), len * shrink * 0.88, wid * 0.52, depth + 1);
+        /* 가끔 셋으로 갈린다. 둘로만 갈리면 좌우 대칭처럼 읽힌다. */
+        if (s.a > 0.62 && depth < 3) {
+          limb(tip[0], tip[1], ang + (s.c - 0.5) * 0.3, len * shrink * 0.7, wid * 0.42, depth + 2);
+        }
+      }
+
+      /* 오른쪽 아래에서 올라와 왼쪽 위로 뻗는다. 화조도의 자리다. */
+      const trunkLen = M * (0.40 + 0.22 * vert) * clamp(k.scale, 0.75, 1.35);
+      limb(W * 0.86, H * 1.02, -Math.PI * 0.62, trunkLen, M * 0.018, 0);
+      limb(W * 0.80, H * 1.02, -Math.PI * 0.52, trunkLen * 0.66, M * 0.011, 1);
+
+      /* ── 꽃 ──────────────────────────────────────────────────
+         다섯 장. 가운데에 꽃술. 빛 쪽에 가까울수록 환하다. */
+      const rBase = M * 0.028 * clamp(k.scale, 0.8, 1.3);
+      for (let i = 0; i < blooms.length; i++) {
+        const b = blooms[i], s = b.s;
+        const q = sway(b.p);
+        /* 숨. 꽃마다 박자를 달리 줘서 한꺼번에 커졌다 작아지지 않게 한다. */
+        const br = 1 + 0.045 * Math.sin(ph + s.a * TAU);
+        const R = rBase * (0.55 + 0.75 * s.b) * br * (1 - b.d * 0.07);
+        /* 빛에서 멀면 그늘로 둔다 */
+        const dist = Math.hypot(q[0] - lx, q[1] - ly) / Math.hypot(W, H);
+        const lit = clamp(1.15 - dist * 1.5, 0.25, 1);
+
+        /* 꽃 뒤 후광. 처음엔 방사 그라데이션을 깔았는데 shade() 가
+           불투명한 색이라 바깥 끝이 투명이 아니라 '배경색'이었다.
+           꽃마다 접시가 하나씩 깔렸다. 그림자로 번지게 바꾼다. */
+        ctx.shadowColor = tone(1, 0.30 * lit * k.glow * 2);
+        ctx.shadowBlur = R * 1.5;
+
+        const spin = s.c * TAU + Math.sin(ph + s.d * TAU) * 0.06;
+        for (let p = 0; p < 5; p++) {
+          const a = spin + (p / 5) * TAU;
+          const px = q[0] + Math.cos(a) * R * 0.62;
+          const py = q[1] + Math.sin(a) * R * 0.62;
+          ctx.save();
+          ctx.translate(px, py); ctx.rotate(a);
+          ctx.beginPath();
+          ctx.ellipse(0, 0, R * 0.60, R * 0.44, 0, 0, TAU);
+          const pg = ctx.createRadialGradient(0, 0, 0, 0, 0, R * 0.60);
+          pg.addColorStop(0, shade(p % 2 ? 0 : 1, (0.16 + 0.20 * lit) * k.contrast));
+          pg.addColorStop(1, shade(3, (0.34 + 0.26 * lit) * k.contrast));
+          ctx.fillStyle = pg;
+          ctx.fill();
+          ctx.restore();
+        }
+        ctx.shadowBlur = 0;
+        /* 꽃술. 점 몇 개면 꽃이 산다. */
+        ctx.fillStyle = shade(2, (0.26 + 0.18 * lit) * k.accent);
+        ctx.beginPath(); ctx.arc(q[0], q[1], R * 0.17, 0, TAU); ctx.fill();
+        const stam = 5;
+        ctx.strokeStyle = shade(2, 0.22 * k.accent);
+        ctx.lineWidth = Math.max(1, R * 0.055);
+        for (let p = 0; p < stam; p++) {
+          const a = spin * 1.7 + (p / stam) * TAU;
+          ctx.beginPath();
+          ctx.moveTo(q[0], q[1]);
+          ctx.lineTo(q[0] + Math.cos(a) * R * 0.40, q[1] + Math.sin(a) * R * 0.40);
+          ctx.stroke();
+        }
+      }
+
+      /* ── 지는 꽃잎 ───────────────────────────────────────────
+         한 바퀴 끝에서 제자리로 돌아가야 한다. 떨어지는 진행을 0~1 로
+         두고 양 끝에서 투명하게 만들면, 튀는 자리가 안 보인다. */
+      const fall = 7 + Math.round(k.density * 10);
+      for (let i = 0; i < fall; i++) {
+        const s = seeds[(600 + i * 3) % seeds.length];
+        const u = ((ph / TAU) * (0.6 + 0.5 * s.a) + s.b) % 1;
+        const x = W * (0.10 + 0.82 * s.c) + Math.sin(u * TAU * 1.5 + s.d * TAU) * W * 0.055;
+        const y = H * (-0.05) + u * H * 1.1;
+        const r = M * 0.009 * (0.6 + 0.8 * s.d);
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(u * TAU * 2 + s.a * TAU);
+        ctx.beginPath();
+        ctx.ellipse(0, 0, r, r * 0.6, 0, 0, TAU);
+        /* sin 은 양 끝에서 0 이다. 들어올 때와 나갈 때 저절로 투명해진다. */
+        ctx.fillStyle = shade(1, 0.34 * Math.sin(u * Math.PI) * k.contrast);
+        ctx.fill();
+        ctx.restore();
+      }
+    },
+
   };
 
   /* ── 마감 처리 ────────────────────────────────────────────────
@@ -5597,6 +5760,7 @@ const STYLE_LABELS = [
   ["moonjar", "달항아리"], ["buddha", "금불"], ["celadon", "청자 상감"],
   ["reactdiff", "반응확산"], ["curlflow", "곡류"], ["voronoi", "세포"],
   ["pojagi", "조각보"], ["motiongfx", "모션그래픽"], ["galleryveil", "빛의 베일"],
+  ["bomgaji", "봄가지"],
 ];
 
 global.StudioArt = {
